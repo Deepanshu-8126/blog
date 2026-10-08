@@ -49,6 +49,41 @@ const remainingPosts = posts.slice(1);
     <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />
   )}
 
+  <!-- Quick Topic & Filter Pills (Dynamic Sub-category Filter) -->
+  <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 no-scrollbar">
+    <span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-brand text-white shadow-xs shrink-0 cursor-pointer">
+      All {niche.name}
+    </span>
+    {niche.slug === 'exams-results' ? (
+      <>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📊 Sarkari Results & Cutoffs
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🎫 Admit Cards & Dates
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📖 NCERT & Revision Notes
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          💡 AI Study Tools & Cheat Sheets
+        </span>
+      </>
+    ) : (
+      <>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🔥 Trending in India
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ⚡ Today's Verified Deals
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🎯 In-Depth Guides
+        </span>
+      </>
+    )}
+  </div>
+
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     
     <!-- Main Feed Column -->
