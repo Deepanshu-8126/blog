@@ -151,17 +151,27 @@ def get_trends(seeds):
     try:
         from pytrends.request import TrendReq
         py = TrendReq(hl="en-IN", tz=330, timeout=(5, 20))
-        for s in seeds[:3]:
-            py.build_payload([s], timeframe="now 7-d", geo=GEO)
-            rising = py.related_queries().get(s, {}).get("rising")
-            if rising is not None:
-                for _, row in rising.head(8).iterrows():
-                    out[str(row["query"])] = int(row["value"])
-            time.sleep(2)
-        if not seeds:
+        
+        # 1. Fetch live rising searches across India (captures whatever is breaking right now: Exams, Cricket, Sales, Tech)
+        try:
             df = py.trending_searches(pn="india")
-            for q in df[0].head(10):
+            for q in df[0].head(15):
                 out[str(q)] = 100
+        except Exception as e:
+            print("[Daily trending searches fallback]:", e)
+
+        # 2. Fetch specific rising momentum if seeds provided
+        if seeds:
+            for s in seeds[:2]:
+                try:
+                    py.build_payload([s], timeframe="now 7-d", geo=GEO)
+                    rising = py.related_queries().get(s, {}).get("rising")
+                    if rising is not None:
+                        for _, row in rising.head(6).iterrows():
+                            out[str(row["query"])] = int(row["value"])
+                    time.sleep(1)
+                except Exception:
+                    pass
     except Exception as e:
         print("trends failed:", e)
     return out
