@@ -1,0 +1,93 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  keyword: string;
+  nicheName?: string;
+  customTitle?: string;
+}
+
+const { keyword, nicheName = 'Tech & Gaming', customTitle } = Astro.props;
+const amazonTag = 'uniquedigi0c6-21';
+const cleanKeyword = keyword.replace(/[^\w\s-]/gi, '').trim();
+const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(cleanKeyword)}&tag=${amazonTag}`;
+---
+
+<div class="my-8 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-8 text-white border border-amber-500/30 shadow-2xl relative overflow-hidden">
+  <!-- Glowing Accent Background -->
+  <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -left-16 -top-16 w-64 h-64 bg-brand/20 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="relative z-10">
+    <!-- Top Header Badge -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-md">
+          <Icon name="sparkles" class="w-3.5 h-3.5" />
+          Editor's Buying Recommendation
+        </span>
+        <span class="text-xs text-slate-400 font-medium hidden sm:inline">Verified Deal</span>
+      </div>
+
+      <div class="flex items-center gap-1.5 text-xs text-amber-300 font-mono font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+        <span>★ 4.7/5</span>
+        <span class="text-slate-400">|</span>
+        <span>Top Rated</span>
+      </div>
+    </div>
+
+    <!-- Title & Value Pitch -->
+    <h3 class="text-xl sm:text-2xl font-black text-white leading-snug mb-2">
+      {customTitle || `Looking for the Best Deals on ${cleanKeyword}?`}
+    </h3>
+
+    <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+      Check today's lowest prices, exclusive bank discounts, and lightning deals directly on Amazon India. Compare customer reviews and find verified seller offers before stock runs out.
+    </p>
+
+    <!-- Key Reasons / Value Props -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+      <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-2.5">
+        <span class="text-amber-400 text-base">⚡</span>
+        <div>
+          <span class="block text-xs font-bold text-white">Live Price Drops</span>
+          <span class="text-[11px] text-slate-400">Instant discounts & coupons</span>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-2.5">
+        <span class="text-emerald-400 text-base">🛡️</span>
+        <div>
+          <span class="block text-xs font-bold text-white">100% Genuine</span>
+          <span class="text-[11px] text-slate-400">Official Indian Brand Warranty</span>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-2.5">
+        <span class="text-blue-400 text-base">📦</span>
+        <div>
+          <span class="block text-xs font-bold text-white">Fast Delivery</span>
+          <span class="text-[11px] text-slate-400">Prime Same-Day / 1-Day</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Row -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-white/10">
+      <div class="text-xs text-slate-400">
+        <span class="text-slate-200 font-semibold block">Amazon Verified Merchant Links</span>
+        <span>Affiliate commissions help support our research at ₹0 extra cost to you.</span>
+      </div>
+
+      <a
+        href={searchUrl}
+        target="_blank"
+        rel="sponsored nofollow noopener"
+        class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-sm transition transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-amber-500/25 cursor-pointer shrink-0"
+      >
+        <span>Check Live Price & Amazon Offers</span>
+        <Icon name="external-link" class="w-4 h-4" />
+      </a>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import ToolCard from '../../components/ToolCard.astro';
+import AmazonDealBox from '../../components/AmazonDealBox.astro';
 import NicheCard from '../../components/NicheCard.astro';
 import DisclaimerBar from '../../components/DisclaimerBar.astro';
 import Icon from '../../components/Icon.astro';
@@ -137,17 +138,33 @@ const articleSchema = {
       <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />
     )}
 
+    <!-- Quick Value Proposition / Why You Are Here -->
+    <div class="my-6 p-5 sm:p-6 rounded-2xl bg-brand/5 border border-brand/20 flex items-start gap-4">
+      <div class="w-10 h-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center shrink-0 font-bold text-lg">
+        💡
+      </div>
+      <div>
+        <h3 class="text-sm font-black text-ink uppercase tracking-wider mb-1">Editor's Quick Verdict & Reader Guide</h3>
+        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+          Our editorial team evaluated current market specifications, user feedback, and price-to-performance metrics. Below you will find the complete breakdown along with direct verified retail options and today's live discount offers.
+        </p>
+      </div>
+    </div>
+
     <AdSlot position="top" />
 
     <!-- Article Markdown Content -->
     <div class="prose max-w-none text-ink text-base sm:text-lg leading-relaxed mb-12" set:html={bodyHtml} />
+
+    <!-- High-Converting Amazon Affiliate Recommendation & Live Deal Widget -->
+    <AmazonDealBox keyword={post.title} nicheName={niche.name} />
 
     <!-- Product Recommendations if in Tools/PC/Deals Niche -->
     {products.length > 0 && (
       <div class="my-12 p-6 sm:p-8 rounded-3xl bg-slate-50 border border-line">
         <div class="flex items-center gap-2 mb-4">
           <span class="w-2.5 h-2.5 rounded-full bg-cta"></span>
-          <h3 class="text-lg font-black text-ink tracking-tight">Verified Gear & Deals Mentioned</h3>
+          <h3 class="text-lg font-black text-ink tracking-tight">Verified Gear & Tools in {niche.name}</h3>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {products.slice(0, 2).map(pr => (
