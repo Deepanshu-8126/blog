@@ -196,8 +196,8 @@ export const SEED_PRODUCTS: Product[] = [
 ];
 
 // Supabase client instance
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
 
 export const supabase = (supabaseUrl && supabaseAnonKey)
   ? createClient(supabaseUrl, supabaseAnonKey)
@@ -212,12 +212,12 @@ export async function getNiches(): Promise<Niche[]> {
   if (!supabase) return SEED_NICHES;
   try {
     const { data, error } = await supabase
-      .table('niches')
+      .from('niches')
       .select('*')
       .eq('active', true)
       .order('sort', { ascending: true });
     if (error || !data || data.length === 0) return SEED_NICHES;
-    return data;
+    return data as Niche[];
   } catch {
     return SEED_NICHES;
   }
@@ -236,7 +236,7 @@ export async function getPostsByNiche(nicheId: string, limit = 12): Promise<Post
   }
   try {
     const { data, error } = await supabase
-      .table('posts')
+      .from('posts')
       .select('*, niches(*)')
       .eq('niche_id', nicheId)
       .eq('status', 'published')
@@ -245,7 +245,7 @@ export async function getPostsByNiche(nicheId: string, limit = 12): Promise<Post
     if (error || !data || data.length === 0) {
       return SEED_POSTS.filter(p => p.niche_id === nicheId).slice(0, limit);
     }
-    return data;
+    return data as Post[];
   } catch {
     return SEED_POSTS.filter(p => p.niche_id === nicheId).slice(0, limit);
   }
@@ -258,7 +258,7 @@ export async function getTrendingPosts(limit = 5): Promise<Post[]> {
   }
   try {
     const { data, error } = await supabase
-      .table('posts')
+      .from('posts')
       .select('*, niches(*)')
       .eq('status', 'published')
       .order('trend_score', { ascending: false })
@@ -266,7 +266,7 @@ export async function getTrendingPosts(limit = 5): Promise<Post[]> {
     if (error || !data || data.length === 0) {
       return [...SEED_POSTS].sort((a, b) => b.trend_score - a.trend_score).slice(0, limit);
     }
-    return data;
+    return data as Post[];
   } catch {
     return [...SEED_POSTS].sort((a, b) => b.trend_score - a.trend_score).slice(0, limit);
   }
@@ -279,7 +279,7 @@ export async function getProductsByNiche(nicheId: string): Promise<Product[]> {
   }
   try {
     const { data, error } = await supabase
-      .table('products')
+      .from('products')
       .select('*')
       .eq('niche_id', nicheId)
       .eq('active', true)
@@ -287,7 +287,7 @@ export async function getProductsByNiche(nicheId: string): Promise<Product[]> {
     if (error || !data || data.length === 0) {
       return SEED_PRODUCTS.filter(pr => pr.niche_id === nicheId);
     }
-    return data;
+    return data as Product[];
   } catch {
     return SEED_PRODUCTS.filter(pr => pr.niche_id === nicheId);
   }
@@ -306,21 +306,17 @@ export async function getPost(nicheSlug: string, postSlug: string): Promise<Post
 
   try {
     const { data, error } = await supabase
-      .table('posts')
+      .from('posts')
       .select('*, niches(*)')
       .eq('niche_id', niche.id)
       .eq('slug', postSlug)
       .eq('status', 'published')
       .single();
-    if (error || !data) {
-      const p = SEED_POSTS.find(post => post.slug === postSlug);
-      if (p) return { ...p, niches: niche };
-      return null;
-    }
-    return data;
+    return data as Post;
   } catch {
     const p = SEED_POSTS.find(post => post.slug === postSlug);
     if (p) return { ...p, niches: niche };
     return null;
   }
 }
+

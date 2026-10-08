@@ -1,0 +1,9 @@
+{
+  "venvPath": "C:\\Users\\Deepanshu\\AppData\\Local\\Programs\\Python",
+  "venv": "Python311",
+  "pythonPath": "C:\\Users\\Deepanshu\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+  "extraPaths": [
+    "C:\\Users\\Deepanshu\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages"
+  ],
+  "typeCheckingMode": "basic"
+}
