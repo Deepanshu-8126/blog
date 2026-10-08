@@ -51,12 +51,12 @@ import AdSlot from '../../components/AdSlot.astro';
   </div>
 
   <!-- Main Simulator Container -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 my-6 w-full items-start">
     
     <!-- LEFT COLUMN: 3D Interactive PC Cabinet Visualizer -->
-    <div class="lg:col-span-6 flex flex-col gap-6">
+    <div class="w-full min-w-0 flex flex-col gap-6">
       
-      <div class="p-6 rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl relative overflow-hidden">
+      <div class="p-5 sm:p-7 rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl relative overflow-hidden w-full">
         <!-- Ambient ARGB Background Lighting -->
         <div id="ambient-rgb" class="absolute -top-20 -left-20 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
         <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-brand/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -81,7 +81,7 @@ import AdSlot from '../../components/AdSlot.astro';
           </div>
 
           <!-- The 3D-Styled PC Cabinet Simulation Box -->
-          <div class="w-full aspect-[4/3] rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-inner overflow-hidden">
+          <div class="w-full min-h-[380px] rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-inner overflow-hidden">
             
             <!-- Tempered Glass Reflection Layer -->
             <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none"></div>
@@ -225,7 +225,7 @@ import AdSlot from '../../components/AdSlot.astro';
     </div>
 
     <!-- RIGHT COLUMN: Interactive Component Selector -->
-    <div class="lg:col-span-6 flex flex-col gap-6">
+    <div class="w-full min-w-0 flex flex-col gap-6">
       
       <!-- Category Selection Tabs -->
       <div class="p-4 rounded-3xl bg-white border border-line shadow-card">
