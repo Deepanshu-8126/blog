@@ -37,6 +37,23 @@ import AdSlot from '../../components/AdSlot.astro';
         <p class="text-sm text-muted mt-1 max-w-3xl">
           Assemble your custom gaming rig in interactive 3D, test AM4/AM5 socket compatibility & PSU headroom, hear mechanical snap feedback, predict 1080p/1440p gaming FPS, and checkout individual parts or full builds on Amazon India.
         </p>
+
+        <!-- Indian Budget Preset Rigs Bar -->
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <span class="text-xs font-mono font-bold text-slate-500 uppercase mr-1">⚡ Quick Preset Rigs:</span>
+          <button class="preset-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-ink text-xs font-bold transition cursor-pointer" data-preset="p35k">
+            ₹35K Esports Entry
+          </button>
+          <button class="preset-btn px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-black shadow-xs cursor-pointer" data-preset="p55k">
+            ₹55K 1080p Value King
+          </button>
+          <button class="preset-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-ink text-xs font-bold transition cursor-pointer" data-preset="p85k">
+            ₹85K 1440p Creator
+          </button>
+          <button class="preset-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-ink text-xs font-bold transition cursor-pointer" data-preset="p150k">
+            ₹1.5L+ 4K Ultra & AI
+          </button>
+        </div>
       </div>
 
       <!-- Quick Stats Pill -->
@@ -254,11 +271,29 @@ import AdSlot from '../../components/AdSlot.astro';
             </div>
           </div>
 
-          <!-- 1-Click Amazon India Complete Build Checkout Button -->
+          <!-- Electricity Cost & UPS Backup Estimator -->
+          <div class="mt-4 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="text-lg">⚡</span>
+              <div>
+                <span class="text-xs font-bold text-white block">Electricity Cost: <span id="bill-estimate" class="text-amber-300 font-mono">~₹378/month</span></span>
+                <span class="text-[10px] text-slate-400">Based on 4 hrs/day @ ₹7.5/unit • Recommended UPS: <span id="ups-recommend" class="text-cyan-400 font-mono font-bold">600VA / 360W</span></span>
+              </div>
+            </div>
+            <a href="https://www.amazon.in/s?k=apc+microtek+600va+ups+for+gaming+pc&tag=uniquedigi0c6-21" target="_blank" rel="sponsored nofollow noopener" class="text-[10px] font-bold text-cyan-400 hover:underline shrink-0">
+              View UPS Deals ➔
+            </a>
+          </div>
+
+          <!-- 1-Click Amazon India Complete Build Checkout Button & Social Sharing -->
           <div class="mt-5 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div>
-              <span class="text-xs text-slate-300 font-bold block">Amazon India Prime Certified Cart</span>
-              <span class="text-[10px] text-slate-500">Official brand warranties & fast Prime shipping.</span>
+            <div class="flex items-center gap-2">
+              <button id="btn-share-whatsapp" class="p-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm" title="Share Build on WhatsApp">
+                <span>💬 WhatsApp</span>
+              </button>
+              <button id="btn-copy-link" class="p-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition cursor-pointer" title="Copy Direct Build Link">
+                <span>🔗 Share Link</span>
+              </button>
             </div>
 
             <a
@@ -268,7 +303,7 @@ import AdSlot from '../../components/AdSlot.astro';
               rel="sponsored nofollow noopener"
               class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs transition transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-amber-500/25 cursor-pointer shrink-0"
             >
-              <span>🛒 Buy Complete Build on Amazon</span>
+              <span>🛒 1-Click Amazon Cart (All Parts)</span>
               <Icon name="external-link" class="w-3.5 h-3.5" />
             </a>
           </div>
@@ -329,6 +364,66 @@ import AdSlot from '../../components/AdSlot.astro';
 
     </div>
 
+  </div>
+
+  <!-- MATCHING GAMING PERIPHERALS & MONITORS UPSELL SECTION -->
+  <div class="my-10 p-6 sm:p-8 rounded-3xl bg-white border border-line shadow-card">
+    <div class="flex items-center justify-between pb-4 border-b border-line mb-6">
+      <div>
+        <span class="text-xs font-mono font-bold uppercase text-brand">Complete Your Battle-Station</span>
+        <h3 class="text-xl sm:text-2xl font-black text-ink">Matching Gaming Monitors & Peripherals</h3>
+      </div>
+      <span class="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 hidden sm:inline">
+        ⚡ Amazon Verified Deals
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Monitor 1 -->
+      <div class="p-4 rounded-2xl border border-line hover:border-brand/40 transition flex flex-col justify-between group">
+        <div>
+          <div class="aspect-video w-full rounded-xl overflow-hidden mb-3 bg-slate-100">
+            <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=400&q=80" alt="LG UltraGear 144Hz" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-brand/10 text-brand">144Hz IPS 1ms</span>
+          <h4 class="text-sm font-bold text-ink mt-1.5 leading-snug">LG UltraGear 24-inch FHD IPS 144Hz Gaming Monitor</h4>
+          <span class="block text-sm font-black text-ink font-mono mt-1">₹10,999</span>
+        </div>
+        <a href="https://www.amazon.in/s?k=lg+ultragear+24+inch+144hz+monitor&tag=uniquedigi0c6-21" target="_blank" rel="sponsored nofollow noopener" class="mt-4 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs text-center transition">
+          🛒 Buy on Amazon
+        </a>
+      </div>
+
+      <!-- Monitor 2 -->
+      <div class="p-4 rounded-2xl border border-line hover:border-brand/40 transition flex flex-col justify-between group">
+        <div>
+          <div class="aspect-video w-full rounded-xl overflow-hidden mb-3 bg-slate-100">
+            <img src="https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=400&q=80" alt="Acer Nitro 180Hz 1440p" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-purple-500/10 text-purple-600">2K 180Hz HDR</span>
+          <h4 class="text-sm font-bold text-ink mt-1.5 leading-snug">Acer Nitro 27-inch 1440p 2K 180Hz Fast IPS Monitor</h4>
+          <span class="block text-sm font-black text-ink font-mono mt-1">₹18,499</span>
+        </div>
+        <a href="https://www.amazon.in/s?k=acer+nitro+27+inch+1440p+180hz+gaming+monitor&tag=uniquedigi0c6-21" target="_blank" rel="sponsored nofollow noopener" class="mt-4 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs text-center transition">
+          🛒 Buy on Amazon
+        </a>
+      </div>
+
+      <!-- Keyboard & Mouse Combo -->
+      <div class="p-4 rounded-2xl border border-line hover:border-brand/40 transition flex flex-col justify-between group">
+        <div>
+          <div class="aspect-video w-full rounded-xl overflow-hidden mb-3 bg-slate-100">
+            <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=400&q=80" alt="Mechanical Keyboard & Mouse" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-500/10 text-emerald-600">RGB Mechanical</span>
+          <h4 class="text-sm font-bold text-ink mt-1.5 leading-snug">Redragon K552 RGB Mechanical Keyboard + Razer DeathAdder Mouse</h4>
+          <span class="block text-sm font-black text-ink font-mono mt-1">₹3,799</span>
+        </div>
+        <a href="https://www.amazon.in/s?k=redragon+k552+razer+deathadder+gaming+combo&tag=uniquedigi0c6-21" target="_blank" rel="sponsored nofollow noopener" class="mt-4 px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs text-center transition">
+          🛒 Buy on Amazon
+        </a>
+      </div>
+    </div>
   </div>
 
   <AdSlot position="mid" />
@@ -481,6 +576,42 @@ import AdSlot from '../../components/AdSlot.astro';
     ]
   };
 
+  // Indian Budget Preset Rigs Matrix
+  const PRESET_RIGS = {
+    p35k: {
+      cpu: PARTS_DATA.cpu[0],
+      gpu: PARTS_DATA.gpu[0],
+      mobo: PARTS_DATA.mobo[0],
+      ram: PARTS_DATA.ram[0],
+      ssd: PARTS_DATA.ssd[0],
+      cabinet: PARTS_DATA.cabinet[0]
+    },
+    p55k: {
+      cpu: PARTS_DATA.cpu[0],
+      gpu: PARTS_DATA.gpu[2],
+      mobo: PARTS_DATA.mobo[0],
+      ram: PARTS_DATA.ram[0],
+      ssd: PARTS_DATA.ssd[1],
+      cabinet: PARTS_DATA.cabinet[0]
+    },
+    p85k: {
+      cpu: PARTS_DATA.cpu[2],
+      gpu: PARTS_DATA.gpu[3],
+      mobo: PARTS_DATA.mobo[2],
+      ram: PARTS_DATA.ram[2],
+      ssd: PARTS_DATA.ssd[1],
+      cabinet: PARTS_DATA.cabinet[1]
+    },
+    p150k: {
+      cpu: PARTS_DATA.cpu[3],
+      gpu: PARTS_DATA.gpu[4],
+      mobo: PARTS_DATA.mobo[2],
+      ram: PARTS_DATA.ram[2],
+      ssd: PARTS_DATA.ssd[2],
+      cabinet: PARTS_DATA.cabinet[2]
+    }
+  };
+
   // Indian Gaming Laptop Catalog dynamically mapped to budget tiers
   const LAPTOPS_DATA = [
     { min: 40000, max: 55000, name: 'Lenovo IdeaPad Gaming 3 (Ryzen 5 5500H / RTX 2050 / 8GB / 512GB)', price: 46990, badge: 'Best Under ₹50K', affUrl: `https://www.amazon.in/s?k=lenovo+ideapad+gaming+3+rtx+2050&tag=${AMAZON_TAG}`, img: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=400&q=80' },
@@ -592,6 +723,14 @@ import AdSlot from '../../components/AdSlot.astro';
     if (visPsu) visPsu.textContent = `${psuWattage}W PSU`;
     if (visPsuHeadroom) visPsuHeadroom.textContent = headroom >= 100 ? `Headroom: +${headroom}W (Safe)` : `Headroom: +${headroom}W (Tight)`;
 
+    // Electricity & UPS Calculations
+    const monthlyUnits = (totalWattage * 4 * 30) / 1000;
+    const monthlyCost = Math.round(monthlyUnits * 7.5);
+    const billEstimate = document.getElementById('bill-estimate');
+    const upsRecommend = document.getElementById('ups-recommend');
+    if (billEstimate) billEstimate.textContent = `~₹${monthlyCost}/month`;
+    if (upsRecommend) upsRecommend.textContent = totalWattage > 450 ? '1100VA / 660W' : '600VA / 360W';
+
     // Dynamic FPS Calculations
     const multiplier = gpu.fpsMultiplier || 1.0;
     const fpsGta = document.getElementById('fps-gta');
@@ -612,28 +751,30 @@ import AdSlot from '../../components/AdSlot.astro';
     let isPsuSafe = (headroom >= 80);
 
     if (!isSocketMatch) {
-      if (compatIcon) { compatIcon.textContent = '✕'; compatIcon.className = 'w-8 h-8 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-black text-sm shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '✕'; compatIcon.className = 'w-7 h-7 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `⚠️ Socket Mismatch: ${cpu.socket} vs ${mobo.socket}`; compatStatus.className = 'block text-xs font-bold text-rose-400'; }
       if (compatDesc) compatDesc.textContent = `Please switch motherboard to match ${cpu.socket} processor socket.`;
     } else if (!isRamMatch) {
-      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-sm shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `⚠️ RAM Type Mismatch: ${ram.ramType} on ${mobo.ramType}`; compatStatus.className = 'block text-xs font-bold text-amber-400'; }
       if (compatDesc) compatDesc.textContent = `Please select matching ${mobo.ramType} memory modules.`;
     } else if (!isPsuSafe) {
-      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-sm shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `⚠️ PSU Headroom Warning (${totalWattage}W / ${psuWattage}W)`; compatStatus.className = 'block text-xs font-bold text-amber-400'; }
       if (compatDesc) compatDesc.textContent = `Consider upgrading to a 650W or 750W PSU for peak stability.`;
     } else {
-      if (compatIcon) { compatIcon.textContent = '✓'; compatIcon.className = 'w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-sm shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '✓'; compatIcon.className = 'w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `100% Component Compatibility Verified`; compatStatus.className = 'block text-xs font-bold text-white'; }
       if (compatDesc) compatDesc.textContent = `${cpu.socket} Socket & ${psuWattage}W PSU match perfectly with ${gpu.name}.`;
     }
 
-    // Update 1-Click Amazon Complete Build Link
+    // Update 1-Click Multi-ASIN Amazon Cart Link
     const buyBtn = document.getElementById('btn-buy-full-build');
     if (buyBtn) {
-      const searchTerms = encodeURIComponent(`${cpu.name.split('(')[0]} ${gpu.name.split(' ')[2] || ''} gaming pc build`);
-      buyBtn.setAttribute('href', `https://www.amazon.in/s?k=${searchTerms}&tag=${AMAZON_TAG}`);
+      const asins = [cpu.amazonAsin, gpu.amazonAsin, mobo.amazonAsin, ram.amazonAsin, ssd.amazonAsin, cabinet.amazonAsin].filter(Boolean);
+      const cartParams = asins.map((asin, idx) => `ASIN.${idx+1}=${asin}&Quantity.${idx+1}=1`).join('&');
+      const directCartUrl = `https://www.amazon.in/gp/aws/cart/add.html?AssociateTag=${AMAZON_TAG}&${cartParams}`;
+      buyBtn.setAttribute('href', directCartUrl);
     }
 
     // Update summary table
@@ -662,6 +803,22 @@ import AdSlot from '../../components/AdSlot.astro';
     }
   };
 
+  // Setup Preset Rigs Buttons
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.preset-btn').forEach(b => {
+        b.className = 'preset-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-ink text-xs font-bold transition cursor-pointer';
+      });
+      btn.className = 'preset-btn px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-black shadow-xs cursor-pointer';
+      const presetKey = btn.getAttribute('data-preset');
+      if (PRESET_RIGS[presetKey]) {
+        currentSelection = { ...PRESET_RIGS[presetKey] };
+        playSound('power');
+        updateVisualizerAndStats();
+      }
+    });
+  });
+
   // Setup Category Tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -687,7 +844,7 @@ import AdSlot from '../../components/AdSlot.astro';
       playSound('click');
 
       if (caseBox) {
-        if (cam === 'hero') caseBox.style.transform = 'rotateX(6deg) rotateY(-8deg)';
+        if (cam === 'hero') caseBox.style.transform = 'rotateX(5deg) rotateY(-7deg)';
         if (cam === 'flat') caseBox.style.transform = 'rotateX(0deg) rotateY(0deg)';
         if (cam === 'side') caseBox.style.transform = 'rotateX(4deg) rotateY(-18deg)';
       }
@@ -705,7 +862,7 @@ import AdSlot from '../../components/AdSlot.astro';
     });
 
     viewportBox.addEventListener('mouseleave', () => {
-      caseBox.style.transform = 'rotateX(6deg) rotateY(-8deg)';
+      caseBox.style.transform = 'rotateX(5deg) rotateY(-7deg)';
     });
   }
 
@@ -716,11 +873,11 @@ import AdSlot from '../../components/AdSlot.astro';
       const rgbAmbient = document.getElementById('ambient-rgb');
       playSound('rgb');
       if (rgbAmbient) {
-        if (color === 'cyan') rgbAmbient.className = 'absolute -top-20 -left-20 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'purple') rgbAmbient.className = 'absolute -top-20 -left-20 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'emerald') rgbAmbient.className = 'absolute -top-20 -left-20 w-96 h-96 bg-emerald-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'amber') rgbAmbient.className = 'absolute -top-20 -left-20 w-96 h-96 bg-amber-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'rose') rgbAmbient.className = 'absolute -top-20 -left-20 w-96 h-96 bg-rose-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'cyan') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'purple') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'emerald') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'amber') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'rose') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
       }
     });
   });
@@ -757,6 +914,24 @@ import AdSlot from '../../components/AdSlot.astro';
       soundEnabled = !soundEnabled;
       soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
       if (soundEnabled) playSound('click');
+    });
+  }
+
+  // Social Share & WhatsApp Handler
+  const waBtn = document.getElementById('btn-share-whatsapp');
+  const copyBtn = document.getElementById('btn-copy-link');
+  if (waBtn) {
+    waBtn.addEventListener('click', () => {
+      const text = encodeURIComponent(`Check out my custom gaming PC build on UniqueDigit: ₹${document.getElementById('total-price-header')?.textContent || ''} - ${currentSelection.cpu.name} + ${currentSelection.gpu.name}! View 3D simulator: ${window.location.href}`);
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    });
+  }
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard?.writeText(window.location.href);
+      const orig = copyBtn.textContent;
+      copyBtn.textContent = '✓ Copied!';
+      setTimeout(() => { copyBtn.textContent = orig; }, 2000);
     });
   }
 
