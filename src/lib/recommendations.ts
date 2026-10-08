@@ -275,6 +275,32 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       priceNote: 'Auto-Refreshed Daily',
       trustTag: 'Verified Working Codes'
     }
+  ],
+
+  // 9. Exams, Sarkari Results & Education Hub
+  'exams-results': [
+    {
+      title: 'Best Exam Preparation Books, Previous Year Solved Papers & Mock Tests',
+      category: 'Exam Prep Books',
+      badge: '📚 Bestseller',
+      discount: 'Flat 40% Off on Combos',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=ssc+cgl+upsc+neet+exam+prep+books&tag=${AMAZON_TAG}`,
+      icon: 'book-open',
+      priceNote: 'Latest Syllabus 2026 Editions',
+      trustTag: '100% Original Publisher'
+    },
+    {
+      title: 'Study Tablets with Stylus & E-Readers for Digital Notes & PDF Prep',
+      category: 'Study Gadgets',
+      badge: '⚡ Up to ₹8,000 Off',
+      discount: 'No Cost EMI from ₹1,200/mo',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=study+tablets+with+stylus+pen&tag=${AMAZON_TAG}`,
+      icon: 'sparkles',
+      priceNote: 'Eye-Comfort Display',
+      trustTag: 'Brand Indian Warranty'
+    }
   ]
 };
 

@@ -127,4 +127,5 @@ INSERT OR REPLACE INTO niches (id, slug, name, tagline, grp, icon, page_type, se
 ('9', 'food', 'Food', 'Recipes & cooking guides', 'Lifestyle', 'utensils', 'feed', '["recipe","street food"]', '["trends","wikipedia"]', '{}', 0, 0, 9, 1),
 ('10', 'gta-6', 'GTA 6', 'News, updates & guides', 'Entertainment', 'gamepad', 'feed', '["gta 6","rockstar games"]', '["trends","wikipedia"]', '{}', 1, 1, 10, 1),
 ('11', 'movies', 'Movies', 'Reviews, OTT & trailers', 'Entertainment', 'clapperboard', 'movies', '["new movies","ott release"]', '["trends","tmdb"]', '{}', 0, 0, 11, 1),
-('12', 'viral', 'Viral', 'Trending internet moments', 'Entertainment', 'rocket', 'feed', '[]', '["trends"]', '{}', 0, 0, 12, 1);
+('12', 'viral', 'Viral', 'Trending internet moments', 'Entertainment', 'rocket', 'feed', '[]', '["trends"]', '{}', 0, 0, 12, 1),
+('13', 'exams-results', 'Exams & Results', 'Sarkari results, admit cards & notes', 'Education', 'book-open', 'feed', '["ssc cgl result","cbse board exam","neet admit card","sarkari result","jee main","ncert solutions"]', '["trends","wikipedia"]', '{}', 1, 1, 13, 1);
