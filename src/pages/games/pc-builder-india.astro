@@ -156,6 +156,22 @@ import AdSlot from '../../components/AdSlot.astro';
             </div>
           </div>
 
+          <!-- View Mode Selector (Real 4K Photo vs 3D WebGL Orbit) -->
+          <div class="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800">
+            <div class="flex items-center gap-1.5">
+              <button id="tab-mode-photo" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-black flex items-center gap-1.5 shadow-md shadow-cyan-500/20 cursor-pointer transition">
+                <span>📸 Real Hardware (4K)</span>
+                <span class="px-1.5 py-0.2 rounded bg-white/20 text-[9px] font-mono">LIVE</span>
+              </button>
+              <button id="tab-mode-3d" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition">
+                <span>🌐 3D WebGL Orbit</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 pr-1">
+              <span class="text-[10px] font-mono text-emerald-400 font-bold hidden sm:inline">⚡ PRIME 24H DISPATCH</span>
+            </div>
+          </div>
+
           <!-- ARGB Mode Indicator Pill -->
           <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] font-mono">
             <div class="flex items-center gap-2">
@@ -172,11 +188,89 @@ import AdSlot from '../../components/AdSlot.astro';
             </div>
           </div>
 
-          <!-- 3D Perspective Cabinet Chamber with Three.js WebGL Engine -->
-          <div class="perspective-1000 w-full flex items-center justify-center py-2">
+          <!-- Real 4K Hardware Photo Chamber (Default View) -->
+          <div id="real-rig-chamber" class="relative w-full rounded-3xl overflow-hidden border-2 border-slate-700/80 bg-slate-950 shadow-2xl group">
+            <!-- Real Hardware Photo with Smooth Transitions -->
+            <img
+              id="real-pc-photo"
+              src="/builds/budget-gaming-50k.png"
+              alt="Real Custom Gaming PC Build"
+              class="w-full h-auto min-h-[440px] max-h-[520px] object-cover transition-all duration-500 transform group-hover:scale-[1.02]"
+            />
+
+            <!-- Glass Reflection & ARGB Gradient Overlays -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-slate-950/40 pointer-events-none"></div>
+            <div id="photo-argb-glow" class="absolute inset-0 bg-cyan-500/10 mix-blend-screen pointer-events-none transition-all duration-700"></div>
+
+            <!-- Top Corner Real Hardware Badge -->
+            <div class="absolute top-3 left-3 z-20 flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-xl bg-slate-950/90 border border-cyan-400/60 text-cyan-300 text-[10px] font-mono font-black backdrop-blur-md shadow-lg flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                <span id="real-photo-rig-badge">REAL 4K HARDWARE PHOTO</span>
+              </span>
+            </div>
+
+            <!-- Interactive Hardware Hotspots Overlaid on Real Components -->
+            <!-- 1. CPU AIO Cooler Hotspot -->
+            <div class="absolute top-[34%] left-[45%] z-30 group/hotspot cursor-pointer" onclick="window.switchTabAndHighlight('cpu')">
+              <div class="relative flex items-center justify-center">
+                <span class="animate-ping absolute inline-flex h-7 w-7 rounded-full bg-cyan-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-5 w-5 bg-cyan-500 border-2 border-white shadow-lg text-[9px] font-bold text-slate-950 items-center justify-center">1</span>
+              </div>
+              <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/hotspot:flex flex-col p-2.5 rounded-xl bg-slate-950/95 border border-cyan-400 text-[10px] font-mono text-white shadow-2xl backdrop-blur-xl w-48 z-40 pointer-events-none">
+                <span class="font-black text-cyan-300 uppercase">⚡ CPU & 240mm Liquid Cooler</span>
+                <span class="text-slate-300 truncate" id="hotspot-cpu-text">AMD Ryzen 5 5600</span>
+                <span class="text-emerald-400 font-bold mt-0.5">Click to customize CPU</span>
+              </div>
+            </div>
+
+            <!-- 2. Triple-Fan Vertical GPU Hotspot -->
+            <div class="absolute top-[66%] left-[48%] z-30 group/hotspot cursor-pointer" onclick="window.switchTabAndHighlight('gpu')">
+              <div class="relative flex items-center justify-center">
+                <span class="animate-ping absolute inline-flex h-7 w-7 rounded-full bg-purple-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-5 w-5 bg-purple-500 border-2 border-white shadow-lg text-[9px] font-bold text-white items-center justify-center">2</span>
+              </div>
+              <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/hotspot:flex flex-col p-2.5 rounded-xl bg-slate-950/95 border border-purple-400 text-[10px] font-mono text-white shadow-2xl backdrop-blur-xl w-52 z-40 pointer-events-none">
+                <span class="font-black text-purple-300 uppercase">🎮 Triple-Fan RTX GPU</span>
+                <span class="text-slate-300 truncate" id="hotspot-gpu-text">Gigabyte RTX 4060 Eagle OC</span>
+                <span class="text-emerald-400 font-bold mt-0.5">Click to customize GPU</span>
+              </div>
+            </div>
+
+            <!-- 3. RGB RAM Sticks Hotspot -->
+            <div class="absolute top-[36%] left-[54%] z-30 group/hotspot cursor-pointer" onclick="window.switchTabAndHighlight('ram')">
+              <div class="relative flex items-center justify-center">
+                <span class="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-amber-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-4.5 w-4.5 bg-amber-500 border-2 border-white shadow-lg text-[8px] font-bold text-slate-950 items-center justify-center">3</span>
+              </div>
+              <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover/hotspot:flex flex-col p-2 rounded-xl bg-slate-950/95 border border-amber-400 text-[10px] font-mono text-white shadow-2xl backdrop-blur-xl w-44 z-40 pointer-events-none">
+                <span class="font-black text-amber-300 uppercase">⚡ ARGB Gaming Memory</span>
+                <span class="text-slate-300 truncate" id="hotspot-ram-text">16GB Dual-Channel RGB</span>
+                <span class="text-emerald-400 font-bold mt-0.5">Click to customize RAM</span>
+              </div>
+            </div>
+
+            <!-- Bottom Floating Hardware Specs Strip on Real Photo -->
+            <div class="absolute bottom-3 inset-x-3 z-30 flex items-center justify-between gap-2 p-2 px-3.5 rounded-2xl bg-slate-950/90 border border-slate-700/80 backdrop-blur-md">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <div class="min-w-0">
+                  <span class="text-xs font-black text-white font-mono block truncate" id="vis-cpu-name">AMD RYZEN 5 5600</span>
+                  <span class="text-[9px] font-mono text-cyan-300 font-bold block truncate" id="vis-cpu-socket-line">AM4 • 6C/12T • RTX 4060 GPU MATCHED</span>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <span class="text-xs font-black text-amber-400 font-mono" id="vis-gpu-name">RTX 4060 8GB</span>
+                <span class="text-[9px] font-mono text-purple-300 block" id="vis-gpu-spec">DLSS 3 • 115W</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3D Perspective Cabinet Chamber with Three.js WebGL Engine (Hidden by default or toggled) -->
+          <div id="webgl-3d-chamber" class="perspective-1000 w-full hidden items-center justify-center py-2">
             <div
               id="pc-3d-case"
-              class="w-full min-h-[480px] rounded-3xl bg-gradient-to-b from-[#0e1424] via-[#080c18] to-[#04060d] border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-2xl transition-transform duration-300 transform-gpu overflow-hidden"
+              class="w-full min-h-[460px] rounded-3xl bg-gradient-to-b from-[#0e1424] via-[#080c18] to-[#04060d] border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-2xl transition-transform duration-300 transform-gpu overflow-hidden"
               style="transform: rotateX(5deg) rotateY(-7deg);"
             >
               <!-- Real Three.js WebGL 3D Canvas -->
@@ -189,7 +283,7 @@ import AdSlot from '../../components/AdSlot.astro';
               <div class="absolute bottom-3 left-3 w-3 h-3 rounded-full bg-slate-600 border border-slate-300 z-30 shadow-sm flex items-center justify-center text-[7px] text-slate-900 font-bold">+</div>
               <div class="absolute bottom-3 right-3 w-3 h-3 rounded-full bg-slate-600 border border-slate-300 z-30 shadow-sm flex items-center justify-center text-[7px] text-slate-900 font-bold">+</div>
 
-              <!-- Top Radiator Fans (2x 120mm ARGB Spinning Halos with Anti-Gravity) -->
+              <!-- Top Radiator Fans -->
               <div class="flex items-center justify-center gap-6 pb-2 relative z-20 pointer-events-none">
                 <div class="anti-gravity w-24 h-8 rounded-full bg-slate-950/80 border-2 border-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-400/40 p-1 pointer-events-auto">
                   <div class="rig-fan w-full h-full rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 blur-xs"></div>
@@ -199,87 +293,22 @@ import AdSlot from '../../components/AdSlot.astro';
                 </div>
               </div>
 
-              <!-- Floating Hologram Callout 1: Top CPU Spec Badge (Anti-Gravity) -->
-              <div class="anti-gravity relative z-30 self-start p-2.5 px-4 rounded-2xl bg-slate-950/95 border border-cyan-400/80 shadow-2xl shadow-cyan-500/30 backdrop-blur-xl max-w-[290px]">
-                <div class="flex items-center gap-2 mb-0.5">
-                  <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400 animate-ping"></span>
-                  <span class="text-xs font-black text-white font-mono tracking-tight truncate uppercase" id="vis-cpu-name">
-                    INTEL CORE i5-13400F
-                  </span>
-                </div>
-                <span class="text-[9px] font-mono text-cyan-300 font-bold block" id="vis-cpu-socket-line">
-                  LGA1700 • 10C/16T • 4.6GHz • 65W TDP
-                </span>
+              <!-- 3D Orbit Helper Hint -->
+              <div class="relative z-30 text-center py-4 text-xs font-mono text-cyan-300 font-bold bg-slate-950/80 rounded-xl border border-cyan-500/30">
+                🖱️ Drag with mouse / Touch to orbit 360° in full 3D space
               </div>
 
-              <!-- Center Chamber: Dual Vertical ARGB Front Intake Fans + Motherboard Core -->
-              <div class="relative z-20 w-full flex items-center justify-between my-2 gap-4 pointer-events-none">
-                
-                <!-- Left/Center Motherboard & CPU Cooler Block (Anti-Gravity) -->
-                <div class="flex items-center gap-3 pointer-events-auto">
-                  <!-- Circular ARGB CPU Liquid Pump / Cooler -->
-                  <div class="anti-gravity w-22 h-22 rounded-full bg-slate-950/90 border-2 border-purple-500 shadow-2xl shadow-purple-500/40 flex items-center justify-center relative p-2">
-                    <div class="rig-fan w-full h-full rounded-full border-2 border-dashed border-cyan-400 flex items-center justify-center" style="animation-duration: 2.2s;">
-                      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 shadow-lg shadow-cyan-400 blur-xs"></div>
-                    </div>
-                  </div>
-
-                  <!-- Dual Glowing RAM Sticks with Illuminated Tops -->
-                  <div class="anti-gravity flex gap-2 p-2 rounded-xl bg-slate-950/90 border border-slate-700 shadow-inner">
-                    <div class="w-2.5 h-16 rounded-sm bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 shadow-md shadow-purple-400 animate-pulse"></div>
-                    <div class="w-2.5 h-16 rounded-sm bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 shadow-md shadow-purple-400 animate-pulse"></div>
-                  </div>
-                </div>
-
-                <!-- Right Side: Dual Front 140mm ARGB Intake Fans (Rainbow Spinning Halos) -->
-                <div class="flex flex-col gap-3 shrink-0 pointer-events-auto">
-                  <div class="anti-gravity w-20 h-20 rounded-full bg-slate-950/90 border-2 border-cyan-400 shadow-2xl shadow-cyan-400/50 flex items-center justify-center relative p-1.5">
-                    <div class="rig-fan w-full h-full rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center" style="animation-duration: 1.8s;">
-                      <div class="w-7 h-7 rounded-full bg-gradient-to-r from-cyan-400 to-pink-500 blur-xs"></div>
-                    </div>
-                  </div>
-                  <div class="anti-gravity w-20 h-20 rounded-full bg-slate-950/90 border-2 border-cyan-400 shadow-2xl shadow-cyan-400/50 flex items-center justify-center relative p-1.5">
-                    <div class="rig-fan w-full h-full rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center" style="animation-duration: 1.8s;">
-                      <div class="w-7 h-7 rounded-full bg-gradient-to-r from-cyan-400 to-pink-500 blur-xs"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Floating Hologram Callout 2: Graphics Card (GPU) Beast Block (Anti-Gravity) -->
-              <div class="anti-gravity relative z-30 p-3.5 rounded-2xl bg-slate-950/95 border-2 border-purple-500/90 shadow-2xl shadow-purple-500/40 backdrop-blur-xl my-1">
-                <div class="flex items-center justify-between gap-2 mb-1">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-sm shadow-purple-400 animate-pulse"></span>
-                    <span class="text-xs font-black text-white font-mono uppercase tracking-tight" id="vis-gpu-name">
-                      NVIDIA GEFORCE RTX 4060 • 8GB GDDR6
-                    </span>
-                  </div>
-                  <span class="px-2 py-0.5 rounded text-[8px] font-mono font-black bg-purple-500/30 text-purple-200 border border-purple-500/50">PCIe 4.0 x16</span>
-                </div>
-                <span class="text-[9px] font-mono text-purple-300 font-bold block" id="vis-gpu-spec">
-                  DLSS 3 • 115W TDP • Ray Tracing Core Active
-                </span>
-              </div>
-
-              <!-- Bottom Floating Hologram Badges: RAM & NVMe SSD (Anti-Gravity) -->
+              <!-- Bottom Floating Badges in 3D -->
               <div class="relative z-30 flex items-center justify-between gap-2 pt-1">
-                <!-- Left: RAM Pill -->
-                <div class="anti-gravity p-2 px-3.5 rounded-xl bg-slate-950/95 border border-cyan-400/60 shadow-lg shadow-cyan-500/10 text-[10px] font-mono">
-                  <span class="font-bold text-white block" id="vis-ram-spec">DDR5</span>
-                  <span class="text-cyan-400 font-bold text-[9px]" id="vis-ram-type">16GB • 5600MHz</span>
+                <div class="anti-gravity p-2 px-3.5 rounded-xl bg-slate-950/95 border border-cyan-400/60 text-[10px] font-mono">
+                  <span class="font-bold text-white block" id="vis-ram-spec">DDR4 RGB</span>
+                  <span class="text-cyan-400 font-bold text-[9px]" id="vis-ram-type">16GB Dual-Channel</span>
                 </div>
-
-                <!-- Right: NVMe SSD Pill -->
-                <div class="anti-gravity p-2 px-3.5 rounded-xl bg-slate-950/95 border border-emerald-400/60 shadow-lg shadow-emerald-500/10 text-right text-[10px] font-mono flex items-center gap-2">
-                  <span class="text-emerald-400 font-bold text-xs">✓</span>
-                  <div>
-                    <span class="font-bold text-white block truncate max-w-[150px]" id="vis-ssd-name">WD BLUE SN580 1TB NVMe</span>
-                    <span class="text-emerald-300 font-bold text-[9px]" id="vis-ssd-speed">PCIe 4.0 • 4150 MB/s Read</span>
-                  </div>
+                <div class="anti-gravity p-2 px-3.5 rounded-xl bg-slate-950/95 border border-emerald-400/60 text-right text-[10px] font-mono">
+                  <span class="font-bold text-white block truncate max-w-[150px]" id="vis-ssd-name">1TB NVMe Gen4</span>
+                  <span class="text-emerald-300 font-bold text-[9px]" id="vis-ssd-speed">4150 MB/s Read</span>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -328,26 +357,32 @@ import AdSlot from '../../components/AdSlot.astro';
           </div>
 
           <!-- 1-Click Multi-Item Amazon Cart Link & Share Buttons -->
-          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-            <div class="flex items-center gap-2">
-              <button id="btn-share-whatsapp" class="p-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm" title="Share Build on WhatsApp">
-                <span>💬 WhatsApp</span>
-              </button>
-              <button id="btn-copy-link" class="p-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition cursor-pointer" title="Copy Direct Build Link">
-                <span>🔗 Share Link</span>
-              </button>
-            </div>
-
+          <div class="pt-2 flex flex-col gap-2.5">
             <a
               id="btn-buy-full-build"
               href="https://www.amazon.in/s?k=ryzen+5+5600+rtx+4060+pc+build&tag=uniquedigi0c6-21"
               target="_blank"
               rel="sponsored nofollow noopener"
-              class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs transition transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-amber-500/25 cursor-pointer shrink-0"
+              class="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-200 text-slate-950 font-black text-sm tracking-tight transition-all transform hover:-translate-y-0.5 active:translate-y-0 shadow-xl shadow-amber-500/30 cursor-pointer text-center"
             >
-              <span>🛒 1-Click Amazon Cart (All Parts)</span>
-              <Icon name="external-link" class="w-3.5 h-3.5" />
+              <span class="text-base">🛒</span>
+              <span>Build This Real PC — Get on Amazon in 24H</span>
+              <span class="px-2 py-0.5 rounded-md bg-slate-950 text-amber-300 text-[10px] font-mono font-black uppercase">1-Click Cart</span>
             </a>
+
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <button id="btn-share-whatsapp" class="p-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm" title="Share Build on WhatsApp">
+                  <span>💬 WhatsApp</span>
+                </button>
+                <button id="btn-copy-link" class="p-2.5 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition cursor-pointer" title="Copy Direct Build Link">
+                  <span>🔗 Share Link</span>
+                </button>
+              </div>
+              <span class="text-[10px] font-mono text-slate-400 flex items-center gap-1">
+                <span>🛡️ Amazon A-to-z Guarantee</span>
+              </span>
+            </div>
           </div>
 
         </div>
@@ -750,7 +785,7 @@ import AdSlot from '../../components/AdSlot.astro';
     if (priceHdr) priceHdr.textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
     if (wattEl) wattEl.textContent = `${totalWattage}W`;
 
-    // Visualizer Hardware Hologram Callouts
+    // Visualizer Hardware Hologram Callouts & Real Photo Hotspot Text
     const visCpu = document.getElementById('vis-cpu-name');
     const visCpuSocketLine = document.getElementById('vis-cpu-socket-line');
     const visGpu = document.getElementById('vis-gpu-name');
@@ -760,6 +795,10 @@ import AdSlot from '../../components/AdSlot.astro';
     const visSsd = document.getElementById('vis-ssd-name');
     const visSsdSpeed = document.getElementById('vis-ssd-speed');
     const visPsuHeadroomBanner = document.getElementById('vis-psu-headroom-banner');
+
+    const hotspotCpuText = document.getElementById('hotspot-cpu-text');
+    const hotspotGpuText = document.getElementById('hotspot-gpu-text');
+    const hotspotRamText = document.getElementById('hotspot-ram-text');
 
     if (visCpu) visCpu.textContent = cpu.name.toUpperCase();
     if (visCpuSocketLine) visCpuSocketLine.textContent = `${cpu.socket} • ${cpu.brand} • ${cpu.wattage}W TDP • ${cpu.badge}`;
@@ -772,6 +811,10 @@ import AdSlot from '../../components/AdSlot.astro';
     if (visPsuHeadroomBanner) {
       visPsuHeadroomBanner.textContent = `PSU ${psuWattage}W 80+ • HEADROOM: +${headroomPct}% (${headroom >= 80 ? 'SAFE' : 'TIGHT'})`;
     }
+
+    if (hotspotCpuText) hotspotCpuText.textContent = cpu.name;
+    if (hotspotGpuText) hotspotGpuText.textContent = `${gpu.name} (${gpu.badge})`;
+    if (hotspotRamText) hotspotRamText.textContent = `${ram.name}`;
 
     // Dynamic Live Telemetry Temp Updates based on wattage
     const teleLoad = document.getElementById('telemetry-load');
@@ -855,7 +898,7 @@ import AdSlot from '../../components/AdSlot.astro';
     renderPartCards(activeTab);
   }
 
-  // Window helper for onclick handler
+  // Window helper for onclick handler from card or hotspot
   window.selectPart = function(category, id) {
     const item = PARTS_DATA[category]?.find(x => x.id === id);
     if (item) {
@@ -863,6 +906,32 @@ import AdSlot from '../../components/AdSlot.astro';
       playSound('click');
       updateVisualizerAndStats();
     }
+  };
+
+  // Helper to jump tab on hotspot click
+  window.switchTabAndHighlight = function(category) {
+    activeTab = category;
+    playSound('click');
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      if (b.getAttribute('data-cat') === category) {
+        b.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-black bg-brand text-white shadow-xs shrink-0 cursor-pointer';
+      } else {
+        b.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition';
+      }
+    });
+    renderPartCards(category);
+    const catalogEl = document.getElementById('part-cards-list');
+    if (catalogEl) {
+      catalogEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
+
+  // Preset Rig Photo Mapping
+  const PRESET_PHOTOS = {
+    p35k: '/builds/budget-gaming-50k.png',
+    p55k: '/builds/budget-gaming-50k.png',
+    p85k: '/builds/high-end-4k-120k.png',
+    p150k: '/builds/dream-rgb-150k.png'
   };
 
   // Setup Preset Rigs Buttons
@@ -875,11 +944,44 @@ import AdSlot from '../../components/AdSlot.astro';
       const presetKey = btn.getAttribute('data-preset');
       if (PRESET_RIGS[presetKey]) {
         currentSelection = { ...PRESET_RIGS[presetKey] };
+        
+        // Update Real Hardware Photo
+        const photoEl = document.getElementById('real-pc-photo') as HTMLImageElement;
+        if (photoEl && PRESET_PHOTOS[presetKey]) {
+          photoEl.src = PRESET_PHOTOS[presetKey];
+        }
+
         playSound('power');
         updateVisualizerAndStats();
       }
     });
   });
+
+  // Setup View Mode Switcher (Real Photo vs 3D WebGL)
+  const tabPhoto = document.getElementById('tab-mode-photo');
+  const tab3d = document.getElementById('tab-mode-3d');
+  const realChamber = document.getElementById('real-rig-chamber');
+  const webglChamber = document.getElementById('webgl-3d-chamber');
+
+  if (tabPhoto && tab3d && realChamber && webglChamber) {
+    tabPhoto.addEventListener('click', () => {
+      playSound('click');
+      tabPhoto.className = 'px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-black flex items-center gap-1.5 shadow-md shadow-cyan-500/20 cursor-pointer transition';
+      tab3d.className = 'px-3 py-1.5 rounded-xl text-slate-400 hover:text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition';
+      realChamber.classList.remove('hidden');
+      webglChamber.classList.add('hidden');
+      webglChamber.classList.remove('flex');
+    });
+
+    tab3d.addEventListener('click', () => {
+      playSound('click');
+      tab3d.className = 'px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-black flex items-center gap-1.5 shadow-md shadow-purple-500/20 cursor-pointer transition';
+      tabPhoto.className = 'px-3 py-1.5 rounded-xl text-slate-400 hover:text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition';
+      realChamber.classList.add('hidden');
+      webglChamber.classList.remove('hidden');
+      webglChamber.classList.add('flex');
+    });
+  }
 
   // Setup Category Tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
