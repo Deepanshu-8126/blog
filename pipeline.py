@@ -226,12 +226,36 @@ def ai_topics(n):
 
 def write_article(n, title, angle, facts, trend):
     cfg = json.loads(n.get("config") or "{}") if isinstance(n.get("config"), str) else (n.get("config") or {})
-    prompt = f"""Write a helpful article for an Indian audience. Niche: {n['name']}.
-Title idea: {title}. Angle: {angle}. Google Trends interest score: {trend}.
-FACTS (use ONLY these; do not invent statistics, prices, dates, quotes, or product claims):
-{facts or 'No extra facts available - keep it general, explanatory, and clearly hedged.'}
-Rules: plain simple English/Hinglish-friendly, no clickbait, no medical/financial advice{', add a short safety note' if cfg.get('disclaimer') else ''}.
-Return JSON: {{"title":"","summary":"<=160 chars","body_md":"400-600 words markdown with ## headings","faq":[{{"q":"","a":""}}],"tags":["",""]}}"""
+    prompt = f"""You are an elite Indian tech & lifestyle journalist for UniqueDigit.
+Topic: {title} | Niche: {n['name']} | Angle: {angle} | Google Trends Interest: +{trend}k.
+
+GROUNDED FACTS & CONTEXT (Use ONLY verified claims):
+{facts or 'Keep analysis objective, explanatory, and grounded in common industry standards without fabricating numbers.'}
+
+AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING:
+1. Detect why the user is searching for "{title}" RIGHT NOW:
+   - Case A (Exam/Result/Admit Card): Provide a clear timeline, official check steps, cutoff breakdown, and preparation revision tips.
+   - Case B (Shopping/Deal/Loot): Provide a price-to-value verdict, key specs, warranty note, and why this discount matters.
+   - Case C (Tech/Gaming/Hardware): Provide performance benchmarks, compatibility requirements, and pros/cons.
+   - Case D (Trending Viral/Event): Explain what happened, why it is buzzing in India, and key verified takeaways.
+2. Structure the response in clean, engaging Markdown (450-600 words) using:
+   - ## Catchy, clear subheadings
+   - Markdown comparison tables or bulleted checklists where relevant
+   - Simple, humanized English with natural Hinglish warmth for Indian audiences
+   - Zero clickbait, zero hallucinated medical/legal guarantees{', include standard safety note' if cfg.get('disclaimer') else ''}.
+
+Return strict JSON:
+{{
+  "title": "Clear, engaging headline matching reader intent",
+  "summary": "Compelling summary under 160 chars for Google SERP meta description",
+  "body_md": "Full markdown content with ## subheadings, bullet points, and tables",
+  "faq": [
+    {{"q": "Real question users ask on Google", "a": "Direct, helpful 2-sentence answer"}},
+    {{"q": "Second popular search query", "a": "Direct, helpful 2-sentence answer"}},
+    {{"q": "Third question regarding cutoff/pricing/dates", "a": "Direct, helpful 2-sentence answer"}}
+  ],
+  "tags": ["Tag1", "Tag2", "Tag3", "Tag4"]
+}}"""
     return gemini(prompt)
 
 
