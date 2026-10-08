@@ -4,16 +4,62 @@ import Icon from '../../components/Icon.astro';
 import AdSlot from '../../components/AdSlot.astro';
 ---
 
+<style>
+  /* 🌌 Anti-Gravity & 3D Pop Effects */
+  .anti-gravity {
+    animation: float-rig 5s ease-in-out infinite;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+  }
+  .anti-gravity:hover {
+    transform: translateZ(50px) scale(1.06) !important;
+    filter: drop-shadow(0 0 25px rgba(34, 211, 238, 0.6));
+    z-index: 50;
+  }
+  @keyframes float-rig {
+    0%, 100% { transform: translateY(0px) translateZ(0px); }
+    50% { transform: translateY(-8px) translateZ(12px); }
+  }
+
+  /* 🖱️ Custom Magnetic Cursor Styling */
+  #custom-cursor {
+    transition: transform 0.15s ease-out, border-color 0.2s ease;
+    pointer-events: none;
+  }
+  #cursor-dot {
+    transition: transform 0.05s linear;
+    pointer-events: none;
+  }
+  @media (min-width: 768px) {
+    #rig-viewport-box, #rig-viewport-box * {
+      cursor: none; /* Holographic laboratory feel */
+    }
+  }
+
+  /* 🌀 High-Performance Fan Spin */
+  .rig-fan {
+    animation: spin-fan 2.5s linear infinite;
+  }
+  @keyframes spin-fan {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+</style>
+
 <Layout
   title="PC Builder Simulator India (2026) — 3D Interactive Rig Builder & Live INR Amazon Prices | UniqueDigit"
   description="Interactive 3D PC Builder Simulator for Indian gamers. Custom build your gaming rig with live ARGB lighting, mechanical audio feedback, component compatibility validation, live Amazon India prices, FPS benchmarks, and laptop alternatives."
 >
+  <!-- 🖱️ Custom Magnetic Cursor Elements -->
+  <div id="custom-cursor" class="fixed w-10 h-10 rounded-full border-2 border-cyan-400 z-[9999] hidden md:block mix-blend-difference pointer-events-none"></div>
+  <div id="cursor-dot" class="fixed w-2 h-2 rounded-full bg-cyan-400 z-[9999] hidden md:block pointer-events-none"></div>
+
   <!-- Top Banner & Breadcrumb -->
   <div class="mb-6">
     <nav class="flex items-center gap-2 text-xs text-muted mb-3">
       <a href="/" class="hover:text-brand transition">Home</a>
       <span>/</span>
-      <a href="/pc-builds" class="hover:text-brand transition font-medium">PC Builds</a>
+      <a href="/builds" class="hover:text-brand transition font-medium">PC Builds</a>
       <span>/</span>
       <span class="text-ink font-bold">3D Rig Simulator</span>
     </nav>
@@ -77,11 +123,14 @@ import AdSlot from '../../components/AdSlot.astro';
     <div class="w-full min-w-0 lg:col-span-6 xl:col-span-6 flex flex-col gap-6 lg:sticky lg:top-20">
       
       <div class="p-4 sm:p-6 rounded-3xl bg-[#090D16] border border-slate-800 text-white shadow-2xl relative overflow-hidden w-full select-none" id="rig-viewport-box">
+        <!-- Dynamic Mouse Spotlight Overlay -->
+        <div id="dynamic-spotlight" class="absolute inset-0 pointer-events-none z-10 transition-opacity duration-300"></div>
+
         <!-- Ambient Dynamic ARGB Glow -->
         <div id="ambient-rgb" class="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
         <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10 flex flex-col gap-3.5">
+        <div class="relative z-20 flex flex-col gap-3.5">
           <!-- Cockpit Top Bar: System Online, 3D Camera Angles & Power Icon -->
           <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
             <div class="flex items-center gap-2">
@@ -137,18 +186,18 @@ import AdSlot from '../../components/AdSlot.astro';
               <div class="absolute bottom-3 left-3 w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-400 z-30 shadow-xs"></div>
               <div class="absolute bottom-3 right-3 w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-400 z-30 shadow-xs"></div>
 
-              <!-- Top Radiator Fans (2x 120mm ARGB Spinning Halos) -->
+              <!-- Top Radiator Fans (2x 120mm ARGB Spinning Halos with Anti-Gravity) -->
               <div class="flex items-center justify-center gap-6 pb-2 relative z-10">
-                <div class="w-20 h-7 rounded-full bg-slate-900 border-2 border-cyan-400/80 flex items-center justify-center shadow-lg shadow-cyan-400/30 rig-fan animate-pulse">
-                  <div class="w-14 h-3 rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-xs"></div>
+                <div class="anti-gravity w-20 h-7 rounded-full bg-slate-900 border-2 border-cyan-400/80 flex items-center justify-center shadow-lg shadow-cyan-400/30">
+                  <div class="rig-fan w-14 h-3 rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-xs"></div>
                 </div>
-                <div class="w-20 h-7 rounded-full bg-slate-900 border-2 border-cyan-400/80 flex items-center justify-center shadow-lg shadow-cyan-400/30 rig-fan animate-pulse">
-                  <div class="w-14 h-3 rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-xs"></div>
+                <div class="anti-gravity w-20 h-7 rounded-full bg-slate-900 border-2 border-cyan-400/80 flex items-center justify-center shadow-lg shadow-cyan-400/30">
+                  <div class="rig-fan w-14 h-3 rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-xs"></div>
                 </div>
               </div>
 
-              <!-- Floating Hologram Callout 1: Top CPU Spec Badge -->
-              <div class="relative z-30 self-start p-2.5 px-3.5 rounded-2xl bg-slate-950/90 border border-cyan-400/70 shadow-xl shadow-cyan-500/20 backdrop-blur-md max-w-[280px]">
+              <!-- Floating Hologram Callout 1: Top CPU Spec Badge (Anti-Gravity) -->
+              <div class="anti-gravity relative z-30 self-start p-2.5 px-3.5 rounded-2xl bg-slate-950/90 border border-cyan-400/70 shadow-xl shadow-cyan-500/20 backdrop-blur-md max-w-[280px]">
                 <div class="flex items-center gap-1.5 mb-0.5">
                   <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
                   <span class="text-xs font-black text-white font-mono tracking-tight truncate uppercase" id="vis-cpu-name">
@@ -163,17 +212,17 @@ import AdSlot from '../../components/AdSlot.astro';
               <!-- Center Chamber: Dual Vertical ARGB Front Intake Fans + Motherboard Core -->
               <div class="relative z-10 w-full flex items-center justify-between my-2 gap-4">
                 
-                <!-- Left/Center Motherboard & CPU Cooler Block -->
+                <!-- Left/Center Motherboard & CPU Cooler Block (Anti-Gravity) -->
                 <div class="flex items-center gap-3">
                   <!-- Circular ARGB CPU Liquid Pump / Cooler -->
-                  <div class="w-20 h-20 rounded-full bg-slate-900 border-2 border-purple-500/80 shadow-xl shadow-purple-500/30 flex items-center justify-center relative p-1.5">
-                    <div class="w-full h-full rounded-full border border-dashed border-cyan-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 2.2s;">
+                  <div class="anti-gravity w-20 h-20 rounded-full bg-slate-900 border-2 border-purple-500/80 shadow-xl shadow-purple-500/30 flex items-center justify-center relative p-1.5">
+                    <div class="rig-fan w-full h-full rounded-full border border-dashed border-cyan-400 flex items-center justify-center" style="animation-duration: 2.2s;">
                       <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 shadow-md shadow-cyan-400 blur-xs"></div>
                     </div>
                   </div>
 
                   <!-- Dual Glowing RAM Sticks -->
-                  <div class="flex gap-1.5 p-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 shadow-inner">
+                  <div class="anti-gravity flex gap-1.5 p-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 shadow-inner">
                     <div class="w-2 h-14 rounded-sm bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 shadow-md shadow-purple-400 animate-pulse"></div>
                     <div class="w-2 h-14 rounded-sm bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 shadow-md shadow-purple-400 animate-pulse"></div>
                   </div>
@@ -181,21 +230,21 @@ import AdSlot from '../../components/AdSlot.astro';
 
                 <!-- Right Side: Dual Front 140mm ARGB Intake Fans (Rainbow Spinning Halos) -->
                 <div class="flex flex-col gap-3 shrink-0">
-                  <div class="w-18 h-18 rounded-full bg-slate-900/90 border-2 border-cyan-400/90 shadow-xl shadow-cyan-400/40 flex items-center justify-center relative">
-                    <div class="w-14 h-14 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 1.8s;">
+                  <div class="anti-gravity w-18 h-18 rounded-full bg-slate-900/90 border-2 border-cyan-400/90 shadow-xl shadow-cyan-400/40 flex items-center justify-center relative">
+                    <div class="rig-fan w-14 h-14 rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center" style="animation-duration: 1.8s;">
                       <div class="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-400 to-pink-400 blur-xs"></div>
                     </div>
                   </div>
-                  <div class="w-18 h-18 rounded-full bg-slate-900/90 border-2 border-cyan-400/90 shadow-xl shadow-cyan-400/40 flex items-center justify-center relative">
-                    <div class="w-14 h-14 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 1.8s;">
+                  <div class="anti-gravity w-18 h-18 rounded-full bg-slate-900/90 border-2 border-cyan-400/90 shadow-xl shadow-cyan-400/40 flex items-center justify-center relative">
+                    <div class="rig-fan w-14 h-14 rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center" style="animation-duration: 1.8s;">
                       <div class="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-400 to-pink-400 blur-xs"></div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Floating Hologram Callout 2: Graphics Card (GPU) Beast Block -->
-              <div class="relative z-30 p-3 rounded-2xl bg-slate-950/95 border border-purple-500/80 shadow-2xl shadow-purple-500/30 backdrop-blur-md my-1">
+              <!-- Floating Hologram Callout 2: Graphics Card (GPU) Beast Block (Anti-Gravity) -->
+              <div class="anti-gravity relative z-30 p-3 rounded-2xl bg-slate-950/95 border border-purple-500/80 shadow-2xl shadow-purple-500/30 backdrop-blur-md my-1">
                 <div class="flex items-center justify-between gap-2 mb-1">
                   <div class="flex items-center gap-1.5">
                     <span class="w-2 h-2 rounded-full bg-purple-400"></span>
@@ -210,16 +259,16 @@ import AdSlot from '../../components/AdSlot.astro';
                 </span>
               </div>
 
-              <!-- Bottom Floating Hologram Badges: RAM & NVMe SSD -->
+              <!-- Bottom Floating Hologram Badges: RAM & NVMe SSD (Anti-Gravity) -->
               <div class="relative z-30 flex items-center justify-between gap-2 pt-1">
                 <!-- Left: RAM Pill -->
-                <div class="p-1.5 px-3 rounded-xl bg-slate-950/90 border border-slate-700 text-[10px] font-mono">
+                <div class="anti-gravity p-1.5 px-3 rounded-xl bg-slate-950/90 border border-slate-700 text-[10px] font-mono">
                   <span class="font-bold text-white block" id="vis-ram-spec">DDR5</span>
                   <span class="text-cyan-400 text-[9px]" id="vis-ram-type">16GB • 5600MHz</span>
                 </div>
 
                 <!-- Right: NVMe SSD Pill -->
-                <div class="p-1.5 px-3 rounded-xl bg-slate-950/90 border border-slate-700 text-right text-[10px] font-mono flex items-center gap-1.5">
+                <div class="anti-gravity p-1.5 px-3 rounded-xl bg-slate-950/90 border border-slate-700 text-right text-[10px] font-mono flex items-center gap-1.5">
                   <span class="text-emerald-400 font-bold">✓</span>
                   <div>
                     <span class="font-bold text-white block truncate max-w-[150px]" id="vis-ssd-name">WD BLUE SN580 1TB NVMe</span>
@@ -979,6 +1028,40 @@ import AdSlot from '../../components/AdSlot.astro';
       setTimeout(() => { copyBtn.textContent = orig; }, 2000);
     });
   }
+
+  // 🖱️ Custom Magnetic Cursor & Dynamic Glass Spotlight Logic
+  const cursor = document.getElementById('custom-cursor');
+  const cursorDot = document.getElementById('cursor-dot');
+  const spotlight = document.getElementById('dynamic-spotlight');
+
+  document.addEventListener('mousemove', (e) => {
+    if (cursor && cursorDot) {
+      cursor.style.transform = `translate3d(${e.clientX - 20}px, ${e.clientY - 20}px, 0)`;
+      cursorDot.style.transform = `translate3d(${e.clientX - 4}px, ${e.clientY - 4}px, 0)`;
+    }
+    if (viewportBox && spotlight) {
+      const rect = viewportBox.getBoundingClientRect();
+      if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        spotlight.style.background = `radial-gradient(450px circle at ${x}px ${y}px, rgba(34, 211, 238, 0.18), transparent 60%)`;
+      }
+    }
+  });
+
+  document.querySelectorAll('button, a, .anti-gravity, input[type="range"]').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      if (cursor) {
+        cursor.style.transform += ' scale(1.6)';
+        cursor.style.borderColor = '#fbbf24';
+      }
+    });
+    el.addEventListener('mouseleave', () => {
+      if (cursor) {
+        cursor.style.borderColor = '#22d3ee';
+      }
+    });
+  });
 
   // Budget Slider & Dynamic Laptop Filter
   const slider = document.getElementById('budget-slider');
