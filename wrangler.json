@@ -1,0 +1,14 @@
+{
+  "name": "uniquedigit-viral-hub",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "uniquedigit-db",
+      "database_id": "YOUR_D1_DATABASE_ID"
+    }
+  ]
+}

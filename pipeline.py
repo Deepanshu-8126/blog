@@ -1,20 +1,24 @@
 """
-UniqueDigit daily pipeline (single file, DB-driven)
+UniqueDigit daily pipeline (All-in-One Cloudflare D1 Edition)
 
 Usage:
   python pipeline.py                  # all active niches
   python pipeline.py --niche ai-tools # one niche
   python pipeline.py --dry            # no DB writes, prints only
 
-Env: SUPABASE_URL, SUPABASE_SERVICE_KEY, GEMINI_API_KEY
-Optional: GROK_API_KEY, TMDB_API_KEY, GEMINI_MODEL, GROK_MODEL, TRENDS_GEO, POSTS_PER_NICHE
+Env:
+  CLOUDFLARE_ACCOUNT_ID
+  CLOUDFLARE_D1_DATABASE_ID
+  CLOUDFLARE_API_TOKEN
+  GEMINI_API_KEY
+Optional:
+  GROK_API_KEY, TMDB_API_KEY, POSTS_PER_NICHE, AMAZON_ASSOCIATE_TAG
 """
-import json, os, re, sys, time, urllib.parse
+import json, os, re, sys, time, uuid, urllib.parse
 from dotenv import load_dotenv
 load_dotenv()
 
 import requests
-from supabase import create_client
 
 DRY = "--dry" in sys.argv
 ONLY = sys.argv[sys.argv.index("--niche") + 1] if "--niche" in sys.argv else None
@@ -26,26 +30,39 @@ GROK_MODEL = os.environ.get("GROK_MODEL", "grok-4")
 TMDB_KEY = os.environ.get("TMDB_API_KEY")
 GEO = os.environ.get("TRENDS_GEO", "IN")
 N_POSTS = int(os.environ.get("POSTS_PER_NICHE", "3"))
+AMAZON_TAG = os.environ.get("AMAZON_ASSOCIATE_TAG", "uniquedigi0c6-21")
 UA = {"User-Agent": "UniqueDigitBot/1.0 (contact: info@uniquedigit.in)"}
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
-SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
+CF_ACCOUNT = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
+CF_D1_DB = os.environ.get("CLOUDFLARE_D1_DATABASE_ID", "")
+CF_TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN", "")
 
-SB = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY) if (SUPABASE_URL and SUPABASE_SERVICE_KEY) else None
+
+# ---------- Cloudflare D1 Helpers ----------
+def d1_query(sql, params=None):
+    if DRY or not (CF_ACCOUNT and CF_D1_DB and CF_TOKEN):
+        print(f"[dry/local d1] {sql[:120]} | params: {params}")
+        return []
+    url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT}/d1/database/{CF_D1_DB}/query"
+    headers = {
+        "Authorization": f"Bearer {CF_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    payload = {"sql": sql, "params": params or []}
+    try:
+        r = requests.post(url, headers=headers, json=payload, timeout=30)
+        r.raise_for_status()
+        res = r.json()
+        if res.get("result") and len(res["result"]) > 0:
+            return res["result"][0].get("results", [])
+        return []
+    except Exception as e:
+        print("D1 query error:", e)
+        return []
 
 
-# ---------- helpers ----------
 def slugify(s):
     return re.sub(r"[^a-z0-9]+", "-", str(s).lower()).strip("-")[:80]
-
-
-def save(table, row, conflict=None):
-    if DRY or not SB:
-        print(f"[dry] {table}:", json.dumps(row, ensure_ascii=False)[:300])
-        return {"id": None}
-    q = SB.table(table)
-    r = (q.upsert(row, on_conflict=conflict) if conflict else q.insert(row)).execute()
-    return r.data[0] if r.data else {}
 
 
 def gemini(prompt):
@@ -79,9 +96,8 @@ def grok(prompt):
         return None
 
 
-# ---------- sources ----------
+# ---------- Sources ----------
 def get_trends(seeds):
-    """Google Trends rising queries (pytrends = unofficial; fallback exists)."""
     out = {}
     try:
         from pytrends.request import TrendReq
@@ -93,7 +109,7 @@ def get_trends(seeds):
                 for _, row in rising.head(8).iterrows():
                     out[str(row["query"])] = int(row["value"])
             time.sleep(2)
-        if not seeds:  # general trending searches
+        if not seeds:
             df = py.trending_searches(pn="india")
             for q in df[0].head(10):
                 out[str(q)] = 100
@@ -118,7 +134,6 @@ def tmdb_trending():
 
 
 def wiki(query):
-    """Returns {extract, image, url} or None. Image license: Wikipedia/Commons."""
     try:
         s = requests.get("https://en.wikipedia.org/w/rest.php/v1/search/title",
                          params={"q": query, "limit": 1}, headers=UA, timeout=20).json()
@@ -135,19 +150,6 @@ def wiki(query):
         return None
 
 
-def save_dataset(n, cfg):
-    h = {}
-    if cfg.get("auth_env"):
-        h[cfg.get("auth_header", "Authorization")] = os.environ.get(cfg["auth_env"], "")
-    try:
-        d = requests.get(cfg["dataset_url"], headers=h, timeout=30)
-        d.raise_for_status()
-        save("datasets", {"niche_id": n["id"], "data": d.json()})
-    except Exception as e:
-        print(f"[{n['slug']}] dataset fetch failed:", e)
-
-
-# ---------- AI steps ----------
 def rank(n, titles):
     prompt = (f"Niche: {n['name']} (India audience). Candidate trending topics: {json.dumps(titles)}.\n"
               f"Pick the {N_POSTS} best for a useful, non-clickbait article with affiliate/ad potential. "
@@ -164,7 +166,7 @@ def ai_topics(n):
 
 
 def write_article(n, title, angle, facts, trend):
-    cfg = n.get("config") or {}
+    cfg = json.loads(n.get("config") or "{}") if isinstance(n.get("config"), str) else (n.get("config") or {})
     prompt = f"""Write a helpful article for an Indian audience. Niche: {n['name']}.
 Title idea: {title}. Angle: {angle}. Google Trends interest score: {trend}.
 FACTS (use ONLY these; do not invent statistics, prices, dates, quotes, or product claims):
@@ -174,31 +176,18 @@ Return JSON: {{"title":"","summary":"<=160 chars","body_md":"400-600 words markd
     return gemini(prompt)
 
 
-# ---------- affiliate ----------
-def fill_affiliate():
-    if not SB:
-        return
-    rules = {r["domain"]: r["template"] for r in SB.table("affiliate_rules").select("*").execute().data}
-    for p in SB.table("products").select("id,url").is_("aff_url", "null").execute().data:
-        host = urllib.parse.urlparse(p["url"]).netloc.replace("www.", "")
-        tpl = next((t for d, t in rules.items() if d in host), None)
-        if tpl and not DRY:
-            link = tpl.replace("{enc_url}", urllib.parse.quote(p["url"], safe="")).replace("{url}", p["url"])
-            SB.table("products").update({"aff_url": link}).eq("id", p["id"]).execute()
-
-
-# ---------- per niche ----------
-def process(n):
-    cfg, fetchers = n.get("config") or {}, n.get("fetchers") or []
-    made = 0
-    if cfg.get("dataset_url"):
-        save_dataset(n, cfg)
-    if n["page_type"] == "dataset":
+# ---------- Main Pipeline Runner ----------
+def process_niche(n):
+    cfg = json.loads(n.get("config") or "{}") if isinstance(n.get("config"), str) else (n.get("config") or {})
+    fetchers = json.loads(n.get("fetchers") or "[]") if isinstance(n.get("fetchers"), str) else (n.get("fetchers") or [])
+    seeds = json.loads(n.get("seed_keywords") or "[]") if isinstance(n.get("seed_keywords"), str) else (n.get("seed_keywords") or [])
+    
+    if n.get("page_type") == "dataset":
         return 0
 
-    cands = {}  # title -> {score, image, credit, facts, url}
+    cands = {}
     if "trends" in fetchers:
-        for q, v in get_trends(n.get("seed_keywords") or []).items():
+        for q, v in get_trends(seeds).items():
             cands[q] = {"score": v}
     if "tmdb" in fetchers:
         for m in tmdb_trending():
@@ -207,12 +196,15 @@ def process(n):
     if not cands:
         cands = {t: {"score": s} for t, s in ai_topics(n).items()}
 
-    seen = {r["slug"] for r in SB.table("topics").select("slug").eq("niche_id", n["id"]).execute().data} if SB else set()
+    # Check already existing topics in D1
+    existing = d1_query("SELECT slug FROM topics WHERE niche_id = ?", [n["id"]])
+    seen = {row["slug"] for row in existing}
     titles = [t for t in cands if slugify(t) not in seen][:25]
     if not titles:
-        print(f"[{n['slug']}] nothing new")
+        print(f"[{n['slug']}] No new trending topics.")
         return 0
 
+    made = 0
     for pick in rank(n, titles):
         t, c = pick["title"], cands[pick["title"]]
         facts, image, credit, src = c.get("facts", ""), c.get("image"), c.get("credit"), c.get("url")
@@ -227,44 +219,72 @@ def process(n):
         except Exception as e:
             print(f"[{n['slug']}] write failed for {t}:", e)
             continue
-        topic = save("topics", {"niche_id": n["id"], "title": t, "slug": slugify(t),
-                                "trend_score": c["score"], "source": "tmdb" if "tmdb" in (n.get("fetchers") or []) else "trends"},
-                     "niche_id,slug")
-        save("posts", {"niche_id": n["id"], "topic_id": topic.get("id"), "slug": slugify(a["title"]) or slugify(t),
-                       "title": a["title"], "summary": a["summary"][:200], "body_md": a["body_md"],
-                       "faq": a.get("faq", []), "tags": a.get("tags", []),
-                       "image_url": image, "image_credit": credit, "source_url": src,
-                       "trend_score": c["score"],
-                       "status": "draft" if cfg.get("review") else "published"},
-             "niche_id,slug")
+
+        topic_id = str(uuid.uuid4())
+        topic_slug = slugify(t)
+        post_id = str(uuid.uuid4())
+        post_slug = slugify(a.get("title")) or topic_slug
+
+        # Insert topic into Cloudflare D1
+        d1_query(
+            "INSERT OR IGNORE INTO topics (id, niche_id, title, slug, trend_score, source) VALUES (?, ?, ?, ?, ?, ?)",
+            [topic_id, n["id"], t, topic_slug, c["score"], "trends"]
+        )
+
+        # Insert post into Cloudflare D1
+        d1_query(
+            """INSERT OR REPLACE INTO posts 
+               (id, niche_id, topic_id, slug, title, summary, body_md, faq, tags, image_url, image_credit, source_url, trend_score, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            [
+                post_id, n["id"], topic_id, post_slug,
+                a.get("title", t), a.get("summary", "")[:200], a.get("body_md", ""),
+                json.dumps(a.get("faq", [])), json.dumps(a.get("tags", [])),
+                image, credit, src, c["score"],
+                "draft" if cfg.get("review") else "published"
+            ]
+        )
         made += 1
         time.sleep(1)
     return made
 
 
+SEED_NICHES = [
+    {"id": "1", "slug": "pc-builds", "name": "PC Builds", "tagline": "Custom rigs & parts", "grp": "Tech", "icon": "cpu", "page_type": "tools", "seed_keywords": '["gaming pc build","graphics card"]', "fetchers": '["trends"]'},
+    {"id": "2", "slug": "gold-rate", "name": "Gold Rate", "tagline": "Live gold prices & trends", "grp": "Tech", "icon": "coins", "page_type": "dataset"},
+    {"id": "3", "slug": "ai-tools", "name": "AI Tools", "tagline": "Generative AI & utilities", "grp": "Tech", "icon": "sparkles", "page_type": "tools", "seed_keywords": '["ai tools","chatgpt alternative"]', "fetchers": '["trends","wikipedia"]'},
+    {"id": "4", "slug": "deals", "name": "Deals", "tagline": "Today's top discounts", "grp": "Money", "icon": "tag", "page_type": "tools", "seed_keywords": '["deals","discount"]', "fetchers": '["trends"]'},
+    {"id": "5", "slug": "side-hustles", "name": "Side Hustles", "tagline": "Earn extra income", "grp": "Money", "icon": "briefcase", "page_type": "feed", "seed_keywords": '["side hustle","work from home"]', "fetchers": '["trends","wikipedia"]'},
+    {"id": "6", "slug": "cashback", "name": "Cashback", "tagline": "Rewards & cashback offers", "grp": "Money", "icon": "percent", "page_type": "tools", "seed_keywords": '["cashback offers"]', "fetchers": '["trends"]'},
+    {"id": "7", "slug": "health", "name": "Health", "tagline": "Wellness & fitness tips", "grp": "Lifestyle", "icon": "heart", "page_type": "feed", "seed_keywords": '["healthy diet","home workout"]', "fetchers": '["trends","wikipedia"]', "config": '{"review":true,"disclaimer":"Medical disclaimer."}'},
+    {"id": "8", "slug": "fashion", "name": "Fashion", "tagline": "Trends & style guides", "grp": "Lifestyle", "icon": "shirt", "page_type": "feed", "seed_keywords": '["fashion trends","sneakers"]', "fetchers": '["trends","wikipedia"]'},
+    {"id": "9", "slug": "food", "name": "Food", "tagline": "Recipes & cooking guides", "grp": "Lifestyle", "icon": "utensils", "page_type": "feed", "seed_keywords": '["recipe","street food"]', "fetchers": '["trends","wikipedia"]'},
+    {"id": "10", "slug": "gta-6", "name": "GTA 6", "tagline": "News, updates & guides", "grp": "Entertainment", "icon": "gamepad", "page_type": "feed", "seed_keywords": '["gta 6","rockstar games"]', "fetchers": '["trends","wikipedia"]'},
+    {"id": "11", "slug": "movies", "name": "Movies", "tagline": "Reviews, OTT & trailers", "grp": "Entertainment", "icon": "clapperboard", "page_type": "movies", "seed_keywords": '["new movies","ott release"]', "fetchers": '["trends","tmdb"]'},
+    {"id": "12", "slug": "viral", "name": "Viral", "tagline": "Trending internet moments", "grp": "Entertainment", "icon": "rocket", "page_type": "feed", "seed_keywords": '[]', "fetchers": '["trends"]'}
+]
+
 def main():
-    if not SB:
-        print("SUPABASE credentials not found. Running in mock/dry mode.")
-        return
-    q = SB.table("niches").select("*").eq("active", True)
+    print("--- Running UniqueDigit Pipeline (Cloudflare D1 Edition) ---")
+    niches = d1_query("SELECT * FROM niches WHERE active = 1 ORDER BY sort ASC")
+    if not niches:
+        print("[Notice] Using local baseline niches for dry run.")
+        niches = SEED_NICHES
+
     if ONLY:
-        q = q.eq("slug", ONLY)
-    summary, err = {}, None
-    for n in q.execute().data:
+        niches = [n for n in niches if n["slug"] == ONLY]
+
+    summary = {}
+    for n in niches:
         try:
-            summary[n["slug"]] = process(n)
-            print(f"[{n['slug']}] posts: {summary[n['slug']]}")
+            count = process_niche(n)
+            summary[n["slug"]] = count
+            print(f"[{n['slug']}] Generated {count} articles.")
         except Exception as e:
-            summary[n["slug"]] = f"ERROR {e}"
-            err = (err or "") + f"{n['slug']}: {e}\n"
-            print(f"[{n['slug']}] failed:", e)
-    try:
-        fill_affiliate()
-    except Exception as e:
-        err = (err or "") + f"affiliate: {e}\n"
-    save("pipeline_runs", {"ok": err is None, "summary": summary, "error": err})
-    if err:
-        sys.exit(1)
+            summary[n["slug"]] = f"ERROR: {e}"
+            print(f"[{n['slug']}] Failed:", e)
+
+    print("Pipeline finished:", summary)
 
 
 if __name__ == "__main__":

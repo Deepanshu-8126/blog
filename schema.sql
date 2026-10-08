@@ -1,166 +1,128 @@
 -- =========================================================
--- UniqueDigit Viral Hub — Supabase Database Schema (v1.0)
+-- UniqueDigit Viral Hub — Cloudflare D1 Database Schema (v1.0)
 -- =========================================================
 
-create extension if not exists pgcrypto;
-
--- 1. Niches Table (Source of truth for Menu, Dashboard, Pipeline)
-create table if not exists niches (
-  id uuid primary key default gen_random_uuid(),
-  slug text unique not null,
-  name text not null,
-  tagline text,
-  grp text not null,                     -- Tech | Money | Lifestyle | Entertainment (mega-menu column)
-  icon text,                             -- lucide icon name (cpu, coins, sparkles, etc.)
-  page_type text not null check (page_type in ('feed','tools','dataset','movies')),
-  seed_keywords text[] default '{}',     -- Google Trends seeds
-  fetchers text[] default '{trends,wikipedia}',   -- trends | wikipedia | tmdb
-  config jsonb default '{}',             -- {disclaimer, review, dataset_url, auth_env, auth_header}
-  pin boolean default false,             -- header mein direct quick link
-  is_new boolean default false,
-  sort int default 0,
-  active boolean default true,
-  created_at timestamptz default now()
+-- 1. Niches Table (Source of truth for Menu, Hubs, and Templates)
+CREATE TABLE IF NOT EXISTS niches (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  tagline TEXT,
+  grp TEXT NOT NULL,                     -- Tech | Money | Lifestyle | Entertainment
+  icon TEXT DEFAULT 'sparkles',
+  page_type TEXT NOT NULL,               -- feed | tools | dataset | movies
+  seed_keywords TEXT DEFAULT '[]',       -- JSON array string
+  fetchers TEXT DEFAULT '["trends","wikipedia"]', -- JSON array string
+  config TEXT DEFAULT '{}',              -- JSON config string {disclaimer, review, dataset_url}
+  pin INTEGER DEFAULT 0,                 -- 1 for pinned in header, 0 for more
+  is_new INTEGER DEFAULT 0,
+  sort INTEGER DEFAULT 0,
+  active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Topics Table (Deduplication & Trend Tracking)
-create table if not exists topics (
-  id uuid primary key default gen_random_uuid(),
-  niche_id uuid references niches on delete cascade,
-  title text not null,
-  slug text not null,
-  trend_score int default 0,
-  source text,
-  fetched_at timestamptz default now(),
-  unique(niche_id, slug)
+-- 2. Topics Table (Trend Tracking & Deduplication)
+CREATE TABLE IF NOT EXISTS topics (
+  id TEXT PRIMARY KEY,
+  niche_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL,
+  trend_score INTEGER DEFAULT 0,
+  source TEXT,
+  fetched_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(niche_id, slug),
+  FOREIGN KEY (niche_id) REFERENCES niches(id) ON DELETE CASCADE
 );
 
 -- 3. Posts Table (Articles & Guides)
-create table if not exists posts (
-  id uuid primary key default gen_random_uuid(),
-  niche_id uuid references niches on delete cascade,
-  topic_id uuid references topics on delete set null,
-  slug text not null,
-  title text not null,
-  summary text,
-  body_md text,
-  faq jsonb default '[]',
-  tags text[] default '{}',
-  image_url text,
-  image_credit text,
-  source_url text,
-  trend_score int default 0,
-  views int default 0,
-  is_breaking boolean default false,
-  status text default 'published' check (status in ('draft','published','archived')),
-  published_at timestamptz default now(),
-  unique(niche_id, slug)
+CREATE TABLE IF NOT EXISTS posts (
+  id TEXT PRIMARY KEY,
+  niche_id TEXT NOT NULL,
+  topic_id TEXT,
+  slug TEXT NOT NULL,
+  title TEXT NOT NULL,
+  summary TEXT,
+  body_md TEXT,
+  faq TEXT DEFAULT '[]',                 -- JSON array string
+  tags TEXT DEFAULT '[]',                -- JSON array string
+  image_url TEXT,
+  image_credit TEXT,
+  source_url TEXT,
+  trend_score INTEGER DEFAULT 0,
+  views INTEGER DEFAULT 0,
+  is_breaking INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'published',       -- published | draft | archived
+  published_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(niche_id, slug),
+  FOREIGN KEY (niche_id) REFERENCES niches(id) ON DELETE CASCADE
 );
 
-create index if not exists idx_posts_niche_status_pub on posts(niche_id, status, published_at desc);
-create index if not exists idx_posts_status_trend on posts(status, trend_score desc, published_at desc);
+CREATE INDEX IF NOT EXISTS idx_posts_niche_pub ON posts(niche_id, status, published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_trend ON posts(status, trend_score DESC, published_at DESC);
 
 -- 4. Products Table (Tools, Deals, PC Parts, Cashback offers)
-create table if not exists products (
-  id uuid primary key default gen_random_uuid(),
-  niche_id uuid references niches on delete cascade,
-  name text not null,
-  tagline text,
-  category text,
-  badge text,
-  image_url text,
-  price numeric,
-  rating numeric,
-  url text not null,                      -- Merchant original link
-  aff_url text,                           -- Filled via affiliate_rules template
-  merchant text,
-  active boolean default true,
-  sort int default 0,
-  created_at timestamptz default now()
+CREATE TABLE IF NOT EXISTS products (
+  id TEXT PRIMARY KEY,
+  niche_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  tagline TEXT,
+  category TEXT,
+  badge TEXT,
+  image_url TEXT,
+  price REAL,
+  rating REAL,
+  url TEXT NOT NULL,
+  aff_url TEXT,
+  merchant TEXT,
+  active INTEGER DEFAULT 1,
+  sort INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (niche_id) REFERENCES niches(id) ON DELETE CASCADE
 );
 
--- 5. Affiliate Rules Table (EarnKaro / Affiliate link formats)
-create table if not exists affiliate_rules (
-  id uuid primary key default gen_random_uuid(),
-  domain text unique not null,            -- amazon.in, flipkart.com, myntra.com ...
-  template text not null                  -- e.g. https://ekaro.in/enkr2020/?url={enc_url}&ref=YOURID
+-- 5. Affiliate Rules Table (Amazon / EarnKaro link format rules)
+CREATE TABLE IF NOT EXISTS affiliate_rules (
+  id TEXT PRIMARY KEY,
+  domain TEXT UNIQUE NOT NULL,           -- amazon.in, flipkart.com ...
+  template TEXT NOT NULL                 -- https://www.amazon.in/dp/{asin}?tag=uniquedigi0c6-21
 );
 
--- 6. Datasets Table (Gold rates, Bullion, Currency history)
-create table if not exists datasets (
-  id uuid primary key default gen_random_uuid(),
-  niche_id uuid references niches on delete cascade,
-  data jsonb not null,
-  fetched_at timestamptz default now()
+-- 6. Datasets Table (Gold Rates & Bullion History)
+CREATE TABLE IF NOT EXISTS datasets (
+  id TEXT PRIMARY KEY,
+  niche_id TEXT NOT NULL,
+  data TEXT NOT NULL,                    -- JSON payload string
+  fetched_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (niche_id) REFERENCES niches(id) ON DELETE CASCADE
 );
-
-create index if not exists idx_datasets_niche_fetched on datasets(niche_id, fetched_at desc);
 
 -- 7. Subscribers & Pipeline Runs
-create table if not exists subscribers (
-  email text primary key,
-  created_at timestamptz default now()
+CREATE TABLE IF NOT EXISTS subscribers (
+  email TEXT PRIMARY KEY,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-create table if not exists pipeline_runs (
-  id uuid primary key default gen_random_uuid(),
-  started_at timestamptz default now(),
-  ok boolean,
-  summary jsonb,
-  error text
+CREATE TABLE IF NOT EXISTS pipeline_runs (
+  id TEXT PRIMARY KEY,
+  started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  ok INTEGER,
+  summary TEXT,
+  error TEXT
 );
-
--- =========================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
--- =========================================================
-alter table niches enable row level security;
-drop policy if exists r_niches on niches;
-create policy r_niches on niches for select using (active = true);
-
-alter table posts enable row level security;
-drop policy if exists r_posts on posts;
-create policy r_posts on posts for select using (status = 'published');
-
-alter table products enable row level security;
-drop policy if exists r_products on products;
-create policy r_products on products for select using (active = true);
-
-alter table datasets enable row level security;
-drop policy if exists r_datasets on datasets;
-create policy r_datasets on datasets for select using (true);
-
-alter table topics enable row level security;
-alter table affiliate_rules enable row level security;
-alter table pipeline_runs enable row level security;
-
-alter table subscribers enable row level security;
-drop policy if exists i_subscribers on subscribers;
-create policy i_subscribers on subscribers for insert with check (true);
 
 -- =========================================================
 -- SEED DATA (12 Niches across 4 Groups)
 -- =========================================================
-insert into niches(slug, name, tagline, grp, icon, page_type, seed_keywords, fetchers, config, pin, is_new, sort) values
-('pc-builds', 'PC Builds', 'Custom rigs & parts', 'Tech', 'cpu', 'tools', '{gaming pc build,graphics card}', '{trends}', '{}', true, false, 1),
-('gold-rate', 'Gold Rate', 'Live gold prices & trends', 'Tech', 'coins', 'dataset', '{}', '{}', '{"dataset_url":"https://api.metals.dev/v1/latest", "disclaimer":"Gold rates are indicative market rates and exclude GST and making charges."}', false, false, 2),
-('ai-tools', 'AI Tools', 'Generative AI & utilities', 'Tech', 'sparkles', 'tools', '{ai tools,chatgpt alternative}', '{trends,wikipedia}', '{}', true, false, 3),
-('deals', 'Deals', 'Today''s top discounts', 'Money', 'tag', 'tools', '{deals,discount}', '{trends}', '{}', true, false, 4),
-('side-hustles', 'Side Hustles', 'Earn extra income', 'Money', 'briefcase', 'feed', '{side hustle,work from home}', '{trends,wikipedia}', '{}', false, false, 5),
-('cashback', 'Cashback', 'Rewards & cashback offers', 'Money', 'percent', 'tools', '{cashback offers}', '{trends}', '{}', false, false, 6),
-('health', 'Health', 'Wellness & fitness tips', 'Lifestyle', 'heart', 'feed', '{healthy diet,home workout}', '{trends,wikipedia}', '{"review":true,"disclaimer":"Yeh jankari sirf education ke liye hai, medical salah nahi. Kisi bhi upchar se pehle doctor se consult karein."}', false, false, 7),
-('fashion', 'Fashion', 'Trends & style guides', 'Lifestyle', 'shirt', 'feed', '{fashion trends,sneakers}', '{trends,wikipedia}', '{}', false, false, 8),
-('food', 'Food', 'Recipes & cooking guides', 'Lifestyle', 'utensils', 'feed', '{recipe,street food}', '{trends,wikipedia}', '{}', false, false, 9),
-('gta-6', 'GTA 6', 'News, updates & guides', 'Entertainment', 'gamepad', 'feed', '{gta 6,rockstar games}', '{trends,wikipedia}', '{}', true, true, 10),
-('movies', 'Movies', 'Reviews, OTT & trailers', 'Entertainment', 'clapperboard', 'movies', '{new movies,ott release}', '{trends,tmdb}', '{}', false, false, 11),
-('viral', 'Viral', 'Trending internet moments', 'Entertainment', 'rocket', 'feed', '{}', '{trends}', '{}', false, false, 12)
-on conflict (slug) do update set
-  name = excluded.name,
-  tagline = excluded.tagline,
-  grp = excluded.grp,
-  icon = excluded.icon,
-  page_type = excluded.page_type,
-  seed_keywords = excluded.seed_keywords,
-  config = excluded.config,
-  pin = excluded.pin,
-  is_new = excluded.is_new,
-  sort = excluded.sort;
+INSERT OR REPLACE INTO niches (id, slug, name, tagline, grp, icon, page_type, seed_keywords, fetchers, config, pin, is_new, sort, active) VALUES
+('1', 'pc-builds', 'PC Builds', 'Custom rigs & parts', 'Tech', 'cpu', 'tools', '["gaming pc build","graphics card"]', '["trends"]', '{}', 1, 0, 1, 1),
+('2', 'gold-rate', 'Gold Rate', 'Live gold prices & trends', 'Tech', 'coins', 'dataset', '[]', '[]', '{"dataset_url":"https://api.metals.dev/v1/latest","disclaimer":"Gold rates are indicative market rates and exclude GST and making charges."}', 0, 0, 2, 1),
+('3', 'ai-tools', 'AI Tools', 'Generative AI & utilities', 'Tech', 'sparkles', 'tools', '["ai tools","chatgpt alternative"]', '["trends","wikipedia"]', '{}', 1, 0, 3, 1),
+('4', 'deals', 'Deals', 'Today''s top discounts', 'Money', 'tag', 'tools', '["deals","discount"]', '["trends"]', '{}', 1, 0, 4, 1),
+('5', 'side-hustles', 'Side Hustles', 'Earn extra income', 'Money', 'briefcase', 'feed', '["side hustle","work from home"]', '["trends","wikipedia"]', '{}', 0, 0, 5, 1),
+('6', 'cashback', 'Cashback', 'Rewards & cashback offers', 'Money', 'percent', 'tools', '["cashback offers"]', '["trends"]', '{}', 0, 0, 6, 1),
+('7', 'health', 'Health', 'Wellness & fitness tips', 'Lifestyle', 'heart', 'feed', '["healthy diet","home workout"]', '["trends","wikipedia"]', '{"review":true,"disclaimer":"Yeh jankari sirf education ke liye hai, medical salah nahi. Doctor se pucho."}', 0, 0, 7, 1),
+('8', 'fashion', 'Fashion', 'Trends & style guides', 'Lifestyle', 'shirt', 'feed', '["fashion trends","sneakers"]', '["trends","wikipedia"]', '{}', 0, 0, 8, 1),
+('9', 'food', 'Food', 'Recipes & cooking guides', 'Lifestyle', 'utensils', 'feed', '["recipe","street food"]', '["trends","wikipedia"]', '{}', 0, 0, 9, 1),
+('10', 'gta-6', 'GTA 6', 'News, updates & guides', 'Entertainment', 'gamepad', 'feed', '["gta 6","rockstar games"]', '["trends","wikipedia"]', '{}', 1, 1, 10, 1),
+('11', 'movies', 'Movies', 'Reviews, OTT & trailers', 'Entertainment', 'clapperboard', 'movies', '["new movies","ott release"]', '["trends","tmdb"]', '{}', 0, 0, 11, 1),
+('12', 'viral', 'Viral', 'Trending internet moments', 'Entertainment', 'rocket', 'feed', '[]', '["trends"]', '{}', 0, 0, 12, 1);
