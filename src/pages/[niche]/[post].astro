@@ -157,7 +157,7 @@ const articleSchema = {
     <div class="prose max-w-none text-ink text-base sm:text-lg leading-relaxed mb-12" set:html={bodyHtml} />
 
     <!-- High-Converting Amazon Affiliate Recommendation & Live Deal Widget -->
-    <AmazonDealBox keyword={post.title} nicheName={niche.name} />
+    <AmazonDealBox keyword={post.title} nicheSlug={niche.slug} nicheName={niche.name} />
 
     <!-- Product Recommendations if in Tools/PC/Deals Niche -->
     {products.length > 0 && (

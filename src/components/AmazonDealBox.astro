@@ -1,16 +1,20 @@
 ---
 import Icon from './Icon.astro';
+import { getContextualDeals } from '../lib/recommendations';
 
 interface Props {
   keyword: string;
+  nicheSlug?: string;
   nicheName?: string;
   customTitle?: string;
 }
 
-const { keyword, nicheName = 'Tech & Gaming', customTitle } = Astro.props;
+const { keyword, nicheSlug = 'pc-builds', nicheName = 'Tech & Gaming', customTitle } = Astro.props;
 const amazonTag = 'uniquedigi0c6-21';
 const cleanKeyword = keyword.replace(/[^\w\s-]/gi, '').trim();
 const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(cleanKeyword)}&tag=${amazonTag}`;
+
+const contextualDeals = getContextualDeals(nicheSlug);
 ---
 
 <div class="my-8 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 sm:p-8 text-white border border-amber-500/30 shadow-2xl relative overflow-hidden">
@@ -24,59 +28,73 @@ const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(cleanKeyword)}
       <div class="flex items-center gap-2">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-md">
           <Icon name="sparkles" class="w-3.5 h-3.5" />
-          Editor's Buying Recommendation
+          Contextual Buying & Loot Deals
         </span>
-        <span class="text-xs text-slate-400 font-medium hidden sm:inline">Verified Deal</span>
+        <span class="text-xs text-slate-400 font-medium hidden sm:inline">Handpicked for {nicheName}</span>
       </div>
 
       <div class="flex items-center gap-1.5 text-xs text-amber-300 font-mono font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
-        <span>★ 4.7/5</span>
+        <span>⚡ Verified Today</span>
         <span class="text-slate-400">|</span>
-        <span>Top Rated</span>
+        <span>Top Discounts</span>
       </div>
     </div>
 
     <!-- Title & Value Pitch -->
     <h3 class="text-xl sm:text-2xl font-black text-white leading-snug mb-2">
-      {customTitle || `Looking for the Best Deals on ${cleanKeyword}?`}
+      {customTitle || `Handpicked Deals & Verified Offers for ${cleanKeyword}`}
     </h3>
 
     <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
-      Check today's lowest prices, exclusive bank discounts, and lightning deals directly on Amazon India. Compare customer reviews and find verified seller offers before stock runs out.
+      Our automated price tracker scanned current offers across Amazon India, official brand stores, and verified retail networks. Here are today's top curated recommendations:
     </p>
 
-    <!-- Key Reasons / Value Props -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-      <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-2.5">
-        <span class="text-amber-400 text-base">⚡</span>
-        <div>
-          <span class="block text-xs font-bold text-white">Live Price Drops</span>
-          <span class="text-[11px] text-slate-400">Instant discounts & coupons</span>
-        </div>
-      </div>
+    <!-- Contextual Dynamic Deals List -->
+    {contextualDeals.length > 0 && (
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        {contextualDeals.map(deal => (
+          <div class="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-amber-400/40 transition flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 text-[11px] font-black uppercase">
+                  {deal.badge}
+                </span>
+                <span class="text-[10px] text-slate-400 font-mono bg-white/10 px-2 py-0.5 rounded-full">
+                  {deal.merchant}
+                </span>
+              </div>
+              <h4 class="font-bold text-sm text-white group-hover:text-amber-300 transition mb-1">
+                {deal.title}
+              </h4>
+              <p class="text-xs text-slate-300 font-medium">
+                {deal.discount} • <span class="text-slate-400">{deal.priceNote}</span>
+              </p>
+            </div>
 
-      <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-2.5">
-        <span class="text-emerald-400 text-base">🛡️</span>
-        <div>
-          <span class="block text-xs font-bold text-white">100% Genuine</span>
-          <span class="text-[11px] text-slate-400">Official Indian Brand Warranty</span>
-        </div>
+            <div class="pt-3 mt-3 border-t border-white/10 flex items-center justify-between">
+              <span class="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
+                ✓ {deal.trustTag}
+              </span>
+              <a
+                href={deal.affUrl}
+                target="_blank"
+                rel="sponsored nofollow noopener"
+                class="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition flex items-center gap-1 shadow-xs cursor-pointer"
+              >
+                <span>View Deal</span>
+                <Icon name="external-link" class="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+        ))}
       </div>
+    )}
 
-      <div class="p-3 rounded-2xl bg-white/5 border border-white/10 flex items-start gap-2.5">
-        <span class="text-blue-400 text-base">📦</span>
-        <div>
-          <span class="block text-xs font-bold text-white">Fast Delivery</span>
-          <span class="text-[11px] text-slate-400">Prime Same-Day / 1-Day</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- CTA Row -->
+    <!-- Universal CTA Row -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-white/10">
       <div class="text-xs text-slate-400">
-        <span class="text-slate-200 font-semibold block">Amazon Verified Merchant Links</span>
-        <span>Affiliate commissions help support our research at ₹0 extra cost to you.</span>
+        <span class="text-slate-200 font-semibold block">Amazon India & Verified Partner Links</span>
+        <span>Live prices and coupons fluctuate rapidly during sales.</span>
       </div>
 
       <a
@@ -85,7 +103,7 @@ const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(cleanKeyword)}
         rel="sponsored nofollow noopener"
         class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-sm transition transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-amber-500/25 cursor-pointer shrink-0"
       >
-        <span>Check Live Price & Amazon Offers</span>
+        <span>Search Live Amazon Deals on "{cleanKeyword}"</span>
         <Icon name="external-link" class="w-4 h-4" />
       </a>
     </div>
