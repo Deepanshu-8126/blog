@@ -172,13 +172,16 @@ import AdSlot from '../../components/AdSlot.astro';
             </div>
           </div>
 
-          <!-- 3D Perspective Cabinet Chamber -->
+          <!-- 3D Perspective Cabinet Chamber with Three.js WebGL Engine -->
           <div class="perspective-1000 w-full flex items-center justify-center py-2">
             <div
               id="pc-3d-case"
               class="w-full min-h-[480px] rounded-3xl bg-gradient-to-b from-[#0e1424] via-[#080c18] to-[#04060d] border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-2xl transition-transform duration-300 transform-gpu overflow-hidden"
               style="transform: rotateX(5deg) rotateY(-7deg);"
             >
+              <!-- Real Three.js WebGL 3D Canvas -->
+              <canvas id="three-pc-canvas" class="absolute inset-0 w-full h-full z-10 pointer-events-auto rounded-3xl"></canvas>
+
               <!-- Tempered Glass Reflection Diagonal Sheen & Screws -->
               <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500/5 via-white/5 to-purple-500/10 pointer-events-none rounded-3xl border border-white/15 z-20"></div>
               <div class="absolute top-3 left-3 w-3 h-3 rounded-full bg-slate-600 border border-slate-300 z-30 shadow-sm flex items-center justify-center text-[7px] text-slate-900 font-bold">+</div>
@@ -187,11 +190,11 @@ import AdSlot from '../../components/AdSlot.astro';
               <div class="absolute bottom-3 right-3 w-3 h-3 rounded-full bg-slate-600 border border-slate-300 z-30 shadow-sm flex items-center justify-center text-[7px] text-slate-900 font-bold">+</div>
 
               <!-- Top Radiator Fans (2x 120mm ARGB Spinning Halos with Anti-Gravity) -->
-              <div class="flex items-center justify-center gap-6 pb-2 relative z-10">
-                <div class="anti-gravity w-24 h-8 rounded-full bg-slate-950 border-2 border-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-400/40 p-1">
+              <div class="flex items-center justify-center gap-6 pb-2 relative z-20 pointer-events-none">
+                <div class="anti-gravity w-24 h-8 rounded-full bg-slate-950/80 border-2 border-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-400/40 p-1 pointer-events-auto">
                   <div class="rig-fan w-full h-full rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 blur-xs"></div>
                 </div>
-                <div class="anti-gravity w-24 h-8 rounded-full bg-slate-950 border-2 border-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-400/40 p-1">
+                <div class="anti-gravity w-24 h-8 rounded-full bg-slate-950/80 border-2 border-cyan-400 flex items-center justify-center shadow-lg shadow-cyan-400/40 p-1 pointer-events-auto">
                   <div class="rig-fan w-full h-full rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 blur-xs"></div>
                 </div>
               </div>
@@ -210,12 +213,12 @@ import AdSlot from '../../components/AdSlot.astro';
               </div>
 
               <!-- Center Chamber: Dual Vertical ARGB Front Intake Fans + Motherboard Core -->
-              <div class="relative z-10 w-full flex items-center justify-between my-2 gap-4">
+              <div class="relative z-20 w-full flex items-center justify-between my-2 gap-4 pointer-events-none">
                 
                 <!-- Left/Center Motherboard & CPU Cooler Block (Anti-Gravity) -->
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 pointer-events-auto">
                   <!-- Circular ARGB CPU Liquid Pump / Cooler -->
-                  <div class="anti-gravity w-22 h-22 rounded-full bg-slate-950 border-2 border-purple-500 shadow-2xl shadow-purple-500/40 flex items-center justify-center relative p-2">
+                  <div class="anti-gravity w-22 h-22 rounded-full bg-slate-950/90 border-2 border-purple-500 shadow-2xl shadow-purple-500/40 flex items-center justify-center relative p-2">
                     <div class="rig-fan w-full h-full rounded-full border-2 border-dashed border-cyan-400 flex items-center justify-center" style="animation-duration: 2.2s;">
                       <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 shadow-lg shadow-cyan-400 blur-xs"></div>
                     </div>
@@ -229,13 +232,13 @@ import AdSlot from '../../components/AdSlot.astro';
                 </div>
 
                 <!-- Right Side: Dual Front 140mm ARGB Intake Fans (Rainbow Spinning Halos) -->
-                <div class="flex flex-col gap-3 shrink-0">
-                  <div class="anti-gravity w-20 h-20 rounded-full bg-slate-950 border-2 border-cyan-400 shadow-2xl shadow-cyan-400/50 flex items-center justify-center relative p-1.5">
+                <div class="flex flex-col gap-3 shrink-0 pointer-events-auto">
+                  <div class="anti-gravity w-20 h-20 rounded-full bg-slate-950/90 border-2 border-cyan-400 shadow-2xl shadow-cyan-400/50 flex items-center justify-center relative p-1.5">
                     <div class="rig-fan w-full h-full rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center" style="animation-duration: 1.8s;">
                       <div class="w-7 h-7 rounded-full bg-gradient-to-r from-cyan-400 to-pink-500 blur-xs"></div>
                     </div>
                   </div>
-                  <div class="anti-gravity w-20 h-20 rounded-full bg-slate-950 border-2 border-cyan-400 shadow-2xl shadow-cyan-400/50 flex items-center justify-center relative p-1.5">
+                  <div class="anti-gravity w-20 h-20 rounded-full bg-slate-950/90 border-2 border-cyan-400 shadow-2xl shadow-cyan-400/50 flex items-center justify-center relative p-1.5">
                     <div class="rig-fan w-full h-full rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center" style="animation-duration: 1.8s;">
                       <div class="w-7 h-7 rounded-full bg-gradient-to-r from-cyan-400 to-pink-500 blur-xs"></div>
                     </div>
@@ -520,8 +523,10 @@ import AdSlot from '../../components/AdSlot.astro';
   <AdSlot position="bottom" />
 </Layout>
 
-<!-- Client-Side Simulator Logic & 3D Web Audio Engine -->
+<!-- Client-Side Simulator Logic & 3D Three.js WebGL Engine -->
 <script>
+  import * as THREE from 'three';
+
   // Web Audio Synthesizer (Realistic Mechanical Clicks, Power-On Hum, RGB Whir)
   let audioCtx = null;
   let soundEnabled = true;
@@ -1063,50 +1068,331 @@ import AdSlot from '../../components/AdSlot.astro';
     });
   });
 
-  // Budget Slider & Dynamic Laptop Filter
-  const slider = document.getElementById('budget-slider');
-  const sliderVal = document.getElementById('slider-val-display');
-  const laptopContainer = document.getElementById('laptop-cards-container');
+  // ==========================================
+  // 🎮 THREE.JS HIGH-PERFORMANCE 3D WEBGL ENGINE
+  // ==========================================
+  let threeScene, threeCamera, threeRenderer, pcModelGroup;
+  let fanMeshes = [];
+  let gpuMesh, cpuCoolerMesh, ramMeshGroup;
+  let argbPointLight1, argbPointLight2;
+  let isDragging = false;
+  let previousMouseX = 0;
+  let previousMouseY = 0;
+  let targetRotationX = 0.1;
+  let targetRotationY = -0.15;
+  let fanRotationSpeed = 0.05;
 
-  function renderLaptops(budget) {
-    if (!laptopContainer) return;
-    const matching = LAPTOPS_DATA.filter(l => budget >= (l.min - 10000) && budget <= (l.max + 15000));
-    const items = matching.length > 0 ? matching : LAPTOPS_DATA.slice(0, 3);
+  function initThreeEngine() {
+    const canvas = document.getElementById('three-pc-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
 
-    laptopContainer.innerHTML = items.map(l => `
-      <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 hover:border-amber-400/50 transition-all duration-300 flex flex-col justify-between group shadow-card">
-        <div>
-          <div class="aspect-video w-full rounded-xl overflow-hidden mb-3 border border-slate-800 bg-slate-900">
-            <img src="${l.img}" alt="${l.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
-          </div>
-          <div class="flex items-center justify-between gap-2 mb-2">
-            <span class="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase">${l.badge}</span>
-            <span class="text-xs font-mono font-bold text-emerald-400">₹${l.price.toLocaleString('en-IN')}</span>
-          </div>
-          <h4 class="text-sm font-bold text-white group-hover:text-amber-300 transition leading-snug mb-2">${l.name}</h4>
-        </div>
+    const width = canvas.clientWidth || 500;
+    const height = canvas.clientHeight || 480;
 
-        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-2 mt-2">
-          <span class="text-[11px] text-slate-400">Amazon Prime Deal</span>
-          <a href="${l.affUrl}" target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition flex items-center gap-1 shadow-xs cursor-pointer">
-            <span>View Amazon Deal</span>
-            <span>➔</span>
-          </a>
-        </div>
-      </div>
-    `).join('');
+    // 1. Scene & Camera
+    threeScene = new THREE.Scene();
+    threeCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    threeCamera.position.set(0, 0, 7.2);
+
+    // 2. WebGL Renderer with Alpha & Tone Mapping
+    try {
+      threeRenderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance'
+      });
+      threeRenderer.setSize(width, height);
+      threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+      threeRenderer.toneMappingExposure = 1.2;
+    } catch (e) {
+      console.warn('WebGL init fallback:', e);
+      return;
+    }
+
+    // 3. Studio Lighting & ARGB Accent Point Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    threeScene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(5, 8, 6);
+    threeScene.add(dirLight);
+
+    argbPointLight1 = new THREE.PointLight(0x00f2ff, 3.5, 10);
+    argbPointLight1.position.set(-2, 1.5, 1.5);
+    threeScene.add(argbPointLight1);
+
+    argbPointLight2 = new THREE.PointLight(0xbf00ff, 3.5, 10);
+    argbPointLight2.position.set(2, -1, 1.5);
+    threeScene.add(argbPointLight2);
+
+    // 4. PC Chassis & Components 3D Mesh Construction
+    pcModelGroup = new THREE.Group();
+
+    // Outer Mid-Tower PC Case (Metallic Dark Box)
+    const caseGeo = new THREE.BoxGeometry(3.2, 4.4, 2.0);
+    const caseMat = new THREE.MeshStandardMaterial({
+      color: 0x0a0e1a,
+      roughness: 0.3,
+      metalness: 0.85
+    });
+    const caseMesh = new THREE.Mesh(caseGeo, caseMat);
+    pcModelGroup.add(caseMesh);
+
+    // Tempered Glass Front/Side View Window (Physics Glass Effect)
+    const glassGeo = new THREE.BoxGeometry(3.05, 4.25, 0.05);
+    const glassMat = new THREE.MeshPhysicalMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.15,
+      roughness: 0.05,
+      metalness: 0.1,
+      transmission: 0.9,
+      ior: 1.5
+    });
+    const glassMesh = new THREE.Mesh(glassGeo, glassMat);
+    glassMesh.position.set(0, 0, 0.98);
+    pcModelGroup.add(glassMesh);
+
+    // Motherboard PCB Plate
+    const moboGeo = new THREE.BoxGeometry(2.6, 3.4, 0.1);
+    const moboMat = new THREE.MeshStandardMaterial({
+      color: 0x111827,
+      roughness: 0.6,
+      metalness: 0.4
+    });
+    const moboMesh = new THREE.Mesh(moboGeo, moboMat);
+    moboMesh.position.set(0, 0, -0.4);
+    pcModelGroup.add(moboMesh);
+
+    // CPU Cooler Liquid AIO Pump (Cylinder with Glowing ARGB Ring)
+    const coolerGeo = new THREE.CylinderGeometry(0.48, 0.48, 0.25, 32);
+    const coolerMat = new THREE.MeshStandardMaterial({
+      color: 0x1e1b4b,
+      emissive: 0x6366f1,
+      emissiveIntensity: 0.6,
+      roughness: 0.2,
+      metalness: 0.8
+    });
+    cpuCoolerMesh = new THREE.Mesh(coolerGeo, coolerMat);
+    cpuCoolerMesh.rotation.x = Math.PI / 2;
+    cpuCoolerMesh.position.set(-0.35, 0.6, -0.2);
+    pcModelGroup.add(cpuCoolerMesh);
+
+    // Dual Glowing ARGB DDR5 RAM Sticks
+    ramMeshGroup = new THREE.Group();
+    const ramGeo = new THREE.BoxGeometry(0.08, 0.9, 0.15);
+    const ramMat = new THREE.MeshStandardMaterial({
+      color: 0x00f2ff,
+      emissive: 0x00f2ff,
+      emissiveIntensity: 0.8,
+      roughness: 0.1
+    });
+    const ram1 = new THREE.Mesh(ramGeo, ramMat);
+    ram1.position.set(0.35, 0.6, -0.2);
+    const ram2 = new THREE.Mesh(ramGeo, ramMat);
+    ram2.position.set(0.5, 0.6, -0.2);
+    ramMeshGroup.add(ram1);
+    ramMeshGroup.add(ram2);
+    pcModelGroup.add(ramMeshGroup);
+
+    // NVIDIA GeForce RTX Graphics Card (GPU) with LED Backplate
+    const gpuGeo = new THREE.BoxGeometry(2.3, 0.45, 0.9);
+    const gpuMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a,
+      emissive: 0x8b5cf6,
+      emissiveIntensity: 0.5,
+      roughness: 0.3,
+      metalness: 0.9
+    });
+    gpuMesh = new THREE.Mesh(gpuGeo, gpuMat);
+    gpuMesh.position.set(-0.15, -0.45, 0.1);
+    pcModelGroup.add(gpuMesh);
+
+    // 4x Animated Rotating ARGB Cooling Fans
+    const createFan = (x, y, z, rotX = 0) => {
+      const fanGroup = new THREE.Group();
+      const ringGeo = new THREE.TorusGeometry(0.38, 0.04, 16, 32);
+      const ringMat = new THREE.MeshStandardMaterial({
+        color: 0x00f2ff,
+        emissive: 0x00f2ff,
+        emissiveIntensity: 0.9
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      fanGroup.add(ring);
+
+      const bladeGeo = new THREE.BoxGeometry(0.68, 0.08, 0.02);
+      const bladeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+      const blade1 = new THREE.Mesh(bladeGeo, bladeMat);
+      const blade2 = new THREE.Mesh(bladeGeo, bladeMat);
+      blade2.rotation.z = Math.PI / 2;
+      fanGroup.add(blade1);
+      fanGroup.add(blade2);
+
+      fanGroup.position.set(x, y, z);
+      fanGroup.rotation.x = rotX;
+      pcModelGroup.add(fanGroup);
+      fanMeshes.push({ group: fanGroup, blade1, blade2, ringMat });
+    };
+
+    // Top Radiator Fans
+    createFan(-0.6, 1.85, 0, Math.PI / 2);
+    createFan(0.6, 1.85, 0, Math.PI / 2);
+
+    // Front Intake Fans
+    createFan(1.35, 0.8, 0.2);
+    createFan(1.35, -0.5, 0.2);
+
+    threeScene.add(pcModelGroup);
+
+    // 5. Mouse Drag 360° Orbit Interaction
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      previousMouseX = e.clientX;
+      previousMouseY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - previousMouseX;
+      const deltaY = e.clientY - previousMouseY;
+
+      targetRotationY += deltaX * 0.01;
+      targetRotationX += deltaY * 0.01;
+
+      // Restrict pitch
+      targetRotationX = Math.max(-0.6, Math.min(0.6, targetRotationX));
+
+      previousMouseX = e.clientX;
+      previousMouseY = e.clientY;
+    });
+
+    // Touch support for mobile 3D interaction
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        previousMouseX = e.touches[0].clientX;
+        previousMouseY = e.touches[0].clientY;
+      }
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const deltaX = e.touches[0].clientX - previousMouseX;
+      const deltaY = e.touches[0].clientY - previousMouseY;
+
+      targetRotationY += deltaX * 0.012;
+      targetRotationX += deltaY * 0.012;
+      targetRotationX = Math.max(-0.6, Math.min(0.6, targetRotationX));
+
+      previousMouseX = e.touches[0].clientX;
+      previousMouseY = e.touches[0].clientY;
+    });
+
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    // 6. Responsive Resize Handling
+    window.addEventListener('resize', () => {
+      if (!canvas || !threeCamera || !threeRenderer) return;
+      const newW = canvas.clientWidth;
+      const newH = canvas.clientHeight;
+      threeCamera.aspect = newW / newH;
+      threeCamera.updateProjectionMatrix();
+      threeRenderer.setSize(newW, newH);
+    });
+
+    // 7. Render Animation Loop (60 FPS)
+    function animateThree() {
+      requestAnimationFrame(animateThree);
+
+      if (pcModelGroup) {
+        // Smooth Lerp Rotation
+        pcModelGroup.rotation.y += (targetRotationY - pcModelGroup.rotation.y) * 0.08;
+        pcModelGroup.rotation.x += (targetRotationX - pcModelGroup.rotation.x) * 0.08;
+
+        // Subtle Anti-Gravity idle bob
+        pcModelGroup.position.y = Math.sin(Date.now() * 0.002) * 0.08;
+      }
+
+      // Spin Fans
+      fanMeshes.forEach(f => {
+        f.blade1.rotation.z += fanRotationSpeed;
+        f.blade2.rotation.z += fanRotationSpeed;
+      });
+
+      if (threeRenderer && threeScene && threeCamera) {
+        threeRenderer.render(threeScene, threeCamera);
+      }
+    }
+
+    animateThree();
   }
 
-  if (slider && sliderVal) {
-    slider.addEventListener('input', (e) => {
-      const val = parseInt((e.target as HTMLInputElement).value, 10);
-      sliderVal.textContent = `₹${val.toLocaleString('en-IN')}`;
-      renderLaptops(val);
+  // Update Three.js ARGB Colors
+  function updateThreeARGB(colorHex) {
+    if (!argbPointLight1 || !argbPointLight2) return;
+    const color = new THREE.Color(colorHex);
+    argbPointLight1.color = color;
+    argbPointLight2.color = color;
+
+    fanMeshes.forEach(f => {
+      if (f.ringMat) {
+        f.ringMat.color = color;
+        f.ringMat.emissive = color;
+      }
     });
-    renderLaptops(55000);
+
+    if (ramMeshGroup) {
+      ramMeshGroup.children.forEach((child: any) => {
+        if (child.material) {
+          child.material.color = color;
+          child.material.emissive = color;
+        }
+      });
+    }
+  }
+
+  // Camera presets helper for Three.js
+  function setThreeCameraAngle(angle) {
+    if (angle === 'hero') { targetRotationX = 0.1; targetRotationY = -0.15; }
+    if (angle === 'flat') { targetRotationX = 0.0; targetRotationY = 0.0; }
+    if (angle === 'side') { targetRotationX = 0.08; targetRotationY = -0.55; }
+  }
+
+  // Connect Camera Angle Buttons to Three.js
+  document.querySelectorAll('.cam-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cam = btn.getAttribute('data-cam');
+      setThreeCameraAngle(cam);
+    });
+  });
+
+  // Connect Color Buttons to Three.js
+  document.querySelectorAll('[data-rgb]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const color = btn.getAttribute('data-rgb');
+      if (color === 'cyan') updateThreeARGB(0x00f2ff);
+      if (color === 'purple') updateThreeARGB(0xbf00ff);
+      if (color === 'emerald') updateThreeARGB(0x10b981);
+      if (color === 'amber') updateThreeARGB(0xf59e0b);
+      if (color === 'rose') updateThreeARGB(0xf43f5e);
+    });
+  });
+
+  // Connect Reset Button to Three.js
+  const resetThreeBtn = document.getElementById('btn-reset-rig');
+  if (resetThreeBtn) {
+    resetThreeBtn.addEventListener('click', () => {
+      targetRotationX = 0.1;
+      targetRotationY = -0.15;
+    });
   }
 
   // Initial load
+  initThreeEngine();
   renderPartCards('cpu');
   updateVisualizerAndStats();
 </script>
