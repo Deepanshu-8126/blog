@@ -1,0 +1,36 @@
+name: Daily Viral Pipeline
+
+on:
+  schedule:
+    - cron: '30 0 * * *'    # 6:00 AM IST daily (00:30 UTC)
+    - cron: '30 6 * * *'    # 12:00 PM IST (viral check)
+    - cron: '30 12 * * *'   # 6:00 PM IST
+  workflow_dispatch:        # Manual trigger from GitHub UI
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROK_API_KEY: ${{ secrets.GROK_API_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          POSTS_PER_NICHE: "3"
+        run: |
+          python pipeline.py

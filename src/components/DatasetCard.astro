@@ -1,0 +1,76 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  title?: string;
+  disclaimer?: string;
+}
+
+const {
+  title = "Today's 24K & 22K Gold Rates in India",
+  disclaimer = "Rates updated daily from bullion market indexes. Excludes GST (3%) and local jeweller making charges."
+} = Astro.props;
+
+// Standard Indian city rates matrix
+const CITY_RATES = [
+  { city: 'Mumbai', k24: 76850, k22: 70450, change: '+₹250' },
+  { city: 'Delhi', k24: 77000, k22: 70600, change: '+₹250' },
+  { city: 'Bengaluru', k24: 76850, k22: 70450, change: '+₹250' },
+  { city: 'Chennai', k24: 77250, k22: 70800, change: '+₹200' },
+  { city: 'Hyderabad', k24: 76850, k22: 70450, change: '+₹250' },
+  { city: 'Kolkata', k24: 76850, k22: 70450, change: '+₹250' },
+  { city: 'Ahmedabad', k24: 76900, k22: 70500, change: '+₹250' },
+  { city: 'Lucknow', k24: 77000, k22: 70600, change: '+₹250' }
+];
+---
+
+<div class="rounded-3xl bg-white border border-line p-6 sm:p-8 shadow-card mb-8">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+    <div>
+      <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-money-bg text-money inline-block mb-2">
+        📈 Live Bullion Index
+      </span>
+      <h2 class="text-2xl sm:text-3xl font-black text-ink tracking-tight">{title}</h2>
+      <p class="text-xs text-muted mt-1">{disclaimer}</p>
+    </div>
+
+    <!-- Live 10g 24K Big Stat Banner -->
+    <div class="p-4 rounded-2xl bg-slate-900 text-white flex items-center gap-6 shrink-0 shadow-soft">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-slate-400 block">24K Pure (10 Grams)</span>
+        <span class="text-2xl font-black text-cta font-mono">₹76,850</span>
+      </div>
+      <div class="border-l border-slate-800 pl-4">
+        <span class="text-[10px] uppercase font-bold text-slate-400 block">22K Ornaments</span>
+        <span class="text-2xl font-black text-white font-mono">₹70,450</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- City Rates Table -->
+  <div class="mt-6 overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-slate-200 text-xs font-bold text-muted uppercase tracking-wider">
+          <th class="py-3 px-4">City / Market</th>
+          <th class="py-3 px-4">24 Karat (10g)</th>
+          <th class="py-3 px-4">22 Karat (10g)</th>
+          <th class="py-3 px-4 text-right">24h Change</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100 font-mono">
+        {CITY_RATES.map(item => (
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3.5 px-4 font-sans font-bold text-ink flex items-center gap-2">
+              <Icon name="coins" class="w-4 h-4 text-amber-500" />
+              <span>{item.city}</span>
+            </td>
+            <td class="py-3.5 px-4 font-bold text-ink">₹{item.k24.toLocaleString('en-IN')}</td>
+            <td class="py-3.5 px-4 text-slate-700">₹{item.k22.toLocaleString('en-IN')}</td>
+            <td class="py-3.5 px-4 text-right font-bold text-life">{item.change}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>

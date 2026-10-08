@@ -1,0 +1,82 @@
+---
+import { getNiches, type Niche } from '../lib/db';
+import Icon from './Icon.astro';
+
+const niches = await getNiches();
+
+// Group niches by grp (Tech | Money | Lifestyle | Entertainment)
+const groups = ['Tech', 'Money', 'Lifestyle', 'Entertainment'];
+const nichesByGroup: Record<string, Niche[]> = {};
+
+groups.forEach(g => {
+  nichesByGroup[g] = niches.filter(n => n.grp.toLowerCase() === g.toLowerCase());
+});
+
+const groupColors: Record<string, { chip: string; bg: string; text: string }> = {
+  Tech: { chip: 'bg-tech-bg text-tech', bg: 'hover:bg-blue-50/60', text: 'text-blue-600' },
+  Money: { chip: 'bg-money-bg text-money', bg: 'hover:bg-amber-50/60', text: 'text-amber-600' },
+  Lifestyle: { chip: 'bg-life-bg text-life', bg: 'hover:bg-emerald-50/60', text: 'text-emerald-600' },
+  Entertainment: { chip: 'bg-ent-bg text-ent', bg: 'hover:bg-pink-50/60', text: 'text-pink-600' }
+};
+---
+
+<div id="megamenu-panel" class="hidden absolute top-full left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-line shadow-2xl transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {groups.map(grp => {
+        const items = nichesByGroup[grp] || [];
+        const color = groupColors[grp] || groupColors.Tech;
+        return (
+          <div class="flex flex-col">
+            <div class="flex items-center gap-2 pb-3 mb-3 border-b border-slate-100">
+              <span class={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${color.chip}`}>
+                {grp}
+              </span>
+              <span class="text-xs text-muted font-medium">({items.length} Hubs)</span>
+            </div>
+            
+            <div class="flex flex-col gap-1">
+              {items.map(n => (
+                <a
+                  href={`/${n.slug}`}
+                  class={`group flex items-start gap-3 p-2.5 rounded-xl transition-all ${color.bg}`}
+                >
+                  <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center text-slate-700 group-hover:bg-white group-hover:shadow-xs transition shrink-0">
+                    <Icon name={n.icon || 'sparkles'} class="w-4 h-4" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm font-bold text-ink group-hover:text-brand transition truncate">
+                        {n.name}
+                      </span>
+                      {n.is_new && (
+                        <span class="px-1.5 py-0.2 rounded text-[10px] font-black uppercase tracking-tighter bg-breaking text-white">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+                    <p class="text-xs text-muted truncate mt-0.5">
+                      {n.tagline || `${n.name} intelligence & updates`}
+                    </p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- MegaMenu Footer Strip -->
+    <div class="mt-8 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-life animate-pulse"></span>
+        <span>All 12 hubs dynamically updated daily from Google Trends & verified databases.</span>
+      </div>
+      <a href="/#explore-all" class="font-bold text-brand hover:text-brand-dark flex items-center gap-1 group">
+        Explore Complete Directory 
+        <Icon name="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
+      </a>
+    </div>
+  </div>
+</div>

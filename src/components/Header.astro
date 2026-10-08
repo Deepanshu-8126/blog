@@ -1,0 +1,192 @@
+---
+import { getNiches } from '../lib/db';
+import MegaMenu from './MegaMenu.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  activeNiche?: string;
+  activeGroup?: string;
+}
+
+const { activeNiche } = Astro.props;
+const niches = await getNiches();
+const pinnedNiches = niches.filter(n => n.pin).slice(0, 5);
+---
+
+<header class="sticky top-0 z-40 w-full bg-brand text-white shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-6">
+        <a href="/" class="flex items-center gap-2 group">
+          <div class="w-9 h-9 rounded-xl bg-cta text-cta-ink font-black flex items-center justify-center text-lg shadow-sm group-hover:scale-105 transition">
+            UD
+          </div>
+          <div class="flex flex-col">
+            <span class="font-extrabold text-lg tracking-tight leading-none text-white">UniqueDigit</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-purple-200">Viral Hub & Intel</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation: Pinned Niches + More Button -->
+        <nav class="hidden md:flex items-center gap-1">
+          <a
+            href="/"
+            class={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${!activeNiche ? 'bg-brand-dark text-white' : 'text-purple-100 hover:bg-brand-dark/50'}`}
+          >
+            Home
+          </a>
+          {pinnedNiches.map(n => (
+            <a
+              href={`/${n.slug}`}
+              class={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${activeNiche === n.slug ? 'bg-brand-dark text-white' : 'text-purple-100 hover:bg-brand-dark/50'}`}
+            >
+              <Icon name={n.icon} class="w-3.5 h-3.5 text-cta" />
+              <span>{n.name}</span>
+              {n.is_new && (
+                <span class="px-1 py-0.2 rounded text-[9px] font-black uppercase bg-breaking text-white">
+                  HOT
+                </span>
+              )}
+            </a>
+          ))}
+
+          <!-- Mega Menu Trigger Button -->
+          <button
+            id="megamenu-toggle-btn"
+            type="button"
+            class="px-3 py-1.5 rounded-lg text-xs font-bold text-purple-100 hover:bg-brand-dark/50 transition flex items-center gap-1 cursor-pointer"
+            aria-expanded="false"
+          >
+            <span>More Hubs</span>
+            <Icon name="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200" id="megamenu-arrow" />
+          </button>
+        </nav>
+      </div>
+
+      <!-- Right Action Tools -->
+      <div class="flex items-center gap-2">
+        <a
+          href="/search"
+          class="p-2 rounded-lg text-purple-100 hover:bg-brand-dark/50 hover:text-white transition cursor-pointer"
+          title="Search all topics"
+        >
+          <Icon name="search" class="w-4 h-4" />
+        </a>
+
+        <a
+          href="/deals"
+          class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cta text-cta-ink text-xs font-extrabold shadow-sm hover:brightness-105 transition"
+        >
+          <Icon name="tag" class="w-3.5 h-3.5" />
+          <span>Loot Deals</span>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button
+          id="mobile-menu-btn"
+          type="button"
+          class="md:hidden p-2 rounded-lg text-purple-100 hover:bg-brand-dark/50 transition cursor-pointer"
+          aria-label="Open Mobile Menu"
+        >
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mega Menu Dropdown -->
+  <MegaMenu />
+
+  <!-- Mobile Drawer / Sheet Accordion -->
+  <div id="mobile-sheet" class="hidden md:hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm">
+    <div class="fixed inset-y-0 right-0 max-w-xs w-full bg-white text-ink p-6 shadow-2xl overflow-y-auto flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <span class="font-extrabold text-base text-brand">All 12 Hubs</span>
+          <button id="close-mobile-sheet" class="p-1 rounded-lg text-muted hover:text-ink cursor-pointer">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="py-4 flex flex-col gap-2">
+          <a href="/" class="p-2.5 rounded-xl font-bold text-sm hover:bg-slate-50 flex items-center gap-2">
+            🏠 Home
+          </a>
+          {niches.map(n => (
+            <a
+              href={`/${n.slug}`}
+              class="p-2.5 rounded-xl font-medium text-sm hover:bg-slate-50 flex items-center justify-between text-slate-800"
+            >
+              <div class="flex items-center gap-2.5">
+                <Icon name={n.icon} class="w-4 h-4 text-brand" />
+                <span class="font-bold">{n.name}</span>
+              </div>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase bg-slate-100 text-slate-600">
+                {n.grp}
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-100">
+        <a href="/deals" class="w-full py-2.5 rounded-xl bg-cta text-cta-ink font-bold text-xs flex items-center justify-center gap-2">
+          <Icon name="tag" class="w-4 h-4" />
+          Browse Today's Loot Deals
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  // MegaMenu interactive click toggle
+  const toggleBtn = document.getElementById('megamenu-toggle-btn');
+  const panel = document.getElementById('megamenu-panel');
+  const arrow = document.getElementById('megamenu-arrow');
+  const mobileBtn = document.getElementById('mobile-menu-btn');
+  const mobileSheet = document.getElementById('mobile-sheet');
+  const closeMobileSheet = document.getElementById('close-mobile-sheet');
+
+  if (toggleBtn && panel && arrow) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = !panel.classList.contains('hidden');
+      if (isOpen) {
+        panel.classList.add('hidden');
+        arrow.classList.remove('rotate-180');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        panel.classList.remove('hidden');
+        arrow.classList.add('rotate-180');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target as Node) && !toggleBtn.contains(e.target as Node)) {
+        panel.classList.add('hidden');
+        arrow.classList.remove('rotate-180');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  if (mobileBtn && mobileSheet && closeMobileSheet) {
+    mobileBtn.addEventListener('click', () => {
+      mobileSheet.classList.remove('hidden');
+    });
+    closeMobileSheet.addEventListener('click', () => {
+      mobileSheet.classList.add('hidden');
+    });
+    mobileSheet.addEventListener('click', (e) => {
+      if (e.target === mobileSheet) mobileSheet.classList.add('hidden');
+    });
+  }
+</script>

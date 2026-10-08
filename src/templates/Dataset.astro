@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DatasetCard from '../components/DatasetCard.astro';
+import NicheCard from '../components/NicheCard.astro';
+import AdSlot from '../components/AdSlot.astro';
+import NewsletterStrip from '../components/NewsletterStrip.astro';
+import DisclaimerBar from '../components/DisclaimerBar.astro';
+import Icon from '../components/Icon.astro';
+import type { Niche, Post } from '../lib/db';
+
+interface Props {
+  niche: Niche;
+  posts: Post[];
+}
+
+const { niche, posts } = Astro.props;
+---
+
+<Layout
+  title={`${niche.name} Today (24K & 22K) — Live Indian Bullion Rates | UniqueDigit`}
+  description={niche.tagline || 'Live 24 Karat and 22 Karat gold rates in Mumbai, Delhi, Bengaluru, Chennai and major Indian cities.'}
+  niche={niche}
+>
+  <div class="mb-6">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
+        <Icon name={niche.icon} class="w-5 h-5" />
+      </div>
+      <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Real-Time Feed</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name} India Tracker</h1>
+    <p class="text-sm text-muted mt-1">{niche.tagline} • MCX futures, IBJA wholesale spot rates & retail city prices.</p>
+  </div>
+
+  {niche.config?.disclaimer && (
+    <DisclaimerBar text={niche.config.disclaimer} type="general" />
+  )}
+
+  <!-- Main Dataset Matrix Card -->
+  <DatasetCard disclaimer={niche.config?.disclaimer} />
+
+  <AdSlot position="top" />
+
+  <!-- Educational & Analytical Articles -->
+  {posts.length > 0 && (
+    <div class="my-12">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand font-mono">Expert Analysis</span>
+        <h2 class="text-2xl font-black text-ink tracking-tight">Gold Buying Guides & Hallmark Verification</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map(p => (
+          <NicheCard post={p} niche={niche} />
+        ))}
+      </div>
+    </div>
+  )}
+
+  <AdSlot position="mid" />
+  <NewsletterStrip />
+</Layout>

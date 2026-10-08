@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+---
+
+<Layout title="404 — Page Not Found | UniqueDigit" description="The requested topic or hub page does not exist.">
+  <div class="max-w-xl mx-auto py-20 text-center">
+    <div class="w-16 h-16 rounded-3xl bg-brand/10 text-brand flex items-center justify-center mx-auto mb-6">
+      <Icon name="rocket" class="w-8 h-8" />
+    </div>
+    <span class="text-xs font-mono font-bold uppercase tracking-widest text-muted">Error 404</span>
+    <h1 class="text-3xl sm:text-4xl font-black text-ink mt-1 mb-3">Topic or Hub Not Found</h1>
+    <p class="text-sm text-muted leading-relaxed mb-8">
+      The requested link might have been updated or moved. Check out our latest trending intelligence or return home.
+    </p>
+    <div class="flex items-center justify-center gap-4">
+      <a href="/" class="px-6 py-3 rounded-xl bg-brand text-white text-xs font-bold shadow-md hover:bg-brand-dark transition">
+        Back to Homepage
+      </a>
+      <a href="/deals" class="px-6 py-3 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold hover:bg-slate-200 transition">
+        Browse Deals
+      </a>
+    </div>
+  </div>
+</Layout>

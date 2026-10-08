@@ -1,0 +1,33 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  text?: string;
+  type?: 'health' | 'affiliate' | 'general';
+}
+
+const {
+  text,
+  type = 'general'
+} = Astro.props;
+
+if (!text) return null;
+
+const styles: Record<string, { bg: string; border: string; text: string; icon: string }> = {
+  health: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-900', icon: 'heart' },
+  affiliate: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-900', icon: 'tag' },
+  general: { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-700', icon: 'shield-check' }
+};
+
+const s = styles[type] || styles.general;
+---
+
+<div class={`w-full p-4 rounded-2xl ${s.bg} border ${s.border} ${s.text} text-xs leading-relaxed my-4 flex items-start gap-3 shadow-2xs`}>
+  <div class="mt-0.5 shrink-0">
+    <Icon name={s.icon} class="w-4 h-4" />
+  </div>
+  <div>
+    <span class="font-bold uppercase tracking-wider text-[10px] block mb-0.5">Editorial Disclaimer:</span>
+    <p>{text}</p>
+  </div>
+</div>

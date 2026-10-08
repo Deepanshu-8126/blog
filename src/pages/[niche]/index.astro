@@ -1,0 +1,39 @@
+---
+import { getNiches, getNicheBySlug, getPostsByNiche, getTrendingPosts, getProductsByNiche } from '../../lib/db';
+import Feed from '../../templates/Feed.astro';
+import Tools from '../../templates/Tools.astro';
+import Dataset from '../../templates/Dataset.astro';
+import Movies from '../../templates/Movies.astro';
+
+const { niche: nicheSlug } = Astro.params;
+if (!nicheSlug) {
+  return Astro.redirect('/404');
+}
+
+const niche = await getNicheBySlug(nicheSlug);
+if (!niche) {
+  return Astro.redirect('/404');
+}
+
+const [posts, trendingPosts, products] = await Promise.all([
+  getPostsByNiche(niche.id, 16),
+  getTrendingPosts(5),
+  getProductsByNiche(niche.id)
+]);
+---
+
+{niche.page_type === 'feed' && (
+  <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} />
+)}
+
+{niche.page_type === 'tools' && (
+  <Tools niche={niche} products={products} posts={posts} />
+)}
+
+{niche.page_type === 'dataset' && (
+  <Dataset niche={niche} posts={posts} />
+)}
+
+{niche.page_type === 'movies' && (
+  <Movies niche={niche} posts={posts} />
+)}

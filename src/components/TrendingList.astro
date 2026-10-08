@@ -1,0 +1,47 @@
+---
+import type { Post } from '../lib/db';
+import Icon from './Icon.astro';
+
+interface Props {
+  posts: Post[];
+  title?: string;
+}
+
+const { posts = [], title = "Trending Now (Top 05)" } = Astro.props;
+---
+
+<div class="rounded-3xl bg-white border border-line p-6 shadow-card">
+  <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-breaking animate-pulse"></span>
+      <h3 class="font-extrabold text-base text-ink tracking-tight">{title}</h3>
+    </div>
+    <span class="text-xs font-mono font-bold text-muted uppercase">24h Score</span>
+  </div>
+
+  <div class="flex flex-col divide-y divide-slate-100">
+    {posts.slice(0, 5).map((post, idx) => {
+      const rank = String(idx + 1).padStart(2, '0');
+      const slug = post.niches?.slug || 'viral';
+      return (
+        <a href={`/${slug}/${post.slug}`} class="group py-3.5 flex items-start gap-4 transition hover:bg-slate-50/70 rounded-xl px-2">
+          <span class="font-black text-xl font-mono text-slate-300 group-hover:text-brand transition w-7 shrink-0">
+            {rank}
+          </span>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-bold text-sm text-ink group-hover:text-brand transition leading-snug line-clamp-2">
+              {post.title}
+            </h4>
+            <div class="flex items-center gap-2 mt-1.5 text-[11px] text-muted">
+              <span class="px-1.5 py-0.2 rounded font-bold uppercase bg-slate-100 text-slate-700">
+                {post.niches?.name || 'Viral'}
+              </span>
+              <span>•</span>
+              <span class="font-mono">+{post.trend_score} interest</span>
+            </div>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+</div>

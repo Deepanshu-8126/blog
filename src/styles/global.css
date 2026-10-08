@@ -1,0 +1,94 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  :root {
+    --brand: #5B2FD0;
+    --brand-dark: #3E1FA0;
+    --brand-soft: #EFEAFD;
+    --ink: #111827;
+    --muted: #6B7280;
+    --bg: #F6F5FB;
+    --card: #FFFFFF;
+    --line: #E8E6F0;
+    --breaking: #E11D2E;
+    --cta: #FFD21F;
+    --cta-ink: #1A1A1A;
+    
+    /* Niche group colors */
+    --tech: #2F80ED;
+    --tech-bg: #DCEFFB;
+    --money: #D99A00;
+    --money-bg: #FFF1CC;
+    --life: #1FA971;
+    --life-bg: #DDF5E7;
+    --ent: #E0348B;
+    --ent-bg: #FDE1EE;
+    
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  .dark {
+    --bg: #0F0D1A;
+    --card: #181528;
+    --ink: #F3F2FA;
+    --muted: #A4A0BC;
+    --line: #2A2644;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom scrollbars and transitions */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink);
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink);
+}
+
+.prose p {
+  margin-bottom: 1.25rem;
+  line-height: 1.75;
+  color: #374151;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.prose strong {
+  font-weight: 700;
+  color: var(--ink);
+}

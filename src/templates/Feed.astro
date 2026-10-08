@@ -1,0 +1,90 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NicheCard from '../components/NicheCard.astro';
+import TrendingList from '../components/TrendingList.astro';
+import AdSlot from '../components/AdSlot.astro';
+import DisclaimerBar from '../components/DisclaimerBar.astro';
+import NewsletterStrip from '../components/NewsletterStrip.astro';
+import Icon from '../components/Icon.astro';
+import type { Niche, Post } from '../lib/db';
+
+interface Props {
+  niche: Niche;
+  posts: Post[];
+  trendingPosts: Post[];
+}
+
+const { niche, posts, trendingPosts } = Astro.props;
+const heroPost = posts[0];
+const remainingPosts = posts.slice(1);
+---
+
+<Layout
+  title={`${niche.name} — ${niche.tagline || 'Daily Updates'} | UniqueDigit`}
+  description={niche.tagline || `Latest ${niche.name} insights, real-time guides, and viral updates in India.`}
+  niche={niche}
+>
+  <!-- Niche Header Banner -->
+  <div class="mb-8 pb-6 border-b border-line flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
+          <Icon name={niche.icon} class="w-5 h-5" />
+        </div>
+        <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Hub</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name}</h1>
+      <p class="text-sm text-muted mt-1">{niche.tagline}</p>
+    </div>
+
+    {niche.config?.review && (
+      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shrink-0 shadow-2xs">
+        <Icon name="shield-check" class="w-4 h-4 text-amber-600" />
+        <span>Editorial Fact-Checked & Peer Reviewed</span>
+      </span>
+    )}
+  </div>
+
+  {niche.config?.disclaimer && (
+    <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />
+  )}
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Main Feed Column -->
+    <div class="lg:col-span-8">
+      {heroPost ? (
+        <div class="mb-8">
+          <NicheCard post={heroPost} niche={niche} />
+        </div>
+      ) : null}
+
+      <AdSlot position="top" />
+
+      {remainingPosts.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {remainingPosts.map(p => (
+            <NicheCard post={p} niche={niche} />
+          ))}
+        </div>
+      ) : (
+        <div class="p-12 text-center bg-white rounded-3xl border border-line my-6">
+          <Icon name="sparkles" class="w-8 h-8 text-brand mx-auto mb-3" />
+          <h3 class="text-base font-bold text-ink">New articles are currently being generated</h3>
+          <p class="text-xs text-muted mt-1">Our daily pipeline fetches fresh trends for {niche.name} every morning.</p>
+        </div>
+      )}
+
+      <AdSlot position="mid" />
+    </div>
+
+    <!-- Sidebar Column -->
+    <div class="lg:col-span-4 flex flex-col gap-6">
+      <TrendingList posts={trendingPosts} title="Trending Right Now" />
+      <AdSlot position="sidebar" />
+    </div>
+
+  </div>
+
+  <NewsletterStrip />
+</Layout>

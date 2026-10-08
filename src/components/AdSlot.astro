@@ -1,0 +1,24 @@
+---
+interface Props {
+  position?: 'top' | 'mid' | 'sidebar' | 'footer';
+  class?: string;
+}
+
+const { position = 'mid', class: className = '' } = Astro.props;
+
+const heights: Record<string, string> = {
+  top: 'min-h-[100px] sm:min-h-[120px]',
+  mid: 'min-h-[250px] sm:min-h-[280px]',
+  sidebar: 'min-h-[300px]',
+  footer: 'min-h-[90px]'
+};
+---
+
+<div class={`w-full my-6 flex flex-col items-center justify-center rounded-2xl bg-slate-50 border border-dashed border-slate-300 p-4 text-center overflow-hidden ${heights[position] || 'min-h-[120px]'} ${className}`}>
+  <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 font-mono">
+    ADVERTISEMENT
+  </span>
+  <div class="text-xs text-slate-400 flex items-center gap-2">
+    <span>Sponsored Partner Slot</span>
+  </div>
+</div>

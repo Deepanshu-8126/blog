@@ -1,0 +1,30 @@
+---
+import type { Post } from '../lib/db';
+import Icon from './Icon.astro';
+
+interface Props {
+  posts?: Post[];
+}
+
+const { posts = [] } = Astro.props;
+const breakingPosts = posts.filter(p => p.is_breaking);
+if (breakingPosts.length === 0) return null;
+---
+
+<div class="w-full bg-breaking/10 border border-breaking/20 rounded-2xl p-2.5 sm:p-3 mb-6 flex items-center gap-3 overflow-hidden shadow-xs">
+  <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-breaking text-white text-[11px] font-black uppercase tracking-wider shrink-0 shadow-xs">
+    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+    <span>BREAKING</span>
+  </div>
+  
+  <div class="flex-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+    <div class="inline-flex items-center gap-6 text-xs font-bold text-ink">
+      {breakingPosts.map(p => (
+        <a href={`/${p.niches?.slug || 'viral'}/${p.slug}`} class="hover:text-breaking hover:underline transition flex items-center gap-2">
+          <span>{p.title}</span>
+          <span class="text-muted font-normal">• {p.trend_score}+ interest</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</div>

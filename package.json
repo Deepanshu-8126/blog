@@ -1,0 +1,25 @@
+{
+  "name": "uniquedigit-viral-hub",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "node ./node_modules/astro/astro.js dev",
+    "start": "node ./node_modules/astro/astro.js dev",
+    "build": "node ./node_modules/astro/astro.js build",
+    "check": "node ./node_modules/@astrojs/check/dist/index.js",
+    "preview": "node ./node_modules/astro/astro.js preview"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^12.2.0",
+    "@astrojs/tailwind": "^6.0.0",
+    "@supabase/supabase-js": "^2.49.1",
+    "astro": "^5.4.2",
+    "clsx": "^2.1.1",
+    "lucide": "^1.52.0",
+    "marked": "^15.0.7",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  }
+}

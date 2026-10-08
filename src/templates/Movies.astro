@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MovieCard from '../components/MovieCard.astro';
+import NicheCard from '../components/NicheCard.astro';
+import AdSlot from '../components/AdSlot.astro';
+import NewsletterStrip from '../components/NewsletterStrip.astro';
+import Icon from '../components/Icon.astro';
+import type { Niche, Post } from '../lib/db';
+
+interface Props {
+  niche: Niche;
+  posts: Post[];
+}
+
+const { niche, posts } = Astro.props;
+
+// Mock TMDB trending movies if not yet loaded from pipeline
+const TMDB_SAMPLE_MOVIES = [
+  {
+    title: 'Dune: Part Two',
+    posterUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80',
+    releaseDate: 'Available on OTT',
+    overview: 'Paul Atreides unites with Chani and the Fremen while seeking revenge against conspirators.',
+    ottPlatform: 'JioCinema / Prime'
+  },
+  {
+    title: 'Oppenheimer',
+    posterUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=80',
+    releaseDate: 'Streaming Now',
+    overview: 'The story of American scientist J. Robert Oppenheimer and his role in the Manhattan Project.',
+    ottPlatform: 'JioCinema'
+  },
+  {
+    title: 'Kalki 2898 AD',
+    posterUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=600&q=80',
+    releaseDate: 'Blockbuster Hit',
+    overview: 'A modern avatar of Hindu god Vishnu descends to earth to protect the world from evil forces.',
+    ottPlatform: 'Netflix / Prime'
+  },
+  {
+    title: 'Stree 2: Sarkate Ka Aatank',
+    posterUrl: 'https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=600&q=80',
+    releaseDate: 'Record Breaker',
+    overview: 'The town of Chanderi is haunted by a headless entity known as Sarkata.',
+    ottPlatform: 'Prime Video'
+  }
+];
+---
+
+<Layout
+  title={`${niche.name} — Reviews, OTT Releases & Box Office Intel | UniqueDigit`}
+  description={niche.tagline || 'Latest Bollywood, Hollywood and South cinema releases, honest reviews, and streaming guides.'}
+  niche={niche}
+>
+  <div class="mb-8 pb-6 border-b border-line">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
+        <Icon name={niche.icon} class="w-5 h-5" />
+      </div>
+      <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Hub</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name} & OTT Radar</h1>
+    <p class="text-sm text-muted mt-1">{niche.tagline} • Trending theatrical runs, OTT release dates, and verified reviews.</p>
+  </div>
+
+  <!-- TMDB Trending Posters Row -->
+  <div class="mb-12">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-extrabold text-ink flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-ent"></span>
+        <span>Now Trending on OTT & Theatres</span>
+      </h2>
+      <span class="text-xs text-muted font-mono">TMDB Verified</span>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      {TMDB_SAMPLE_MOVIES.map(movie => (
+        <MovieCard {...movie} />
+      ))}
+    </div>
+  </div>
+
+  <AdSlot position="top" />
+
+  <!-- Editorial Articles & Film Teardowns -->
+  {posts.length > 0 && (
+    <div class="my-12">
+      <div class="mb-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-brand font-mono">Editorial Breakdown</span>
+        <h2 class="text-2xl font-black text-ink tracking-tight">Latest Movie Reviews & Streaming Breakdowns</h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map(p => (
+          <NicheCard post={p} niche={niche} />
+        ))}
+      </div>
+    </div>
+  )}
+
+  <AdSlot position="mid" />
+  <NewsletterStrip />
+</Layout>

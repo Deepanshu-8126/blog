@@ -1,0 +1,87 @@
+---
+import type { Post } from '../lib/db';
+import Icon from './Icon.astro';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+if (!post) return null;
+
+const nicheSlug = post.niches?.slug || 'viral';
+const nicheName = post.niches?.name || 'Trending';
+---
+
+<div class="relative w-full rounded-3xl bg-white border border-line shadow-card overflow-hidden transition-all duration-300 hover:shadow-soft mb-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+    
+    <!-- Image Box -->
+    <div class="lg:col-span-7 relative min-h-[260px] sm:min-h-[340px] bg-slate-900 overflow-hidden">
+      <img
+        src={post.image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'}
+        alt={post.title}
+        loading="eager"
+        class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+      
+      <div class="absolute top-4 left-4 flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand text-white shadow-md">
+          {nicheName}
+        </span>
+        {post.trend_score > 0 && (
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-cta text-cta-ink shadow-md flex items-center gap-1 font-mono">
+            🔥 +{post.trend_score}k Trend
+          </span>
+        )}
+      </div>
+
+      {post.image_credit && (
+        <span class="absolute bottom-3 right-4 text-[10px] text-white/70 bg-black/40 px-2 py-0.5 rounded backdrop-blur-xs">
+          Source: {post.image_credit}
+        </span>
+      )}
+    </div>
+
+    <!-- Content Box -->
+    <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-white">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-muted mb-3">
+          <span>{new Date(post.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          <span>•</span>
+          <span>4 min read</span>
+          {post.views ? <span>• {post.views.toLocaleString()} reads</span> : null}
+        </div>
+
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-ink leading-tight tracking-tight mb-3 hover:text-brand transition">
+          <a href={`/${nicheSlug}/${post.slug}`}>
+            {post.title}
+          </a>
+        </h1>
+
+        <p class="text-sm text-muted leading-relaxed line-clamp-3 mb-6">
+          {post.summary}
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100">
+        <a
+          href={`/${nicheSlug}/${post.slug}`}
+          class="px-5 py-2.5 rounded-xl bg-brand hover:bg-brand-dark text-white font-bold text-xs shadow-md transition flex items-center gap-1.5"
+        >
+          <span>Read Full Intelligence</span>
+          <Icon name="arrow-right" class="w-3.5 h-3.5" />
+        </a>
+        
+        <a
+          href={`/${nicheSlug}`}
+          class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs transition"
+        >
+          Explore {nicheName}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>

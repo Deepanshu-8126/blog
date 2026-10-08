@@ -1,0 +1,101 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import NicheCard from '../components/NicheCard.astro';
+import AdSlot from '../components/AdSlot.astro';
+import NewsletterStrip from '../components/NewsletterStrip.astro';
+import Icon from '../components/Icon.astro';
+import type { Niche, Product, Post } from '../lib/db';
+
+interface Props {
+  niche: Niche;
+  products: Product[];
+  posts: Post[];
+}
+
+const { niche, products, posts } = Astro.props;
+
+// Extract categories for sidebar filters
+const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[];
+---
+
+<Layout
+  title={`${niche.name} Directory & Buying Guides | UniqueDigit`}
+  description={niche.tagline || `Discover top verified ${niche.name} tools, specifications, price comparisons, and buying guides in India.`}
+  niche={niche}
+>
+  <!-- Niche Header Banner -->
+  <div class="mb-8 pb-6 border-b border-line">
+    <div class="flex items-center gap-2 mb-2">
+      <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
+        <Icon name={niche.icon} class="w-5 h-5" />
+      </div>
+      <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Directory</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name}</h1>
+    <p class="text-sm text-muted mt-1">{niche.tagline} • Verified specs, Indian pricing, and zero-clutter links.</p>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="mb-8 p-4 rounded-2xl bg-white border border-line shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="relative w-full sm:max-w-md">
+      <input
+        type="text"
+        id="tool-search-input"
+        placeholder={`Search ${niche.name}...`}
+        class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-brand"
+      />
+      <div class="absolute left-3.5 top-3 text-muted pointer-events-none">
+        <Icon name="search" class="w-4 h-4" />
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto">
+      <button class="px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold shrink-0 cursor-pointer">
+        All Items ({products.length})
+      </button>
+      {categories.map(cat => (
+        <button class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold shrink-0 transition cursor-pointer">
+          {cat}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Product & Tool Grid -->
+  {products.length > 0 ? (
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+      {products.map(pr => (
+        <ToolCard product={pr} />
+      ))}
+    </div>
+  ) : (
+    <div class="p-12 text-center bg-white rounded-3xl border border-line my-6">
+      <Icon name="tag" class="w-8 h-8 text-brand mx-auto mb-3" />
+      <h3 class="text-base font-bold text-ink">Catalog updating</h3>
+      <p class="text-xs text-muted mt-1">Live verified products & deals for {niche.name} are being synced from database.</p>
+    </div>
+  )}
+
+  <AdSlot position="mid" />
+
+  <!-- Related Guides Section -->
+  {posts.length > 0 && (
+    <div class="mt-12 pt-8 border-t border-line">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-brand font-mono">In-Depth Testing</span>
+          <h2 class="text-2xl font-black text-ink tracking-tight">{niche.name} Buying Guides & Benchmarks</h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map(p => (
+          <NicheCard post={p} niche={niche} />
+        ))}
+      </div>
+    </div>
+  )}
+
+  <NewsletterStrip />
+</Layout>

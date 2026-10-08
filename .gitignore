@@ -1,0 +1,25 @@
+# Backup Folder
+_backup/
+images_refernce_idea/
+lm/
+
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# Production Build
+dist/
+.astro/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
