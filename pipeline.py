@@ -253,10 +253,10 @@ def process_niche(n):
         # Insert post into Cloudflare D1
         d1_query(
             """INSERT OR REPLACE INTO posts 
-               (id, niche_id, topic_id, slug, title, summary, body_md, faq, tags, image_url, image_credit, source_url, trend_score, status)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               (id, niche_id, category, topic_id, slug, title, summary, body_md, faq, tags, image_url, image_credit, source_url, trend_score, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [
-                post_id, n["id"], topic_id, post_slug,
+                post_id, n["id"], n["slug"], topic_id, post_slug,
                 a.get("title", t), a.get("summary", "")[:200], a.get("body_md", ""),
                 json.dumps(a.get("faq", [])), json.dumps(a.get("tags", [])),
                 image, credit, src, c["score"],

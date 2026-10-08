@@ -26,6 +26,7 @@ export interface Niche {
 export interface Post {
   id: string;
   niche_id: string;
+  category?: string;
   slug: string;
   title: string;
   summary: string;

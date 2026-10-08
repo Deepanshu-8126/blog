@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS topics (
 CREATE TABLE IF NOT EXISTS posts (
   id TEXT PRIMARY KEY,
   niche_id TEXT NOT NULL,
+  category TEXT NOT NULL,                -- gaming, health, movies, deals, tech, etc.
   topic_id TEXT,
   slug TEXT NOT NULL,
   title TEXT NOT NULL,
@@ -58,6 +59,7 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_posts_niche_pub ON posts(niche_id, status, published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category, status, published_at DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_trend ON posts(status, trend_score DESC, published_at DESC);
 
 -- 4. Products Table (Tools, Deals, PC Parts, Cashback offers)
