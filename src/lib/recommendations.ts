@@ -10,7 +10,7 @@ export interface ContextualDeal {
   category: string;
   badge: string;
   discount: string;
-  merchant: 'Amazon' | 'Myntra / Ajio' | 'EarnKaro' | 'Swiggy / Zomato' | 'Bank / Cards' | 'MakeMyTrip' | 'Udemy';
+  merchant: 'Amazon' | 'Myntra / Ajio' | 'EarnKaro' | 'Swiggy / Zomato' | 'Bank / Cards' | 'MakeMyTrip' | 'Udemy' | 'Blinkit / Zepto / Instamart';
   affUrl: string;
   icon: string;
   priceNote?: string;
@@ -20,6 +20,31 @@ export interface ContextualDeal {
 const AMAZON_TAG = 'uniquedigi0c6-21';
 
 export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
+  // Deals & Quick Commerce (Blinkit / Zepto / Amazon)
+  'deals': [
+    {
+      title: 'Quick Commerce Flash Deals: Blinkit & Zepto 10-Minute Grocery & Tech Loot',
+      category: '10-Min Flash Delivery',
+      badge: '⚡ Flat 50% Off Code',
+      discount: 'Instant ₹100 Cashback',
+      merchant: 'Blinkit / Zepto / Instamart',
+      affUrl: `https://www.amazon.in/s?k=daily+grocery+household+deals&tag=${AMAZON_TAG}`,
+      icon: 'tag',
+      priceNote: 'Live in Top 20 Indian Cities',
+      trustTag: 'Verified Today'
+    },
+    {
+      title: 'Amazon Lightning Deals: Electronics, Laptops & Smartphones Under ₹9,999',
+      category: 'Electronics Loot',
+      badge: '🔥 60% OFF',
+      discount: 'Additional Bank Discount',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=lightning+deals+electronics&tag=${AMAZON_TAG}`,
+      icon: 'sparkles',
+      priceNote: 'Limited Stock Offers',
+      trustTag: 'Prime Fast Delivery'
+    }
+  ],
   // 1. Gaming / GTA 6 / PC Builds
   'gta-6': [
     {

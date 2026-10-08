@@ -1,14 +1,13 @@
-name: Daily Viral Pipeline
+name: UniqueDigit Level 3 Trend Radar & Automation Pipeline
 
 on:
   schedule:
-    - cron: '30 0 * * *'    # 6:00 AM IST daily (00:30 UTC)
-    - cron: '30 6 * * *'    # 12:00 PM IST (viral check)
-    - cron: '30 12 * * *'   # 6:00 PM IST
-  workflow_dispatch:        # Manual trigger from GitHub UI
+    # Runs every 4 hours automatically (Level 3 Radar)
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # Allows 1-click manual trigger from GitHub Actions
 
 jobs:
-  run-pipeline:
+  run-radar-pipeline:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -20,17 +19,21 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install Dependencies
+      - name: Install Pipeline Dependencies
         run: |
           pip install -r requirements.txt
 
-      - name: Run Pipeline
+      - name: Execute Multi-Source Trend Radar & Publish to D1
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROK_API_KEY: ${{ secrets.GROK_API_KEY }}
-          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          GEMINI_MODEL: "gemini-3.5-flash-lite"
+          AMAZON_ASSOCIATE_TAG: "uniquedigi0c6-21"
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PORTAL_BASE_URL: "https://dk-s.pages.dev"
           POSTS_PER_NICHE: "3"
         run: |
           python pipeline.py

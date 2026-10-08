@@ -37,6 +37,36 @@ CF_ACCOUNT = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
 CF_D1_DB = os.environ.get("CLOUDFLARE_D1_DATABASE_ID", "")
 CF_TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN", "")
 
+TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+PORTAL_BASE = os.environ.get("PORTAL_BASE_URL", "https://dk-s.pages.dev")
+
+
+# ---------- Telegram Dispatcher ----------
+def send_telegram(title, niche_name, post_slug):
+    if not (TG_BOT_TOKEN and TG_CHAT_ID):
+        return
+    post_url = f"{PORTAL_BASE}/{post_slug}"
+    text = (
+        f"🔥 *New Trend Live on UniqueDigit*\n\n"
+        f"📌 *Category:* {niche_name}\n"
+        f"📝 *Title:* {title}\n"
+        f"🔗 *Link:* {post_url}\n\n"
+        f"⚡ _Auto-published with verified deals & schema_"
+    )
+    try:
+        url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+        requests.post(url, json={"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=10)
+    except Exception as e:
+        print("[Telegram notify failed]:", e)
+
+
+# ---------- Storage Optimization (Prevent 5GB D1 Bloat) ----------
+def cleanup_old_data():
+    """Retains last 90 days of posts to keep D1 SQLite lightweight and fast"""
+    print("[D1 Storage Optimizer] Pruning articles older than 90 days...")
+    d1_query("DELETE FROM posts WHERE published_at < datetime('now', '-90 days')")
+
 
 # ---------- Cloudflare D1 Helpers ----------
 def d1_query(sql, params=None):
@@ -263,6 +293,8 @@ def process_niche(n):
                 "draft" if cfg.get("review") else "published"
             ]
         )
+        # Dispatch instant Telegram alert
+        send_telegram(a.get("title", t), n["name"], post_slug)
         made += 1
         time.sleep(1)
     return made
@@ -285,6 +317,7 @@ SEED_NICHES = [
 
 def main():
     print("--- Running UniqueDigit Pipeline (Cloudflare D1 Edition) ---")
+    cleanup_old_data()
     niches = d1_query("SELECT * FROM niches WHERE active = 1 ORDER BY sort ASC")
     if not niches:
         print("[Notice] Using local baseline niches for dry run.")
