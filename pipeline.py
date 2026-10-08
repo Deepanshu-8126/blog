@@ -69,14 +69,33 @@ def gemini(prompt):
     if not GEMINI_KEY:
         print("GEMINI_API_KEY not set")
         return {"title": "Default Title", "summary": "Summary", "body_md": "Body content", "faq": [], "tags": []}
-    r = requests.post(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
-        headers={"x-goog-api-key": GEMINI_KEY},
-        json={"contents": [{"parts": [{"text": prompt}]}],
-              "generationConfig": {"responseMimeType": "application/json", "temperature": 0.4}},
-        timeout=90)
-    r.raise_for_status()
-    return json.loads(r.json()["candidates"][0]["content"]["parts"][0]["text"])
+    
+    models_to_try = [GEMINI_MODEL, "gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-flash-latest"]
+    # Deduplicate while preserving order
+    seen_models = []
+    for m in models_to_try:
+        if m and m not in seen_models:
+            seen_models.append(m)
+
+    for model in seen_models:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
+        for retry in range(2):
+            try:
+                r = requests.post(
+                    url,
+                    json={"contents": [{"parts": [{"text": prompt}]}],
+                          "generationConfig": {"responseMimeType": "application/json", "temperature": 0.4}},
+                    timeout=90
+                )
+                r.raise_for_status()
+                text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+                return json.loads(text)
+            except Exception as e:
+                print(f"[Gemini model {model} attempt {retry+1} failed]:", e)
+                time.sleep(1)
+                continue
+
+    raise RuntimeError("All Gemini models failed")
 
 
 def grok(prompt):
