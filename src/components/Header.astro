@@ -76,6 +76,16 @@ const pinnedNiches = niches.filter(n => n.pin).slice(0, 5);
         </a>
 
         <a
+          href="/games/pc-builder-india"
+          class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 text-xs font-black shadow-sm hover:scale-105 transition ring-1 ring-amber-300"
+          title="3D Gaming PC Builder India"
+        >
+          <span>🖥️</span>
+          <span>3D PC Builder</span>
+          <span class="px-1 py-0.2 rounded text-[8px] font-black uppercase bg-red-600 text-white animate-pulse">NEW</span>
+        </a>
+
+        <a
           href="/deals"
           class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cta text-cta-ink text-xs font-extrabold shadow-sm hover:brightness-105 transition"
         >
@@ -118,6 +128,15 @@ const pinnedNiches = niches.filter(n => n.pin).slice(0, 5);
           <a href="/" class="p-2.5 rounded-xl font-bold text-sm hover:bg-slate-50 flex items-center gap-2">
             🏠 Home
           </a>
+          <a href="/games/pc-builder-india" class="p-2.5 rounded-xl font-bold text-sm bg-amber-50 hover:bg-amber-100 text-amber-950 flex items-center justify-between border border-amber-200">
+            <div class="flex items-center gap-2">
+              <span>🖥️</span>
+              <span class="font-extrabold">3D PC Builder Simulator</span>
+            </div>
+            <span class="text-[9px] px-1.5 py-0.5 rounded font-black uppercase bg-red-600 text-white">
+              HOT
+            </span>
+          </a>
           {niches.map(n => (
             <a
               href={`/${n.slug}`}
@@ -135,7 +154,11 @@ const pinnedNiches = niches.filter(n => n.pin).slice(0, 5);
         </div>
       </div>
 
-      <div class="pt-4 border-t border-slate-100">
+      <div class="pt-4 border-t border-slate-100 flex flex-col gap-2">
+        <a href="/games/pc-builder-india" class="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-sm">
+          <span>🖥️</span>
+          Launch 3D PC Builder Simulator
+        </a>
         <a href="/deals" class="w-full py-2.5 rounded-xl bg-cta text-cta-ink font-bold text-xs flex items-center justify-center gap-2">
           <Icon name="tag" class="w-4 h-4" />
           Browse Today's Loot Deals
