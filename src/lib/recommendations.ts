@@ -280,26 +280,37 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
   // 9. Exams, Sarkari Results & Education Hub
   'exams-results': [
     {
-      title: 'Best Exam Preparation Books, Previous Year Solved Papers & Mock Tests',
+      title: 'NCERT Solution Guides, Previous Year Solved Papers & Mock Test Combos',
       category: 'Exam Prep Books',
-      badge: '📚 Bestseller',
-      discount: 'Flat 40% Off on Combos',
+      badge: '📚 40% OFF',
+      discount: 'Latest 2026 Syllabus Editions',
       merchant: 'Amazon',
-      affUrl: `https://www.amazon.in/s?k=ssc+cgl+upsc+neet+exam+prep+books&tag=${AMAZON_TAG}`,
+      affUrl: `https://www.amazon.in/s?k=ncert+solutions+previous+year+solved+papers&tag=${AMAZON_TAG}`,
       icon: 'book-open',
-      priceNote: 'Latest Syllabus 2026 Editions',
+      priceNote: 'Amazon Fast Prime Delivery',
       trustTag: '100% Original Publisher'
     },
     {
-      title: 'Study Tablets with Stylus & E-Readers for Digital Notes & PDF Prep',
-      category: 'Study Gadgets',
+      title: 'Affordable Handwritten Study Notes, Formula Sheets & Exam Handbooks',
+      category: 'Budget Study Material',
+      badge: '🔥 Under ₹299 Loot',
+      discount: 'Extra 15% Off on Combos',
+      merchant: 'EarnKaro',
+      affUrl: `https://www.amazon.in/s?k=exam+study+notes+handbook&tag=${AMAZON_TAG}`,
+      icon: 'book-open',
+      priceNote: 'Flipkart & Meesho Verified Sellers',
+      trustTag: 'Easy 7-Day Return'
+    },
+    {
+      title: 'Study Tablets with Stylus & Digital Note-Taking Gadgets (iPad / Galaxy Tab)',
+      category: 'Digital Study Tech',
       badge: '⚡ Up to ₹8,000 Off',
-      discount: 'No Cost EMI from ₹1,200/mo',
+      discount: 'No-Cost EMI from ₹1,200/mo',
       merchant: 'Amazon',
       affUrl: `https://www.amazon.in/s?k=study+tablets+with+stylus+pen&tag=${AMAZON_TAG}`,
       icon: 'sparkles',
-      priceNote: 'Eye-Comfort Display',
-      trustTag: 'Brand Indian Warranty'
+      priceNote: 'Eye-Comfort Display for PDF Prep',
+      trustTag: 'Official Brand Warranty'
     }
   ]
 };
