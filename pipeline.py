@@ -350,9 +350,116 @@ SEED_NICHES = [
     {"id": "13", "slug": "exams-results", "name": "Exams & Results", "tagline": "Sarkari results, admit cards & notes", "grp": "Education", "icon": "book-open", "page_type": "feed", "seed_keywords": '["ssc cgl result","cbse board exam","neet admit card","sarkari result","jee main","ncert solutions"]', "fetchers": '["trends","wikipedia"]'}
 ]
 
+# ---------- Universal Autonomous Trend Discovery (Auto-Niche Creation) ----------
+def process_national_breaking_trends():
+    """Scans all trending searches in India and dynamically creates/assigns niches on the fly"""
+    print("--- [Radar Agent] Scanning National Real-Time Indian Search Trends ---")
+    try:
+        from pytrends.request import TrendReq
+        py = TrendReq(hl="en-IN", tz=330, timeout=(5, 20))
+        df = py.trending_searches(pn="india")
+        breaking_queries = [str(q) for q in df[0].head(15)]
+    except Exception as e:
+        print("[National Trends fetch error]:", e)
+        return 0
+
+    existing_slugs = {row["slug"] for row in d1_query("SELECT slug FROM topics")}
+    candidates = [q for q in breaking_queries if slugify(q) not in existing_slugs][:6]
+    
+    if not candidates:
+        print("[Radar Agent] No new unhandled national trends found.")
+        return 0
+
+    print(f"[Radar Agent] Discovered {len(candidates)} new breaking national trends:", candidates)
+    processed = 0
+
+    for query in candidates:
+        prompt = f"""You are the Chief Editorial AI for UniqueDigit India.
+Breaking Search Trend in India: "{query}"
+
+1. Categorize this trend into a suitable clean category/niche (e.g., "gaming", "tech-reviews", "deals", "exams-results", "movies", "health", "cricket-sports", "finance").
+2. Write a highly engaging, humanized, fact-grounded article (450-600 words) tailored to why Indian users are searching for "{query}" right now.
+3. Include FAQ schema and tags.
+
+Return strict JSON:
+{{
+  "niche_slug": "clean-kebab-slug",
+  "niche_name": "Display Name (e.g., Gaming, Cricket, Tech)",
+  "niche_tagline": "Short 1-line description",
+  "niche_group": "Tech | Entertainment | Lifestyle | Money | Education",
+  "niche_icon": "gamepad | sparkles | cpu | book-open | tag | heart | clapperboard",
+  "title": "Engaging, click-worthy, non-clickbait headline",
+  "summary": "Meta summary under 160 characters",
+  "body_md": "Full markdown with ## subheadings, comparison points, and guides",
+  "faq": [{{"q": "Popular question", "a": "Direct 2-sentence answer"}}],
+  "tags": ["Tag1", "Tag2"]
+}}"""
+        try:
+            res = gemini(prompt)
+        except Exception as e:
+            print(f"[Universal Radar failed for {query}]:", e)
+            continue
+
+        n_slug = slugify(res.get("niche_slug") or "viral")
+        n_name = res.get("niche_name") or n_slug.title()
+        n_tagline = res.get("niche_tagline") or f"Latest updates on {n_name}"
+        n_grp = res.get("niche_group") or "Entertainment"
+        n_icon = res.get("niche_icon") or "sparkles"
+
+        # 1. Auto-create Niche in D1 if it doesn't already exist
+        niche_id = str(uuid.uuid4())
+        d1_query(
+            "INSERT OR IGNORE INTO niches (id, slug, name, tagline, grp, icon, page_type, active) VALUES (?, ?, ?, ?, ?, ?, 'feed', 1)",
+            [niche_id, n_slug, n_name, n_tagline, n_grp, n_icon]
+        )
+
+        # Get the actual niche_id in case it existed
+        niche_record = d1_query("SELECT id FROM niches WHERE slug = ?", [n_slug])
+        actual_niche_id = niche_record[0]["id"] if niche_record else niche_id
+
+        # 2. Wikipedia Image & Fact Check
+        w = wiki(query)
+        facts, image, credit, src = (w["extract"], w["image"], "Wikimedia Commons", w["url"]) if w else ("", None, None, None)
+
+        topic_id = str(uuid.uuid4())
+        topic_slug = slugify(query)
+        post_id = str(uuid.uuid4())
+        post_slug = slugify(res.get("title")) or topic_slug
+
+        d1_query(
+            "INSERT OR IGNORE INTO topics (id, niche_id, title, slug, trend_score, source) VALUES (?, ?, ?, ?, 100, 'google-trends-national')",
+            [topic_id, actual_niche_id, query, topic_slug]
+        )
+
+        d1_query(
+            """INSERT OR REPLACE INTO posts 
+               (id, niche_id, category, topic_id, slug, title, summary, body_md, faq, tags, image_url, image_credit, source_url, trend_score, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, 'published')""",
+            [
+                post_id, actual_niche_id, n_slug, topic_id, post_slug,
+                res.get("title", query), res.get("summary", "")[:200], res.get("body_md", ""),
+                json.dumps(res.get("faq", [])), json.dumps(res.get("tags", [])),
+                image, credit, src
+            ]
+        )
+
+        send_telegram(res.get("title", query), n_name, post_slug)
+        print(f"[Radar Agent Published]: {res.get('title')} -> /{n_slug}/{post_slug}")
+        processed += 1
+        time.sleep(1)
+
+    return processed
+
+
 def main():
-    print("--- Running UniqueDigit Pipeline (Cloudflare D1 Edition) ---")
+    print("--- Running UniqueDigit Universal Autonomous Pipeline (Level 3 Edition) ---")
     cleanup_old_data()
+
+    # Phase 1: Universal Autonomous National Radar (Discovers any new viral gaming, news, exam, tech trend)
+    national_count = process_national_breaking_trends()
+    print(f"[Radar Complete] Published {national_count} breaking national articles.")
+
+    # Phase 2: Seeded Specialized Niches
     niches = d1_query("SELECT * FROM niches WHERE active = 1 ORDER BY sort ASC")
     if not niches:
         print("[Notice] Using local baseline niches for dry run.")
@@ -361,7 +468,7 @@ def main():
     if ONLY:
         niches = [n for n in niches if n["slug"] == ONLY]
 
-    summary = {}
+    summary = {"national_breaking": national_count}
     for n in niches:
         try:
             count = process_niche(n)
