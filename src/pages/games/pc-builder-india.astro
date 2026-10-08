@@ -176,6 +176,27 @@ import AdSlot from '../../components/AdSlot.astro';
             </div>
           </div>
 
+          <!-- Step-by-Step Assembly Progress Bar & Simulator Controls (Inspired by pc-lab-3d & builder-pc-3D) -->
+          <div class="flex items-center justify-between gap-1 p-2 rounded-2xl bg-slate-900/95 border border-slate-800 text-[10px] font-mono overflow-x-auto">
+            <div class="flex items-center gap-1 shrink-0">
+              <span class="text-amber-400 font-bold uppercase text-[9px] mr-1">🛠️ STEPS:</span>
+              <button class="step-badge px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer font-bold hover:bg-emerald-500/30 transition" onclick="window.switchTabAndHighlight('cpu')">1. CPU</button>
+              <button class="step-badge px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer font-bold hover:bg-emerald-500/30 transition" onclick="window.switchTabAndHighlight('mobo')">2. MOBO</button>
+              <button class="step-badge px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer font-bold hover:bg-emerald-500/30 transition" onclick="window.switchTabAndHighlight('ram')">3. RAM</button>
+              <button class="step-badge px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer font-bold hover:bg-emerald-500/30 transition" onclick="window.switchTabAndHighlight('ssd')">4. SSD</button>
+              <button class="step-badge px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer font-bold hover:bg-emerald-500/30 transition" onclick="window.switchTabAndHighlight('gpu')">5. GPU</button>
+              <button class="step-badge px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-pointer font-bold hover:bg-emerald-500/30 transition" onclick="window.switchTabAndHighlight('cabinet')">6. PSU</button>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button id="btn-exploded-view" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 font-bold cursor-pointer transition text-[10px]" title="Exploded 3D Anatomy View">
+                💥 Exploded 3D
+              </button>
+              <button id="btn-boot-console" class="px-2.5 py-1 rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black cursor-pointer transition shadow-xs text-[10px]" title="Open BIOS Boot Console">
+                💻 BIOS Boot
+              </button>
+            </div>
+          </div>
+
           <!-- ARGB Mode Indicator Pill -->
           <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] font-mono">
             <div class="flex items-center gap-2">
@@ -476,6 +497,45 @@ import AdSlot from '../../components/AdSlot.astro';
               <span class="text-[10px] font-mono text-slate-400 flex items-center gap-1">
                 <span>🛡️ Amazon A-to-z Guarantee</span>
               </span>
+          </div>
+
+          <!-- BIOS POST Boot Console Modal (Interactive Diagnostic Terminal) -->
+          <div id="boot-console-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+            <div class="w-full max-w-2xl rounded-3xl bg-[#080d1a] border-2 border-emerald-500/60 shadow-2xl p-6 font-mono text-xs text-emerald-400 relative overflow-hidden flex flex-col gap-4">
+              <!-- Console Header Bar -->
+              <div class="flex items-center justify-between pb-3 border-b border-emerald-500/30">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+                  <span class="font-bold text-white tracking-widest text-sm uppercase">🖥️ UNIQUEDIGIT UEFI BIOS & POST TERMINAL</span>
+                </div>
+                <button id="btn-close-boot-console" class="w-7 h-7 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center font-bold text-xs cursor-pointer border border-slate-700">
+                  ✕
+                </button>
+              </div>
+
+              <!-- Terminal Diagnostic Log Content -->
+              <div class="p-4 rounded-2xl bg-black/60 border border-emerald-500/20 max-h-72 overflow-y-auto space-y-1.5 leading-relaxed" id="boot-console-logs">
+                <div class="text-slate-400 font-bold">[BIOS v2.4.0] Power-On Self-Test (POST) Initialized...</div>
+                <div class="text-cyan-300" id="boot-log-cpu">[CPU] Initializing Processor...</div>
+                <div class="text-purple-300" id="boot-log-ram">[MEM] Checking Dual-Channel DDR Memory...</div>
+                <div class="text-emerald-300" id="boot-log-gpu">[GPU] Initializing PCIe 4.0 x16 Interface...</div>
+                <div class="text-amber-300" id="boot-log-ssd">[STORAGE] Mounting NVMe M.2 Primary Drive...</div>
+                <div class="text-cyan-400" id="boot-log-fans">[ARGB] Aura Sync 9x PWM Radiator Fans Running @ 1,250 RPM</div>
+                <div class="text-emerald-400 font-bold pt-2 border-t border-emerald-500/30" id="boot-log-fps">
+                  [BENCHMARK] Valorant: 280 FPS • GTA V: 95 FPS • Cyberpunk 2077: 72 FPS (DLSS 3 Active)
+                </div>
+                <div class="text-white font-black animate-pulse">
+                  [STATUS] ALL SYSTEMS NORMAL (0 ERRORS) • LAUNCHING WINDOWS 11 GAMING OS...
+                </div>
+              </div>
+
+              <!-- Console Bottom Actions -->
+              <div class="flex items-center justify-between gap-3 pt-2">
+                <span class="text-slate-400 text-[10px]">Press ESC or click close to exit virtual console</span>
+                <button id="btn-rerun-post" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer shadow-md shadow-emerald-500/30">
+                  🔄 Re-Run Diagnostics
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1592,6 +1652,83 @@ import AdSlot from '../../components/AdSlot.astro';
       if (color === 'amber') updateThreeARGB(0xf59e0b);
       if (color === 'rose') updateThreeARGB(0xf43f5e);
     });
+  });
+
+  // Exploded 3D Anatomy State
+  let isExploded = false;
+  const explodedBtn = document.getElementById('btn-exploded-view');
+  if (explodedBtn) {
+    explodedBtn.addEventListener('click', () => {
+      isExploded = !isExploded;
+      playSound('rgb');
+      explodedBtn.className = isExploded
+        ? 'px-2.5 py-1 rounded-lg bg-cyan-500 text-slate-950 font-black border border-cyan-400 cursor-pointer transition text-[10px] shadow-md shadow-cyan-500/30'
+        : 'px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 font-bold cursor-pointer transition text-[10px]';
+      
+      // If user is in photo/desk view, auto-switch to 3D to show exploded effect
+      if (isExploded && tab3d) {
+        setVisualizerMode('3d');
+      }
+
+      if (cpuCoolerMesh && gpuMesh && ramMeshGroup) {
+        if (isExploded) {
+          cpuCoolerMesh.position.z = 1.1;
+          gpuMesh.position.z = 1.5;
+          ramMeshGroup.position.z = 0.8;
+        } else {
+          cpuCoolerMesh.position.z = -0.2;
+          gpuMesh.position.z = 0.1;
+          ramMeshGroup.position.z = 0;
+        }
+      }
+    });
+  }
+
+  // BIOS POST Boot Console Modal Handler
+  const bootBtn = document.getElementById('btn-boot-console');
+  const bootModal = document.getElementById('boot-console-modal');
+  const closeBootBtn = document.getElementById('btn-close-boot-console');
+  const rerunPostBtn = document.getElementById('btn-rerun-post');
+
+  function openBootConsole() {
+    playSound('power');
+    if (!bootModal) return;
+    bootModal.classList.remove('hidden');
+
+    const { cpu, gpu, mobo, ram, ssd } = currentSelection;
+    const logCpu = document.getElementById('boot-log-cpu');
+    const logRam = document.getElementById('boot-log-ram');
+    const logGpu = document.getElementById('boot-log-gpu');
+    const logSsd = document.getElementById('boot-log-ssd');
+    const logFps = document.getElementById('boot-log-fps');
+
+    if (logCpu) logCpu.textContent = `[CPU] Initializing ${cpu.name} (${cpu.socket} Socket OK • ${cpu.wattage}W TDP)`;
+    if (logRam) logRam.textContent = `[MEM] Checking ${ram.name} Dual-Channel XMP Profile LOADED`;
+    if (logGpu) logGpu.textContent = `[GPU] Initializing ${gpu.name} (PCIe 4.0 x16 Link 16GT/s OK • DLSS 3 Ready)`;
+    if (logSsd) logSsd.textContent = `[STORAGE] Mounted ${ssd.name} (Gen4 NVMe Read: ${ssd.speed || '4150 MB/s'})`;
+    
+    const mult = gpu.fpsMultiplier || 1.0;
+    if (logFps) {
+      logFps.textContent = `[BENCHMARK] Valorant: ${Math.round(cpu.valFps * mult)} FPS • GTA V: ${Math.round(cpu.gtaFps * mult)} FPS • Cyberpunk 2077: ${Math.round(cpu.cpFps * mult)} FPS (Avg Ultra)`;
+    }
+  }
+
+  if (bootBtn) bootBtn.addEventListener('click', openBootConsole);
+  if (closeBootBtn && bootModal) {
+    closeBootBtn.addEventListener('click', () => {
+      playSound('click');
+      bootModal.classList.add('hidden');
+    });
+  }
+  if (rerunPostBtn) {
+    rerunPostBtn.addEventListener('click', () => {
+      openBootConsole();
+    });
+  }
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && bootModal && !bootModal.classList.contains('hidden')) {
+      bootModal.classList.add('hidden');
+    }
   });
 
   // Connect Reset Button to Three.js
