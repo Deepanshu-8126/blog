@@ -73,220 +73,210 @@ import AdSlot from '../../components/AdSlot.astro';
   <!-- Main Simulator Container: Cockpit Layout -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-6 w-full items-start">
     
-    <!-- LEFT COLUMN: 3D Interactive PC Cabinet Visualizer (lg:col-span-6 xl:col-span-6) -->
+    <!-- LEFT COLUMN: 3D Interactive Glass PC Chassis Cockpit (lg:col-span-6 xl:col-span-6) -->
     <div class="w-full min-w-0 lg:col-span-6 xl:col-span-6 flex flex-col gap-6 lg:sticky lg:top-20">
       
-      <div class="p-5 sm:p-6 rounded-3xl bg-[#090D16] border border-slate-800 text-white shadow-2xl relative overflow-hidden w-full select-none" id="rig-viewport-box">
+      <div class="p-4 sm:p-6 rounded-3xl bg-[#090D16] border border-slate-800 text-white shadow-2xl relative overflow-hidden w-full select-none" id="rig-viewport-box">
         <!-- Ambient Dynamic ARGB Glow -->
-        <div id="ambient-rgb" class="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
-        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div id="ambient-rgb" class="absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div class="relative z-10">
-          <!-- Visualizer Header: Power Status & Controls -->
-          <div class="flex flex-wrap items-center justify-between gap-2.5 pb-3.5 border-b border-slate-800 mb-4">
+        <div class="relative z-10 flex flex-col gap-3.5">
+          <!-- Cockpit Top Bar: System Online, 3D Camera Angles & Power Icon -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800/80">
             <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-md shadow-emerald-400/50" id="rig-power-led"></span>
-              <span class="text-xs font-mono font-black text-slate-200 tracking-wide" id="rig-status-text">SYSTEM ONLINE (60 FPS)</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-md shadow-emerald-400/80" id="rig-power-led"></span>
+              <span class="text-xs font-mono font-black text-emerald-300 tracking-wider" id="rig-status-text">● SYSTEM ONLINE • 60 FPS</span>
             </div>
 
-            <!-- Interactive Controls: Camera Angles + ARGB Switcher -->
-            <div class="flex items-center gap-1.5">
-              <!-- Camera Angle Selector -->
-              <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-[10px] font-mono">
-                <button class="cam-btn px-2 py-1 rounded-lg bg-brand text-white font-bold cursor-pointer transition" data-cam="hero">3D Hero</button>
-                <button class="cam-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer transition" data-cam="flat">Front</button>
-                <button class="cam-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer transition" data-cam="side">Side 45°</button>
+            <div class="flex items-center gap-2">
+              <!-- Camera Angle Tabs -->
+              <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs font-mono">
+                <button class="cam-btn px-2.5 py-1 rounded-lg bg-brand text-white font-bold cursor-pointer transition shadow-xs" data-cam="hero">3D View</button>
+                <button class="cam-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer transition" data-cam="flat">Front</button>
+                <button class="cam-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer transition" data-cam="side">Side 45°</button>
               </div>
 
-              <!-- ARGB Color Switcher -->
-              <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
-                <button class="w-4 h-4 rounded-full bg-cyan-400 border border-white/50 cursor-pointer transition hover:scale-125" data-rgb="cyan" title="Cyber Cyan"></button>
-                <button class="w-4 h-4 rounded-full bg-purple-500 border border-white/50 cursor-pointer transition hover:scale-125" data-rgb="purple" title="Neon Purple"></button>
-                <button class="w-4 h-4 rounded-full bg-emerald-400 border border-white/50 cursor-pointer transition hover:scale-125" data-rgb="emerald" title="Razer Emerald"></button>
-                <button class="w-4 h-4 rounded-full bg-amber-400 border border-white/50 cursor-pointer transition hover:scale-125" data-rgb="amber" title="Blaze Gold"></button>
-                <button class="w-4 h-4 rounded-full bg-rose-500 border border-white/50 cursor-pointer transition hover:scale-125" data-rgb="rose" title="Crimson Red"></button>
-              </div>
-
-              <!-- Sound Toggle -->
-              <button id="btn-sound-toggle" class="p-1.5 px-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 hover:text-white cursor-pointer" title="Toggle Sound FX">
-                🔊
+              <!-- Power & Reset Icons -->
+              <button id="btn-power-switch" class="w-7 h-7 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-xs cursor-pointer transition" title="Toggle Power / Stress Test">
+                ⏻
+              </button>
+              <button id="btn-reset-rig" class="w-7 h-7 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-xs cursor-pointer transition" title="Reset View">
+                ⛶
               </button>
             </div>
           </div>
 
-          <!-- 3D Perspective Cabinet Viewport -->
-          <div class="perspective-1000 w-full flex items-center justify-center py-1">
+          <!-- ARGB Mode Indicator Pill -->
+          <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-[11px] font-mono">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">🌈</span>
+              <span class="text-slate-300 font-bold uppercase tracking-wider">ARGB SYNC — <span class="text-cyan-400" id="argb-mode-name">RAINBOW MODE • ALL FANS SYNCED</span></span>
+            </div>
+            <!-- ARGB Color Switcher -->
+            <div class="flex items-center gap-1.5">
+              <button class="w-3.5 h-3.5 rounded-full bg-cyan-400 border border-white/60 cursor-pointer transition hover:scale-125" data-rgb="cyan" title="Cyber Cyan"></button>
+              <button class="w-3.5 h-3.5 rounded-full bg-purple-500 border border-white/60 cursor-pointer transition hover:scale-125" data-rgb="purple" title="Neon Purple"></button>
+              <button class="w-3.5 h-3.5 rounded-full bg-emerald-400 border border-white/60 cursor-pointer transition hover:scale-125" data-rgb="emerald" title="Razer Emerald"></button>
+              <button class="w-3.5 h-3.5 rounded-full bg-amber-400 border border-white/60 cursor-pointer transition hover:scale-125" data-rgb="amber" title="Blaze Gold"></button>
+              <button class="w-3.5 h-3.5 rounded-full bg-rose-500 border border-white/60 cursor-pointer transition hover:scale-125" data-rgb="rose" title="Crimson Red"></button>
+            </div>
+          </div>
+
+          <!-- 3D Perspective Cabinet Chamber -->
+          <div class="perspective-1000 w-full flex items-center justify-center py-2">
             <div
               id="pc-3d-case"
-              class="w-full min-h-[430px] rounded-3xl bg-[#070A11] border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-2xl transition-transform duration-300 transform-gpu overflow-hidden"
+              class="w-full min-h-[460px] rounded-3xl bg-gradient-to-b from-[#0b0f19] via-[#070a12] to-[#05070d] border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-2xl transition-transform duration-300 transform-gpu overflow-hidden"
               style="transform: rotateX(5deg) rotateY(-7deg);"
             >
-              
-              <!-- Realistic Tempered Glass Reflection Layer -->
-              <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-cyan-400/5 pointer-events-none rounded-3xl border border-white/10 z-20"></div>
+              <!-- Tempered Glass Sheen & Corner Screws -->
+              <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-cyan-400/10 pointer-events-none rounded-3xl border border-white/10 z-20"></div>
+              <div class="absolute top-3 left-3 w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-400 z-30 shadow-xs"></div>
+              <div class="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-400 z-30 shadow-xs"></div>
+              <div class="absolute bottom-3 left-3 w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-400 z-30 shadow-xs"></div>
+              <div class="absolute bottom-3 right-3 w-2.5 h-2.5 rounded-full bg-slate-600 border border-slate-400 z-30 shadow-xs"></div>
 
-              <!-- Motherboard PCB Background Circuit Grid Texture -->
-              <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
-              
-              <!-- Front I/O Header -->
-              <div class="relative z-30 flex items-center justify-between pb-2.5 border-b border-slate-800/80 mb-2">
-                <button id="btn-power-switch" class="px-2.5 py-1 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/40 text-[10px] font-mono font-black flex items-center gap-1.5 cursor-pointer active:scale-95 transition shadow-sm">
-                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span>
-                  <span>⚡ POWER / STRESS TEST</span>
-                </button>
-
-                <div class="flex items-center gap-2 text-[9px] font-mono text-slate-400">
-                  <span class="text-cyan-400 font-bold">ARGB AURA SYNC</span>
-                  <span>•</span>
-                  <span>PWM FANS</span>
+              <!-- Top Radiator Fans (2x 120mm ARGB Spinning Halos) -->
+              <div class="flex items-center justify-center gap-6 pb-2 relative z-10">
+                <div class="w-20 h-7 rounded-full bg-slate-900 border-2 border-cyan-400/80 flex items-center justify-center shadow-lg shadow-cyan-400/30 rig-fan animate-pulse">
+                  <div class="w-14 h-3 rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-xs"></div>
+                </div>
+                <div class="w-20 h-7 rounded-full bg-slate-900 border-2 border-cyan-400/80 flex items-center justify-center shadow-lg shadow-cyan-400/30 rig-fan animate-pulse">
+                  <div class="w-14 h-3 rounded-full bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 blur-xs"></div>
                 </div>
               </div>
 
-              <!-- Internal Components Chamber -->
-              <div class="relative z-10 w-full h-full flex flex-col justify-between gap-3.5 my-auto">
+              <!-- Floating Hologram Callout 1: Top CPU Spec Badge -->
+              <div class="relative z-30 self-start p-2.5 px-3.5 rounded-2xl bg-slate-950/90 border border-cyan-400/70 shadow-xl shadow-cyan-500/20 backdrop-blur-md max-w-[280px]">
+                <div class="flex items-center gap-1.5 mb-0.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                  <span class="text-xs font-black text-white font-mono tracking-tight truncate uppercase" id="vis-cpu-name">
+                    INTEL CORE i5-13400F
+                  </span>
+                </div>
+                <span class="text-[9px] font-mono text-cyan-300 block" id="vis-cpu-socket-line">
+                  LGA1700 • 10C/16T • 4.6GHz • 65W TDP
+                </span>
+              </div>
+
+              <!-- Center Chamber: Dual Vertical ARGB Front Intake Fans + Motherboard Core -->
+              <div class="relative z-10 w-full flex items-center justify-between my-2 gap-4">
                 
-                <!-- TOP ZONE: Exhaust Fan + CPU Cooler Block + Dual RGB RAM -->
-                <div class="flex items-start justify-between gap-2.5">
-                  
-                  <!-- Rear 120mm Exhaust ARGB Fan (Spinning) -->
-                  <div class="w-18 h-18 rounded-2xl bg-slate-900/90 border border-slate-700/90 flex items-center justify-center relative shadow-inner shrink-0">
-                    <div class="w-14 h-14 rounded-full border-2 border-dashed border-cyan-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 2.0s;">
-                      <div class="w-4 h-4 rounded-full bg-cyan-400/90 blur-xs shadow-md shadow-cyan-400"></div>
+                <!-- Left/Center Motherboard & CPU Cooler Block -->
+                <div class="flex items-center gap-3">
+                  <!-- Circular ARGB CPU Liquid Pump / Cooler -->
+                  <div class="w-20 h-20 rounded-full bg-slate-900 border-2 border-purple-500/80 shadow-xl shadow-purple-500/30 flex items-center justify-center relative p-1.5">
+                    <div class="w-full h-full rounded-full border border-dashed border-cyan-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 2.2s;">
+                      <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 shadow-md shadow-cyan-400 blur-xs"></div>
                     </div>
-                    <span class="absolute -bottom-3 text-[8px] font-mono text-slate-400">1400 RPM</span>
                   </div>
 
-                  <!-- CPU Socket & Cooler Block with ARGB Ring -->
-                  <div class="flex-1 max-w-[200px] p-3 rounded-2xl bg-slate-900/90 border border-cyan-400/50 shadow-xl shadow-cyan-500/10 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-cyan-500/15 to-transparent pointer-events-none"></div>
-                    <span class="text-[10px] font-black uppercase text-cyan-300 font-mono tracking-tight mb-1 truncate w-full" id="vis-cpu-name">AMD Ryzen 5 5600</span>
-                    <div class="w-11 h-11 rounded-xl bg-slate-950 border border-cyan-400/60 flex flex-col items-center justify-center shadow-inner">
-                      <span class="text-xs font-mono font-black text-cyan-400" id="vis-cpu-socket">AM4</span>
-                      <span class="text-[8px] font-mono text-slate-400">65W TDP</span>
-                    </div>
-                    <span class="text-[9px] text-slate-300 mt-1 font-medium" id="vis-cpu-cooler">Wraith Stealth ARGB</span>
-                  </div>
-
-                  <!-- Dual Channel RGB Heatspreader RAM Sticks -->
-                  <div class="flex gap-1.5 p-2 rounded-2xl bg-slate-900/80 border border-slate-700 shadow-inner shrink-0">
-                    <div class="w-2.5 h-16 rounded-sm bg-gradient-to-t from-cyan-500 via-purple-500 to-pink-500 shadow-md shadow-purple-500/50 animate-pulse"></div>
-                    <div class="w-2.5 h-16 rounded-sm bg-gradient-to-t from-cyan-500 via-purple-500 to-pink-500 shadow-md shadow-purple-500/50 animate-pulse"></div>
-                    <div class="flex flex-col justify-center text-[9px] font-mono text-slate-300 pl-1">
-                      <span id="vis-ram-spec" class="font-bold text-white">16GB</span>
-                      <span id="vis-ram-type" class="text-cyan-400 text-[8px]">DDR4</span>
-                    </div>
+                  <!-- Dual Glowing RAM Sticks -->
+                  <div class="flex gap-1.5 p-1.5 rounded-xl bg-slate-900/80 border border-slate-700/80 shadow-inner">
+                    <div class="w-2 h-14 rounded-sm bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 shadow-md shadow-purple-400 animate-pulse"></div>
+                    <div class="w-2 h-14 rounded-sm bg-gradient-to-t from-cyan-400 via-purple-400 to-pink-400 shadow-md shadow-purple-400 animate-pulse"></div>
                   </div>
                 </div>
 
-                <!-- MIDDLE ZONE: Triple-Fan GPU Beast Card with Backplate Glow -->
-                <div class="p-3.5 rounded-2xl bg-slate-900/95 border-2 border-purple-500/60 shadow-2xl shadow-purple-500/20 flex items-center justify-between relative overflow-hidden group">
-                  <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-                  <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 1.6s;">
-                      <div class="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-xs shadow-purple-400"></div>
-                    </div>
-                    <div class="w-10 h-10 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 1.6s;">
-                      <div class="w-2.5 h-2.5 rounded-full bg-purple-400 shadow-xs shadow-purple-400"></div>
+                <!-- Right Side: Dual Front 140mm ARGB Intake Fans (Rainbow Spinning Halos) -->
+                <div class="flex flex-col gap-3 shrink-0">
+                  <div class="w-18 h-18 rounded-full bg-slate-900/90 border-2 border-cyan-400/90 shadow-xl shadow-cyan-400/40 flex items-center justify-center relative">
+                    <div class="w-14 h-14 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 1.8s;">
+                      <div class="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-400 to-pink-400 blur-xs"></div>
                     </div>
                   </div>
-
-                  <div class="text-right pl-2">
-                    <div class="flex items-center justify-end gap-1.5 mb-0.5">
-                      <span class="px-1.5 py-0.5 rounded text-[8px] font-mono font-black bg-purple-500/30 text-purple-300 border border-purple-500/40">PCIe 4.0 x16</span>
-                      <span class="text-xs font-black text-purple-200 font-mono tracking-tight" id="vis-gpu-name">
-                        RTX 4060 8GB
-                      </span>
+                  <div class="w-18 h-18 rounded-full bg-slate-900/90 border-2 border-cyan-400/90 shadow-xl shadow-cyan-400/40 flex items-center justify-center relative">
+                    <div class="w-14 h-14 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center rig-fan" style="animation-duration: 1.8s;">
+                      <div class="w-5 h-5 rounded-full bg-gradient-to-r from-cyan-400 to-pink-400 blur-xs"></div>
                     </div>
-                    <span class="text-[9px] text-slate-400 font-mono block" id="vis-gpu-spec">
-                      115W TDP • DLSS 3 & Ray Tracing
+                  </div>
+                </div>
+              </div>
+
+              <!-- Floating Hologram Callout 2: Graphics Card (GPU) Beast Block -->
+              <div class="relative z-30 p-3 rounded-2xl bg-slate-950/95 border border-purple-500/80 shadow-2xl shadow-purple-500/30 backdrop-blur-md my-1">
+                <div class="flex items-center justify-between gap-2 mb-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+                    <span class="text-xs font-black text-white font-mono uppercase tracking-tight" id="vis-gpu-name">
+                      NVIDIA GEFORCE RTX 4060 • 8GB GDDR6
                     </span>
                   </div>
+                  <span class="px-1.5 py-0.5 rounded text-[8px] font-mono font-black bg-purple-500/20 text-purple-300 border border-purple-500/40">PCIe 4.0 x16</span>
                 </div>
-
-                <!-- BOTTOM ZONE: M.2 NVMe SSD Heatsink & PSU Shroud -->
-                <div class="flex items-center justify-between pt-2.5 border-t border-slate-800/80">
-                  <div class="p-2 rounded-xl bg-slate-900 border border-slate-700 flex items-center gap-1.5">
-                    <Icon name="cpu" class="w-3.5 h-3.5 text-cyan-400" />
-                    <div>
-                      <span class="text-[9px] font-mono font-bold text-white block" id="vis-ssd-name">1TB Gen4 NVMe</span>
-                      <span class="text-[8px] font-mono text-slate-400" id="vis-ssd-speed">3,500 MB/s Read</span>
-                    </div>
-                  </div>
-
-                  <div class="p-2 px-3 rounded-xl bg-slate-900 border border-slate-700 text-right">
-                    <span class="text-[9px] font-mono font-bold text-amber-300 block" id="vis-psu-name">550W Bronze PSU</span>
-                    <span class="text-[8px] font-mono text-slate-400" id="vis-psu-headroom">+130W Headroom</span>
-                  </div>
-                </div>
-
+                <span class="text-[9px] font-mono text-purple-300 block" id="vis-gpu-spec">
+                  DLSS 3 • 115W TDP • Ray Tracing Core Active
+                </span>
               </div>
+
+              <!-- Bottom Floating Hologram Badges: RAM & NVMe SSD -->
+              <div class="relative z-30 flex items-center justify-between gap-2 pt-1">
+                <!-- Left: RAM Pill -->
+                <div class="p-1.5 px-3 rounded-xl bg-slate-950/90 border border-slate-700 text-[10px] font-mono">
+                  <span class="font-bold text-white block" id="vis-ram-spec">DDR5</span>
+                  <span class="text-cyan-400 text-[9px]" id="vis-ram-type">16GB • 5600MHz</span>
+                </div>
+
+                <!-- Right: NVMe SSD Pill -->
+                <div class="p-1.5 px-3 rounded-xl bg-slate-950/90 border border-slate-700 text-right text-[10px] font-mono flex items-center gap-1.5">
+                  <span class="text-emerald-400 font-bold">✓</span>
+                  <div>
+                    <span class="font-bold text-white block truncate max-w-[150px]" id="vis-ssd-name">WD BLUE SN580 1TB NVMe</span>
+                    <span class="text-slate-400 text-[9px]" id="vis-ssd-speed">PCIe 4.0 • 4150 MB/s Read</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <!-- Compatibility & Bottleneck Alert Banner -->
-          <div class="mt-4 p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-              <span class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xs shrink-0" id="compat-icon">
-                ✓
-              </span>
+          <!-- Bottom Real-Time Telemetry Bar (ECG / Temp Wave Monitor) -->
+          <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col gap-2.5">
+            <div class="flex items-center justify-between gap-3">
+              <!-- Stress Test Trigger Button -->
+              <button id="btn-power-switch-bottom" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-black font-mono flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95 transition shrink-0">
+                <span>⚡ POWER / STRESS TEST</span>
+              </button>
+
+              <!-- Live Sine Wave SVG Graphic -->
+              <div class="flex-1 h-6 flex items-center justify-center overflow-hidden px-2">
+                <svg class="w-full h-5 text-cyan-400 animate-pulse" viewBox="0 0 100 20" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M0,10 L20,10 L25,2 L30,18 L35,10 L50,10 L55,4 L60,16 L65,10 L100,10" />
+                </svg>
+              </div>
+
+              <!-- Live Load & Temp Telemetry -->
+              <div class="text-right shrink-0">
+                <div class="text-[10px] font-mono font-black text-slate-300">
+                  Load <span class="text-cyan-400" id="telemetry-load">58%</span>
+                </div>
+                <div class="text-[10px] font-mono font-bold text-amber-300">
+                  <span id="telemetry-cpu-temp">CPU 52°C</span> • <span id="telemetry-gpu-temp">GPU 61°C</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PSU Headroom Banner -->
+            <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono">
+              <span class="text-slate-300 font-bold" id="vis-psu-headroom-banner">PSU 550W 80+ GOLD • HEADROOM: +29% SAFE</span>
+              <span class="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center text-[10px] font-black">✓</span>
+            </div>
+          </div>
+
+          <!-- Compatibility Banner -->
+          <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xs shrink-0" id="compat-icon">✓</span>
               <div>
                 <span class="block text-xs font-bold text-white" id="compat-status">100% Component Compatibility Verified</span>
-                <span class="text-[10px] text-slate-400" id="compat-desc">AM4 Socket & 550W PSU match RTX 4060.</span>
-              </div>
-            </div>
-
-            <div class="text-right shrink-0">
-              <span class="text-[9px] font-mono uppercase text-slate-400 block">Bottleneck</span>
-              <span class="text-xs font-black text-emerald-400 font-mono" id="bottleneck-score">0.8%</span>
-            </div>
-          </div>
-
-          <!-- Live Gaming FPS Benchmarks Meter -->
-          <div class="mt-4 pt-4 border-t border-slate-800">
-            <div class="flex items-center justify-between mb-2.5">
-              <h4 class="text-[11px] font-mono font-black uppercase text-slate-400 tracking-wider">
-                🎮 Real-Time Gaming FPS (1080p Ultra)
-              </h4>
-              <span class="text-[9px] font-mono text-emerald-400">Live Simulation</span>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                <span class="text-[9px] text-slate-400 font-bold block">GTA 5 / 6</span>
-                <span class="text-sm font-black text-cyan-300 font-mono" id="fps-gta">95 FPS</span>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                <span class="text-[9px] text-slate-400 font-bold block">Valorant</span>
-                <span class="text-sm font-black text-emerald-300 font-mono" id="fps-val">280 FPS</span>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                <span class="text-[9px] text-slate-400 font-bold block">Cyberpunk</span>
-                <span class="text-sm font-black text-purple-300 font-mono" id="fps-cp">72 FPS</span>
-              </div>
-              <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
-                <span class="text-[9px] text-slate-400 font-bold block">BGMI / PUBG</span>
-                <span class="text-sm font-black text-amber-300 font-mono" id="fps-bgmi">140 FPS</span>
+                <span class="text-[10px] text-slate-400" id="compat-desc">AM4 Socket & 550W PSU match RTX 4060 perfectly.</span>
               </div>
             </div>
           </div>
 
-          <!-- Electricity Cost & UPS Backup Estimator -->
-          <div class="mt-4 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5">
-              <span class="text-lg">⚡</span>
-              <div>
-                <span class="text-xs font-bold text-white block">Electricity Cost: <span id="bill-estimate" class="text-amber-300 font-mono">~₹378/month</span></span>
-                <span class="text-[10px] text-slate-400">Based on 4 hrs/day @ ₹7.5/unit • Recommended UPS: <span id="ups-recommend" class="text-cyan-400 font-mono font-bold">600VA / 360W</span></span>
-              </div>
-            </div>
-            <a href="https://www.amazon.in/s?k=apc+microtek+600va+ups+for+gaming+pc&tag=uniquedigi0c6-21" target="_blank" rel="sponsored nofollow noopener" class="text-[10px] font-bold text-cyan-400 hover:underline shrink-0">
-              View UPS Deals ➔
-            </a>
-          </div>
-
-          <!-- 1-Click Amazon India Complete Build Checkout Button & Social Sharing -->
-          <div class="mt-5 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <!-- 1-Click Multi-Item Amazon Cart Link & Share Buttons -->
+          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <div class="flex items-center gap-2">
               <button id="btn-share-whatsapp" class="p-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center gap-1.5 cursor-pointer shadow-sm" title="Share Build on WhatsApp">
                 <span>💬 WhatsApp</span>
@@ -318,9 +308,14 @@ import AdSlot from '../../components/AdSlot.astro';
       
       <!-- Category Selection Tabs -->
       <div class="p-5 sm:p-6 rounded-3xl bg-white border border-line shadow-card">
-        <div class="flex items-center justify-between mb-3 pb-2 border-b border-line">
-          <span class="text-xs font-mono font-bold uppercase text-muted">Component Catalog</span>
-          <span class="text-xs font-mono font-bold text-brand">Select parts to install</span>
+        <div class="flex items-center justify-between mb-4 pb-2 border-b border-line">
+          <div>
+            <h3 class="text-base font-black text-ink tracking-tight uppercase">Component Catalog</h3>
+            <span class="text-xs text-muted font-medium">Select parts to install</span>
+          </div>
+          <span class="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+            ● Real Indian INR Prices
+          </span>
         </div>
 
         <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar" id="part-category-tabs">
@@ -334,18 +329,18 @@ import AdSlot from '../../components/AdSlot.astro';
             3. Motherboard
           </button>
           <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="ram">
-            4. RAM (Memory)
+            4. RAM / Memory
           </button>
           <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="ssd">
             5. Storage (SSD)
           </button>
           <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="cabinet">
-            6. Case & PSU
+            6. Cabinet & PSU
           </button>
         </div>
 
         <!-- Dynamic Part Cards List Container -->
-        <div class="mt-4 flex flex-col gap-3 max-h-[540px] overflow-y-auto pr-1" id="part-cards-list">
+        <div class="mt-4 flex flex-col gap-3 max-h-[560px] overflow-y-auto pr-1" id="part-cards-list">
           <!-- Populated dynamically by JavaScript below -->
         </div>
       </div>
@@ -693,6 +688,7 @@ import AdSlot from '../../components/AdSlot.astro';
     const totalWattage = (cpu?.wattage || 65) + (gpu?.wattage || 115) + 80;
     const psuWattage = cabinet?.wattage || 550;
     const headroom = psuWattage - totalWattage;
+    const headroomPct = Math.round((headroom / psuWattage) * 100);
 
     // Update Header and Summary
     const priceHdr = document.getElementById('total-price-header');
@@ -700,28 +696,40 @@ import AdSlot from '../../components/AdSlot.astro';
     if (priceHdr) priceHdr.textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
     if (wattEl) wattEl.textContent = `${totalWattage}W`;
 
-    // Visualizer Hardware elements
+    // Visualizer Hardware Hologram Callouts
     const visCpu = document.getElementById('vis-cpu-name');
-    const visCpuSocket = document.getElementById('vis-cpu-socket');
+    const visCpuSocketLine = document.getElementById('vis-cpu-socket-line');
     const visGpu = document.getElementById('vis-gpu-name');
     const visGpuSpec = document.getElementById('vis-gpu-spec');
     const visRam = document.getElementById('vis-ram-spec');
     const visRamType = document.getElementById('vis-ram-type');
     const visSsd = document.getElementById('vis-ssd-name');
     const visSsdSpeed = document.getElementById('vis-ssd-speed');
-    const visPsu = document.getElementById('vis-psu-name');
-    const visPsuHeadroom = document.getElementById('vis-psu-headroom');
+    const visPsuHeadroomBanner = document.getElementById('vis-psu-headroom-banner');
 
-    if (visCpu) visCpu.textContent = cpu.name.split('(')[0];
-    if (visCpuSocket) visCpuSocket.textContent = cpu.socket;
-    if (visGpu) visGpu.textContent = gpu.name;
-    if (visGpuSpec) visGpuSpec.textContent = `${gpu.wattage}W TDP • ${gpu.badge}`;
-    if (visRam) visRam.textContent = ram.name.includes('32GB') ? '32GB' : '16GB';
-    if (visRamType) visRamType.textContent = ram.ramType;
-    if (visSsd) visSsd.textContent = ssd.name.split('(')[0];
-    if (visSsdSpeed) visSsdSpeed.textContent = ssd.speed ? `${ssd.speed} Read Speed` : 'Ultra Fast NVMe';
-    if (visPsu) visPsu.textContent = `${psuWattage}W PSU`;
-    if (visPsuHeadroom) visPsuHeadroom.textContent = headroom >= 100 ? `Headroom: +${headroom}W (Safe)` : `Headroom: +${headroom}W (Tight)`;
+    if (visCpu) visCpu.textContent = cpu.name.toUpperCase();
+    if (visCpuSocketLine) visCpuSocketLine.textContent = `${cpu.socket} • ${cpu.brand} • ${cpu.wattage}W TDP • ${cpu.badge}`;
+    if (visGpu) visGpu.textContent = `${gpu.name.toUpperCase()}`;
+    if (visGpuSpec) visGpuSpec.textContent = `${gpu.wattage}W TDP • ${gpu.badge} • PCIe 4.0 Core`;
+    if (visRam) visRam.textContent = ram.ramType;
+    if (visRamType) visRamType.textContent = ram.name.includes('32GB') ? '32GB (16GBx2) High-Speed' : '16GB (8GBx2) Dual-Channel';
+    if (visSsd) visSsd.textContent = ssd.name.split('(')[0].toUpperCase();
+    if (visSsdSpeed) visSsdSpeed.textContent = ssd.speed ? `${ssd.speed} Read Speed • Gen4` : 'PCIe 4.0 NVMe';
+    if (visPsuHeadroomBanner) {
+      visPsuHeadroomBanner.textContent = `PSU ${psuWattage}W 80+ • HEADROOM: +${headroomPct}% (${headroom >= 80 ? 'SAFE' : 'TIGHT'})`;
+    }
+
+    // Dynamic Live Telemetry Temp Updates based on wattage
+    const teleLoad = document.getElementById('telemetry-load');
+    const teleCpu = document.getElementById('telemetry-cpu-temp');
+    const teleGpu = document.getElementById('telemetry-gpu-temp');
+    const cpuTemp = Math.round(42 + (cpu.wattage * 0.16));
+    const gpuTemp = Math.round(48 + (gpu.wattage * 0.09));
+    const loadPct = Math.round((totalWattage / psuWattage) * 75);
+
+    if (teleLoad) teleLoad.textContent = `${loadPct}%`;
+    if (teleCpu) teleCpu.textContent = `CPU ${cpuTemp}°C`;
+    if (teleGpu) teleGpu.textContent = `GPU ${gpuTemp}°C`;
 
     // Electricity & UPS Calculations
     const monthlyUnits = (totalWattage * 4 * 30) / 1000;
@@ -751,19 +759,19 @@ import AdSlot from '../../components/AdSlot.astro';
     let isPsuSafe = (headroom >= 80);
 
     if (!isSocketMatch) {
-      if (compatIcon) { compatIcon.textContent = '✕'; compatIcon.className = 'w-7 h-7 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-black text-xs shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '✕'; compatIcon.className = 'w-6 h-6 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `⚠️ Socket Mismatch: ${cpu.socket} vs ${mobo.socket}`; compatStatus.className = 'block text-xs font-bold text-rose-400'; }
       if (compatDesc) compatDesc.textContent = `Please switch motherboard to match ${cpu.socket} processor socket.`;
     } else if (!isRamMatch) {
-      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-xs shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `⚠️ RAM Type Mismatch: ${ram.ramType} on ${mobo.ramType}`; compatStatus.className = 'block text-xs font-bold text-amber-400'; }
       if (compatDesc) compatDesc.textContent = `Please select matching ${mobo.ramType} memory modules.`;
     } else if (!isPsuSafe) {
-      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-xs shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '⚠️'; compatIcon.className = 'w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `⚠️ PSU Headroom Warning (${totalWattage}W / ${psuWattage}W)`; compatStatus.className = 'block text-xs font-bold text-amber-400'; }
       if (compatDesc) compatDesc.textContent = `Consider upgrading to a 650W or 750W PSU for peak stability.`;
     } else {
-      if (compatIcon) { compatIcon.textContent = '✓'; compatIcon.className = 'w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xs shrink-0'; }
+      if (compatIcon) { compatIcon.textContent = '✓'; compatIcon.className = 'w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-xs shrink-0'; }
       if (compatStatus) { compatStatus.textContent = `100% Component Compatibility Verified`; compatStatus.className = 'block text-xs font-bold text-white'; }
       if (compatDesc) compatDesc.textContent = `${cpu.socket} Socket & ${psuWattage}W PSU match perfectly with ${gpu.name}.`;
     }
@@ -851,6 +859,15 @@ import AdSlot from '../../components/AdSlot.astro';
     });
   });
 
+  // Reset Rig View Button
+  const resetBtn = document.getElementById('btn-reset-rig');
+  if (resetBtn && caseBox) {
+    resetBtn.addEventListener('click', () => {
+      playSound('click');
+      caseBox.style.transform = 'rotateX(5deg) rotateY(-7deg)';
+    });
+  }
+
   // Interactive 3D Parallax Tilt with Mouse Cursor Movement
   const viewportBox = document.getElementById('rig-viewport-box');
   if (viewportBox && caseBox) {
@@ -871,41 +888,69 @@ import AdSlot from '../../components/AdSlot.astro';
     btn.addEventListener('click', () => {
       const color = btn.getAttribute('data-rgb');
       const rgbAmbient = document.getElementById('ambient-rgb');
+      const rgbModeName = document.getElementById('argb-mode-name');
       playSound('rgb');
       if (rgbAmbient) {
-        if (color === 'cyan') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'purple') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'emerald') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'amber') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
-        if (color === 'rose') rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'cyan') {
+          rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+          if (rgbModeName) rgbModeName.textContent = 'CYBER CYAN • AURA SYNC';
+        }
+        if (color === 'purple') {
+          rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+          if (rgbModeName) rgbModeName.textContent = 'NEON PURPLE • SYNTHWAVE';
+        }
+        if (color === 'emerald') {
+          rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+          if (rgbModeName) rgbModeName.textContent = 'RAZER EMERALD • CHROMA';
+        }
+        if (color === 'amber') {
+          rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-amber-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+          if (rgbModeName) rgbModeName.textContent = 'BLAZE GOLD • WARP SPEED';
+        }
+        if (color === 'rose') {
+          rgbAmbient.className = 'absolute -top-24 -left-24 w-96 h-96 bg-rose-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+          if (rgbModeName) rgbModeName.textContent = 'CRIMSON RED • OVERCLOCK';
+        }
       }
     });
   });
 
-  // Power Switch & Stress Test Simulation
+  // Power Switch & Stress Test Simulation (Both Buttons)
   const powerBtn = document.getElementById('btn-power-switch');
+  const powerBtnBottom = document.getElementById('btn-power-switch-bottom');
   const powerLed = document.getElementById('rig-power-led');
   const statusText = document.getElementById('rig-status-text');
-  if (powerBtn) {
-    powerBtn.addEventListener('click', () => {
-      playSound('power');
-      if (statusText) statusText.textContent = 'STRESS TESTING 100% LOAD...';
-      if (powerLed) powerLed.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
-      
-      // Speed up fans temporarily
-      document.querySelectorAll('.rig-fan').forEach(fan => {
-        (fan as HTMLElement).style.animationDuration = '0.4s';
-      });
 
-      setTimeout(() => {
-        if (statusText) statusText.textContent = 'SYSTEM BENCHMARK PASSED (STABLE)';
-        if (powerLed) powerLed.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
-        document.querySelectorAll('.rig-fan').forEach(fan => {
-          (fan as HTMLElement).style.animationDuration = '2.0s';
-        });
-      }, 1600);
+  function triggerStressTest() {
+    playSound('power');
+    if (statusText) statusText.textContent = '● STRESS TESTING 100% LOAD...';
+    if (powerLed) powerLed.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping';
+    
+    // Temporarily ramp telemetry
+    const teleLoad = document.getElementById('telemetry-load');
+    const teleCpu = document.getElementById('telemetry-cpu-temp');
+    const teleGpu = document.getElementById('telemetry-gpu-temp');
+    if (teleLoad) teleLoad.textContent = '99%';
+    if (teleCpu) teleCpu.textContent = 'CPU 76°C';
+    if (teleGpu) teleGpu.textContent = 'GPU 79°C';
+
+    // Speed up fans temporarily
+    document.querySelectorAll('.rig-fan').forEach(fan => {
+      (fan as HTMLElement).style.animationDuration = '0.35s';
     });
+
+    setTimeout(() => {
+      if (statusText) statusText.textContent = '● SYSTEM ONLINE • 60 FPS';
+      if (powerLed) powerLed.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
+      updateVisualizerAndStats();
+      document.querySelectorAll('.rig-fan').forEach(fan => {
+        (fan as HTMLElement).style.animationDuration = '2.0s';
+      });
+    }, 1800);
   }
+
+  if (powerBtn) powerBtn.addEventListener('click', triggerStressTest);
+  if (powerBtnBottom) powerBtnBottom.addEventListener('click', triggerStressTest);
 
   // Sound Toggle
   const soundBtn = document.getElementById('btn-sound-toggle');

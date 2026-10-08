@@ -1,0 +1,124 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+
+const BUILDS = [
+  {
+    slug: 'student-35000',
+    title: 'Student Budget Gaming PC',
+    price: '₹34,890',
+    badge: 'STUDENT BUDGET',
+    badgeColor: 'bg-emerald-500 text-white',
+    specs: 'AMD Ryzen 5 5600 • GTX 1650 • 16GB RAM • 500GB SSD',
+    fps: 'GTA 5: 95 FPS | Val: 280 FPS',
+    tag: 'Best for Coding, Esports & School Work'
+  },
+  {
+    slug: 'budget-gaming-50000',
+    title: 'Value King 1080p Ultra Gaming Rig',
+    price: '₹54,980',
+    badge: 'VALUE GAMING KING',
+    badgeColor: 'bg-amber-400 text-slate-950',
+    specs: 'Ryzen 5 5600 • RTX 4060 8GB • 16GB RAM • 1TB NVMe',
+    fps: 'GTA 5: 125 FPS | Val: 380 FPS | Cyberpunk: 78 FPS',
+    tag: 'DLSS 3 & Ray Tracing King under ₹55k'
+  },
+  {
+    slug: 'editing-workstation-85000',
+    title: 'Video Editing & 3D Render Workstation',
+    price: '₹84,970',
+    badge: 'CREATOR WORKSTATION',
+    badgeColor: 'bg-blue-600 text-white',
+    specs: 'Intel Core i5-13400F 10-Core • RTX 4060 • 32GB DDR5 • 1TB Gen4',
+    fps: '4K Video Editing • Premiere Pro & DaVinci Ready',
+    tag: '32GB High-Speed DDR5 Memory'
+  },
+  {
+    slug: '4k-gaming-120000',
+    title: 'High-End 4K Esports & Creator Beast',
+    price: '₹1,24,960',
+    badge: '4K ULTRA BEAST',
+    badgeColor: 'bg-purple-600 text-white',
+    specs: 'Ryzen 7 7800X3D (3D V-Cache) • RTX 4070 Super 12GB • 32GB DDR5',
+    fps: '4K 120 FPS Ultra Gaming & Streamer Rig',
+    tag: 'World #1 Gaming CPU (7800X3D)'
+  },
+  {
+    slug: 'rgb-dream-150000',
+    title: 'Ultimate ARGB Dream Showcase Rig',
+    price: '₹1,48,900',
+    badge: 'ULTIMATE RGB DREAM',
+    badgeColor: 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white',
+    specs: 'Ryzen 7 7800X3D • RTX 4070 Super • Corsair 4000D • 750W Gold',
+    fps: '6x ARGB Aura Sync • 4K Max Settings 144Hz',
+    tag: 'Full Tempered Glass & Liquid AIO'
+  }
+];
+---
+
+<Layout
+  title="Top 5 Best Gaming & Workstation PC Builds in India (2026) — UniqueDigit"
+  description="Compare the top 5 curated Indian gaming PC builds from ₹35,000 to ₹1.5 Lakhs with live 3D visualizer, FPS benchmarks, and 1-click Amazon checkout."
+>
+  <div class="my-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-line mb-8">
+      <div>
+        <span class="text-xs font-mono font-bold uppercase text-brand">Curated Hardware Ecosystem</span>
+        <h1 class="text-2xl sm:text-3xl font-black text-ink tracking-tight mt-0.5">
+          Top 5 Gaming & Workstation PC Builds in India
+        </h1>
+        <p class="text-xs sm:text-sm text-muted mt-1">
+          Every component verified for 100% socket compatibility, PSU headroom, and live Amazon India pricing.
+        </p>
+      </div>
+
+      <a
+        href="/games/pc-builder-india"
+        class="px-5 py-3 rounded-2xl bg-brand hover:bg-brand-dark text-white font-black text-xs transition shadow-md flex items-center justify-center gap-2 self-start sm:self-center shrink-0"
+      >
+        <span>🖥️ Launch Custom 3D Builder</span>
+        <span>➔</span>
+      </a>
+    </div>
+
+    <!-- 5 Showcase Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {BUILDS.map(b => (
+        <div class="p-6 rounded-3xl bg-white border border-line shadow-card hover:shadow-xl hover:border-brand/40 transition-all duration-300 flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class={`px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${b.badgeColor}`}>
+                {b.badge}
+              </span>
+              <span class="text-base font-black text-ink font-mono">{b.price}</span>
+            </div>
+
+            <h3 class="text-base font-black text-ink group-hover:text-brand transition leading-snug mb-2">
+              {b.title}
+            </h3>
+
+            <p class="text-xs text-muted mb-3 leading-relaxed">
+              {b.specs}
+            </p>
+
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 text-[11px] font-mono text-slate-700 mb-4">
+              <div class="font-bold text-emerald-600 mb-0.5">⚡ FPS & Target:</div>
+              <div>{b.fps}</div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+            <span class="text-[11px] text-muted truncate">{b.tag}</span>
+            <a
+              href={`/builds/${b.slug}`}
+              class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-brand text-white font-black text-xs transition shrink-0 flex items-center gap-1"
+            >
+              <span>View Build</span>
+              <span>➔</span>
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

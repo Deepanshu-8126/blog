@@ -37,6 +37,13 @@ const pinnedNiches = niches.filter(n => n.pin).slice(0, 5);
           >
             Home
           </a>
+          <a
+            href="/builds"
+            class="px-3 py-1.5 rounded-lg text-xs font-bold text-purple-100 hover:bg-brand-dark/50 transition flex items-center gap-1.5"
+          >
+            <Icon name="cpu" class="w-3.5 h-3.5 text-cta" />
+            <span>PC Builds</span>
+          </a>
           {pinnedNiches.map(n => (
             <a
               href={`/${n.slug}`}
