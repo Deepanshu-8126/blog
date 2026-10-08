@@ -156,7 +156,7 @@ import AdSlot from '../../components/AdSlot.astro';
             </div>
           </div>
 
-          <!-- View Mode Selector (Real Case vs Full Battlestation Desk vs 3D WebGL Orbit) -->
+          <!-- View Mode Selector (Real Case vs Battlestation Desk vs 3D WebGL vs PC Lab Assembly) -->
           <div class="flex items-center justify-between gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 flex-wrap">
             <div class="flex items-center gap-1.5 flex-wrap">
               <button id="tab-mode-photo" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-black flex items-center gap-1.5 shadow-md shadow-cyan-500/20 cursor-pointer transition">
@@ -169,6 +169,10 @@ import AdSlot from '../../components/AdSlot.astro';
               </button>
               <button id="tab-mode-3d" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition">
                 <span>🌐 3D WebGL</span>
+              </button>
+              <button id="tab-mode-lab" class="px-3 py-1.5 rounded-xl text-slate-400 hover:text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition">
+                <span>🛠️ PC Lab Assembly</span>
+                <span class="px-1.5 py-0.2 rounded bg-cyan-400/20 text-cyan-300 text-[9px] font-mono">SIM</span>
               </button>
             </div>
             <div class="flex items-center gap-1.5 pr-1">
@@ -425,6 +429,25 @@ import AdSlot from '../../components/AdSlot.astro';
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Chamber 4: Embedded PC Lab 3D Assembly Simulator (from eru123/pc-lab-3d) -->
+          <div id="lab-assembly-chamber" class="relative w-full rounded-3xl overflow-hidden border-2 border-cyan-500/60 bg-slate-950 shadow-2xl hidden">
+            <div class="p-2 bg-slate-900 border-b border-cyan-500/30 flex items-center justify-between text-xs font-mono">
+              <span class="text-cyan-300 font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                <span>🛠️ PC LAB 3D ASSEMBLY SIMULATOR</span>
+              </span>
+              <a href="/pc-lab-3d/index.html" target="_blank" class="text-amber-400 hover:underline text-[11px] font-bold">
+                ↗ Open Fullscreen
+              </a>
+            </div>
+            <iframe
+              src="/pc-lab-3d/index.html"
+              class="w-full h-[520px] border-0 rounded-b-3xl bg-slate-950"
+              title="3D PC Assembly Lab Simulator"
+              loading="lazy"
+            ></iframe>
           </div>
 
           <!-- Bottom Real-Time Telemetry Bar (ECG / Temp Wave Monitor) -->
@@ -1111,13 +1134,15 @@ import AdSlot from '../../components/AdSlot.astro';
     });
   });
 
-  // Setup View Mode Switcher (Real Case Photo vs Battlestation Desk vs 3D WebGL)
+  // Setup View Mode Switcher (Real Case Photo vs Battlestation Desk vs 3D WebGL vs PC Lab Assembly)
   const tabPhoto = document.getElementById('tab-mode-photo');
   const tabDesk = document.getElementById('tab-mode-desk');
   const tab3d = document.getElementById('tab-mode-3d');
+  const tabLab = document.getElementById('tab-mode-lab');
   const realChamber = document.getElementById('real-rig-chamber');
   const deskChamber = document.getElementById('battlestation-desk-chamber');
   const webglChamber = document.getElementById('webgl-3d-chamber');
+  const labChamber = document.getElementById('lab-assembly-chamber');
 
   function setVisualizerMode(mode) {
     playSound('click');
@@ -1126,9 +1151,11 @@ import AdSlot from '../../components/AdSlot.astro';
     if (tabPhoto) tabPhoto.className = inactiveClass;
     if (tabDesk) tabDesk.className = inactiveClass;
     if (tab3d) tab3d.className = inactiveClass;
+    if (tabLab) tabLab.className = inactiveClass;
 
     if (realChamber) realChamber.classList.add('hidden');
     if (deskChamber) deskChamber.classList.add('hidden');
+    if (labChamber) labChamber.classList.add('hidden');
     if (webglChamber) {
       webglChamber.classList.add('hidden');
       webglChamber.classList.remove('flex');
@@ -1146,12 +1173,16 @@ import AdSlot from '../../components/AdSlot.astro';
         webglChamber.classList.remove('hidden');
         webglChamber.classList.add('flex');
       }
+    } else if (mode === 'lab') {
+      if (tabLab) tabLab.className = 'px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 text-xs font-black flex items-center gap-1.5 shadow-md shadow-cyan-500/20 cursor-pointer transition';
+      if (labChamber) labChamber.classList.remove('hidden');
     }
   }
 
   if (tabPhoto) tabPhoto.addEventListener('click', () => setVisualizerMode('photo'));
   if (tabDesk) tabDesk.addEventListener('click', () => setVisualizerMode('desk'));
   if (tab3d) tab3d.addEventListener('click', () => setVisualizerMode('3d'));
+  if (tabLab) tabLab.addEventListener('click', () => setVisualizerMode('lab'));
 
   // Setup Category Tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
