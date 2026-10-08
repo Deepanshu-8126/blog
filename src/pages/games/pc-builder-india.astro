@@ -1,0 +1,588 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import AdSlot from '../../components/AdSlot.astro';
+---
+
+<Layout
+  title="PC Builder Simulator India (2026) — Build Gaming PC & Check Live INR Prices | UniqueDigit"
+  description="Interactive 3D PC Builder Simulator for Indian gamers. Custom build your gaming rig, check part compatibility, calculate live Amazon India prices, test gaming FPS, and compare laptop alternatives."
+>
+  <!-- Top Banner & Breadcrumb -->
+  <div class="mb-6">
+    <nav class="flex items-center gap-2 text-xs text-muted mb-3">
+      <a href="/" class="hover:text-brand transition">Home</a>
+      <span>/</span>
+      <a href="/pc-builds" class="hover:text-brand transition font-medium">PC Builds</a>
+      <span>/</span>
+      <span class="text-ink font-bold">3D Rig Simulator</span>
+    </nav>
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-line">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand text-white shadow-xs">
+            🎮 Interactive Simulator
+          </span>
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 font-mono">
+            ⚡ Live INR Prices (Amazon India)
+          </span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">
+          Indian PC Builder & 3D Rig Simulator
+        </h1>
+        <p class="text-sm text-muted mt-1">
+          Customize your custom gaming rig, test real-time component compatibility, calculate FPS benchmarks, and get live retail deal links.
+        </p>
+      </div>
+
+      <!-- Quick Stats Pill -->
+      <div class="flex items-center gap-4 bg-slate-900 text-white p-4 rounded-2xl border border-slate-800 shrink-0 shadow-card">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 block font-mono">Estimated Rig Cost</span>
+          <span class="text-2xl font-black text-cta font-mono" id="total-price-header">₹54,988</span>
+        </div>
+        <div class="border-l border-slate-800 pl-4">
+          <span class="text-[10px] uppercase font-bold text-slate-400 block font-mono">Wattage</span>
+          <span class="text-lg font-black text-white font-mono" id="total-wattage">420W</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Simulator Container -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-6">
+    
+    <!-- LEFT COLUMN: 3D Interactive PC Cabinet Visualizer -->
+    <div class="lg:col-span-6 flex flex-col gap-6">
+      
+      <div class="p-6 rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl relative overflow-hidden">
+        <!-- Ambient ARGB Background Lighting -->
+        <div id="ambient-rgb" class="absolute -top-20 -left-20 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none transition-all duration-700"></div>
+        <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-brand/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10">
+          <!-- Top Header inside Visualizer -->
+          <div class="flex items-center justify-between gap-2 pb-4 border-b border-slate-800 mb-6">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-xs font-mono font-bold text-slate-300">Live 3D Case Preview</span>
+            </div>
+
+            <!-- ARGB Color Switcher -->
+            <div class="flex items-center gap-1.5 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] font-mono text-slate-400 mr-1 hidden sm:inline">ARGB:</span>
+              <button class="w-5 h-5 rounded-full bg-cyan-400 border border-white/40 cursor-pointer transition hover:scale-110" data-rgb="cyan" title="Cyber Cyan"></button>
+              <button class="w-5 h-5 rounded-full bg-purple-500 border border-white/40 cursor-pointer transition hover:scale-110" data-rgb="purple" title="Neon Purple"></button>
+              <button class="w-5 h-5 rounded-full bg-emerald-400 border border-white/40 cursor-pointer transition hover:scale-110" data-rgb="emerald" title="Razer Emerald"></button>
+              <button class="w-5 h-5 rounded-full bg-amber-400 border border-white/40 cursor-pointer transition hover:scale-110" data-rgb="amber" title="Golden Blaze"></button>
+              <button class="w-5 h-5 rounded-full bg-rose-500 border border-white/40 cursor-pointer transition hover:scale-110" data-rgb="rose" title="Crimson Red"></button>
+            </div>
+          </div>
+
+          <!-- The 3D-Styled PC Cabinet Simulation Box -->
+          <div class="w-full aspect-[4/3] rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border-2 border-slate-700/80 p-5 relative flex flex-col justify-between shadow-inner overflow-hidden">
+            
+            <!-- Tempered Glass Reflection Layer -->
+            <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none"></div>
+
+            <!-- Motherboard & Internal Hardware Grid -->
+            <div class="relative z-10 w-full h-full flex flex-col justify-between">
+              
+              <!-- Top Row: Rear Exhaust Fan & Liquid / Air CPU Cooler -->
+              <div class="flex items-start justify-between">
+                
+                <!-- Rear Exhaust Fan (Spinning) -->
+                <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center relative group">
+                  <div class="w-12 h-12 rounded-full border-2 border-dashed border-cyan-400 animate-spin flex items-center justify-center">
+                    <div class="w-4 h-4 rounded-full bg-cyan-400/80 blur-xs"></div>
+                  </div>
+                  <span class="absolute -bottom-4 text-[9px] font-mono text-slate-400">Exhaust</span>
+                </div>
+
+                <!-- CPU Socket & Cooler Block -->
+                <div class="flex-1 max-w-[180px] p-3 rounded-2xl bg-slate-800/90 border border-cyan-400/40 shadow-lg shadow-cyan-500/10 flex flex-col items-center justify-center text-center">
+                  <span class="text-[10px] font-black uppercase text-cyan-300 font-mono tracking-wider mb-1" id="vis-cpu-name">AMD Ryzen 5 5600</span>
+                  <div class="w-10 h-10 rounded-xl bg-slate-950 border border-cyan-500/50 flex items-center justify-center">
+                    <span class="text-xs font-mono font-bold text-cyan-400">AM4</span>
+                  </div>
+                  <span class="text-[9px] text-slate-400 mt-1" id="vis-cpu-cooler">Wraith Stealth Cooler</span>
+                </div>
+
+                <!-- Dual Channel RAM Slots -->
+                <div class="flex gap-1.5 p-2 rounded-xl bg-slate-800/60 border border-slate-700">
+                  <div class="w-2.5 h-16 rounded-sm bg-gradient-to-t from-cyan-500 to-purple-500 shadow-sm shadow-cyan-400/50 animate-pulse"></div>
+                  <div class="w-2.5 h-16 rounded-sm bg-gradient-to-t from-cyan-500 to-purple-500 shadow-sm shadow-cyan-400/50 animate-pulse"></div>
+                  <div class="flex flex-col justify-center text-[9px] font-mono text-slate-400 pl-1">
+                    <span id="vis-ram-spec">16GB</span>
+                    <span>DDR4</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Middle Row: Dedicated Graphics Card (GPU) with Spinning Fans -->
+              <div class="my-auto p-3.5 rounded-2xl bg-slate-800/95 border border-purple-500/50 shadow-xl shadow-purple-500/15 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center">
+                    <div class="w-2.5 h-2.5 rounded-full bg-purple-400"></div>
+                  </div>
+                  <div class="w-10 h-10 rounded-full border-2 border-dashed border-purple-400 animate-spin flex items-center justify-center">
+                    <div class="w-2.5 h-2.5 rounded-full bg-purple-400"></div>
+                  </div>
+                </div>
+
+                <div class="text-right">
+                  <span class="block text-xs font-black text-purple-300 font-mono tracking-tight" id="vis-gpu-name">
+                    NVIDIA GeForce RTX 4060 8GB
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-mono" id="vis-gpu-spec">
+                    115W TDP • DLSS 3 & Ray Tracing
+                  </span>
+                </div>
+              </div>
+
+              <!-- Bottom Row: NVMe SSD & PSU Power Shroud -->
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+                <div class="p-2 rounded-xl bg-slate-800 border border-slate-700 flex items-center gap-2">
+                  <Icon name="cpu" class="w-3.5 h-3.5 text-cyan-400" />
+                  <span class="text-[10px] font-mono text-slate-300" id="vis-ssd-name">1TB Gen4 NVMe (3500 MB/s)</span>
+                </div>
+
+                <div class="p-2 px-3 rounded-xl bg-slate-900 border border-slate-700 text-right">
+                  <span class="text-[10px] font-mono font-bold text-amber-300" id="vis-psu-name">550W Bronze PSU</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Compatibility & Bottleneck Alert Banner -->
+          <div class="mt-5 p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5">
+              <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
+                ✓
+              </span>
+              <div>
+                <span class="block text-xs font-bold text-white" id="compat-status">100% Component Compatibility Verified</span>
+                <span class="text-[11px] text-slate-400" id="compat-desc">AM4 Socket & 550W PSU are fully compatible with RTX 4060.</span>
+              </div>
+            </div>
+
+            <div class="text-right shrink-0">
+              <span class="text-[10px] font-mono uppercase text-slate-400 block">Bottleneck</span>
+              <span class="text-xs font-black text-emerald-400 font-mono" id="bottleneck-score">0.8% (Ideal)</span>
+            </div>
+          </div>
+
+          <!-- Live Gaming FPS Benchmarks Meter -->
+          <div class="mt-5 pt-5 border-t border-slate-800">
+            <h4 class="text-xs font-mono font-black uppercase text-slate-400 tracking-wider mb-3">
+              🎮 Estimated Gaming FPS Benchmarks (1080p Ultra)
+            </h4>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block">GTA 5 / 6</span>
+                <span class="text-base font-black text-cyan-300 font-mono" id="fps-gta">95 FPS</span>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block">Valorant / CS2</span>
+                <span class="text-base font-black text-emerald-300 font-mono" id="fps-val">280 FPS</span>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block">Cyberpunk 2077</span>
+                <span class="text-base font-black text-purple-300 font-mono" id="fps-cp">72 FPS</span>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+                <span class="text-[10px] text-slate-400 font-bold block">BGMI / PUBG</span>
+                <span class="text-base font-black text-amber-300 font-mono" id="fps-bgmi">140 FPS</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1-Click Amazon India Complete Build Checkout Button -->
+          <div class="mt-6 pt-5 border-t border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs text-slate-400 block">Amazon Verified Indian Merchant Link</span>
+              <span class="text-[11px] text-slate-500">Includes official brand warranties & Prime delivery options.</span>
+            </div>
+
+            <a
+              id="btn-buy-full-build"
+              href="https://www.amazon.in/s?k=ryzen+5+5600+rtx+4060+pc+build&tag=uniquedigi0c6-21"
+              target="_blank"
+              rel="sponsored nofollow noopener"
+              class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-sm transition transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-amber-500/25 cursor-pointer shrink-0"
+            >
+              <span>🛒 Buy Complete Build on Amazon India</span>
+              <Icon name="external-link" class="w-4 h-4" />
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Interactive Component Selector -->
+    <div class="lg:col-span-6 flex flex-col gap-6">
+      
+      <!-- Category Selection Tabs -->
+      <div class="p-4 rounded-3xl bg-white border border-line shadow-card">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar" id="part-category-tabs">
+          <button class="tab-btn px-4 py-2 rounded-xl text-xs font-black bg-brand text-white shadow-xs shrink-0 cursor-pointer" data-cat="cpu">
+            1. Processor (CPU)
+          </button>
+          <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="gpu">
+            2. Graphics Card (GPU)
+          </button>
+          <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="mobo">
+            3. Motherboard
+          </button>
+          <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="ram">
+            4. RAM (Memory)
+          </button>
+          <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="ssd">
+            5. Storage (SSD)
+          </button>
+          <button class="tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition" data-cat="cabinet">
+            6. Case & PSU
+          </button>
+        </div>
+
+        <!-- Dynamic Part Cards List Container -->
+        <div class="mt-4 flex flex-col gap-3 max-h-[520px] overflow-y-auto pr-1" id="part-cards-list">
+          <!-- Populated dynamically by JavaScript below -->
+        </div>
+      </div>
+
+      <!-- Current Selected Components Breakdown Table -->
+      <div class="p-6 rounded-3xl bg-white border border-line shadow-card">
+        <h3 class="text-base font-black text-ink mb-4 flex items-center justify-between">
+          <span>Selected Parts Breakdown</span>
+          <span class="text-xs font-mono font-bold text-muted" id="summary-part-count">6 of 6 Parts Selected</span>
+        </h3>
+
+        <div class="flex flex-col divide-y divide-slate-100 text-xs" id="selected-parts-summary">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <AdSlot position="mid" />
+
+  <!-- DYNAMIC BUDGET SLIDER & GAMING LAPTOP ALTERNATIVES SECTION -->
+  <div class="my-12 p-6 sm:p-10 rounded-3xl bg-slate-900 border border-slate-800 text-white shadow-2xl">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-800 mb-8">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+          <span class="text-xs font-mono font-bold uppercase text-amber-300">Portability Dilemma</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          Prefer a Laptop Instead? Top Alternatives for Your Budget
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">
+          Compare your custom desktop build against pre-assembled gaming laptops available at the exact same price point.
+        </p>
+      </div>
+
+      <!-- Budget Selector Range Slider -->
+      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 min-w-[260px]">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="text-slate-400 font-medium">Your Target Budget:</span>
+          <span class="font-black text-cta font-mono text-base" id="slider-val-display">₹55,000</span>
+        </div>
+        <input
+          type="range"
+          id="budget-slider"
+          min="40000"
+          max="140000"
+          step="5000"
+          value="55000"
+          class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
+        />
+        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+          <span>₹40k</span>
+          <span>₹80k</span>
+          <span>₹1.4L+</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Laptop Cards List -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="laptop-cards-container">
+      <!-- Injected by JavaScript based on budget slider value -->
+    </div>
+  </div>
+
+  <AdSlot position="bottom" />
+</Layout>
+
+<!-- Client-Side Simulator Logic -->
+<script>
+  // Comprehensive Indian Components Catalog with Live Prices & Specs
+  const PARTS_DATA = {
+    cpu: [
+      { id: 'c1', name: 'AMD Ryzen 5 5600', brand: 'AMD', price: 12499, socket: 'AM4', ramType: 'DDR4', wattage: 65, gtaFps: 95, valFps: 280, cpFps: 72, bgmiFps: 140, badge: 'Best Budget Gaming', img: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=300&q=80', amazonAsin: 'B09VCHR1VH' },
+      { id: 'c2', name: 'Intel Core i5-13400F', brand: 'Intel', price: 18499, socket: 'LGA1700', ramType: 'DDR4/DDR5', wattage: 65, gtaFps: 110, valFps: 320, cpFps: 84, bgmiFps: 160, badge: 'Top 10-Core Multi-tasker', img: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=300&q=80', amazonAsin: 'B0BN5ZW62Z' },
+      { id: 'c3', name: 'AMD Ryzen 5 7600', brand: 'AMD', price: 18990, socket: 'AM5', ramType: 'DDR5', wattage: 65, gtaFps: 125, valFps: 380, cpFps: 92, bgmiFps: 180, badge: 'Future-Proof AM5', img: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=300&q=80', amazonAsin: 'B0BMQJWBDM' },
+      { id: 'c4', name: 'AMD Ryzen 7 7800X3D', brand: 'AMD', price: 36999, socket: 'AM5', ramType: 'DDR5', wattage: 120, gtaFps: 165, valFps: 550, cpFps: 125, bgmiFps: 240, badge: 'World #1 Gaming CPU', img: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=300&q=80', amazonAsin: 'B0BTZB7F88' }
+    ],
+    gpu: [
+      { id: 'g1', name: 'ZOTAC Gaming GeForce GTX 1650 4GB', brand: 'NVIDIA', price: 11999, wattage: 75, fpsMultiplier: 0.6, badge: 'Entry Esports', amazonAsin: 'B07ZKSZ5MV' },
+      { id: 'g2', name: 'ASUS Dual GeForce RTX 3060 12GB', brand: 'NVIDIA', price: 25499, wattage: 170, fpsMultiplier: 1.0, badge: '12GB VRAM Value', amazonAsin: 'B096677X14' },
+      { id: 'g3', name: 'Gigabyte GeForce RTX 4060 Eagle OC 8GB', brand: 'NVIDIA', price: 29490, wattage: 115, fpsMultiplier: 1.25, badge: 'DLSS 3 & Ray Tracing King', amazonAsin: 'B0C8JZKV6T' },
+      { id: 'g4', name: 'Sapphire Pulse AMD Radeon RX 7600 8GB', brand: 'AMD', price: 25990, wattage: 165, fpsMultiplier: 1.2, badge: 'Best Pure Raster Value', amazonAsin: 'B0C5R4N813' },
+      { id: 'g5', name: 'Gigabyte GeForce RTX 4070 Super 12GB', brand: 'NVIDIA', price: 59990, wattage: 220, fpsMultiplier: 1.85, badge: '1440p Ultra Beast', amazonAsin: 'B0CS9K4X6K' }
+    ],
+    mobo: [
+      { id: 'm1', name: 'MSI B550M PRO-VDH WiFi Motherboard', socket: 'AM4', ramType: 'DDR4', price: 9290, badge: 'B550 Best Seller', amazonAsin: 'B08BCR4Z9P' },
+      { id: 'm2', name: 'MSI PRO B760M-P DDR4 Motherboard', socket: 'LGA1700', ramType: 'DDR4', price: 9999, badge: 'Intel 13th Gen Value', amazonAsin: 'B0BNP5C9XW' },
+      { id: 'm3', name: 'Gigabyte B650M Gaming WiFi Motherboard', socket: 'AM5', ramType: 'DDR5', price: 11490, badge: 'AM5 Ready', amazonAsin: 'B0C9J7V2T4' }
+    ],
+    ram: [
+      { id: 'r1', name: 'Corsair Vengeance LPX 16GB (8GBx2) DDR4 3200MHz', ramType: 'DDR4', price: 3499, badge: 'Dual Channel Fast', amazonAsin: 'B0143UM4TC' },
+      { id: 'r2', name: 'Kingston Fury Beast RGB 32GB (16GBx2) DDR4 3200MHz', ramType: 'DDR4', price: 6890, badge: '32GB Multitasking', amazonAsin: 'B097K3NY9W' },
+      { id: 'r3', name: 'Corsair Vengeance RGB 32GB (16GBx2) DDR5 6000MHz', ramType: 'DDR5', price: 10499, badge: '6000MHz Ultra Speed', amazonAsin: 'B0BPTKD797' }
+    ],
+    ssd: [
+      { id: 's1', name: 'Crucial P3 500GB PCIe 3.0 3D NAND NVMe M.2 SSD', price: 3290, badge: 'Entry NVMe', amazonAsin: 'B0B25L3P3T' },
+      { id: 's2', name: 'WD Blue SN580 1TB NVMe PCIe Gen 4x4 SSD (4150 MB/s)', price: 5990, badge: 'Top Recommended 1TB', amazonAsin: 'B0C8XMH264' },
+      { id: 's3', name: 'Samsung 990 PRO 1TB PCIe 4.0 M.2 SSD (7450 MB/s)', price: 9999, badge: 'Maximum Speed Pro', amazonAsin: 'B0B9C3Z31R' }
+    ],
+    cabinet: [
+      { id: 'cb1', name: 'Ant Esports ICE-112 Mid-Tower Cabinet + 550W PSU Combo', price: 4799, wattage: 550, badge: 'Budget Case + Power', amazonAsin: 'B097Z77M1T' },
+      { id: 'cb2', name: 'Deepcool CC560 V2 ARGB Case + Deepcool PK650D 650W 80 Plus Bronze', price: 7990, wattage: 650, badge: 'High Airflow + 650W', amazonAsin: 'B09NLH6V32' },
+      { id: 'cb3', name: 'Corsair 4000D Airflow Tempered Glass + Corsair RM750e 750W Gold Modular', price: 15490, wattage: 750, badge: 'Premium Silence & Gold Power', amazonAsin: 'B08C7BGV3D' }
+    ]
+  };
+
+  // Indian Gaming Laptop Catalog dynamically mapped to budget tiers
+  const LAPTOPS_DATA = [
+    { min: 40000, max: 55000, name: 'Lenovo IdeaPad Gaming 3 (Ryzen 5 5500H / RTX 2050 / 8GB / 512GB)', price: 46990, badge: 'Best Under ₹50K', affUrl: 'https://www.amazon.in/s?k=lenovo+ideapad+gaming+3+rtx+2050&tag=uniquedigi0c6-21', img: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=400&q=80' },
+    { min: 50000, max: 70000, name: 'Acer Nitro V 15 (Core i5-13420H / RTX 4050 6GB / 16GB / 512GB SSD)', price: 68990, badge: 'RTX 4050 Value King', affUrl: 'https://www.amazon.in/s?k=acer+nitro+v+rtx+4050&tag=uniquedigi0c6-21', img: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=400&q=80' },
+    { min: 65000, max: 85000, name: 'Lenovo LOQ 15 (Core i5-13450HX / RTX 4050 6GB / 100% sRGB 144Hz)', price: 74990, badge: 'Top Rated Display', affUrl: 'https://www.amazon.in/s?k=lenovo+loq+15+rtx+4050&tag=uniquedigi0c6-21', img: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=400&q=80' },
+    { min: 80000, max: 110000, name: 'HP Victus 16 (Ryzen 7 7840HS / RTX 4060 8GB / 16GB / 1TB SSD)', price: 92990, badge: 'RTX 4060 Powerhouse', affUrl: 'https://www.amazon.in/s?k=hp+victus+16+rtx+4060&tag=uniquedigi0c6-21', img: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=400&q=80' },
+    { min: 100000, max: 160000, name: 'ASUS ROG Strix G16 (Core i7-13650HX / RTX 4070 8GB / 16GB / 1TB SSD)', price: 139990, badge: 'Flagship Esports Machine', affUrl: 'https://www.amazon.in/s?k=asus+rog+strix+g16+rtx+4070&tag=uniquedigi0c6-21', img: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=400&q=80' }
+  ];
+
+  // Active Rig State
+  let currentSelection = {
+    cpu: PARTS_DATA.cpu[0],
+    gpu: PARTS_DATA.gpu[2], // RTX 4060
+    mobo: PARTS_DATA.mobo[0], // B550M
+    ram: PARTS_DATA.ram[0], // 16GB DDR4
+    ssd: PARTS_DATA.ssd[1], // 1TB NVMe
+    cabinet: PARTS_DATA.cabinet[0] // 550W combo
+  };
+
+  let activeTab = 'cpu';
+
+  function renderPartCards(category) {
+    const container = document.getElementById('part-cards-list');
+    if (!container) return;
+
+    const items = PARTS_DATA[category] || [];
+    container.innerHTML = items.map(item => {
+      const isSelected = currentSelection[category]?.id === item.id;
+      return `
+        <div class="p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 ${
+          isSelected
+            ? 'bg-amber-500/10 border-amber-500 shadow-md ring-1 ring-amber-500/50'
+            : 'bg-white hover:bg-slate-50 border-slate-200'
+        }" onclick="window.selectPart('${category}', '${item.id}')">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${
+                isSelected ? 'bg-amber-400 text-slate-950' : 'bg-slate-100 text-slate-700'
+              }">${item.badge || category.toUpperCase()}</span>
+              ${item.brand ? `<span class="text-[11px] font-bold text-slate-500">${item.brand}</span>` : ''}
+            </div>
+            <h4 class="text-sm font-bold text-ink leading-snug">${item.name}</h4>
+          </div>
+
+          <div class="text-right shrink-0">
+            <span class="block text-sm font-black text-ink font-mono">₹${item.price.toLocaleString('en-IN')}</span>
+            <button class="mt-1 px-3 py-1 rounded-lg text-xs font-bold transition ${
+              isSelected
+                ? 'bg-emerald-500 text-white'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+            }">
+              ${isSelected ? '✓ Installed' : '+ Select'}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updateVisualizerAndStats() {
+    const { cpu, gpu, mobo, ram, ssd, cabinet } = currentSelection;
+    const totalPrice = (cpu?.price || 0) + (gpu?.price || 0) + (mobo?.price || 0) + (ram?.price || 0) + (ssd?.price || 0) + (cabinet?.price || 0);
+    const totalWattage = (cpu?.wattage || 65) + (gpu?.wattage || 115) + 80; // base mobo/fans
+
+    // Update Header and Summary
+    const priceHdr = document.getElementById('total-price-header');
+    const wattEl = document.getElementById('total-wattage');
+    if (priceHdr) priceHdr.textContent = `₹${totalPrice.toLocaleString('en-IN')}`;
+    if (wattEl) wattEl.textContent = `${totalWattage}W`;
+
+    // Visualizer text updates
+    const visCpu = document.getElementById('vis-cpu-name');
+    const visGpu = document.getElementById('vis-gpu-name');
+    const visRam = document.getElementById('vis-ram-spec');
+    const visSsd = document.getElementById('vis-ssd-name');
+    const visPsu = document.getElementById('vis-psu-name');
+    if (visCpu) visCpu.textContent = cpu.name;
+    if (visGpu) visGpu.textContent = gpu.name;
+    if (visRam) visRam.textContent = ram.name.includes('32GB') ? '32GB' : '16GB';
+    if (visSsd) visSsd.textContent = ssd.name;
+    if (visPsu) visPsu.textContent = `${cabinet.wattage || 550}W PSU`;
+
+    // Dynamic FPS Calculations
+    const multiplier = gpu.fpsMultiplier || 1.0;
+    const fpsGta = document.getElementById('fps-gta');
+    const fpsVal = document.getElementById('fps-val');
+    const fpsCp = document.getElementById('fps-cp');
+    const fpsBgmi = document.getElementById('fps-bgmi');
+    if (fpsGta) fpsGta.textContent = `${Math.round(cpu.gtaFps * multiplier)} FPS`;
+    if (fpsVal) fpsVal.textContent = `${Math.round(cpu.valFps * multiplier)} FPS`;
+    if (fpsCp) fpsCp.textContent = `${Math.round(cpu.cpFps * multiplier)} FPS`;
+    if (fpsBgmi) fpsBgmi.textContent = `${Math.round(cpu.bgmiFps * multiplier)} FPS`;
+
+    // Compatibility check
+    const compatStatus = document.getElementById('compat-status');
+    const compatDesc = document.getElementById('compat-desc');
+    let isSocketMatch = (cpu.socket === mobo.socket);
+    let isRamMatch = (mobo.ramType.includes(ram.ramType));
+
+    if (!isSocketMatch) {
+      if (compatStatus) {
+        compatStatus.textContent = `⚠️ Socket Mismatch: ${cpu.socket} vs ${mobo.socket}`;
+        compatStatus.className = 'block text-xs font-bold text-rose-400';
+      }
+      if (compatDesc) compatDesc.textContent = `Please switch motherboard to support ${cpu.socket} socket.`;
+    } else if (!isRamMatch) {
+      if (compatStatus) {
+        compatStatus.textContent = `⚠️ RAM Type Mismatch: ${ram.ramType} on ${mobo.ramType}`;
+        compatStatus.className = 'block text-xs font-bold text-amber-400';
+      }
+      if (compatDesc) compatDesc.textContent = `Please choose matching ${mobo.ramType} RAM modules.`;
+    } else {
+      if (compatStatus) {
+        compatStatus.textContent = `100% Component Compatibility Verified`;
+        compatStatus.className = 'block text-xs font-bold text-white';
+      }
+      if (compatDesc) compatDesc.textContent = `${cpu.socket} Socket & ${cabinet.wattage || 550}W PSU match perfectly with ${gpu.name}.`;
+    }
+
+    // Update 1-Click Amazon Checkout Link
+    const buyBtn = document.getElementById('btn-buy-full-build');
+    if (buyBtn) {
+      const searchTerms = encodeURIComponent(`${cpu.name} ${gpu.name} PC parts`);
+      buyBtn.setAttribute('href', `https://www.amazon.in/s?k=${searchTerms}&tag=uniquedigi0c6-21`);
+    }
+
+    // Update summary list
+    const summaryContainer = document.getElementById('selected-parts-summary');
+    if (summaryContainer) {
+      summaryContainer.innerHTML = Object.entries(currentSelection).map(([k, item]) => `
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-500 font-medium uppercase text-[10px] w-16">${k}</span>
+          <span class="font-bold text-ink truncate max-w-[200px]">${item.name}</span>
+          <span class="font-mono font-bold text-slate-800">₹${item.price.toLocaleString('en-IN')}</span>
+        </div>
+      `).join('');
+    }
+
+    // Re-render current tab to show selected state
+    renderPartCards(activeTab);
+  }
+
+  // Window helper for onclick handler
+  window.selectPart = function(category, id) {
+    const item = PARTS_DATA[category]?.find(x => x.id === id);
+    if (item) {
+      currentSelection[category] = item;
+      updateVisualizerAndStats();
+    }
+  };
+
+  // Setup Category Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-ink shrink-0 cursor-pointer transition';
+      });
+      btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs font-black bg-brand text-white shadow-xs shrink-0 cursor-pointer';
+      activeTab = btn.getAttribute('data-cat') || 'cpu';
+      renderPartCards(activeTab);
+    });
+  });
+
+  // Setup ARGB Color Changer
+  document.querySelectorAll('[data-rgb]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const color = btn.getAttribute('data-rgb');
+      const rgbAmbient = document.getElementById('ambient-rgb');
+      if (rgbAmbient) {
+        if (color === 'cyan') rgbAmbient.className = 'absolute -top-20 -left-20 w-80 h-80 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'purple') rgbAmbient.className = 'absolute -top-20 -left-20 w-80 h-80 bg-purple-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'emerald') rgbAmbient.className = 'absolute -top-20 -left-20 w-80 h-80 bg-emerald-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'amber') rgbAmbient.className = 'absolute -top-20 -left-20 w-80 h-80 bg-amber-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+        if (color === 'rose') rgbAmbient.className = 'absolute -top-20 -left-20 w-80 h-80 bg-rose-500/25 rounded-full blur-3xl pointer-events-none transition-all duration-700';
+      }
+    });
+  });
+
+  // Budget Slider & Dynamic Laptop Filter
+  const slider = document.getElementById('budget-slider');
+  const sliderVal = document.getElementById('slider-val-display');
+  const laptopContainer = document.getElementById('laptop-cards-container');
+
+  function renderLaptops(budget) {
+    if (!laptopContainer) return;
+    const matching = LAPTOPS_DATA.filter(l => budget >= (l.min - 10000) && budget <= (l.max + 15000));
+    const items = matching.length > 0 ? matching : LAPTOPS_DATA.slice(0, 3);
+
+    laptopContainer.innerHTML = items.map(l => `
+      <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 hover:border-amber-400/50 transition-all duration-300 flex flex-col justify-between group shadow-card">
+        <div>
+          <div class="aspect-video w-full rounded-xl overflow-hidden mb-3 border border-slate-800">
+            <img src="${l.img}" alt="${l.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" />
+          </div>
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="px-2 py-0.5 rounded-md bg-amber-400/20 text-amber-300 text-[10px] font-black uppercase">${l.badge}</span>
+            <span class="text-xs font-mono font-bold text-emerald-400">₹${l.price.toLocaleString('en-IN')}</span>
+          </div>
+          <h4 class="text-sm font-bold text-white group-hover:text-amber-300 transition leading-snug mb-2">${l.name}</h4>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-2 mt-2">
+          <span class="text-[11px] text-slate-400">Amazon Prime Deal</span>
+          <a href="${l.affUrl}" target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition flex items-center gap-1 shadow-xs cursor-pointer">
+            <span>View Amazon Deal</span>
+            <span>➔</span>
+          </a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  if (slider && sliderVal) {
+    slider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10);
+      sliderVal.textContent = `₹${val.toLocaleString('en-IN')}`;
+      renderLaptops(val);
+    });
+    renderLaptops(55000);
+  }
+
+  // Initial load
+  renderPartCards('cpu');
+  updateVisualizerAndStats();
+</script>
