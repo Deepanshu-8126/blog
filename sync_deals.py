@@ -86,14 +86,23 @@ def d1_query(sql, params=None):
             "Content-Type": "application/json"
         }
         payload = {"sql": sql, "params": params or []}
-        try:
-            r = requests.post(url, headers=headers, json=payload, timeout=30)
-            if r.status_code == 200:
-                res = r.json()
-                if res.get("result") and len(res["result"]) > 0:
-                    return res["result"][0].get("results", [])
-        except Exception as e:
-            print("[D1 REST Error]:", e)
+        for attempt in range(3):
+            try:
+                r = requests.post(url, headers=headers, json=payload, timeout=30)
+                if r.status_code == 200:
+                    res = r.json()
+                    if res.get("result") and len(res["result"]) > 0:
+                        return res["result"][0].get("results", [])
+                    return []
+                elif r.status_code >= 500:
+                    time.sleep(1.5 * (attempt + 1))
+                    continue
+                else:
+                    break
+            except Exception as e:
+                if attempt == 2:
+                    print("[D1 REST Error]:", e)
+                time.sleep(1.5 * (attempt + 1))
 
     # Fallback to local wrangler CLI
     try:

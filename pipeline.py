@@ -46,6 +46,7 @@ CF_KV_ID = os.environ.get("CLOUDFLARE_KV_NAMESPACE_ID", "2ab0d1c56e1c471fa658e52
 TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 PORTAL_BASE = os.environ.get("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
+AFFILIATE_DISCLAIMER = "\n\n---\n*Disclaimer: UniqueDigit participates in affiliate programs including Amazon Associates. When you purchase through links on our site, we may earn an affiliate commission at no extra cost to you.*"
 
 
 # ---------- Telegram Dispatcher ----------
@@ -53,16 +54,18 @@ def send_telegram(title, niche_name, post_slug):
     if not (TG_BOT_TOKEN and TG_CHAT_ID):
         return
     post_url = f"{PORTAL_BASE}/{post_slug}"
+    safe_title = str(title).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    safe_niche = str(niche_name).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     text = (
-        f"🔥 *New Trend Live on UniqueDigit*\n\n"
-        f"📌 *Category:* {niche_name}\n"
-        f"📝 *Title:* {title}\n"
-        f"🔗 *Link:* {post_url}\n\n"
-        f"⚡ _Auto-published with verified deals & schema_"
+        f"🔥 <b>New Trend Live on UniqueDigit</b>\n\n"
+        f"📌 <b>Category:</b> {safe_niche}\n"
+        f"📝 <b>Title:</b> {safe_title}\n"
+        f"🔗 <b>Link:</b> <a href=\"{post_url}\">{post_url}</a>\n\n"
+        f"⚡ <i>Auto-published with verified deals &amp; schema</i>"
     )
     try:
         url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-        requests.post(url, json={"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=10)
+        requests.post(url, json={"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "HTML"}, timeout=10)
     except Exception as e:
         print("[Telegram notify failed]:", e)
 
@@ -72,6 +75,7 @@ def cleanup_old_data():
     """Retains last 90 days of posts to keep D1 SQLite lightweight and fast"""
     print("[D1 Storage Optimizer] Pruning articles older than 90 days...")
     d1_query("DELETE FROM posts WHERE published_at < datetime('now', '-90 days')")
+    d1_query("DELETE FROM signals WHERE captured_at < datetime('now', '-14 days')")
 
 
 # ---------- Cloudflare D1 Helpers ----------
@@ -88,15 +92,23 @@ def d1_query(sql, params=None):
             "Content-Type": "application/json"
         }
         payload = {"sql": sql, "params": params or []}
-        try:
-            r = requests.post(url, headers=headers, json=payload, timeout=30)
-            if r.status_code == 200:
-                res = r.json()
-                if res.get("result") and len(res["result"]) > 0:
-                    return res["result"][0].get("results", [])
-                return []
-        except Exception as e:
-            print("[D1 REST query error]:", e)
+        for attempt in range(3):
+            try:
+                r = requests.post(url, headers=headers, json=payload, timeout=30)
+                if r.status_code == 200:
+                    res = r.json()
+                    if res.get("result") and len(res["result"]) > 0:
+                        return res["result"][0].get("results", [])
+                    return []
+                elif r.status_code >= 500:
+                    time.sleep(1.5 * (attempt + 1))
+                    continue
+                else:
+                    break
+            except Exception as e:
+                if attempt == 2:
+                    print("[D1 REST query error]:", e)
+                time.sleep(1.5 * (attempt + 1))
 
     # 2. Local/Remote Wrangler CLI execution fallback
     try:
@@ -243,6 +255,30 @@ def fetch_google_trends_rss(geo=GEO):
                 })
     except Exception as e:
         print("[Google Trends RSS fetcher warning]:", e)
+
+    if not trends:
+        # Fallback to Google News India Top Stories to guarantee 24/7 stream
+        try:
+            r_news = requests.get(f"https://news.google.com/rss?hl=en-{geo}&gl={geo}&ceid={geo}:en", headers=headers, timeout=15)
+            if r_news.status_code == 200:
+                import xml.etree.ElementTree as ET
+                root = ET.fromstring(r_news.content)
+                for item in root.findall(".//item")[:10]:
+                    t_elem = item.find("title")
+                    link_elem = item.find("link")
+                    if t_elem is not None and t_elem.text:
+                        raw_t = t_elem.text.split(" - ")[0].strip()
+                        trends.append({
+                            "title": raw_t,
+                            "score": 90,
+                            "image": None,
+                            "credit": "Google News India",
+                            "url": link_elem.text if link_elem is not None and link_elem.text else "https://news.google.com/",
+                            "facts": f"Trending national headline: {t_elem.text}"
+                        })
+        except Exception as e:
+            print("[Google News fallback warning]:", e)
+
     return trends
 
 
@@ -487,7 +523,7 @@ def process_niche(n):
                VALUES (?, ?, ?, 'article', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'published', strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))""",
             [
                 post_id, n["id"], topic_id, post_slug,
-                a.get("title", t), a.get("summary", "")[:200], a.get("body_md", ""),
+                a.get("title", t), a.get("summary", "")[:200], (a.get("body_md", "") + AFFILIATE_DISCLAIMER),
                 json.dumps(a.get("faq", [])),
                 json.dumps([{"title": credit or "Verified News", "url": src or ""}]) if (credit or src) else "[]",
                 image, credit, src, c["score"],
@@ -611,7 +647,7 @@ Return strict JSON:
                VALUES (?, ?, ?, 'article', ?, ?, ?, ?, ?, ?, ?, ?, ?, 100, 1, 1, 'published', strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))""",
             [
                 post_id, actual_niche_id, topic_id, post_slug,
-                res.get("title", query), res.get("summary", "")[:200], res.get("body_md", ""),
+                res.get("title", query), res.get("summary", "")[:200], (res.get("body_md", "") + AFFILIATE_DISCLAIMER),
                 json.dumps(res.get("faq", [])),
                 json.dumps([{"title": credit or "Google Trends", "url": src or ""}]) if (credit or src) else "[]",
                 image, credit, src
