@@ -242,7 +242,7 @@ img {
   bottom: -1px;
   width: 3.5rem;
   height: 2.5px;
-  background: linear-gradient(90deg, var(--brand), #8B5CF6);
+  background: linear-gradient(90deg, #5B2FD0, #10B981);
   border-radius: 9999px;
 }
 
@@ -252,6 +252,15 @@ img {
   margin-top: 2rem;
   margin-bottom: 0.75rem;
   color: #1E293B;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prose h3::before {
+  content: '▸';
+  color: #5B2FD0;
+  font-size: 0.9em;
 }
 
 .prose p {
@@ -284,7 +293,7 @@ img {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 9999px;
-  background-color: var(--brand);
+  background-color: #5B2FD0;
 }
 
 .prose ol {
@@ -307,8 +316,8 @@ img {
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--brand);
-  background: linear-gradient(to right, rgba(91, 47, 208, 0.05), transparent);
+  border-left: 4px solid #5B2FD0;
+  background: linear-gradient(to right, rgba(91, 47, 208, 0.05), #F8FAFC);
   padding: 1.15rem 1.5rem;
   border-radius: 0 1rem 1rem 0;
   margin: 1.75rem 0;
@@ -323,4 +332,91 @@ img {
   border-radius: 1.25rem;
   box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
   margin: 2rem 0;
+  image-rendering: auto;
+}
+
+/* Beautiful Editorial Tables (Scorecards, Pricing, Comparison Lists) */
+.prose table {
+  width: 100%;
+  margin: 2rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid #E2E8F0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.prose thead {
+  background: #F8FAFC;
+}
+
+.prose th {
+  padding: 0.875rem 1.25rem;
+  font-weight: 800;
+  text-align: left;
+  color: #0F172A;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #E2E8F0;
+}
+
+.prose td {
+  padding: 0.875rem 1.25rem;
+  color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+}
+
+.prose tr:last-child td {
+  border-bottom: none;
+}
+
+.prose tbody tr:nth-child(even) {
+  background-color: #F8FAFC;
+}
+
+.prose tbody tr:hover {
+  background-color: #F1F5F9;
+  transition: background-color 150ms ease;
+}
+
+.prose hr {
+  margin: 2.5rem 0;
+  border: 0;
+  height: 1px;
+  background: #E2E8F0;
+}
+
+.prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+  font-weight: 600;
+  color: #5B2FD0;
+  background: #F5F3FF;
+  padding: 0.2em 0.4em;
+  border-radius: 0.375rem;
+  border: 1px solid #EDE9FE;
+}
+
+.prose pre {
+  background: #0F172A;
+  color: #F8FAFC;
+  padding: 1.25rem 1.5rem;
+  border-radius: 1rem;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.prose pre code {
+  color: inherit;
+  background: transparent;
+  padding: 0;
+  border: none;
 }

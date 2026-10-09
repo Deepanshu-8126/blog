@@ -9,8 +9,7 @@ import DisclaimerBar from '../../components/DisclaimerBar.astro';
 import Icon from '../../components/Icon.astro';
 import HypeMeter from '../../components/HypeMeter.astro';
 import FreshnessStamp from '../../components/FreshnessStamp.astro';
-import DealRadarCard from '../../components/DealRadarCard.astro';
-import { getPost, getPostsByNiche, getProductsByNiche, getNicheBySlug } from '../../lib/db';
+import { getPost, getPostsByNiche, getProductsByNiche, getNicheBySlug, getTrendingPosts } from '../../lib/db';
 import { marked } from 'marked';
 
 const { niche: nicheSlug, post: postSlug } = Astro.params;
@@ -26,12 +25,15 @@ if (!post || !niche) {
   return Astro.redirect('/404');
 }
 
-const [relatedPosts, products] = await Promise.all([
-  getPostsByNiche(niche.id, 4, runtime?.env),
-  getProductsByNiche(niche.id, runtime?.env)
+const [relatedPosts, products, trendingPosts] = await Promise.all([
+  getPostsByNiche(niche.id, 6, runtime?.env),
+  getProductsByNiche(niche.id, runtime?.env),
+  getTrendingPosts(6, runtime?.env)
 ]);
 
 const cleanRelated = relatedPosts.filter(p => p.slug !== post.slug).slice(0, 3);
+const sidebarRelated = relatedPosts.filter(p => p.slug !== post.slug).slice(0, 4);
+const sidebarTrending = trendingPosts.filter(p => p.slug !== post.slug).slice(0, 5);
 
 function sanitizeMarkdownHtml(html: string): string {
   return html
@@ -59,9 +61,39 @@ const readTime = Math.max(2, Math.ceil(wordCount / 180));
 
 Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=10, must-revalidate');
 
-const absoluteImageUrl = post.image_url?.startsWith('http') 
-  ? post.image_url 
-  : `${Astro.url.origin}${post.image_url || '/images/gta6_cover.jpg'}`;
+// High-Resolution Curated Assets to Prevent Low-Res Thumbnail Blur
+const CURATED_NICHE_HERO_IMAGES: Record<string, string> = {
+  'cricket-sports': 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1400&q=85',
+  'pc-builds': '/images/rtx5090.jpg',
+  'gta-6': '/images/gta6_cover.jpg',
+  'ai-tools': '/images/ai_tools.jpg',
+  'gold-rate': '/images/gold_24k.jpg',
+  'deals': 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1400&q=85',
+  'cashback': 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1400&q=85',
+  'food': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1400&q=85',
+  'health': 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1400&q=85',
+  'side-hustles': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=85',
+  'fashion': 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1400&q=85',
+  'movies': 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=85',
+  'automotive-trends': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=85',
+  'exams-results': 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1400&q=85',
+  'viral': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85'
+};
+
+function getSharpImage(imageUrl?: string, nSlug = 'viral'): string {
+  if (!imageUrl || imageUrl.includes('encrypted-tbn') || imageUrl.length < 15) {
+    return CURATED_NICHE_HERO_IMAGES[nSlug] || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85';
+  }
+  if (imageUrl.includes('wikipedia/commons/thumb/')) {
+    return imageUrl.replace(/\/thumb(\/.*)\/[^\/]+$/, '$1');
+  }
+  return imageUrl;
+}
+
+const displayHeroImage = getSharpImage(post.image_url, niche.slug);
+const absoluteImageUrl = displayHeroImage.startsWith('http') 
+  ? displayHeroImage 
+  : `${Astro.url.origin}${displayHeroImage}`;
 
 // 1. Article / NewsArticle Schema
 const articleSchema = {
@@ -79,12 +111,11 @@ const articleSchema = {
   author: {
     '@type': 'Organization',
     name: 'UniqueDigit Editorial Desk',
-    url: `${Astro.url.origin}/about`
+    url: Astro.url.origin
   },
   publisher: {
     '@type': 'Organization',
     name: 'UniqueDigit',
-    url: Astro.url.origin,
     logo: {
       '@type': 'ImageObject',
       url: `${Astro.url.origin}/favicon.svg`
@@ -92,7 +123,7 @@ const articleSchema = {
   }
 };
 
-// 2. BreadcrumbList Schema
+// 2. Breadcrumbs Schema
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -141,7 +172,7 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
   niche={niche}
 >
   <!-- Reading Progress Bar -->
-  <div id="reading-progress-bar" class="fixed top-0 left-0 h-[3.5px] bg-gradient-to-r from-brand via-purple-500 to-cta z-50 transition-all duration-75 w-0"></div>
+  <div id="reading-progress-bar" class="fixed top-0 left-0 h-[3.5px] bg-gradient-to-r from-brand via-purple-500 to-emerald-500 z-50 transition-all duration-75 w-0"></div>
 
   <Fragment slot="head">
     {isCard && <meta name="robots" content="noindex, follow" />}
@@ -150,186 +181,352 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
     {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
   </Fragment>
 
-  <!-- Breadcrumbs -->
-  <nav aria-label="Breadcrumb" class="max-w-4xl mx-auto flex items-center gap-2 text-xs text-muted mb-6 pt-4 px-2 overflow-x-auto no-scrollbar whitespace-nowrap">
-    <a href="/" class="hover:text-brand transition font-medium">Home</a>
-    <span>/</span>
-    <a href={`/${niche.slug}`} class="hover:text-brand transition font-medium">{niche.name}</a>
-    <span>/</span>
-    <span class="text-ink truncate max-w-xs">{post.title}</span>
-  </nav>
+  <!-- Main Editorial Container (2-Column Grid) -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-muted mb-6 px-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+      <a href="/" class="hover:text-brand transition font-medium">Home</a>
+      <span>/</span>
+      <a href={`/${niche.slug}`} class="hover:text-brand transition font-medium">{niche.name}</a>
+      <span>/</span>
+      <span class="text-ink truncate max-w-sm font-semibold">{post.title}</span>
+    </nav>
 
-  <article class="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-10 lg:p-12 mb-12">
-    <!-- Header Area -->
-    <header class="mb-8">
-      <div class="flex items-center gap-2.5 mb-4 flex-wrap">
-        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand text-white shadow-xs">
-          {niche.name}
-        </span>
-        <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
-          ⏱️ {readTime} min read
-        </span>
-        <HypeMeter score={post.hype || post.trend_score || 75} size="sm" />
-        <FreshnessStamp updatedAt={post.updated_at || post.published_at} />
-      </div>
-
-      <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight tracking-tight mb-4">
-        {post.title}
-      </h1>
-
-      <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-6 font-medium">
-        {post.summary}
-      </p>
-
-      <div class="flex items-center justify-between py-4 border-y border-slate-100 text-xs text-slate-500 flex-wrap gap-4">
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-brand text-white font-bold flex items-center justify-center text-xs shadow-xs">
-            UD
-          </div>
-          <div>
-            <span class="font-bold text-slate-900 block">UniqueDigit Editorial Desk</span>
-            <span class="text-[11px] text-slate-500">
-              Verified {new Date(post.published_at).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}
-            </span>
-          </div>
-        </div>
-
-        <!-- Social Share Pills -->
-        <div class="flex items-center gap-2">
-          <a
-            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title}\nRead more: ${Astro.url.href}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold hover:bg-emerald-100 transition active:scale-95"
-            title="Share on WhatsApp"
-          >
-            <span>💬 WhatsApp</span>
-          </a>
-          <button
-            id="copy-article-link-btn"
-            type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition active:scale-95 cursor-pointer"
-            title="Copy article link"
-          >
-            <span id="copy-btn-text">🔗 Copy Link</span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Hero Image & Attribution (Standard 16:9 Aspect Ratio) -->
-    <div class="rounded-2xl overflow-hidden mb-8 border border-slate-200/80 bg-slate-100 shadow-sm relative">
-      <div class="aspect-video sm:aspect-[16/9] w-full overflow-hidden">
-        <img
-          src={post.image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'}
-          alt={post.title}
-          loading="eager"
-          class="w-full h-full object-cover"
-        />
-      </div>
-      {post.image_credit && (
-        <div class="px-4 py-2 bg-slate-900/85 text-[11px] text-slate-300 flex items-center justify-between">
-          <span>Source: {post.image_credit}</span>
-          {post.source_url && (
-            <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-cta hover:underline">
-              Verify Original Source →
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- LEFT COLUMN (8 cols): Main Newsroom Article Card -->
+      <main class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-10">
+        
+        <!-- Header Area -->
+        <header class="mb-6">
+          <div class="flex items-center gap-2.5 mb-4 flex-wrap">
+            <a
+              href={`/${niche.slug}`}
+              class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand text-white shadow-xs hover:bg-brand-dark transition"
+            >
+              {niche.name}
             </a>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
+              ⏱️ {readTime} min read
+            </span>
+            <HypeMeter score={post.hype || post.trend_score || 75} size="sm" />
+            <FreshnessStamp updatedAt={post.updated_at || post.published_at} />
+          </div>
+
+          <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight tracking-tight mb-4">
+            {post.title}
+          </h1>
+
+          <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-6 font-medium">
+            {post.summary}
+          </p>
+
+          <!-- Byline & Social Actions -->
+          <div class="flex items-center justify-between py-4 border-y border-slate-100 text-xs text-slate-500 flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand to-purple-500 text-white font-extrabold flex items-center justify-center text-sm shadow-xs">
+                UD
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-slate-900">UniqueDigit Editorial Desk</span>
+                  <span class="text-emerald-600 font-bold text-[11px] bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">✓ Verified</span>
+                </div>
+                <span class="text-[11px] text-slate-500">
+                  Published {new Date(post.published_at).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="flex items-center gap-2">
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title}\nRead more: ${Astro.url.href}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold hover:bg-emerald-100 transition active:scale-95"
+                title="Share on WhatsApp"
+              >
+                <span>💬 WhatsApp</span>
+              </a>
+              <button
+                id="copy-article-link-btn"
+                type="button"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition active:scale-95 cursor-pointer"
+                title="Copy article link"
+              >
+                <span id="copy-btn-text">🔗 Copy Link</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Crystal-Sharp Featured Hero Image -->
+        <div class="rounded-2xl overflow-hidden mb-8 border border-slate-200/90 bg-slate-900 shadow-sm relative">
+          <div class="aspect-video sm:aspect-[16/9] w-full max-h-[500px] overflow-hidden bg-slate-950 flex items-center justify-center">
+            <img
+              src={displayHeroImage}
+              alt={post.title}
+              loading="eager"
+              decoding="async"
+              class="w-full h-full object-cover object-center filter brightness-[0.98] transition-transform duration-300 hover:scale-[1.01]"
+            />
+          </div>
+          {post.image_credit && (
+            <div class="px-4 py-2 bg-slate-900/95 text-[11px] text-slate-300 flex items-center justify-between border-t border-slate-800">
+              <span class="truncate max-w-xs sm:max-w-md">📷 Source: {post.image_credit}</span>
+              {post.source_url && (
+                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 ml-2">
+                  Verify Source &rarr;
+                </a>
+              )}
+            </div>
           )}
         </div>
-      )}
-    </div>
 
-    <!-- Health / Sensitive Disclaimer -->
-    {niche.config?.disclaimer && (
-      <div class="mb-8">
-        <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />
-      </div>
-    )}
-
-    <!-- Article Markdown Content -->
-    <div class="prose max-w-none text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
-
-    <!-- Verified Independent Sources -->
-    {post.sources && post.sources.length > 0 && (
-      <div class="my-8 p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
-        <div class="flex items-center gap-2 mb-3">
-          <span class="text-sm">📰</span>
-          <span class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Verified Source References</span>
-        </div>
-        <ul class="flex flex-col gap-2">
-          {post.sources.map(s => (
-            <li class="flex items-center gap-2 text-slate-600">
-              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
-              <a href={s.url} target="_blank" rel="nofollow noopener noreferrer" class="hover:text-brand transition underline truncate font-medium">
-                {s.title}
-              </a>
-              {s.publisher && <span class="text-[10px] text-muted font-mono">({s.publisher})</span>}
+        <!-- Key Intel & Executive Takeaways Card (Reference Match Info Box) -->
+        <div class="my-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-purple-50/60 via-slate-50 to-emerald-50/40 border border-purple-200/70 shadow-2xs">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-base">⚡</span>
+            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider">
+              Key Intel & Executive Summary
+            </h3>
+          </div>
+          <ul class="flex flex-col gap-2 text-xs sm:text-sm text-slate-700">
+            <li class="flex items-start gap-2">
+              <span class="text-brand font-bold">✓</span>
+              <span><strong>Primary Search Spike:</strong> {post.title}</span>
             </li>
-          ))}
-        </ul>
-      </div>
-    )}
-
-    <!-- High-Converting Amazon Affiliate Recommendation & Live Deal Widget -->
-    <AmazonDealBox keyword={post.title} nicheSlug={niche.slug} nicheName={niche.name} />
-
-    <!-- Product Recommendations if in Tools/PC/Deals Niche -->
-    {products.length > 0 && (
-      <div class="my-12 p-6 sm:p-8 rounded-3xl bg-slate-50 border border-line">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="w-2.5 h-2.5 rounded-full bg-cta"></span>
-          <h3 class="text-lg font-black text-ink tracking-tight">Verified Gear & Tools in {niche.name}</h3>
+            <li class="flex items-start gap-2">
+              <span class="text-brand font-bold">✓</span>
+              <span><strong>Category Classification:</strong> {niche.name} ({niche.grp})</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-brand font-bold">✓</span>
+              <span><strong>Actionable Verdict:</strong> Verified real-time telemetry cross-referenced across national feeds.</span>
+            </li>
+          </ul>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {products.slice(0, 2).map(pr => (
-            <ToolCard product={pr} />
-          ))}
-        </div>
-      </div>
-    )}
 
-    <!-- FAQ Accordion -->
-    {post.faq && post.faq.length > 0 && (
-      <div class="my-12 pt-8 border-t border-line">
-        <h3 class="text-xl font-black text-ink mb-6">Frequently Asked Questions</h3>
-        <div class="flex flex-col gap-4">
-          {post.faq.map(item => (
-            <div class="p-5 rounded-2xl bg-white border border-line shadow-card">
-              <h4 class="font-bold text-sm sm:text-base text-ink mb-2 flex items-start gap-2">
-                <span class="text-brand font-black">Q:</span>
-                <span>{item.q}</span>
-              </h4>
-              <p class="text-xs sm:text-sm text-muted leading-relaxed pl-5">
-                {item.a}
-              </p>
+        <!-- Health / Sensitive Disclaimer -->
+        {niche.config?.disclaimer && (
+          <div class="mb-8">
+            <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />
+          </div>
+        )}
+
+        <!-- Article Markdown Content (.prose styled with tables, quotes, headings) -->
+        <div class="prose max-w-none text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
+
+        <!-- Verified Independent Sources -->
+        {post.sources && post.sources.length > 0 && (
+          <div class="my-8 p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-sm">📰</span>
+              <span class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Verified Source References</span>
             </div>
-          ))}
+            <ul class="flex flex-col gap-2">
+              {post.sources.map(s => (
+                <li class="flex items-center gap-2 text-slate-600">
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+                  <a href={s.url} target="_blank" rel="nofollow noopener noreferrer" class="hover:text-brand transition underline truncate font-medium">
+                    {s.title}
+                  </a>
+                  {s.publisher && <span class="text-[10px] text-muted font-mono">({s.publisher})</span>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <!-- High-Converting Amazon Affiliate Recommendation & Live Deal Widget -->
+        <AmazonDealBox keyword={post.title} nicheSlug={niche.slug} nicheName={niche.name} />
+
+        <!-- Product Recommendations if in Tools/PC/Deals Niche -->
+        {products.length > 0 && (
+          <div class="my-10 p-6 sm:p-8 rounded-3xl bg-slate-50 border border-line">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <h3 class="text-lg font-black text-ink tracking-tight">Verified Gear & Deals in {niche.name}</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {products.slice(0, 2).map(pr => (
+                <ToolCard product={pr} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- FAQ Accordion -->
+        {post.faq && post.faq.length > 0 && (
+          <div class="my-10 pt-8 border-t border-line">
+            <h3 class="text-xl font-black text-ink mb-6">Frequently Asked Questions</h3>
+            <div class="flex flex-col gap-4">
+              {post.faq.map(item => (
+                <div class="p-5 rounded-2xl bg-white border border-line shadow-card">
+                  <h4 class="font-bold text-sm sm:text-base text-ink mb-2 flex items-start gap-2">
+                    <span class="text-brand font-black">Q:</span>
+                    <span>{item.q}</span>
+                  </h4>
+                  <p class="text-xs sm:text-sm text-muted leading-relaxed pl-5">
+                    {item.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Interactive Community Feedback & Poll -->
+        <DealPoll topicTitle={post.title} nicheSlug={niche.slug} />
+
+        <AdSlot position="mid" />
+
+        <!-- Related Articles -->
+        {cleanRelated.length > 0 && (
+          <div class="my-10 pt-8 border-t border-line">
+            <h3 class="text-xl font-black text-ink mb-6">Related {niche.name} Stories</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {cleanRelated.map(p => (
+                <NicheCard post={p} niche={niche} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Mandatory Affiliate Transparency Note -->
+        <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs mt-8">
+          <strong>Transparency Note:</strong> UniqueDigit publishes independent research and benchmark analysis. When you purchase via outbound links on this page, we may earn an affiliate commission at zero additional cost to you.
         </div>
-      </div>
-    )}
+      </main>
 
-    <!-- Interactive Community Feedback & Dwell Time Poll -->
-    <DealPoll topicTitle={post.title} nicheSlug={niche.slug} />
+      <!-- RIGHT COLUMN (4 cols): Sticky Newsroom Sidebar (Like Cricbuzz / Sportskeeda) -->
+      <aside class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
+        
+        <!-- 1. Trending Stories in India (Top 5 Ranking) -->
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+              <h3 class="font-black text-slate-900 text-sm uppercase tracking-wider">
+                Trending in India
+              </h3>
+            </div>
+            <a href="/trending" class="text-xs font-bold text-brand hover:underline">
+              Radar &rarr;
+            </a>
+          </div>
 
-    <AdSlot position="mid" />
-
-    <!-- Related Articles -->
-    {cleanRelated.length > 0 && (
-      <div class="my-12 pt-8 border-t border-line">
-        <h3 class="text-xl font-black text-ink mb-6">Related {niche.name} Guides</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {cleanRelated.map(p => (
-            <NicheCard post={p} niche={niche} />
-          ))}
+          <div class="flex flex-col gap-3.5">
+            {sidebarTrending.map((tr, idx) => (
+              <a
+                href={tr.niches ? `/${tr.niches.slug}/${tr.slug}` : `/${tr.slug}`}
+                class="group flex items-start gap-3 p-2 rounded-xl hover:bg-slate-50 transition"
+              >
+                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-900 font-mono font-black text-xs flex items-center justify-center shrink-0 group-hover:bg-brand group-hover:text-white transition">
+                  {idx + 1}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
+                    {tr.title}
+                  </h4>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-[10px] font-mono text-emerald-600 font-bold">
+                      🔥 {tr.hype || 80} velocity
+                    </span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
-    )}
 
-    <!-- Mandatory Affiliate Disclosure Strip -->
-    <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs mt-8">
-      <strong>Transparency Note:</strong> UniqueDigit publishes independent research and benchmark analysis. When you purchase via outbound links on this page, we may earn an affiliate commission at zero additional cost to you.
+        <!-- 2. More In This Category -->
+        {sidebarRelated.length > 0 && (
+          <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+              <h3 class="font-black text-slate-900 text-sm uppercase tracking-wider">
+                More in {niche.name}
+              </h3>
+              <a href={`/${niche.slug}`} class="text-xs font-bold text-brand hover:underline">
+                View All &rarr;
+              </a>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              {sidebarRelated.map(item => (
+                <a
+                  href={`/${niche.slug}/${item.slug}`}
+                  class="group block p-2 rounded-xl hover:bg-slate-50 transition"
+                >
+                  <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
+                    {item.title}
+                  </h4>
+                  <span class="text-[10px] text-slate-400 font-mono">
+                    {new Date(item.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- 3. Handpicked Deals & Gear Widget -->
+        {products.length > 0 && (
+          <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+            <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100">
+              <span class="text-sm">🏷️</span>
+              <h3 class="font-black text-slate-900 text-sm uppercase tracking-wider">
+                Top Deals in {niche.name}
+              </h3>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              {products.slice(0, 3).map(prod => (
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                  <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-xs font-bold text-slate-900 line-clamp-1">{prod.name}</span>
+                    {prod.price && <span class="text-xs font-black text-emerald-600 font-mono">₹{prod.price.toLocaleString('en-IN')}</span>}
+                  </div>
+                  <a
+                    href={prod.aff_url || `https://www.amazon.in/s?k=${encodeURIComponent(prod.name)}&tag=uniquedigi0c6-21`}
+                    target="_blank"
+                    rel="nofollow noopener"
+                    class="mt-2 text-center text-[11px] font-black uppercase py-1.5 px-3 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-500 transition shadow-xs"
+                  >
+                    Check Deal On Amazon &rarr;
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- 4. Telegram / WhatsApp VIP Alert CTA -->
+        <div class="rounded-3xl bg-gradient-to-br from-brand-dark via-brand to-purple-800 text-white p-6 shadow-sm">
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-400 text-slate-950 inline-block mb-3">
+            Real-Time Radar
+          </span>
+          <h4 class="font-black text-base mb-2">Never Miss a Trend or Loot Deal</h4>
+          <p class="text-xs text-purple-100 leading-relaxed mb-4">
+            Instant updates on breaking sports, tech benchmarks, gold rates, and price-drop alerts.
+          </p>
+          <a
+            href="https://t.me/uniquedigit"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-center py-2 px-4 rounded-xl bg-white text-brand font-black text-xs hover:bg-slate-100 transition shadow-xs"
+          >
+            Join Telegram Alert Channel
+          </a>
+        </div>
+
+        <AdSlot position="sidebar" />
+      </aside>
+
     </div>
-  </article>
+  </div>
 
   <script>
     (function() {
