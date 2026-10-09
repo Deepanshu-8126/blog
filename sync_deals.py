@@ -5,9 +5,7 @@ Autonomous listener & ingestion engine that tracks real-time price drops,
 festival sales (Flipkart Big Billion Days, Amazon Great Indian Festival, Myntra BFF, Meesho, Ajio),
 and social price glitches from Reddit (r/dealsindia, r/IndianGaming) & Google Trends RSS.
 
-Usage:
-  python sync_deals.py        # Run sync and update Cloudflare D1 + KV
-  python sync_deals.py --dry  # Dry run (prints findings without writing)
+Runs autonomously on GitHub Actions cron (every 2 hours) or local manual trigger.
 """
 
 import json
@@ -16,6 +14,7 @@ import re
 import sys
 import time
 import urllib.parse
+from datetime import datetime
 import requests
 from dotenv import load_dotenv
 
@@ -36,7 +35,58 @@ CF_KV_ID = os.environ.get("CLOUDFLARE_KV_NAMESPACE_ID", "2ab0d1c56e1c471fa658e52
 AMAZON_TAG = os.environ.get("AMAZON_ASSOCIATE_TAG", "uniquedigi0c6-21")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 
+TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+
 DEALS_NICHE_ID = "5cf8114c0bc3eb20c87ce3dcfc1ff185"
+
+
+def get_current_festival_context():
+    """Autonomously determines which Indian shopping festival is active or upcoming"""
+    month = datetime.now().month
+    if month in [9, 10, 11]:
+        return {
+            "name": "Diwali Festival Radar",
+            "events": ["Flipkart Big Billion Days", "Amazon Great Indian Festival", "Myntra Big Fashion Festival", "Meesho Maha Shopping League"],
+            "keywords": ["big billion days", "great indian festival", "diwali sale", "festive loot", "bbd"]
+        }
+    elif month in [12, 1]:
+        return {
+            "name": "Republic Day & Year End Sale",
+            "events": ["Amazon Great Republic Day Sale", "Flipkart Big Bachat Dhamaal", "Myntra End of Reason Sale"],
+            "keywords": ["republic day sale", "year end sale", "eors", "clearance loot"]
+        }
+    elif month in [5, 6, 7]:
+        return {
+            "name": "Mid-Year Prime Days",
+            "events": ["Amazon Prime Day", "Flipkart Big Saving Days", "Ajio All Stars Sale"],
+            "keywords": ["prime day", "big saving days", "ajio all stars", "summer loot"]
+        }
+    else:
+        return {
+            "name": "Payday & Weekend Flash Loots",
+            "events": ["Amazon Lightning Deals", "Flipkart Flash Drops", "Meesho ₹99 Mega Deal"],
+            "keywords": ["payday sale", "flash drop", "lightning deal", "price glitch", "under 499"]
+        }
+
+
+def send_telegram_deal(name, merchant, price, tagline, aff_url):
+    """Dispatches instant loot alert to Telegram VIP channel"""
+    if not (TG_BOT_TOKEN and TG_CHAT_ID):
+        return
+    text = (
+        f"⚡ *NEW LOOT DROP / PRICE GLITCH*\n\n"
+        f"🛒 *Product:* {name}\n"
+        f"🏪 *Merchant:* {merchant}\n"
+        f"💰 *Effective Loot Price:* ₹{price:,}\n"
+        f"📊 *Breakdown:* {tagline}\n\n"
+        f"🚀 [Grab Deal Before It Expires]({aff_url})"
+    )
+    try:
+        url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+        requests.post(url, json={"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "Markdown"}, timeout=10)
+    except Exception as e:
+        print("[Telegram deal dispatch failed]:", e)
 
 
 def d1_query(sql, params=None):
@@ -84,11 +134,14 @@ def d1_query(sql, params=None):
     return []
 
 
-def fetch_reddit_deals():
-    """Scrapes trending deals and price glitches from Indian subreddits without API keys"""
-    print("[AgentSearch Radar] Scanning Reddit r/dealsindia & r/IndianGaming...")
+def fetch_social_deals():
+    """Scrapes trending deals and price glitches from Indian subreddits and Google Trends"""
+    fest = get_current_festival_context()
+    print(f"[AgentSearch Radar] Active Season: {fest['name']}")
+    print("[AgentSearch Radar] Scanning Reddit r/dealsindia, r/IndianGaming & r/CreditCardsIndia...")
+    
     candidate_posts = []
-    subreddits = ["dealsindia", "IndianGaming"]
+    subreddits = ["dealsindia", "IndianGaming", "CreditCardsIndia"]
 
     for sub in subreddits:
         try:
@@ -104,8 +157,9 @@ def fetch_reddit_deals():
                     link = d.get("url_overridden_by_dest", "") or f"https://reddit.com{d.get('permalink')}"
                     ups = d.get("ups", 0)
 
-                    # Look for shopping/deal intent
-                    if any(k in title.lower() for k in ["deal", "loot", "off", "₹", "rs", "amazon", "flipkart", "drop", "glitch", "price"]):
+                    # Look for shopping/deal intent matching active festival or general loots
+                    search_terms = ["deal", "loot", "off", "₹", "rs", "amazon", "flipkart", "drop", "glitch", "price"] + fest["keywords"]
+                    if any(k in title.lower() for k in search_terms):
                         candidate_posts.append({
                             "title": title,
                             "text": selftext[:400],
@@ -125,15 +179,15 @@ def gemini_parse_deal(raw_title, raw_text):
     if not GEMINI_KEY:
         return None
 
-    prompt = f"""You are UniqueDigit's AI Deal & Price Glitch Parser.
+    prompt = f"""You are UniqueDigit's AI Deal & Price Glitch Parser for Indian shoppers.
 Raw Post Title: "{raw_title}"
 Raw Details: "{raw_text}"
 
-Extract or estimate accurate deal telemetry for Indian shoppers:
-1. Product clean name
+Extract or estimate accurate deal telemetry:
+1. Product clean name (under 75 chars)
 2. Merchant (Pick one: "Amazon", "Flipkart", "Myntra", "Ajio", "Meesho")
 3. Category (Pick one: "Laptops", "Smartphones", "Audio & Gear", "Fashion", "Under ₹499")
-4. Badge (e.g. "🔥 60% OFF", "⚡ PRICE GLITCH", "⭐ ALL-TIME LOW", "BBD DROP")
+4. Badge (e.g. "🔥 60% OFF", "⚡ PRICE GLITCH", "⭐ ALL-TIME LOW", "BBD DROP", "MEESHO LOOT")
 5. Price (in INR integer, e.g. 1499)
 6. Tagline formatted as: "MRP ₹[Original] | Deal ₹[Price] | Bank/Coupon: [Offer] | Effective: ₹[Final]"
 
@@ -163,14 +217,19 @@ Return STRICT JSON:
 
 def sync_deals_to_d1():
     """Main pipeline execution"""
+    fest = get_current_festival_context()
     print("\n=======================================================")
-    print("🚀 UniqueDigit Dynamic Multi-Store Loot Sync Starting...")
+    print(f"🚀 UniqueDigit Dynamic Multi-Store Loot Sync Starting [{fest['name']}]...")
     print("=======================================================")
 
-    candidates = fetch_reddit_deals()
+    candidates = fetch_social_deals()
     if not candidates:
         print("No new raw candidates discovered. Existing D1 catalog remains active.")
         return
+
+    # Fetch existing deal names to avoid duplicates
+    existing_deals = d1_query("SELECT name FROM products WHERE niche_id = ?", [DEALS_NICHE_ID])
+    existing_names = [d.get("name", "").lower() for d in existing_deals] if existing_deals else []
 
     added = 0
     for cand in candidates[:5]:
@@ -178,8 +237,13 @@ def sync_deals_to_d1():
         if not parsed or not parsed.get("name") or not parsed.get("price"):
             continue
 
+        name = parsed["name"].strip()
+        # Avoid duplicate deal inserts
+        if any(name.lower() in en or en in name.lower() for en in existing_names):
+            print(f"⏩ [Skipped Duplicate]: {name}")
+            continue
+
         deal_id = f"loot-{int(time.time())}-{added}"
-        name = parsed["name"]
         merchant = parsed.get("merchant", "Amazon")
         cat = parsed.get("category", "Laptops")
         badge = parsed.get("badge", "🔥 LOOT DROP")
@@ -210,8 +274,9 @@ def sync_deals_to_d1():
         """
         params = [deal_id, DEALS_NICHE_ID, name, tagline, cat, badge, keywords, img, price, 4.6, aff_url, aff_url, merchant]
         
-        print(f"✨ [New Deal Spotted]: {name} | {merchant} | ₹{price} ({badge})")
+        print(f"✨ [New Deal Ingested]: {name} | {merchant} | ₹{price} ({badge})")
         d1_query(sql, params)
+        send_telegram_deal(name, merchant, price, tagline, aff_url)
         added += 1
 
     print(f"\n✅ Sync Completed. {added} new verified multi-store deals synchronized into D1.")

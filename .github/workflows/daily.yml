@@ -1,4 +1,4 @@
-name: UniqueDigit 24/7 Autonomous Radar Pipeline
+name: UniqueDigit 24/7 Autonomous Radar & Deals Pipeline
 
 on:
   schedule:
@@ -42,5 +42,7 @@ jobs:
           PORTAL_BASE_URL: "https://uniquedigit-viral-hub.pages.dev"
           POSTS_PER_NICHE: "2"
         run: |
+          echo "🔥 Stage 1: Running Newsroom Trend Ingestion Pipeline..."
           python pipeline.py
-
+          echo "⚡ Stage 2: Running Autonomous Multi-Store Deals & Glitch Sync Agent..."
+          python sync_deals.py
