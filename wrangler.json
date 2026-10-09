@@ -1,5 +1,6 @@
 {
   "name": "uniquedigit-viral-hub",
+  "pages_build_output_dir": "dist",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": [
     "nodejs_compat"
@@ -8,13 +9,17 @@
     {
       "binding": "DB",
       "database_name": "uniquedigit-db",
-      "database_id": "YOUR_D1_DATABASE_ID"
+      "database_id": "61d1d46f-f438-47f5-9128-516d9beb11cb"
     }
   ],
-  "r2_buckets": [
+  "kv_namespaces": [
     {
-      "binding": "IMAGES_BUCKET",
-      "bucket_name": "uniquedigit-images"
+      "binding": "KV",
+      "id": "2ab0d1c56e1c471fa658e522912373ec"
+    },
+    {
+      "binding": "SESSION",
+      "id": "b82e6f66636f48aa945dc8df1fbe9e01"
     }
   ]
 }

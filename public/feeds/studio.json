@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "title": "3D Gaming PC & Battlestation Studio (v4 Pro)",
+    "affiliateTag": "uniquedigi0c6-21",
+    "currency": "INR"
+  },
+  "quickBuilds": [
+    { "id": "b35", "label": "₹35K Entry Esports", "presetKey": "entry" },
+    { "id": "b55", "label": "₹55K 1080p Value King", "presetKey": "value1080" },
+    { "id": "b85", "label": "₹85K 1440p Creator", "presetKey": "creator1440" },
+    { "id": "b150", "label": "₹1.5L+ 4K Dream Setup", "presetKey": "dream4k" }
+  ],
+  "scene": {
+    "monitorVideo": "/videos/battlestation-loop.mp4"
+  },
+  "parts": {
+    "cpu": [
+      { "sku": "r5-5600", "name": "AMD Ryzen 5 5600", "price": 10499, "watt": 65, "amazonQuery": "AMD Ryzen 5 5600" },
+      { "sku": "i5-12400f", "name": "Intel Core i5-12400F", "price": 10499, "watt": 65, "amazonQuery": "Intel Core i5 12400F" },
+      { "sku": "r7-7800x3d", "name": "AMD Ryzen 7 7800X3D", "price": 36999, "watt": 120, "amazonQuery": "Ryzen 7 7800X3D" }
+    ],
+    "gpu": [
+      { "sku": "rtx4060", "name": "NVIDIA RTX 4060 8GB", "price": 26999, "watt": 115, "amazonQuery": "RTX 4060 8GB" },
+      { "sku": "rtx4070s", "name": "NVIDIA RTX 4070 SUPER", "price": 57999, "watt": 220, "amazonQuery": "RTX 4070 SUPER" },
+      { "sku": "rtx4080s", "name": "NVIDIA RTX 4080 SUPER", "price": 99999, "watt": 320, "amazonQuery": "RTX 4080 SUPER" }
+    ],
+    "ram": [
+      { "sku": "16-ddr4", "name": "16GB (2x8) DDR4 3200", "price": 3299, "watt": 8, "amazonQuery": "16GB DDR4 3200 2x8" },
+      { "sku": "32-ddr5", "name": "32GB (2x16) DDR5 6000", "price": 9999, "watt": 10, "amazonQuery": "32GB DDR5 6000 2x16" }
+    ],
+    "ssd": [
+      { "sku": "1tb-nvme", "name": "1TB NVMe SSD Gen4", "price": 5999, "watt": 6, "amazonQuery": "1TB NVMe Gen4 SSD" }
+    ],
+    "psu": [
+      { "sku": "650g", "name": "650W 80+ Gold PSU", "price": 6999, "watt": 0, "amazonQuery": "650W 80+ Gold PSU" },
+      { "sku": "750g", "name": "750W 80+ Gold PSU", "price": 8999, "watt": 0, "amazonQuery": "750W 80+ Gold PSU" }
+    ],
+    "monitor": [
+      { "sku": "24-144", "name": "24\" 144Hz IPS", "price": 10999, "watt": 25, "amazonQuery": "24 inch 144Hz IPS monitor" },
+      { "sku": "27-qhd", "name": "27\" 165Hz QHD IPS", "price": 24999, "watt": 35, "amazonQuery": "27 inch 165Hz QHD IPS monitor" }
+    ],
+    "keyboard": [
+      { "sku": "mech", "name": "Mechanical RGB Keyboard", "price": 1999, "watt": 2, "amazonQuery": "mechanical keyboard rgb" }
+    ],
+    "mouse": [
+      { "sku": "g502", "name": "Logitech G502 HERO", "price": 3999, "watt": 1, "amazonQuery": "Logitech G502 HERO" }
+    ],
+    "headphones": [
+      { "sku": "xm5", "name": "Sony WH-1000XM5", "price": 26990, "watt": 0, "amazonQuery": "Sony WH-1000XM5" }
+    ]
+  },
+  "presets": {
+    "entry": { "cpu":"r5-5600", "gpu":"rtx4060", "ram":"16-ddr4", "ssd":"1tb-nvme", "psu":"650g", "monitor":"24-144", "keyboard":"mech", "mouse":"g502", "headphones":"xm5" },
+    "value1080": { "cpu":"r5-5600", "gpu":"rtx4060", "ram":"16-ddr4", "ssd":"1tb-nvme", "psu":"650g", "monitor":"24-144", "keyboard":"mech", "mouse":"g502", "headphones":"xm5" },
+    "creator1440": { "cpu":"r7-7800x3d", "gpu":"rtx4070s", "ram":"32-ddr5", "ssd":"1tb-nvme", "psu":"750g", "monitor":"27-qhd", "keyboard":"mech", "mouse":"g502", "headphones":"xm5" },
+    "dream4k": { "cpu":"r7-7800x3d", "gpu":"rtx4080s", "ram":"32-ddr5", "ssd":"1tb-nvme", "psu":"750g", "monitor":"27-qhd", "keyboard":"mech", "mouse":"g502", "headphones":"xm5" }
+  }
+}

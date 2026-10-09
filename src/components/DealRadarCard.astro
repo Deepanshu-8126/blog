@@ -1,0 +1,68 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  product: {
+    id: string;
+    name: string;
+    price?: number;
+    url?: string;
+    aff_url?: string;
+    badge?: string;
+    image_url?: string;
+    merchant?: string;
+  };
+  compact?: boolean;
+}
+
+const { product, compact = false } = Astro.props;
+const targetUrl = product.aff_url || `/go/${product.id}`;
+---
+
+<div class={`rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50/80 via-white to-amber-50/30 p-4 shadow-xs transition hover:border-amber-400 ${compact ? 'text-xs' : ''}`}>
+  <!-- Radar Header -->
+  <div class="flex items-center justify-between gap-2 mb-2">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+      <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+      <span>Deal Radar</span>
+    </span>
+    {product.merchant && (
+      <span class="text-[10px] text-muted font-mono">{product.merchant}</span>
+    )}
+  </div>
+
+  <!-- Body -->
+  <div class="flex items-start gap-4">
+    {product.image_url && (
+      <img
+        src={product.image_url}
+        alt={product.name}
+        class="w-20 h-20 rounded-2xl object-contain bg-white flex-shrink-0 border border-slate-200 p-1.5 shadow-2xs"
+        loading="lazy"
+      />
+    )}
+    <div class="flex-1 min-w-0">
+      <h4 class="font-bold text-ink text-sm leading-snug line-clamp-2">
+        {product.name}
+      </h4>
+      <div class="mt-2 flex items-center gap-1.5">
+        <span class="text-xs text-muted">Price:</span>
+        <span class="text-xs font-mono font-bold text-amber-700">Check Live Offer</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action CTA -->
+  <div class="mt-3 pt-2.5 border-t border-amber-100 flex items-center justify-between gap-2">
+    <span class="text-[10px] text-muted">Verified Deal</span>
+    <a
+      href={targetUrl}
+      target="_blank"
+      rel="sponsored nofollow noopener"
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cta hover:brightness-105 text-cta-ink text-xs font-extrabold transition shadow-xs"
+    >
+      <span>Check Live Deal</span>
+      <Icon name="external-link" class="w-3 h-3" />
+    </a>
+  </div>
+</div>

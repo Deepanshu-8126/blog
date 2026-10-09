@@ -1,0 +1,60 @@
+---
+interface Props {
+  score: number;
+  size?: 'sm' | 'md' | 'lg';
+  showLabel?: boolean;
+}
+
+const { score, size = 'md', showLabel = true } = Astro.props;
+const clampedScore = Math.max(0, Math.min(100, Math.round(score)));
+
+// Thresholds as per 9_DESIGN_ADDON_HYPE_UI.md:
+// <25 grey, 25-54 amber, 55-74 orange 🔥, >=75 red 🚀
+let colorClass = 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+let barColor = 'bg-slate-400';
+let label = 'Low';
+let icon = '';
+
+if (clampedScore >= 75) {
+  colorClass = 'bg-rose-500/15 text-rose-400 border-rose-500/30';
+  barColor = 'bg-rose-500';
+  label = 'Peak';
+  icon = '🚀';
+} else if (clampedScore >= 55) {
+  colorClass = 'bg-amber-500/15 text-amber-400 border-amber-500/30';
+  barColor = 'bg-amber-500';
+  label = 'Hot';
+  icon = '🔥';
+} else if (clampedScore >= 25) {
+  colorClass = 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30';
+  barColor = 'bg-yellow-400';
+  label = 'Rising';
+  icon = '🌱';
+}
+---
+
+<div
+  class="inline-flex items-center gap-2"
+  aria-label={`Hype ${clampedScore} out of 100`}
+  role="meter"
+  aria-valuenow={clampedScore}
+  aria-valuemin="0"
+  aria-valuemax="100"
+>
+  <!-- Pill Badge -->
+  <div class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border font-mono font-bold tracking-tight ${colorClass} ${size === 'sm' ? 'text-[11px]' : size === 'lg' ? 'text-sm px-3.5 py-1.5' : 'text-xs'}`}>
+    <span>{icon}</span>
+    <span>{clampedScore}</span>
+    {showLabel && <span class="uppercase tracking-wider font-sans font-semibold opacity-90">· {label}</span>}
+  </div>
+
+  <!-- Micro Progress Bar for md/lg sizes -->
+  {size !== 'sm' && (
+    <div class="hidden sm:block w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+      <div
+        class={`h-full rounded-full transition-all duration-500 ${barColor}`}
+        style={`width: ${clampedScore}%`}
+      ></div>
+    </div>
+  )}
+</div>

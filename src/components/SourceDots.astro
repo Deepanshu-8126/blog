@@ -1,0 +1,46 @@
+---
+interface Props {
+  sources: string[];
+  maxVisible?: number;
+}
+
+const { sources = [], maxVisible = 4 } = Astro.props;
+
+interface SourceMeta {
+  label: string;
+  short: string;
+  color: string;
+}
+
+const SOURCE_MAP: Record<string, SourceMeta> = {
+  gtrends: { label: 'Google Trends', short: 'Trends', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
+  gnews: { label: 'Google News', short: 'News', color: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30' },
+  wiki: { label: 'Wikipedia Pageviews', short: 'Wiki', color: 'bg-slate-300/15 text-slate-300 border-slate-300/30' },
+  youtube: { label: 'YouTube Trending', short: 'YT', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
+  hn: { label: 'Hacker News', short: 'HN', color: 'bg-orange-500/15 text-orange-400 border-orange-500/30' },
+  tmdb: { label: 'TMDB Movies', short: 'TMDB', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
+  social: { label: 'X Pulse', short: 'X', color: 'bg-purple-500/15 text-purple-400 border-purple-500/30' }
+};
+
+const visibleSources = sources.slice(0, maxVisible);
+const extraCount = Math.max(0, sources.length - maxVisible);
+---
+
+<div class="inline-flex items-center gap-1.5 flex-wrap">
+  {visibleSources.map(key => {
+    const meta = SOURCE_MAP[key] || { label: key, short: key.toUpperCase(), color: 'bg-slate-700 text-slate-300 border-slate-600' };
+    return (
+      <span
+        class={`inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-medium border ${meta.color} cursor-default`}
+        title={`Verified via ${meta.label}`}
+      >
+        {meta.short}
+      </span>
+    );
+  })}
+  {extraCount > 0 && (
+    <span class="text-[10px] text-muted font-mono" title={`${extraCount} more sources`}>
+      +{extraCount}
+    </span>
+  )}
+</div>

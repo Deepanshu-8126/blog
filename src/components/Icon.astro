@@ -3,9 +3,10 @@ interface Props {
   name: string;
   class?: string;
   size?: number;
+  id?: string;
 }
 
-const { name, class: className = "w-5 h-5", size = 20 } = Astro.props;
+const { name, class: className = "w-5 h-5", size = 20, id } = Astro.props;
 
 // SVG icons mapping
 const ICONS: Record<string, string> = {
@@ -34,6 +35,7 @@ const svgContent = ICONS[name] || ICONS.sparkles;
 ---
 
 <svg
+  id={id}
   xmlns="http://www.w3.org/2005/Atom"
   width={size}
   height={size}

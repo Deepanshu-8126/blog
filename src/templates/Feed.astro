@@ -12,9 +12,11 @@ interface Props {
   niche: Niche;
   posts: Post[];
   trendingPosts: Post[];
+  currentPage?: number;
+  totalPages?: number;
 }
 
-const { niche, posts, trendingPosts } = Astro.props;
+const { niche, posts, trendingPosts, currentPage = 1, totalPages = 1 } = Astro.props;
 const heroPost = posts[0];
 const remainingPosts = posts.slice(1);
 ---
@@ -108,6 +110,40 @@ const remainingPosts = posts.slice(1);
           <h3 class="text-base font-bold text-ink">New articles are currently being generated</h3>
           <p class="text-xs text-muted mt-1">Our daily pipeline fetches fresh trends for {niche.name} every morning.</p>
         </div>
+      )}
+
+      {totalPages > 1 && (
+        <nav aria-label="Pagination Navigation" class="flex items-center justify-between border-t border-line mt-8 pt-6">
+          {currentPage > 1 ? (
+            <a 
+              href={`/${niche.slug}${currentPage - 1 === 1 ? '' : `?page=${currentPage - 1}`}`}
+              class="px-4 py-2 rounded-xl bg-white border border-line hover:border-brand text-xs font-bold text-ink transition shadow-2xs"
+            >
+              ← Previous Page
+            </a>
+          ) : (
+            <span class="px-4 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold text-muted cursor-not-allowed">
+              ← Previous Page
+            </span>
+          )}
+
+          <span class="text-xs font-mono text-muted">
+            Page <strong class="text-ink">{currentPage}</strong> of <strong class="text-ink">{totalPages}</strong>
+          </span>
+
+          {currentPage < totalPages ? (
+            <a 
+              href={`/${niche.slug}?page=${currentPage + 1}`}
+              class="px-4 py-2 rounded-xl bg-white border border-line hover:border-brand text-xs font-bold text-ink transition shadow-2xs"
+            >
+              Next Page →
+            </a>
+          ) : (
+            <span class="px-4 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold text-muted cursor-not-allowed">
+              Next Page →
+            </span>
+          )}
+        </nav>
       )}
 
       <AdSlot position="mid" />

@@ -1,5 +1,5 @@
 ---
-import { getNiches, getNicheBySlug, getPostsByNiche, getTrendingPosts, getProductsByNiche } from '../../lib/db';
+import { getNicheBySlug, getPostsByNiche, getPostsCountByNiche, getTrendingPosts, getProductsByNiche } from '../../lib/db';
 import Feed from '../../templates/Feed.astro';
 import Tools from '../../templates/Tools.astro';
 import Dataset from '../../templates/Dataset.astro';
@@ -10,20 +10,29 @@ if (!nicheSlug) {
   return Astro.redirect('/404');
 }
 
-const niche = await getNicheBySlug(nicheSlug);
+const runtime = (Astro.locals as any)?.runtime;
+const niche = await getNicheBySlug(nicheSlug, runtime?.env);
 if (!niche) {
   return Astro.redirect('/404');
 }
 
-const [posts, trendingPosts, products] = await Promise.all([
-  getPostsByNiche(niche.id, 16),
-  getTrendingPosts(5),
-  getProductsByNiche(niche.id)
+const pageQuery = parseInt(Astro.url.searchParams.get('page') || '1', 10);
+const currentPage = isNaN(pageQuery) || pageQuery < 1 ? 1 : pageQuery;
+const pageSize = 12;
+const offset = (currentPage - 1) * pageSize;
+
+const [posts, totalCount, trendingPosts, products] = await Promise.all([
+  getPostsByNiche(niche.id, pageSize, runtime?.env, offset),
+  getPostsCountByNiche(niche.id, runtime?.env),
+  getTrendingPosts(5, runtime?.env),
+  getProductsByNiche(niche.id, runtime?.env)
 ]);
+
+const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 ---
 
 {niche.page_type === 'feed' && (
-  <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} />
+  <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} />
 )}
 
 {niche.page_type === 'tools' && (

@@ -2,21 +2,49 @@
 import Layout from '../layouts/Layout.astro';
 import NicheCard from '../components/NicheCard.astro';
 import Icon from '../components/Icon.astro';
-import { getTrendingPosts, getNiches } from '../lib/db';
+import { getTrendingPosts, getNiches, getD1 } from '../lib/db';
 
-const allPosts = await getTrendingPosts(20);
-const niches = await getNiches();
+const runtime = (Astro.locals as any)?.runtime;
+const db = getD1(runtime?.env);
+const queryParam = Astro.url.searchParams.get('q')?.trim() || '';
+
+let searchResults: any[] = [];
+if (queryParam && db) {
+  try {
+    const pattern = `%${queryParam}%`;
+    const rows = await db.prepare(`
+      SELECT posts.*, niches.slug as niche_slug, niches.name as niche_name
+      FROM posts
+      LEFT JOIN niches ON posts.niche_id = niches.id
+      WHERE (posts.title LIKE ? OR posts.summary LIKE ? OR posts.slug LIKE ?)
+        AND posts.status = 'published'
+      ORDER BY posts.hype DESC, posts.published_at DESC
+      LIMIT 30
+    `).bind(pattern, pattern, pattern).all();
+
+    searchResults = (rows.results || []).map((r: any) => ({
+      ...r,
+      niches: { id: r.niche_id, slug: r.niche_slug || 'viral', name: r.niche_name || 'Viral' }
+    }));
+  } catch {}
+}
+
+const initialPosts = searchResults.length > 0 
+  ? searchResults 
+  : await getTrendingPosts(20, runtime?.env);
+
+const niches = await getNiches(runtime?.env);
 ---
 
 <Layout
-  title="Search All Hubs & Topics | UniqueDigit"
+  title={queryParam ? `Search: "${queryParam}" | UniqueDigit` : "Search All Hubs & Topics | UniqueDigit"}
   description="Search across PC hardware benchmarks, gold rates, generative AI tools, and deals."
 >
   <div class="max-w-4xl mx-auto py-8">
     <div class="text-center mb-8">
       <span class="text-xs font-bold uppercase tracking-wider text-brand font-mono">Global Search</span>
       <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight mt-1">Search UniqueDigit Intel</h1>
-      <p class="text-xs text-muted mt-2">Find articles, buying guides, PC builds, and real-time trends.</p>
+      <p class="text-xs text-muted mt-2">Find articles, buying guides, PC builds, and real-time trends across India.</p>
     </div>
 
     <!-- Search Input Box -->
@@ -24,7 +52,8 @@ const niches = await getNiches();
       <input
         type="text"
         id="global-search-input"
-        placeholder="Type any keyword (e.g. GTA 6, RTX 4070, Gold Rate, ChatGPT, Deals)..."
+        value={queryParam}
+        placeholder="Type any keyword (e.g. GTA 6, Gold Rate, RTX 4070, ChatGPT, Cashback)..."
         class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-line text-base text-ink shadow-soft focus:outline-none focus:ring-2 focus:ring-brand"
         autofocus
       />
@@ -36,7 +65,7 @@ const niches = await getNiches();
     <!-- Quick Hub Filters -->
     <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-6 mb-6">
       <span class="text-xs font-bold text-muted shrink-0">Popular Hubs:</span>
-      {niches.slice(0, 6).map(n => (
+      {niches.slice(0, 8).map(n => (
         <a href={`/${n.slug}`} class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-700 shrink-0 transition">
           {n.name}
         </a>
@@ -44,8 +73,12 @@ const niches = await getNiches();
     </div>
 
     <!-- Results Section -->
+    <div id="search-status" class="text-xs text-muted mb-4 font-mono">
+      {queryParam ? `Showing results for "${queryParam}" (${initialPosts.length} found)` : 'Trending articles:'}
+    </div>
+
     <div id="search-results" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-      {allPosts.map(p => (
+      {initialPosts.map(p => (
         <NicheCard post={p} />
       ))}
     </div>
@@ -55,19 +88,56 @@ const niches = await getNiches();
 <script>
   const searchInput = document.getElementById('global-search-input') as HTMLInputElement;
   const resultsContainer = document.getElementById('search-results');
-  
+  const statusBox = document.getElementById('search-status');
+  let debounceTimeout: any = null;
+
   if (searchInput && resultsContainer) {
-    const cards = Array.from(resultsContainer.children) as HTMLElement[];
     searchInput.addEventListener('input', (e) => {
-      const q = (e.target as HTMLInputElement).value.toLowerCase().trim();
-      cards.forEach(card => {
-        const text = card.textContent?.toLowerCase() || '';
-        if (text.includes(q)) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
+      const q = (e.target as HTMLInputElement).value.trim();
+      clearTimeout(debounceTimeout);
+
+      if (!q) {
+        if (statusBox) statusBox.textContent = 'Showing trending articles:';
+        return;
+      }
+
+      debounceTimeout = setTimeout(async () => {
+        if (statusBox) statusBox.textContent = `Searching database for "${q}"...`;
+
+        try {
+          const res = await fetch(`/api/search-query?q=${encodeURIComponent(q)}`);
+          const data = await res.json() as any;
+
+          if (data && Array.isArray(data.results)) {
+            if (data.results.length === 0) {
+              if (statusBox) statusBox.textContent = `No matching articles found for "${q}".`;
+              resultsContainer.innerHTML = `
+                <div class="col-span-full py-12 text-center text-muted">
+                  <p class="text-base font-bold text-slate-800">No matching articles found</p>
+                  <p class="text-xs mt-1 text-slate-500">Try searching for keywords like "gold", "ai", "gta", or browse categories above.</p>
+                </div>
+              `;
+            } else {
+              if (statusBox) statusBox.textContent = `Found ${data.results.length} articles for "${q}":`;
+              resultsContainer.innerHTML = data.results.map((item: any) => `
+                <a href="/${item.niche_slug}/${item.slug}" class="block group p-4 rounded-2xl bg-white border border-line hover:border-brand transition shadow-sm hover:shadow-md">
+                  <div class="aspect-video w-full overflow-hidden rounded-xl bg-slate-100 mb-3">
+                    <img src="${item.image_url || '/images/gta6_cover.jpg'}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
+                  </div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-bold text-brand uppercase font-mono">${item.niche_name}</span>
+                    <span class="text-xs text-muted">· Hype ${item.hype}/100</span>
+                  </div>
+                  <h3 class="text-base font-bold text-ink group-hover:text-brand transition line-clamp-2">${item.title}</h3>
+                  <p class="text-xs text-muted mt-1 line-clamp-2">${item.summary || ''}</p>
+                </a>
+              `).join('');
+            }
+          }
+        } catch {
+          if (statusBox) statusBox.textContent = 'Search failed. Please try again.';
         }
-      });
+      }, 300);
     });
   }
 </script>

@@ -1,0 +1,16 @@
+name = "uniquedigit-engine"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[triggers]
+crons = ["*/15 * * * *", "7 * * * *", "30 0 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "uniquedigit-db"
+database_id = "61d1d46f-f438-47f5-9128-516d9beb11cb"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "2ab0d1c56e1c471fa658e522912373ec"

@@ -1,0 +1,52 @@
+---
+interface Props {
+  stage: 'emerging' | 'hot' | 'peak' | 'cooling' | 'gone' | string;
+  size?: 'sm' | 'md';
+}
+
+const { stage = 'emerging', size = 'md' } = Astro.props;
+
+interface StageConfig {
+  icon: string;
+  label: string;
+  classes: string;
+}
+
+const STAGES: Record<string, StageConfig> = {
+  emerging: {
+    icon: '🌱',
+    label: 'Rising',
+    classes: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+  },
+  hot: {
+    icon: '🔥',
+    label: 'Hot',
+    classes: 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+  },
+  peak: {
+    icon: '🚀',
+    label: 'Peaking',
+    classes: 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+  },
+  cooling: {
+    icon: '🧊',
+    label: 'Cooling',
+    classes: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30'
+  },
+  gone: {
+    icon: '⚫',
+    label: 'Expired',
+    classes: 'bg-slate-700/30 text-slate-400 border-slate-600/30'
+  }
+};
+
+const current = STAGES[stage.toLowerCase()] || STAGES.emerging;
+---
+
+<span
+  class={`inline-flex items-center gap-1 font-semibold rounded-full border px-2 py-0.5 tracking-tight ${current.classes} ${size === 'sm' ? 'text-[10px]' : 'text-xs'}`}
+  title={`Trend Stage: ${current.label}`}
+>
+  <span aria-hidden="true">{current.icon}</span>
+  <span>{current.label}</span>
+</span>

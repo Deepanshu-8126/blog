@@ -16,7 +16,7 @@ interface Props {
 const {
   title = 'UniqueDigit — Viral Tech, Deals & Real-Time Intelligence Hub',
   description = 'India’s modern tech & earning hub. Real-time PC builds, gold rates, AI tools directory, loot deals, and viral trends.',
-  image = '/og-image.png',
+  image = '/images/gta6_cover.jpg',
   canonical = Astro.url.href,
   niche,
   activeGroup
@@ -37,6 +37,20 @@ const siteName = 'UniqueDigit';
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="google-site-verification" content="O2MfmO-mrSKHoa3coBUKxUx-MfJpBt90-KgbrgYhD0Q" />
+
+    <!-- Google Analytics (GA4) if configured -->
+    {import.meta.env.PUBLIC_GA_ID && (
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.PUBLIC_GA_ID}`}></script>
+      <script is:inline define:vars={{ gaId: import.meta.env.PUBLIC_GA_ID }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', gaId);
+      </script>
+    )}
 
     <!-- Open Graph / Social Media -->
     <meta property="og:type" content="website" />
@@ -57,10 +71,40 @@ const siteName = 'UniqueDigit';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
 
+    <!-- WebSite & Organization Structured Data for Google -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          '@id': `${Astro.url.origin}/#website`,
+          'url': Astro.url.origin,
+          'name': siteName,
+          'description': description,
+          'publisher': { '@id': `${Astro.url.origin}/#organization` },
+          'potentialAction': {
+            '@type': 'SearchAction',
+            'target': {
+              '@type': 'EntryPoint',
+              'urlTemplate': `${Astro.url.origin}/trending?q={search_term_string}`
+            },
+            'query-input': 'required name=search_term_string'
+          }
+        },
+        {
+          '@type': 'Organization',
+          '@id': `${Astro.url.origin}/#organization`,
+          'name': siteName,
+          'url': Astro.url.origin,
+          'logo': `${Astro.url.origin}/favicon.svg`
+        }
+      ]
+    })} />
+
     <!-- Favicon SVG fallback -->
     <slot name="head" />
   </head>
-  <body class="min-h-screen flex flex-col bg-bg text-ink antialiased">
+  <body class="min-h-screen flex flex-col bg-bg text-ink antialiased pb-16 md:pb-0 overflow-x-hidden">
     <Header activeNiche={niche?.slug} activeGroup={activeGroup || niche?.grp} />
     <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <slot />

@@ -2,23 +2,62 @@
 interface Props {
   position?: 'top' | 'mid' | 'sidebar' | 'footer';
   class?: string;
+  adClient?: string;
+  adSlot?: string;
 }
 
-const { position = 'mid', class: className = '' } = Astro.props;
+const { 
+  position = 'mid', 
+  class: className = '',
+  adClient = import.meta.env.PUBLIC_ADSENSE_CLIENT || '',
+  adSlot = ''
+} = Astro.props;
 
-const heights: Record<string, string> = {
-  top: 'min-h-[100px] sm:min-h-[120px]',
-  mid: 'min-h-[250px] sm:min-h-[280px]',
-  sidebar: 'min-h-[300px]',
-  footer: 'min-h-[90px]'
-};
+const hasAdSense = Boolean(adClient && adSlot);
 ---
 
-<div class={`w-full my-6 flex flex-col items-center justify-center rounded-2xl bg-slate-50 border border-dashed border-slate-300 p-4 text-center overflow-hidden ${heights[position] || 'min-h-[120px]'} ${className}`}>
-  <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 font-mono">
-    ADVERTISEMENT
-  </span>
-  <div class="text-xs text-slate-400 flex items-center gap-2">
-    <span>Sponsored Partner Slot</span>
+{hasAdSense ? (
+  <div class:list={["w-full my-6 flex justify-center items-center overflow-hidden min-h-[90px] bg-slate-50/50 rounded-2xl", className]} data-ad-position={position}>
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client={adClient}
+      data-ad-slot={adSlot}
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    ></ins>
+    <script is:inline>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
   </div>
-</div>
+) : (
+  <div class:list={["w-full my-6 rounded-2xl bg-gradient-to-r from-amber-500/10 via-brand-soft/40 to-amber-500/10 border border-amber-200/60 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs", className]} data-ad-position={position}>
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 font-black flex items-center justify-center text-lg shrink-0 shadow-xs">
+        ⚡
+      </div>
+      <div>
+        <div class="flex items-center gap-2 mb-0.5">
+          <span class="text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-mono">
+            Today&apos;s Verified Loot
+          </span>
+          <span class="text-xs text-muted hidden sm:inline">&bull; Live Discount Radar</span>
+        </div>
+        <h4 class="text-sm font-extrabold text-ink leading-tight">
+          Up to 60% Off on Top PC Hardware, Laptops &amp; Audio Deals
+        </h4>
+      </div>
+    </div>
+    <a
+      href="https://www.amazon.in/s?k=today+deals+electronics&tag=uniquedigi0c6-21"
+      target="_blank"
+      rel="sponsored nofollow noopener"
+      class="px-4 py-2 rounded-xl bg-cta hover:bg-amber-400 text-cta-ink font-black text-xs transition shadow-xs flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer"
+    >
+      <span>Claim Offer</span>
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
+    </a>
+  </div>
+)}

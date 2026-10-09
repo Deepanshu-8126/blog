@@ -22,7 +22,7 @@ const groupThemes: Record<string, { cardBg: string; chip: string; border: string
 const theme = groupThemes[grp] || groupThemes.Tech;
 ---
 
-<div class={`group flex flex-col justify-between rounded-2xl ${theme.cardBg} border border-line ${theme.border} p-4 shadow-card hover:shadow-soft hover:-translate-y-1 transition-all duration-300`}>
+<div class="group flex flex-col justify-between rounded-2xl bg-white border border-slate-200 hover:border-brand/50 p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
   <div>
     <!-- Image Box -->
     <div class="relative aspect-video w-full rounded-xl overflow-hidden mb-3.5 bg-slate-200">

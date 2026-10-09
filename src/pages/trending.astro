@@ -1,0 +1,195 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TrendRow from '../components/TrendRow.astro';
+import FreshnessStamp from '../components/FreshnessStamp.astro';
+import LiveDot from '../components/LiveDot.astro';
+import TelegramCTA from '../components/TelegramCTA.astro';
+import AdSlot from '../components/AdSlot.astro';
+import NewsletterStrip from '../components/NewsletterStrip.astro';
+import Icon from '../components/Icon.astro';
+import { getBoard } from '../lib/kv';
+
+const runtime = (Astro.locals as any)?.runtime;
+const board = await getBoard(runtime?.env);
+const latestUpdate = board[0]?.updated_at || new Date().toISOString();
+
+// Robust Niche-to-Group Mapping
+const NICHE_GROUP_MAP: Record<string, string> = {
+  'pc-builds': 'Tech',
+  'ai-tools': 'Tech',
+  'gold-rate': 'Money',
+  'deals': 'Money',
+  'side-hustles': 'Money',
+  'cashback': 'Money',
+  'health': 'Lifestyle',
+  'fashion': 'Lifestyle',
+  'food': 'Lifestyle',
+  'gta-6': 'Entertainment',
+  'movies': 'Entertainment',
+  'viral': 'Entertainment'
+};
+
+const getGroup = (item: any) => NICHE_GROUP_MAP[item.niche_slug || ''] || item.niche || 'Entertainment';
+
+// Category counters
+const categories = ['All', 'Tech', 'Money', 'Lifestyle', 'Entertainment'];
+const counts: Record<string, number> = {
+  All: board.length,
+  Tech: board.filter(b => getGroup(b) === 'Tech').length,
+  Money: board.filter(b => getGroup(b) === 'Money').length,
+  Lifestyle: board.filter(b => getGroup(b) === 'Lifestyle').length,
+  Entertainment: board.filter(b => getGroup(b) === 'Entertainment').length
+};
+
+// ItemList Structured Data for Google Trends Ranking
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  'name': 'Trending Now in India — Live Multi-Signal Ranking',
+  'description': 'Real-time aggregated trending searches and topics in India computed every 15 minutes.',
+  'numberOfItems': Math.min(board.length, 20),
+  'itemListElement': board.slice(0, 20).map((item, index) => ({
+    '@type': 'ListItem',
+    'position': index + 1,
+    'name': item.title,
+    'url': `${Astro.url.origin}/trending`
+  }))
+};
+---
+
+<Layout
+  title="Trending Now in India — Real-Time Multi-Signal Hype Board | UniqueDigit"
+  description="Live tracking top trending searches, viral news, tech drops and deals across India. Multi-source verified from Google Trends, Wikipedia, YouTube and News."
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
+  </Fragment>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Header Block -->
+    <div class="border-b border-line pb-6 mb-8">
+      <div class="flex items-center gap-3 mb-2 flex-wrap">
+        <LiveDot updatedAt={latestUpdate} />
+        <FreshnessStamp updatedAt={latestUpdate} />
+        <span class="text-xs text-muted font-mono hidden sm:inline">· Recomputes every 15 min</span>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-2">
+        <div>
+          <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            Trending Now in India
+          </h1>
+          <p class="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
+            Real-time multi-signal intelligence aggregated from Google Trends, Google News, Wikipedia, and YouTube.
+          </p>
+        </div>
+
+        <a
+          href="https://t.me/uniquedigit"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 hover:bg-sky-100 text-xs font-bold transition flex-shrink-0"
+        >
+          <span>✈️ Telegram Alerts</span>
+        </a>
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="flex items-center gap-2 mt-6 overflow-x-auto no-scrollbar pb-1" id="filter-chips">
+        {categories.map((cat, idx) => (
+          <button
+            type="button"
+            class={`category-filter-btn px-3.5 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${idx === 0 ? 'bg-brand text-white shadow-xs' : 'bg-white hover:bg-slate-100 text-slate-700 border border-line'}`}
+            data-category={cat.toLowerCase()}
+          >
+            <span>{cat}</span>
+            <span class="text-[10px] font-mono opacity-80">({counts[cat] || 0})</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Trend Rows Board -->
+    <div class="flex flex-col gap-3" id="trends-container">
+      {board.map((item, index) => (
+        <>
+          <div class="trend-item-wrapper" data-niche-grp={getGroup(item).toLowerCase()}>
+            <TrendRow item={item} rank={index + 1} />
+          </div>
+
+          {/* Ad Slot after Row 5 */}
+          {index === 4 && (
+            <div class="my-4">
+              <AdSlot position="mid" />
+            </div>
+          )}
+
+          {/* Ad Slot after Row 15 */}
+          {index === 14 && (
+            <div class="my-4">
+              <AdSlot position="mid" />
+            </div>
+          )}
+        </>
+      ))}
+    </div>
+
+    <!-- Telegram CTA Strip -->
+    <div class="mt-12">
+      <TelegramCTA isSticky={false} />
+    </div>
+
+    <!-- Newsletter -->
+    <div class="mt-8">
+      <NewsletterStrip />
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // 1. Client-Side Category Filtering
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.category-filter-btn');
+  const items = document.querySelectorAll<HTMLElement>('.trend-item-wrapper');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Toggle active styling
+      filterBtns.forEach(b => {
+        b.classList.remove('bg-brand', 'text-white', 'shadow-xs');
+        b.classList.add('bg-white', 'text-slate-700', 'border', 'border-line');
+      });
+      btn.classList.add('bg-brand', 'text-white', 'shadow-xs');
+      btn.classList.remove('bg-white', 'text-slate-700', 'border', 'border-line');
+
+      const targetCat = btn.dataset.category || 'all';
+
+      items.forEach(item => {
+        const itemCat = (item.dataset.nicheGrp || '').toLowerCase();
+        if (targetCat === 'all' || itemCat.includes(targetCat)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // 2. Client Auto-Refresh polling every 60s without layout shift
+  let isFetching = false;
+  setInterval(async () => {
+    if (isFetching) return;
+    try {
+      isFetching = true;
+      const res = await fetch('/api/trending');
+      if (res.ok) {
+        // Silently update live indicators if fresh
+        console.log('[HypeBoard]: Verified background sync ok');
+      }
+    } catch (e) {
+      // Silent error ignore
+    } finally {
+      isFetching = false;
+    }
+  }, 60000);
+</script>

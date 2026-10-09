@@ -1,0 +1,105 @@
+---
+import Icon from './Icon.astro';
+
+// Clean curated 4-group structure matching the reference design
+const categories = [
+  {
+    group: 'Tech',
+    badgeClass: 'bg-blue-600 text-white',
+    icon: 'cpu',
+    items: [
+      { name: 'PC Builds', desc: 'Custom rigs & parts', slug: 'pc-builds', icon: 'cpu' },
+      { name: 'Gold Rate', desc: 'Live gold prices', slug: 'gold-rate', icon: 'sparkles' },
+      { name: 'AI Tools', desc: 'Generative AI & utilities', slug: 'ai-tools', icon: 'sparkles' }
+    ]
+  },
+  {
+    group: 'Money',
+    badgeClass: 'bg-emerald-600 text-white',
+    icon: 'tag',
+    items: [
+      { name: 'Deals', desc: "Today's top discounts", slug: 'deals', icon: 'tag' },
+      { name: 'Side Hustles', desc: 'Earn extra income', slug: 'side-hustles', icon: 'sparkles' },
+      { name: 'Cashback', desc: 'Rewards & cashback offers', slug: 'cashback', icon: 'tag' }
+    ]
+  },
+  {
+    group: 'Lifestyle',
+    badgeClass: 'bg-rose-500 text-white',
+    icon: 'shield-check',
+    items: [
+      { name: 'Health', desc: 'Wellness & fitness tips', slug: 'health', icon: 'shield-check' },
+      { name: 'Fashion', desc: 'Trends & style guides', slug: 'fashion', icon: 'sparkles' },
+      { name: 'Food', desc: 'Recipes & cooking', slug: 'food', icon: 'sparkles' }
+    ]
+  },
+  {
+    group: 'Entertainment',
+    badgeClass: 'bg-amber-500 text-white',
+    icon: 'gamepad',
+    items: [
+      { name: 'GTA 6', desc: 'News, updates & guides', slug: 'gta-6', icon: 'gamepad', isNew: true },
+      { name: 'Movies', desc: 'Reviews & trailers', slug: 'movies', icon: 'sparkles' },
+      { name: 'Viral', desc: 'Trending now', slug: 'viral', icon: 'sparkles' }
+    ]
+  }
+];
+---
+
+<div class="w-full bg-white rounded-3xl border border-line shadow-card p-6 sm:p-8 my-8">
+  <!-- 4 Columns Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    {categories.map(cat => (
+      <div class="flex flex-col">
+        <!-- Group Header -->
+        <div class="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-100">
+          <div class={`w-8 h-8 rounded-full ${cat.badgeClass} flex items-center justify-center text-xs font-bold shadow-xs`}>
+            <Icon name={cat.icon} class="w-4 h-4" />
+          </div>
+          <h2 class="text-base font-extrabold text-ink tracking-tight">{cat.group}</h2>
+        </div>
+
+        <!-- Group Items -->
+        <div class="flex flex-col gap-3">
+          {cat.items.map(item => (
+            <a
+              href={`/${item.slug}`}
+              class="group flex items-start gap-3 p-2.5 -mx-2.5 rounded-2xl hover:bg-slate-50 transition"
+            >
+              <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:bg-brand group-hover:text-white transition shrink-0 mt-0.5">
+                <Icon name={item.icon} class="w-4 h-4" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-sm font-bold text-ink group-hover:text-brand transition truncate">
+                    {item.name}
+                  </span>
+                  {item.isNew && (
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-orange-500 text-white shadow-2xs">
+                      NEW
+                    </span>
+                  )}
+                </div>
+                <p class="text-xs text-muted truncate mt-0.5 font-normal">
+                  {item.desc}
+                </p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Bottom Strip -->
+  <div class="mt-8 pt-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-muted">
+    <div class="flex items-center gap-2 font-medium">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span>Popular this week &rarr; <strong>30+ live guides & trends</strong></span>
+    </div>
+    <a href="/trending" class="font-bold text-brand hover:text-brand-dark flex items-center gap-1 transition">
+      <span>View all categories</span>
+      <span>&rarr;</span>
+    </a>
+  </div>
+</div>

@@ -1,10 +1,11 @@
 import type { APIRoute } from 'astro';
 import { getTrendingPosts } from '../lib/db';
 
-export const GET: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request, locals }) => {
   const url = new URL(request.url);
   const baseUrl = `${url.protocol}//${url.host}`;
-  const posts = await getTrendingPosts(20);
+  const runtime = (locals as any)?.runtime;
+  const posts = await getTrendingPosts(20, runtime?.env);
   const buildDate = new Date().toUTCString();
 
   const itemsXml = posts.map(p => {

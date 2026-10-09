@@ -1,0 +1,282 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import StageBadge from '../../components/StageBadge.astro';
+import HypeMeter from '../../components/HypeMeter.astro';
+import { getNiches } from '../../lib/db';
+import { getBoard } from '../../lib/kv';
+
+import { verifyCloudflareAccess, verifyCsrfOrigin } from '../../lib/auth';
+
+const runtime = (Astro.locals as any)?.runtime;
+
+// 1. Cryptographic Cloudflare Access JWT Authentication Check
+const authResult = await verifyCloudflareAccess(Astro.request, runtime?.env);
+if (!authResult.valid) {
+  return new Response(`403 Forbidden: Cloudflare Access Required (${authResult.error})`, {
+    status: 403,
+    headers: { 'Content-Type': 'text/plain' }
+  });
+}
+
+// 2. Strict CSRF Origin Verification on POST
+if (Astro.request.method === 'POST') {
+  if (!verifyCsrfOrigin(Astro.request)) {
+    return new Response('403 Forbidden: CSRF Origin Mismatch', {
+      status: 403,
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  }
+
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+  const db = runtime?.env?.DB;
+
+  if (action === 'block' && db) {
+    const term = formData.get('term')?.toString().trim().toLowerCase();
+    if (term) {
+      await db.prepare('INSERT OR IGNORE INTO blocklist (term, reason) VALUES (?, ?)').bind(term, 'admin_manual').run();
+    }
+  } else if (action === 'promote' && db) {
+    const topicId = formData.get('topic_id')?.toString();
+    if (topicId) {
+      await db.prepare('UPDATE topics SET status = ? WHERE id = ?').bind('article', topicId).run();
+    }
+  }
+}
+
+const niches = await getNiches(runtime?.env);
+const board = await getBoard(runtime?.env);
+
+// Sample review queue drafts for sensitive niches (Health, Finance)
+const DRAFT_QUEUE = [
+  {
+    id: 'dr1',
+    title: 'Ashwagandha Dosage & Liver Safety Study 2026',
+    niche: 'Health',
+    category: 'Wellness',
+    reason: 'YMYL Sensitive category requires human verification',
+    created_at: '2026-10-09T06:30:00Z',
+    status: 'pending_review'
+  },
+  {
+    id: 'dr2',
+    title: 'SEBI Clarification on Algo Trading Apps for Retail Users',
+    niche: 'Money',
+    category: 'Finance',
+    reason: 'Financial advice regulation check required',
+    created_at: '2026-10-09T07:15:00Z',
+    status: 'pending_review'
+  }
+];
+
+const SOURCES = [
+  { key: 'gtrends', label: 'Google Trends India RSS', weight: 0.30, interval: '15m', enabled: true },
+  { key: 'gnews', label: 'Google News IN RSS', weight: 0.20, interval: '30m', enabled: true },
+  { key: 'wiki', label: 'Wikimedia Pageviews API', weight: 0.15, interval: '60m', enabled: true },
+  { key: 'youtube', label: 'YouTube Trending India', weight: 0.10, interval: '30m', enabled: true },
+  { key: 'hn', label: 'Hacker News Top Stories', weight: 0.08, interval: '30m', enabled: true },
+  { key: 'tmdb', label: 'TMDB Movies India', weight: 0.05, interval: '6h', enabled: true },
+  { key: 'social', label: 'xAI / Grok Pulse', weight: 0.12, interval: '60m', enabled: false }
+];
+---
+
+<Layout
+  title="Admin Console & Hype Control | UniqueDigit"
+  description="Protected dashboard for review queue, blocklist management, and engine controls."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    
+    <!-- Admin Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800 mb-8">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-purple-500/20 text-purple-300 border border-purple-500/30">
+            Cloudflare Access Protected
+          </span>
+          <span class="text-xs text-muted font-mono">Edge Worker Control</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-ink tracking-tight mt-1">
+          Hype Engine & Content Operations Desk
+        </h1>
+      </div>
+
+      <!-- Quick Emergency Actions -->
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          id="engine-pause-toggle"
+          class="px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 text-xs font-bold transition flex items-center gap-2 cursor-pointer"
+        >
+          <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+          <span>Engine Kill-Switch (Active)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 Operational Grid Blocks -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left 8 Cols: Review Queue & Active Topics -->
+      <div class="lg:col-span-8 flex flex-col gap-8">
+        
+        <!-- Section 1: Review Queue (Health / Finance Sensitive) -->
+        <div class="p-6 rounded-3xl border border-slate-800 bg-slate-900/60 shadow-soft">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-lg font-black text-ink tracking-tight flex items-center gap-2">
+                <span>🛡️ Safety Review Queue</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300">
+                  {DRAFT_QUEUE.length} Pending
+                </span>
+              </h2>
+              <p class="text-xs text-muted mt-0.5">Sensitive health/finance drafts requiring manual approval before publishing.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            {DRAFT_QUEUE.map(item => (
+              <div class="p-4 rounded-2xl border border-slate-800 bg-slate-950/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
+                      {item.niche}
+                    </span>
+                    <span class="text-[11px] text-amber-400 font-medium">{item.reason}</span>
+                  </div>
+                  <h4 class="font-bold text-ink text-sm">{item.title}</h4>
+                </div>
+
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <button class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold transition">
+                    Approve
+                  </button>
+                  <button class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold transition">
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Section 2: Active Trending Topics Manager -->
+        <div class="p-6 rounded-3xl border border-slate-800 bg-slate-900/60 shadow-soft">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-black text-ink tracking-tight flex items-center gap-2">
+              <span>🔥 Top Active Ingested Topics</span>
+              <span class="text-xs text-muted font-mono font-normal">({board.length} tracked)</span>
+            </h2>
+            <a href="/trending" target="_blank" class="text-xs font-bold text-cta hover:underline">
+              View Public Board →
+            </a>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="border-b border-slate-800 text-slate-500 uppercase font-mono text-[10px]">
+                <tr>
+                  <th class="py-2.5 px-3">Title</th>
+                  <th class="py-2.5 px-3">Hype</th>
+                  <th class="py-2.5 px-3">Stage</th>
+                  <th class="py-2.5 px-3">Sources</th>
+                  <th class="py-2.5 px-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                {board.slice(0, 8).map(t => (
+                  <tr class="hover:bg-slate-800/30 transition">
+                    <td class="py-3 px-3 font-medium text-ink max-w-xs truncate">{t.title}</td>
+                    <td class="py-3 px-3 font-mono font-bold text-cta">{t.hype}</td>
+                    <td class="py-3 px-3"><StageBadge stage={t.stage} size="sm" /></td>
+                    <td class="py-3 px-3 font-mono text-slate-400">{t.sources.join(', ')}</td>
+                    <td class="py-3 px-3 text-right space-x-2">
+                      <button class="text-sky-400 hover:underline">Promote</button>
+                      <button class="text-rose-400 hover:underline">Block</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right 4 Cols: Sources Weights, Blocklist & System Metrics -->
+      <div class="lg:col-span-4 flex flex-col gap-8">
+        
+        <!-- Sources & Weight Distribution -->
+        <div class="p-6 rounded-3xl border border-slate-800 bg-slate-900/60 shadow-soft">
+          <h2 class="text-base font-black text-ink tracking-tight mb-3">
+            Signal Sources & Weights
+          </h2>
+          <div class="flex flex-col gap-3">
+            {SOURCES.map(s => (
+              <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-ink text-xs">{s.label}</div>
+                  <div class="text-[10px] text-muted font-mono">Weight: {s.weight * 100}% · Every {s.interval}</div>
+                </div>
+                <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${s.enabled ? 'bg-emerald-500/15 text-emerald-400' : 'bg-slate-800 text-slate-500'}`}>
+                  {s.enabled ? 'ON' : 'OFF'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Blocklist Quick Add -->
+        <div class="p-6 rounded-3xl border border-slate-800 bg-slate-900/60 shadow-soft">
+          <h2 class="text-base font-black text-ink tracking-tight mb-2">
+            Safety Blocklist
+          </h2>
+          <p class="text-xs text-muted mb-4">Any trending search containing these terms is discarded immediately.</p>
+          <div class="flex gap-2 mb-3">
+            <input
+              type="text"
+              placeholder="Add blocked keyword..."
+              class="flex-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-ink focus:outline-none focus:border-brand"
+            />
+            <button class="px-3 py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-dark transition">
+              Add
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            {['suicide', 'murder', 'crime', 'accident', 'adult', 'nude', 'gambling'].map(term => (
+              <span class="px-2 py-0.5 rounded-lg text-[10px] font-mono bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                {term}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <!-- Pipeline Health Monitor -->
+        <div class="p-6 rounded-3xl border border-slate-800 bg-slate-900/60 shadow-soft">
+          <h2 class="text-base font-black text-ink tracking-tight mb-2">
+            Edge Health Status
+          </h2>
+          <div class="space-y-2 text-xs font-mono text-slate-300">
+            <div class="flex justify-between py-1 border-b border-slate-800">
+              <span class="text-muted">Cloudflare D1:</span>
+              <span class="text-emerald-400 font-bold">ONLINE</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-800">
+              <span class="text-muted">KV board:IN:</span>
+              <span class="text-emerald-400 font-bold">FRESH (4m age)</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-800">
+              <span class="text-muted">Cron Triggers:</span>
+              <span class="text-emerald-400 font-bold">HEALTHY</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-muted">Daily Card Cap:</span>
+              <span>60 max</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</Layout>

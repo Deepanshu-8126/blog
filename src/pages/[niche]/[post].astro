@@ -7,6 +7,9 @@ import DealPoll from '../../components/DealPoll.astro';
 import NicheCard from '../../components/NicheCard.astro';
 import DisclaimerBar from '../../components/DisclaimerBar.astro';
 import Icon from '../../components/Icon.astro';
+import HypeMeter from '../../components/HypeMeter.astro';
+import FreshnessStamp from '../../components/FreshnessStamp.astro';
+import DealRadarCard from '../../components/DealRadarCard.astro';
 import { getPost, getPostsByNiche, getProductsByNiche, getNicheBySlug } from '../../lib/db';
 import { marked } from 'marked';
 
@@ -15,58 +18,133 @@ if (!nicheSlug || !postSlug) {
   return Astro.redirect('/404');
 }
 
-const niche = await getNicheBySlug(nicheSlug);
-const post = await getPost(nicheSlug, postSlug);
+const runtime = (Astro.locals as any)?.runtime;
+const niche = await getNicheBySlug(nicheSlug, runtime?.env);
+const post = await getPost(nicheSlug, postSlug, runtime?.env);
 
 if (!post || !niche) {
   return Astro.redirect('/404');
 }
 
 const [relatedPosts, products] = await Promise.all([
-  getPostsByNiche(niche.id, 4),
-  getProductsByNiche(niche.id)
+  getPostsByNiche(niche.id, 4, runtime?.env),
+  getProductsByNiche(niche.id, runtime?.env)
 ]);
 
 const cleanRelated = relatedPosts.filter(p => p.slug !== post.slug).slice(0, 3);
-const bodyHtml = post.body_md ? marked.parse(post.body_md) : '';
 
-// JSON-LD structured data
+function sanitizeMarkdownHtml(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/\son\w+="[^"]*"/gi, '')
+    .replace(/\son\w+='[^']*'/gi, '')
+    .replace(/href=["']javascript:[^"']*["']/gi, 'href="#"');
+}
+
+// Normalize literal escaped newlines and markdown characters from database / API
+const normalizedMarkdown = (post.body_md || '')
+  .replace(/\\r\\n/g, '\n')
+  .replace(/\\n/g, '\n')
+  .replace(/\\t/g, '  ');
+
+const rawBodyHtml = normalizedMarkdown ? (marked.parse(normalizedMarkdown) as string) : '';
+const bodyHtml = typeof rawBodyHtml === 'string' ? sanitizeMarkdownHtml(rawBodyHtml) : '';
+const isCard = post.kind === 'card' || !post.indexable;
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=10, must-revalidate');
+
+const absoluteImageUrl = post.image_url?.startsWith('http') 
+  ? post.image_url 
+  : `${Astro.url.origin}${post.image_url || '/images/gta6_cover.jpg'}`;
+
+// 1. Article / NewsArticle Schema
 const articleSchema = {
   '@context': 'https://schema.org',
-  '@type': 'Article',
+  '@type': isCard ? 'NewsArticle' : 'Article',
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': Astro.url.href
+  },
   headline: post.title,
   description: post.summary,
-  image: post.image_url ? [post.image_url] : [],
+  image: [absoluteImageUrl],
   datePublished: post.published_at,
-  dateModified: post.published_at,
+  dateModified: post.updated_at || post.published_at,
   author: {
     '@type': 'Organization',
     name: 'UniqueDigit Editorial Desk',
-    url: 'https://uniquedigit.in'
+    url: `${Astro.url.origin}/about`
   },
   publisher: {
     '@type': 'Organization',
     name: 'UniqueDigit',
+    url: Astro.url.origin,
     logo: {
       '@type': 'ImageObject',
-      url: 'https://uniquedigit.in/favicon.svg'
+      url: `${Astro.url.origin}/favicon.svg`
     }
   }
 };
+
+// 2. BreadcrumbList Schema
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: Astro.url.origin
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: niche.name,
+      item: `${Astro.url.origin}/${niche.slug}`
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: post.title,
+      item: Astro.url.href
+    }
+  ]
+};
+
+// 3. FAQPage Schema for Google Rich Accordions
+const faqSchema = post.faq && post.faq.length > 0 ? {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: post.faq.map(item => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.a
+    }
+  }))
+} : null;
 ---
 
 <Layout
   title={`${post.title} | UniqueDigit`}
   description={post.summary}
-  image={post.image_url}
+  image={absoluteImageUrl}
+  canonical={Astro.url.href}
   niche={niche}
 >
   <Fragment slot="head">
+    {isCard && <meta name="robots" content="noindex, follow" />}
     <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
   </Fragment>
 
   <!-- Breadcrumbs -->
-  <nav class="flex items-center gap-2 text-xs text-muted mb-6">
+  <nav class="max-w-4xl mx-auto flex items-center gap-2 text-xs text-muted mb-6">
     <a href="/" class="hover:text-brand transition">Home</a>
     <span>/</span>
     <a href={`/${niche.slug}`} class="hover:text-brand transition font-medium">{niche.name}</a>
@@ -74,57 +152,58 @@ const articleSchema = {
     <span class="text-ink truncate max-w-xs">{post.title}</span>
   </nav>
 
-  <article class="max-w-4xl mx-auto">
+  <article class="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 sm:p-10 lg:p-12 mb-12">
     <!-- Header Area -->
     <header class="mb-8">
-      <div class="flex items-center gap-2 mb-4">
+      <div class="flex items-center gap-3 mb-4 flex-wrap">
         <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand text-white shadow-xs">
           {niche.name}
         </span>
-        {post.trend_score > 0 && (
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-cta text-cta-ink font-mono shadow-xs">
-            🔥 +{post.trend_score}k Trend
-          </span>
-        )}
+        <HypeMeter score={post.hype || post.trend_score || 75} size="sm" />
+        <FreshnessStamp updatedAt={post.updated_at || post.published_at} />
       </div>
 
-      <h1 class="text-2xl sm:text-4xl font-black text-ink leading-tight tracking-tight mb-4">
+      <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight tracking-tight mb-4">
         {post.title}
       </h1>
 
-      <p class="text-base sm:text-lg text-muted leading-relaxed mb-6 font-medium">
+      <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-6 font-medium">
         {post.summary}
       </p>
 
-      <div class="flex items-center justify-between py-4 border-y border-line text-xs text-muted">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-full bg-brand text-white font-bold flex items-center justify-center text-xs">
+      <div class="flex items-center justify-between py-4 border-y border-slate-100 text-xs text-slate-500 flex-wrap gap-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-full bg-brand text-white font-bold flex items-center justify-center text-xs shadow-xs">
             UD
           </div>
           <div>
-            <span class="font-bold text-ink block">UniqueDigit Editorial Team</span>
-            <span class="text-[11px]">{new Date(post.published_at).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+            <span class="font-bold text-slate-900 block">UniqueDigit Editorial Team</span>
+            <span class="text-[11px] text-slate-500">{new Date(post.published_at).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
           </div>
         </div>
 
         <div class="flex items-center gap-3">
-          <span class="bg-slate-100 px-2.5 py-1 rounded-lg text-slate-700 font-bold">4 Min Read</span>
+          <span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg font-bold border border-slate-200">
+            {isCard ? 'Trend Card' : 'Full Explainer'}
+          </span>
           {post.views ? <span>{post.views.toLocaleString()} reads</span> : null}
         </div>
       </div>
     </header>
 
-    <!-- Hero Image & Attribution -->
-    <div class="rounded-3xl overflow-hidden mb-8 border border-line bg-slate-900 shadow-soft">
-      <img
-        src={post.image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'}
-        alt={post.title}
-        loading="eager"
-        class="w-full max-h-[480px] object-cover"
-      />
+    <!-- Hero Image & Attribution (Standard 16:9 Aspect Ratio) -->
+    <div class="rounded-2xl overflow-hidden mb-8 border border-slate-200/80 bg-slate-100 shadow-sm relative">
+      <div class="aspect-video sm:aspect-[16/9] w-full overflow-hidden">
+        <img
+          src={post.image_url || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80'}
+          alt={post.title}
+          loading="eager"
+          class="w-full h-full object-cover"
+        />
+      </div>
       {post.image_credit && (
-        <div class="px-4 py-2 bg-slate-950/80 text-[11px] text-slate-400 flex items-center justify-between">
-          <span>Image Source: {post.image_credit}</span>
+        <div class="px-4 py-2 bg-slate-900/85 text-[11px] text-slate-300 flex items-center justify-between">
+          <span>Source: {post.image_credit}</span>
           {post.source_url && (
             <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-cta hover:underline">
               Verify Original Source →
@@ -136,26 +215,34 @@ const articleSchema = {
 
     <!-- Health / Sensitive Disclaimer -->
     {niche.config?.disclaimer && (
-      <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />
+      <div class="mb-8">
+        <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />
+      </div>
     )}
 
-    <!-- Quick Value Proposition / Why You Are Here -->
-    <div class="my-6 p-5 sm:p-6 rounded-2xl bg-brand/5 border border-brand/20 flex items-start gap-4">
-      <div class="w-10 h-10 rounded-xl bg-brand/10 text-brand flex items-center justify-center shrink-0 font-bold text-lg">
-        💡
-      </div>
-      <div>
-        <h3 class="text-sm font-black text-ink uppercase tracking-wider mb-1">Editor's Quick Verdict & Reader Guide</h3>
-        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-          Our editorial team evaluated current market specifications, user feedback, and price-to-performance metrics. Below you will find the complete breakdown along with direct verified retail options and today's live discount offers.
-        </p>
-      </div>
-    </div>
-
-    <AdSlot position="top" />
-
     <!-- Article Markdown Content -->
-    <div class="prose max-w-none text-ink text-base sm:text-lg leading-relaxed mb-12" set:html={bodyHtml} />
+    <div class="prose max-w-none text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
+
+    <!-- Verified Independent Sources -->
+    {post.sources && post.sources.length > 0 && (
+      <div class="my-8 p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-sm">📰</span>
+          <span class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Verified Source References</span>
+        </div>
+        <ul class="flex flex-col gap-2">
+          {post.sources.map(s => (
+            <li class="flex items-center gap-2 text-slate-600">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              <a href={s.url} target="_blank" rel="nofollow noopener noreferrer" class="hover:text-brand transition underline truncate font-medium">
+                {s.title}
+              </a>
+              {s.publisher && <span class="text-[10px] text-muted font-mono">({s.publisher})</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
 
     <!-- High-Converting Amazon Affiliate Recommendation & Live Deal Widget -->
     <AmazonDealBox keyword={post.title} nicheSlug={niche.slug} nicheName={niche.name} />

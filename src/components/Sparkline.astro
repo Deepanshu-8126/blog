@@ -1,0 +1,70 @@
+---
+interface Props {
+  points?: number[];
+  width?: number;
+  height?: number;
+  strokeColor?: string;
+}
+
+const { points = [], width = 72, height = 24, strokeColor = '#f43f5e' } = Astro.props;
+
+const hasEnoughPoints = points && points.length >= 3;
+
+let polylinePoints = '';
+let areaPoints = '';
+let isRising = false;
+
+if (hasEnoughPoints) {
+  const minVal = Math.min(...points);
+  const maxVal = Math.max(...points);
+  const range = maxVal - minVal || 1;
+  const paddingY = 3;
+  const effectiveHeight = height - paddingY * 2;
+
+  const coords = points.map((val, idx) => {
+    const x = Math.round((idx / (points.length - 1)) * width);
+    const normalized = (val - minVal) / range;
+    const y = Math.round(height - paddingY - normalized * effectiveHeight);
+    return { x, y };
+  });
+
+  polylinePoints = coords.map(c => `${c.x},${c.y}`).join(' ');
+  areaPoints = `0,${height} ` + coords.map(c => `${c.x},${c.y}`).join(' ') + ` ${width},${height}`;
+  isRising = points[points.length - 1] >= points[0];
+}
+---
+
+{hasEnoughPoints ? (
+  <svg
+    width={width}
+    height={height}
+    viewBox={`0 0 ${width} ${height}`}
+    class="overflow-visible inline-block flex-shrink-0"
+    aria-label="24h Hype Sparkline"
+  >
+    <defs>
+      <linearGradient id={`spark-grad-${width}-${points[0]}`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color={isRising ? '#10b981' : '#f43f5e'} stop-opacity="0.35" />
+        <stop offset="100%" stop-color={isRising ? '#10b981' : '#f43f5e'} stop-opacity="0.0" />
+      </linearGradient>
+    </defs>
+    <!-- Shaded gradient area under line -->
+    <polygon
+      points={areaPoints}
+      fill={`url(#spark-grad-${width}-${points[0]})`}
+    />
+    <!-- Sparkline polyline -->
+    <polyline
+      points={polylinePoints}
+      fill="none"
+      stroke={isRising ? '#10b981' : strokeColor}
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+) : (
+  <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase bg-slate-800 text-slate-400 border border-slate-700">
+    Fresh
+  </span>
+)}
