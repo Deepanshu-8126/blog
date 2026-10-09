@@ -4,6 +4,7 @@ import Feed from '../../templates/Feed.astro';
 import Tools from '../../templates/Tools.astro';
 import Dataset from '../../templates/Dataset.astro';
 import Movies from '../../templates/Movies.astro';
+import DealsHub from '../../templates/DealsHub.astro';
 
 const { niche: nicheSlug } = Astro.params;
 if (!nicheSlug) {
@@ -29,20 +30,27 @@ const [posts, totalCount, trendingPosts, products] = await Promise.all([
 ]);
 
 const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+const isDealsNiche = niche.slug === 'deals' || niche.slug === 'cashback';
 ---
 
-{niche.page_type === 'feed' && (
-  <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} />
-)}
+{isDealsNiche ? (
+  <DealsHub niche={niche} products={products} posts={posts} />
+) : (
+  <>
+    {niche.page_type === 'feed' && (
+      <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} />
+    )}
 
-{niche.page_type === 'tools' && (
-  <Tools niche={niche} products={products} posts={posts} />
-)}
+    {niche.page_type === 'tools' && (
+      <Tools niche={niche} products={products} posts={posts} />
+    )}
 
-{niche.page_type === 'dataset' && (
-  <Dataset niche={niche} posts={posts} />
-)}
+    {niche.page_type === 'dataset' && (
+      <Dataset niche={niche} posts={posts} />
+    )}
 
-{niche.page_type === 'movies' && (
-  <Movies niche={niche} posts={posts} />
+    {niche.page_type === 'movies' && (
+      <Movies niche={niche} posts={posts} />
+    )}
+  </>
 )}

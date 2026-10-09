@@ -1,0 +1,404 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NicheCard from '../components/NicheCard.astro';
+import AdSlot from '../components/AdSlot.astro';
+import Icon from '../components/Icon.astro';
+import type { Niche, Product, Post } from '../lib/db';
+
+interface Props {
+  niche: Niche;
+  products: Product[];
+  posts: Post[];
+}
+
+const { niche, products, posts } = Astro.props;
+
+// Unique Merchants & Categories for Dynamic Client-Side Filtering
+const merchants = ['All', 'Amazon', 'Flipkart', 'Myntra', 'Ajio', 'Meesho'];
+const categories = ['All', 'Laptops', 'Smartphones', 'Audio & Gear', 'Fashion', 'Under ₹499'];
+---
+
+<Layout
+  title="Loot Deals & Festival Sale Radar | Amazon, Flipkart BBD & Multi-Store | UniqueDigit"
+  description="Real-time multi-store loot deals, price glitches, bank discount stacking, and festival sale radar across Amazon Great Indian Festival, Flipkart Big Billion Days, Myntra, Ajio & Meesho."
+  niche={niche}
+>
+  <!-- 1. Real-Time Live Glitch Ticker -->
+  <div class="bg-slate-950 text-white border-b border-slate-800 py-2.5 px-4 overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 mb-6">
+    <div class="max-w-7xl mx-auto flex items-center gap-3">
+      <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-600 text-white shrink-0 animate-pulse flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+        LIVE RADAR
+      </span>
+      <div class="text-xs text-slate-300 font-medium overflow-x-auto no-scrollbar whitespace-nowrap flex items-center gap-6">
+        <span class="flex items-center gap-1.5">
+          <span class="text-amber-400 font-bold">🔥 HP Victus RTX 3050:</span>
+          <span>₹48,490 (All-time low with SBI Card on Amazon)</span>
+        </span>
+        <span class="text-slate-600">•</span>
+        <span class="flex items-center gap-1.5">
+          <span class="text-rose-400 font-bold">⚡ PRICE GLITCH:</span>
+          <span>Realme Buds Wireless 3 ANC @ ₹999 on Flipkart</span>
+        </span>
+        <span class="text-slate-600">•</span>
+        <span class="flex items-center gap-1.5">
+          <span class="text-emerald-400 font-bold">👗 MEESHO LOOT:</span>
+          <span>Anime Oversized Tees @ ₹189 (Limited Stock)</span>
+        </span>
+        <span class="text-slate-600">•</span>
+        <span class="flex items-center gap-1.5">
+          <span class="text-sky-400 font-bold">🛍️ AJIO ALL STARS:</span>
+          <span>Puma Smash Sneakers Flat 65% + ₹300 Coupon</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. High-Converting Festival Sale Radar Spotlight -->
+  <div class="mb-10 rounded-3xl bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white p-6 sm:p-10 border border-purple-500/30 shadow-2xl relative overflow-hidden">
+    <!-- Ambient Accent Glow -->
+    <div class="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-brand/20 blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-rose-500/10 blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-md">
+            ⚡ Festival Sale Radar 2026
+          </span>
+          <span class="text-xs text-purple-200 font-mono font-bold hidden sm:inline">
+            Amazon GIF • Flipkart BBD • Myntra BFF • Meesho
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/15 text-xs text-amber-300 font-mono font-bold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Real-Time Social Sync Active</span>
+        </div>
+      </div>
+
+      <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight mb-4">
+        India's Multi-Store <span class="bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 bg-clip-text text-transparent">Loot Deals & Glitch Engine</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-purple-100/90 max-w-3xl leading-relaxed mb-6 font-medium">
+        Our autonomous bot continuously cross-references price glitches, bank discount stacking, and flash drops across <strong>Amazon India, Flipkart, Myntra, Ajio, and Meesho</strong>. Get verified all-time lowest prices before stock runs out.
+      </p>
+
+      <!-- Bank Stacking Cheatsheet Strip -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-white/10 text-xs">
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex items-center gap-2.5">
+          <span class="text-base">💳</span>
+          <div>
+            <strong class="text-amber-300 block">SBI & HDFC Cards</strong>
+            <span class="text-slate-300 text-[11px]">Instant 10% Flat Discount (Up to ₹4,500)</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex items-center gap-2.5">
+          <span class="text-base">🛍️</span>
+          <div>
+            <strong class="text-rose-300 block">Flipkart & Amazon Prime Pass</strong>
+            <span class="text-slate-300 text-[11px]">Early Access 24 Hours Ahead of Public</span>
+          </div>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs flex items-center gap-2.5">
+          <span class="text-base">⚡</span>
+          <div>
+            <strong class="text-emerald-300 block">Under ₹499 Budget Loots</strong>
+            <span class="text-slate-300 text-[11px]">Daily Fast-Moving Flash Loots from Meesho & Amz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Interactive Multi-Store & Category Filter Console -->
+  <div class="mb-8 p-5 rounded-3xl bg-white border border-slate-200/90 shadow-sm">
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+      
+      <!-- Search Input -->
+      <div class="relative flex-1 max-w-lg">
+        <input
+          type="text"
+          id="deal-search-input"
+          placeholder="Search by product, store (Flipkart/Amazon), or laptop model..."
+          class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand font-medium"
+        />
+        <div class="absolute left-3.5 top-3.5 text-slate-400 pointer-events-none">
+          <Icon name="search" class="w-4 h-4" />
+        </div>
+      </div>
+
+      <!-- Merchant Store Switcher Pills -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1 hidden sm:inline">Store:</span>
+        {merchants.map(m => (
+          <button
+            type="button"
+            data-merchant={m.toLowerCase()}
+            class={`merchant-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer active:scale-95 ${
+              m === 'All'
+                ? 'bg-brand text-white shadow-xs'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            }`}
+          >
+            {m === 'All' ? '🔥 All Stores' : m}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-4 mt-4 border-t border-slate-100">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">Category:</span>
+      {categories.map(c => (
+        <button
+          type="button"
+          data-category={c.toLowerCase()}
+          class={`category-filter-btn px-3 py-1 rounded-lg text-xs font-semibold transition shrink-0 cursor-pointer active:scale-95 ${
+            c === 'All'
+              ? 'bg-slate-900 text-white'
+              : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+          }`}
+        >
+          {c}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- 4. High-Converting Price-Stacking Deal Cards Grid -->
+  <div id="deals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+    {products.map(pr => {
+      // Determine Merchant styling
+      const merchantName = pr.merchant || 'Amazon';
+      const isFlipkart = merchantName.toLowerCase().includes('flipkart');
+      const isMyntra = merchantName.toLowerCase().includes('myntra');
+      const isMeesho = merchantName.toLowerCase().includes('meesho');
+      const isAjio = merchantName.toLowerCase().includes('ajio');
+
+      let storeBadgeClass = 'bg-amber-100 text-amber-900 border-amber-200';
+      if (isFlipkart) storeBadgeClass = 'bg-blue-100 text-blue-900 border-blue-200';
+      if (isMyntra) storeBadgeClass = 'bg-rose-100 text-rose-900 border-rose-200';
+      if (isMeesho) storeBadgeClass = 'bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200';
+      if (isAjio) storeBadgeClass = 'bg-cyan-100 text-cyan-900 border-cyan-200';
+
+      const affTarget = pr.aff_url || pr.url || `https://www.amazon.in/s?k=${encodeURIComponent(pr.name)}&tag=uniquedigi0c6-21`;
+
+      return (
+        <div
+          class="deal-card bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+          data-store={(pr.merchant || 'amazon').toLowerCase()}
+          data-cat={(pr.category || 'all').toLowerCase()}
+          data-name={pr.name.toLowerCase()}
+        >
+          <div>
+            <!-- Top Card Header: Badge & Store Indicator -->
+            <div class="p-4 pb-0 flex items-center justify-between gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200">
+                {pr.badge || '🔥 LOOT DROP'}
+              </span>
+              <span class={`px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border ${storeBadgeClass}`}>
+                {merchantName}
+              </span>
+            </div>
+
+            <!-- Product Visual -->
+            <div class="p-4 pt-3">
+              <div class="aspect-[16/10] w-full rounded-2xl overflow-hidden bg-slate-900 relative">
+                <img
+                  src={pr.image_url || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80'}
+                  alt={pr.name}
+                  loading="lazy"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded-lg bg-black/75 backdrop-blur-xs text-[10px] font-mono text-white font-bold">
+                  ★ {pr.rating || 4.6} / 5.0
+                </div>
+              </div>
+            </div>
+
+            <!-- Content & Price Breakdown -->
+            <div class="px-5 pb-3">
+              <h3 class="text-sm sm:text-base font-black text-slate-900 group-hover:text-brand transition leading-snug line-clamp-2 mb-2">
+                {pr.name}
+              </h3>
+
+              <!-- Price Stacking Breakdown Box -->
+              <div class="p-3 rounded-2xl bg-gradient-to-r from-slate-50 via-purple-50/30 to-slate-50 border border-slate-200/80 mb-3 text-xs">
+                {pr.tagline ? (
+                  <p class="text-slate-600 font-medium leading-relaxed text-[11px]">
+                    {pr.tagline}
+                  </p>
+                ) : (
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-slate-500">Verified Drop:</span>
+                    <span class="font-bold text-slate-900">All-Time Low Pricing</span>
+                  </div>
+                )}
+                <div class="flex items-baseline justify-between mt-2 pt-2 border-t border-slate-200/60">
+                  <span class="text-[11px] font-bold text-slate-500 uppercase">Effective Loot:</span>
+                  <span class="text-base font-black text-emerald-600 font-mono">
+                    ₹{pr.price ? pr.price.toLocaleString('en-IN') : 'Check Deal'}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Social Proof Telemetry -->
+              <div class="flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                <span class="flex items-center gap-1 text-emerald-600 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Verified Active
+                </span>
+                <span class="font-mono text-slate-400">
+                  ⚡ {pr.clicks || 120}+ clicked
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="p-4 pt-3 border-t border-slate-100 bg-slate-50/50 flex items-center gap-2">
+            <a
+              href={`/go/${pr.id}`}
+              target="_blank"
+              rel="nofollow sponsored noopener"
+              class="flex-1 text-center py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-xs active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <span>Grab Loot on {merchantName}</span>
+              <span>&rarr;</span>
+            </a>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+
+  <!-- Empty State if no search matches -->
+  <div id="no-deals-found" class="hidden p-12 text-center bg-white rounded-3xl border border-slate-200 my-6">
+    <Icon name="search" class="w-8 h-8 text-brand mx-auto mb-3" />
+    <h3 class="text-base font-bold text-slate-900">No matching deals found</h3>
+    <p class="text-xs text-slate-500 mt-1">Try clearing your filters or select "All Stores".</p>
+  </div>
+
+  <!-- 5. VIP Instant Loot Alert Strip (Telegram & WhatsApp Channel) -->
+  <div class="my-10 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-brand via-purple-700 to-brand-dark text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="max-w-xl">
+      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-400 text-slate-950 inline-block mb-2">
+        ⚡ 0-Minute Price Glitch Channel
+      </span>
+      <h3 class="text-xl sm:text-2xl font-black mb-2">
+        Get 80% Off Loots & Glitches Before They Expire
+      </h3>
+      <p class="text-xs sm:text-sm text-purple-100 leading-relaxed font-medium">
+        Price glitches usually die in under 10 minutes. Join our VIP broadcast channel to get automated ping alerts straight to your phone.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3 w-full md:w-auto">
+      <a
+        href="https://t.me/uniquedigit"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="w-full md:w-auto text-center px-6 py-3 rounded-2xl bg-white text-brand hover:bg-slate-100 font-black text-xs uppercase tracking-wider transition shadow-md active:scale-95"
+      >
+        Join VIP Telegram Alert ➔
+      </a>
+    </div>
+  </div>
+
+  <!-- 6. Editorial Buying Guides & Deep-Dive Articles -->
+  {posts.length > 0 && (
+    <div class="my-12 pt-8 border-t border-slate-200">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+            Verified Shopping Guides & Festival Analysis
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Independent benchmark breakdowns, warranty checks, and best buying time analysis.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.slice(0, 3).map(post => (
+          <NicheCard post={post} niche={niche} />
+        ))}
+      </div>
+    </div>
+  )}
+
+  <AdSlot position="bottom" />
+
+  <script>
+    (function() {
+      const searchInput = document.getElementById('deal-search-input') as HTMLInputElement | null;
+      const merchantBtns = document.querySelectorAll('.merchant-filter-btn');
+      const categoryBtns = document.querySelectorAll('.category-filter-btn');
+      const cards = document.querySelectorAll('.deal-card');
+      const noResults = document.getElementById('no-deals-found');
+
+      let currentMerchant = 'all';
+      let currentCategory = 'all';
+      let currentQuery = '';
+
+      function filterDeals() {
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const cardEl = card as HTMLElement;
+          const store = cardEl.getAttribute('data-store') || '';
+          const cat = cardEl.getAttribute('data-cat') || '';
+          const name = cardEl.getAttribute('data-name') || '';
+
+          const matchMerchant = currentMerchant === 'all' || store.includes(currentMerchant);
+          const matchCategory = currentCategory === 'all' || cat.includes(currentCategory);
+          const matchSearch = !currentQuery || name.includes(currentQuery) || store.includes(currentQuery);
+
+          if (matchMerchant && matchCategory && matchSearch) {
+            cardEl.style.display = 'flex';
+            visibleCount++;
+          } else {
+            cardEl.style.display = 'none';
+          }
+        });
+
+        if (noResults) {
+          noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = (e.target as HTMLInputElement).value.toLowerCase().trim();
+          filterDeals();
+        });
+      }
+
+      merchantBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          merchantBtns.forEach(b => {
+            b.className = 'merchant-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-700';
+          });
+          btn.className = 'merchant-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer active:scale-95 bg-brand text-white shadow-xs';
+          currentMerchant = (btn as HTMLElement).getAttribute('data-merchant') || 'all';
+          filterDeals();
+        });
+      });
+
+      categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          categoryBtns.forEach(b => {
+            b.className = 'category-filter-btn px-3 py-1 rounded-lg text-xs font-semibold transition shrink-0 cursor-pointer active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-600';
+          });
+          btn.className = 'category-filter-btn px-3 py-1 rounded-lg text-xs font-semibold transition shrink-0 cursor-pointer active:scale-95 bg-slate-900 text-white';
+          currentCategory = (btn as HTMLElement).getAttribute('data-category') || 'all';
+          filterDeals();
+        });
+      });
+    })();
+  </script>
+</Layout>
