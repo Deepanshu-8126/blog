@@ -56,31 +56,99 @@ const remainingPosts = posts.slice(1);
     <span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-brand text-white shadow-xs shrink-0 cursor-pointer">
       All {niche.name}
     </span>
-    {niche.slug === 'exams-results' ? (
+    {niche.slug === 'health' && (
       <>
         <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
-          📊 Sarkari Results & Cutoffs
+          💪 Protein & Nutrition
         </span>
         <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
-          🎫 Admit Cards & Dates
+          🥗 Diet & Weight Loss
         </span>
         <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
-          📖 NCERT & Revision Notes
+          🏋️ Gym Workouts
         </span>
         <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
-          💡 AI Study Tools & Cheat Sheets
+          🌿 Ayurvedic Wellness
         </span>
       </>
-    ) : (
+    )}
+    {niche.slug === 'food' && (
       <>
         <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
-          🔥 Trending in India
+          🍳 High-Protein Meals
         </span>
         <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
-          ⚡ Today's Verified Deals
+          🍟 Air Fryer Recipes
         </span>
         <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
-          🎯 In-Depth Guides
+          🍱 Meal Prep & Macros
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ☕ Healthy Snacks
+        </span>
+      </>
+    )}
+    {niche.slug === 'fashion' && (
+      <>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          👟 Sneakers Under ₹5,000
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          👔 Capsule Wardrobe
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          👕 Everyday Essentials
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🕶️ Accessories & Style
+        </span>
+      </>
+    )}
+    {niche.slug === 'side-hustles' && (
+      <>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🤖 AI Freelancing & Tools
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📦 Digital Products & Templates
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          💼 Remote Jobs in India
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📈 Passive Income Ideas
+        </span>
+      </>
+    )}
+    {niche.slug === 'gta-6' && (
+      <>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🖥️ PC Specs & Requirements
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🎮 Vice City Maps & Leaks
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📅 India Release Date & Pre-Orders
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ⚡ Ray Tracing & GPU Tests
+        </span>
+      </>
+    )}
+    {niche.slug === 'viral' && (
+      <>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🔥 Google Search Spikes
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ⚡ Tech & Gadget Drops
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🎬 OTT & Entertainment Buzz
+        </span>
+        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🏷️ Loot Deals & Price Drops
         </span>
       </>
     )}

@@ -65,10 +65,24 @@ const isNicheActive = (slug: string) => {
             <span>Home</span>
           </a>
           <a
+            href="/trending"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${isTrending ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+          >
+            <Icon name="sparkles" class="w-3.5 h-3.5 text-cta" />
+            <span>Trends Radar</span>
+          </a>
+          <a
+            href="/gold-rate"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${pathname.startsWith('/gold-rate') ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+          >
+            <Icon name="coins" class="w-3.5 h-3.5 text-amber-300" />
+            <span>Gold Rate</span>
+          </a>
+          <a
             href="/ai-tools"
             class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${pathname.startsWith('/ai-tools') ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
           >
-            <Icon name="sparkles" class="w-3.5 h-3.5 text-cta" />
+            <Icon name="sparkles" class="w-3.5 h-3.5 text-blue-300" />
             <span>AI Tools</span>
           </a>
           <a
@@ -79,18 +93,11 @@ const isNicheActive = (slug: string) => {
             <span>Deals</span>
           </a>
           <a
-            href="/pc-builds"
-            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${pathname.startsWith('/pc-builds') || isBuilds ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+            href="/builds"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${pathname.startsWith('/builds') || pathname.startsWith('/pc-builds') ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
           >
-            <Icon name="cpu" class="w-3.5 h-3.5 text-blue-300" />
+            <Icon name="cpu" class="w-3.5 h-3.5 text-purple-300" />
             <span>PC Rig</span>
-          </a>
-          <a
-            href="/gta-6"
-            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${pathname.startsWith('/gta-6') ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
-          >
-            <Icon name="gamepad" class="w-3.5 h-3.5 text-pink-300" />
-            <span>Gaming</span>
           </a>
 
           <!-- More Dropdown Button -->
