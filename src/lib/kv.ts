@@ -277,6 +277,45 @@ export async function getBoard(runtimeEnv?: any): Promise<TrendItem[]> {
   if (payload && Array.isArray(payload.global) && payload.global.length > 0) {
     return payload.global;
   }
+
+  // Live D1 dynamic fallback before static seeds
+  const db = runtimeEnv?.DB || runtimeEnv?.env?.DB || (globalThis as any)?.DB;
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const res = await db.prepare(`
+        SELECT posts.id, posts.title, posts.slug as post_slug, posts.kind as post_kind,
+               posts.hype, posts.published_at as updated_at,
+               niches.slug as niche_slug, niches.name as niche_name
+        FROM posts
+        LEFT JOIN niches ON posts.niche_id = niches.id
+        WHERE posts.status = 'published'
+        ORDER BY posts.hype DESC, posts.published_at DESC
+        LIMIT 20
+      `).all();
+      if (res.results && res.results.length > 0) {
+        return res.results.map((r: any, idx: number) => ({
+          id: r.id || `live-${idx}`,
+          title: r.title,
+          slug: r.post_slug,
+          hype: r.hype || 88,
+          growth: 0.18,
+          stage: 'hot',
+          n: idx + 1,
+          sources: ['gtrends', 'verified-news'],
+          spark: [60, 68, 75, 82, 88, 92, r.hype || 95],
+          niche: r.niche_name || 'Trending',
+          niche_slug: r.niche_slug || 'viral',
+          approx_traffic: `${r.hype || 50}K+`,
+          updated_at: r.updated_at || new Date().toISOString(),
+          post_slug: r.post_slug,
+          post_kind: r.post_kind || 'article'
+        }));
+      }
+    } catch (err) {
+      console.warn('[D1 getBoard dynamic query warning]:', err);
+    }
+  }
+
   return SEED_TRENDS;
 }
 
@@ -289,6 +328,45 @@ export async function getNicheBoard(nicheSlug: string, runtimeEnv?: any): Promis
     const filtered = payload.global.filter(t => t.niche_slug === nicheSlug);
     if (filtered.length > 0) return filtered;
   }
+
+  // Live D1 dynamic fallback for specific niche
+  const db = runtimeEnv?.DB || runtimeEnv?.env?.DB || (globalThis as any)?.DB;
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const res = await db.prepare(`
+        SELECT posts.id, posts.title, posts.slug as post_slug, posts.kind as post_kind,
+               posts.hype, posts.published_at as updated_at,
+               niches.slug as niche_slug, niches.name as niche_name
+        FROM posts
+        LEFT JOIN niches ON posts.niche_id = niches.id
+        WHERE niches.slug = ? AND posts.status = 'published'
+        ORDER BY posts.hype DESC, posts.published_at DESC
+        LIMIT 10
+      `).bind(nicheSlug).all();
+      if (res.results && res.results.length > 0) {
+        return res.results.map((r: any, idx: number) => ({
+          id: r.id || `live-niche-${idx}`,
+          title: r.title,
+          slug: r.post_slug,
+          hype: r.hype || 85,
+          growth: 0.15,
+          stage: 'hot',
+          n: idx + 1,
+          sources: ['gtrends', 'verified-news'],
+          spark: [60, 68, 75, 82, 88, 92, r.hype || 95],
+          niche: r.niche_name || nicheSlug,
+          niche_slug: r.niche_slug || nicheSlug,
+          approx_traffic: `${r.hype || 45}K+`,
+          updated_at: r.updated_at || new Date().toISOString(),
+          post_slug: r.post_slug,
+          post_kind: r.post_kind || 'article'
+        }));
+      }
+    } catch (err) {
+      console.warn('[D1 getNicheBoard dynamic query warning]:', err);
+    }
+  }
+
   return SEED_TRENDS.filter(t => t.niche_slug === nicheSlug);
 }
 

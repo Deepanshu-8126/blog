@@ -258,7 +258,7 @@ export const SEED_PRODUCTS: Product[] = [
 
 // Helper to safely get D1 instance
 export function getD1(runtimeEnv?: any): any {
-  return runtimeEnv?.DB || (globalThis as any)?.DB || null;
+  return runtimeEnv?.DB || runtimeEnv?.env?.DB || (globalThis as any)?.DB || null;
 }
 
 function parseJson<T>(val: any, fallback: T): T {
