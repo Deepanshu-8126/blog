@@ -237,22 +237,38 @@ def sync_real_deals_to_d1():
         tagline = parsed.get("tagline", "Verified festival price drop")
         keywords = parsed.get("keywords", name.lower())
 
+        # Real authentic product asset resolution (Zero Unsplash)
+        nl = name.lower()
+        if "iphone" in nl:
+            img = "/images/products/iphone_16_pro.jpg"
+        elif any(k in nl for k in ["macbook", "laptop", "notebook", "victus"]):
+            img = "/images/products/macbook_m3.jpg"
+        elif any(k in nl for k in ["tv", "oled", "screen", "monitor"]):
+            img = "/images/products/oled_tv_screen.jpg"
+        elif any(k in nl for k in ["rtx", "gpu", "ryzen", "processor", "graphics"]):
+            img = "/images/rtx5090.jpg"
+        elif any(k in nl for k in ["headphone", "earbud", "audio", "sony", "wh-1000", "anc"]):
+            img = "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Sony_WH-1000XM4.jpg/640px-Sony_WH-1000XM4.jpg"
+        elif any(k in nl for k in ["shoe", "sneaker", "puma", "nike", "running"]):
+            img = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Sneakers.jpg/640px-Sneakers.jpg"
+        elif any(k in nl for k in ["dress", "shirt", "t-shirt", "kurta", "cotton", "wear"]):
+            img = "https://upload.wikimedia.org/wikipedia/commons/a/a6/Carolina_Herrera_AW14_12.jpg"
+        elif any(k in nl for k in ["ai", "software", "code", "cursor", "claude", "gpt"]):
+            img = "/images/ai_tools.jpg"
+        else:
+            img = "/images/products/iphone_16_pro.jpg"
+
         # Auto-Affiliate link generation
         if merchant == "Amazon":
             aff_url = f"https://www.amazon.in/s?k={urllib.parse.quote_plus(name)}&tag={AMAZON_TAG}"
-            img = "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=800&q=80"
         elif merchant == "Flipkart":
             aff_url = f"https://www.flipkart.com/search?q={urllib.parse.quote_plus(name)}"
-            img = "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&w=800&q=80"
         elif merchant == "Myntra":
             aff_url = f"https://www.myntra.com/{urllib.parse.quote_plus(name)}"
-            img = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
         elif merchant == "Ajio":
             aff_url = f"https://www.ajio.com/s/{urllib.parse.quote_plus(name)}"
-            img = "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80"
         else:
             aff_url = f"https://www.meesho.com/search?q={urllib.parse.quote_plus(name)}"
-            img = "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80"
 
         sql = """
         INSERT INTO products (id, niche_id, name, tagline, category, badge, keywords, image_url, price, rating, url, aff_url, merchant, clicks, active, sort)

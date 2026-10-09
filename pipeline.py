@@ -301,20 +301,56 @@ def fetch_indian_box_office_trends():
 
 
 def wiki(query):
-    try:
-        s = requests.get("https://en.wikipedia.org/w/rest.php/v1/search/title",
-                         params={"q": query, "limit": 1}, headers=UA, timeout=20).json()
-        if not s.get("pages"):
-            return None
-        key = s["pages"][0]["key"]
-        d = requests.get("https://en.wikipedia.org/api/rest_v1/page/summary/" + urllib.parse.quote(key),
-                         headers=UA, timeout=20).json()
-        img = (d.get("originalimage") or d.get("thumbnail") or {}).get("source")
-        return {"extract": d.get("extract", ""), "image": img,
-                "url": d.get("content_urls", {}).get("desktop", {}).get("page")}
-    except Exception as e:
-        print("wiki failed:", e)
-        return None
+    """Robust multi-candidate Wikipedia search for real entity posters and photography with strict relevance filter"""
+    candidates = [
+        query,
+        re.sub(r'(?i)(box office|collection|nears|worldwide|day \d+|review|wrap|grossing|vs|match|score).*', '', query).strip(' :-,'),
+        query.split(':')[0].strip(),
+        query.split('-')[0].strip()
+    ]
+    seen = set()
+    cleaned = []
+    for c in candidates:
+        if c and len(c) >= 3 and c.lower() not in seen:
+            seen.add(c.lower())
+            cleaned.append(c)
+
+    for q in cleaned:
+        try:
+            s = requests.get("https://en.wikipedia.org/w/rest.php/v1/search/title",
+                             params={"q": q, "limit": 4}, headers=UA, timeout=20).json()
+            for p in s.get("pages", []):
+                key = p.get("key")
+                title = p.get("title", "")
+                desc = p.get("description", "")
+                if not key:
+                    continue
+
+                # Strict relevance check: query keywords must match candidate title/description
+                q_words = [w.lower() for w in re.findall(r'[a-zA-Z0-9]+', q) if len(w) >= 4]
+                if q_words:
+                    combined_target = (title + " " + desc).lower()
+                    if not any(w in combined_target for w in q_words):
+                        continue  # Skip mismatched pages (e.g. BCCI for Cars)
+
+                d = requests.get("https://en.wikipedia.org/api/rest_v1/page/summary/" + urllib.parse.quote(key),
+                                 headers=UA, timeout=20).json()
+                img = (d.get("originalimage") or d.get("thumbnail") or {}).get("source")
+                if img:
+                    return {
+                        "extract": d.get("extract", ""),
+                        "image": img,
+                        "url": d.get("content_urls", {}).get("desktop", {}).get("page")
+                    }
+                if d.get("extract") and not img:
+                    return {
+                        "extract": d.get("extract", ""),
+                        "image": None,
+                        "url": d.get("content_urls", {}).get("desktop", {}).get("page")
+                    }
+        except Exception as e:
+            continue
+    return None
 
 
 def rank(n, titles):

@@ -31,7 +31,7 @@ const readTimeMin = Math.max(2, Math.ceil(wordCount / 180));
     <!-- Standardized 16:9 Image Box -->
     <a href={`/${slug}/${post.slug}`} class="block relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-slate-100">
       <img
-        src={post.image_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'}
+        src={post.image_url || '/images/ai_tools.jpg'}
         alt={post.title}
         loading="lazy"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

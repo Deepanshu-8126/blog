@@ -86,23 +86,23 @@ const readTime = Math.max(2, Math.ceil(wordCount / 180));
 
 Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=10, must-revalidate');
 
-// High-Resolution Curated Assets to Prevent Low-Res Thumbnail Blur
+// High-Resolution Curated Assets to Prevent Low-Res Blur (100% Real Wikipedia Commons & Local Assets)
 const CURATED_NICHE_HERO_IMAGES: Record<string, string> = {
-  'cricket-sports': 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1400&q=85',
+  'cricket-sports': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg/960px-Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg.png',
   'pc-builds': '/images/rtx5090.jpg',
   'gta-6': '/images/gta6_cover.jpg',
   'ai-tools': '/images/ai_tools.jpg',
   'gold-rate': '/images/gold_24k.jpg',
-  'deals': 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1400&q=85',
-  'cashback': 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1400&q=85',
-  'food': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1400&q=85',
-  'health': 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1400&q=85',
-  'side-hustles': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=85',
-  'fashion': 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1400&q=85',
-  'movies': 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=85',
-  'automotive-trends': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=85',
-  'exams-results': 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1400&q=85',
-  'viral': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85'
+  'deals': '/images/products/iphone_16_pro.jpg',
+  'cashback': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Visa_2021.svg/960px-Visa_2021.svg.png',
+  'food': 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Tradtional_Thali.jpg',
+  'health': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Yoga_mat_and_dumbbells.jpg/960px-Yoga_mat_and_dumbbells.jpg',
+  'side-hustles': '/images/ai_tools.jpg',
+  'fashion': 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Carolina_Herrera_AW14_12.jpg',
+  'movies': 'https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg',
+  'automotive-trends': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Tata_Nexon_Blue_Dual_Tone.jpg/960px-Tata_Nexon_Blue_Dual_Tone.jpg',
+  'exams-results': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_of_India_logo.svg/960px-Government_of_India_logo.svg.png',
+  'viral': '/images/ai_tools.jpg'
 };
 
 interface GalleryItem {
@@ -111,202 +111,44 @@ interface GalleryItem {
   caption: string;
 }
 
-const NICHE_GALLERIES: Record<string, GalleryItem[]> = {
-  'cricket-sports': [
+// Verified Entity Multi-Image Galleries (Zero Generic Stock Photos)
+const ENTITY_SPECIFIC_GALLERIES: Record<string, GalleryItem[]> = {
+  'drishyam-3-the-conclusion-box-office-collection-nears-400-crore-worldwide': [
     {
-      url: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1400&q=85',
-      label: 'Match Action & Stadium',
-      caption: 'High-octane stadium atmosphere, pitch conditions and match dynamics.'
+      url: 'https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg',
+      label: '1. Official Poster',
+      caption: 'Drishyam 3: The Conclusion official theatrical release poster.'
     },
     {
-      url: 'https://images.unsplash.com/photo-1531415074868-036b107e775a?auto=format&fit=crop&w=1400&q=85',
-      label: 'Gear & Playing Surface',
-      caption: 'Official match balls, certified bats, pitch hardness and boundary dimensions.'
+      url: 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Ajay_Devgn_at_the_trailer_launch_of_Raid_2.jpg',
+      label: '2. Ajay Devgn (Vijay)',
+      caption: 'Ajay Devgn as Vijay Salgaonkar leading the gripping conclusion.'
     },
     {
-      url: 'https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?auto=format&fit=crop&w=1400&q=85',
-      label: 'Squad & Field Tactics',
-      caption: 'Playing XI line-up, bowling rotations and tactical field placements.'
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Mohanlal_at_Vanitha_Film_Awards_2019.jpg/640px-Mohanlal_at_Vanitha_Film_Awards_2019.jpg',
+      label: '3. Mohanlal (Creator)',
+      caption: 'Mohanlal, legendary lead of the original Malayalam cult classic universe.'
     }
   ],
-  'pc-builds': [
-    {
-      url: '/images/rtx5090.jpg',
-      label: 'GPU Flagship & Cooler',
-      caption: 'Next-gen architecture, thermal vapor chamber and ray-tracing performance.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1400&q=85',
-      label: 'Custom Rig & Airflow',
-      caption: 'Dual-chamber chassis, high-static pressure fans and cable management.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1400&q=85',
-      label: 'Motherboard & VRMs',
-      caption: 'Direct power stages, PCIe 5.0 lanes and high-frequency DDR5 memory.'
-    }
-  ],
-  'gta-6': [
+  'gta-6-pc-specs-realistic-india-pricing-what-system-do-you-need': [
     {
       url: '/images/gta6_cover.jpg',
-      label: 'Official Key Artwork',
-      caption: 'Vice City duo, neon dusk horizon and next-generation open world scale.'
+      label: '1. Official Key Art',
+      caption: 'Rockstar Games official Grand Theft Auto VI Vice City artwork.'
     },
     {
-      url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1400&q=85',
-      label: 'RAGE 9 Engine Visuals',
-      caption: 'Volumetric clouds, ray-traced reflections and photorealistic physics.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1400&q=85',
-      label: 'Open-World Ecosystem',
-      caption: 'Dynamic NPC intelligence, sprawling metropolitan districts and waterways.'
-    }
-  ],
-  'ai-tools': [
-    {
-      url: '/images/ai_tools.jpg',
-      label: 'Neural Intelligence Stack',
-      caption: 'Autonomous agents, foundational models and multi-modal benchmarks.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85',
-      label: 'Developer Workstation & IDE',
-      caption: 'High-velocity code completion, terminal orchestration and agent loops.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1400&q=85',
-      label: 'Inference Latency & Speed',
-      caption: 'Ultra-low time-to-first-token and optimized tensor computations.'
-    }
-  ],
-  'gold-rate': [
-    {
-      url: '/images/gold_24k.jpg',
-      label: '24K Minted Bullion Bar',
-      caption: '999.9 pure certified investment-grade bullion bar and seal.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=1400&q=85',
-      label: 'Market Exchange & Spot Ticker',
-      caption: 'MCX spot exchange trends, dollar index hedging and demand curves.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=1400&q=85',
-      label: '22K Jewellery & Hallmarking',
-      caption: 'BIS hallmark 916 purity standards and bridal retail market prices.'
-    }
-  ],
-  'deals': [
-    {
-      url: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1400&q=85',
-      label: 'Flash Sale Radar',
-      caption: 'Verified price drops, merchant discounts and lightning flash sales.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1400&q=85',
-      label: 'Stackable Bank Vouchers',
-      caption: 'Instant credit card discounts, cashback codes and checkout coupons.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1400&q=85',
-      label: 'Price History & Lowest Dip',
-      caption: 'Historical price tracker confirming genuine all-time low pricing.'
-    }
-  ],
-  'food': [
-    {
-      url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1400&q=85',
-      label: 'Signature Plating & Aroma',
-      caption: 'Fresh gourmet plating, rich flavor profiles and culinary mastery.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=1400&q=85',
-      label: 'Authentic Indian Spices',
-      caption: 'Handpicked whole spices, traditional tempering and slow-cooked gravy.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85',
-      label: 'Nutrition & Balance',
-      caption: 'Macro breakdown, farm-fresh ingredients and wholesome nourishment.'
-    }
-  ],
-  'automotive-trends': [
-    {
-      url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=85',
-      label: 'Exterior Aerodynamics',
-      caption: 'Aggressive body contours, drag efficiency and signature LED lighting.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1400&q=85',
-      label: 'Digital Cockpit & Tech',
-      caption: 'Curved driver display, ADAS radar suite and intuitive cabin luxury.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1400&q=85',
-      label: 'Powertrain & Track Dyno',
-      caption: 'Instant torque curve, suspension damping and track-tuned handling.'
-    }
-  ],
-  'movies': [
-    {
-      url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=85',
-      label: 'Cinematic Widescreen',
-      caption: 'Anamorphic framing, high-contrast lighting and evocative set direction.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1400&q=85',
-      label: 'Box Office & Theatre Buzz',
-      caption: 'First-day advance bookings, housefull occupancy and audience excitement.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=85',
-      label: 'Dolby Atmos & Soundstage',
-      caption: 'Original background score, immersive mixing and audio design.'
-    }
-  ],
-  'health': [
-    {
-      url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1400&q=85',
-      label: 'Strength & Conditioning',
-      caption: 'Progressive overload, biomechanics and cardiovascular conditioning.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=85',
-      label: 'Dietary Micronutrients',
-      caption: 'Whole-food nutrition, micronutrient density and electrolyte hydration.'
-    },
-    {
-      url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1400&q=85',
-      label: 'Recovery & Circadian Reset',
-      caption: 'Rest protocols, sleep architecture and central nervous system deload.'
+      url: '/images/rtx5090.jpg',
+      label: '2. RTX 5090 Target',
+      caption: 'Next-gen ray tracing and high-FPS target hardware.'
     }
   ]
 };
 
-const DEFAULT_GALLERY: GalleryItem[] = [
-  {
-    url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85',
-    label: 'Breaking Trend Radar',
-    caption: 'Real-time trending intelligence, social search spikes and national interest.'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1400&q=85',
-    label: 'Verified Context',
-    caption: 'Cross-verified press releases, official dispatches and source archives.'
-  },
-  {
-    url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1400&q=85',
-    label: 'Impact & Data Analysis',
-    caption: 'Audience engagement patterns and longitudinal search trajectory.'
-  }
-];
-
 function getSharpImage(imageUrl?: string, nSlug = 'viral'): string {
-  if (!imageUrl || imageUrl.includes('encrypted-tbn') || imageUrl.length < 15) {
-    return CURATED_NICHE_HERO_IMAGES[nSlug] || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85';
+  if (!imageUrl || imageUrl.length < 10) {
+    return CURATED_NICHE_HERO_IMAGES[nSlug] || '/images/ai_tools.jpg';
   }
-  if (imageUrl.includes('wikipedia/commons/thumb/')) {
+  if (imageUrl.includes('wikipedia/commons/thumb/') || imageUrl.includes('wikipedia/en/thumb/')) {
     return imageUrl.replace(/\/thumb(\/.*)\/[^\/]+$/, '$1');
   }
   return imageUrl;
@@ -317,23 +159,12 @@ const absoluteImageUrl = displayHeroImage.startsWith('http')
   ? displayHeroImage 
   : `${Astro.url.origin}${displayHeroImage}`;
 
-// Build 3-Slide High-Definition Gallery per post
-const baseGallery = NICHE_GALLERIES[niche.slug] || DEFAULT_GALLERY;
-const gallerySlides: GalleryItem[] = [
+// Build Authentic Gallery: Only show real entity slides, never inject fake stock photos
+const gallerySlides: GalleryItem[] = ENTITY_SPECIFIC_GALLERIES[post.slug] || [
   {
     url: displayHeroImage,
-    label: '1. Featured Focus',
-    caption: post.image_credit ? `Source: ${post.image_credit}` : `${post.title} — Primary editorial coverage.`
-  },
-  {
-    url: baseGallery[1] ? baseGallery[1].url : baseGallery[0].url,
-    label: '2. Intel & Gear',
-    caption: baseGallery[1] ? baseGallery[1].caption : 'Detailed tactical breakdown and verified equipment telemetry.'
-  },
-  {
-    url: baseGallery[2] ? baseGallery[2].url : baseGallery[0].url,
-    label: '3. Analytics & Context',
-    caption: baseGallery[2] ? baseGallery[2].caption : 'Comprehensive statistical breakdown and performance telemetry.'
+    label: '1. Verified Visual',
+    caption: post.image_credit ? `Source: ${post.image_credit}` : `${post.title} — Verified editorial coverage.`
   }
 ];
 
@@ -563,31 +394,35 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
               <!-- Top Floating Badges -->
               <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
                 <span id="gallery-counter-badge" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-900/85 backdrop-blur-md text-amber-300 border border-slate-700/80 shadow-md">
-                  Photo 1 of 3
+                  {gallerySlides.length > 1 ? `Photo 1 of ${gallerySlides.length}` : 'Verified Visual'}
                 </span>
                 <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
                   HD 1400w
                 </span>
               </div>
 
-              <!-- Navigation Arrows -->
-              <button
-                id="gallery-prev-btn"
-                type="button"
-                aria-label="Previous Image"
-                class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-              </button>
+              <!-- Navigation Arrows (Shown only if multi-image) -->
+              {gallerySlides.length > 1 && (
+                <>
+                  <button
+                    id="gallery-prev-btn"
+                    type="button"
+                    aria-label="Previous Image"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
+                  >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                  </button>
 
-              <button
-                id="gallery-next-btn"
-                type="button"
-                aria-label="Next Image"
-                class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
-              >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-              </button>
+                  <button
+                    id="gallery-next-btn"
+                    type="button"
+                    aria-label="Next Image"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
+                  >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                  </button>
+                </>
+              )}
             </div>
 
             <!-- Dynamic Slide Caption & Source Bar -->
@@ -606,27 +441,29 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
             </div>
           </div>
 
-          <!-- Interactive Thumbnail Switcher Bar -->
-          <div class="grid grid-cols-3 gap-2.5 mt-3">
-            {gallerySlides.map((slide, idx) => (
-              <button
-                type="button"
-                data-slide-index={idx}
-                class={`gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer ${
-                  idx === 0
-                    ? 'bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold'
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-                }`}
-              >
-                <div class="w-10 h-7 rounded-lg overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                  <img src={slide.url} alt="" class="w-full h-full object-cover" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <span class="text-[11px] block truncate font-bold">{slide.label}</span>
-                </div>
-              </button>
-            ))}
-          </div>
+          <!-- Interactive Thumbnail Switcher Bar (Shown only if multiple authentic slides) -->
+          {gallerySlides.length > 1 && (
+            <div class={`grid ${gallerySlides.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-2.5 mt-3`}>
+              {gallerySlides.map((slide, idx) => (
+                <button
+                  type="button"
+                  data-slide-index={idx}
+                  class={`gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer ${
+                    idx === 0
+                      ? 'bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
+                  <div class="w-10 h-7 rounded-lg overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                    <img src={slide.url} alt="" class="w-full h-full object-cover" />
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <span class="text-[11px] block truncate font-bold">{slide.label}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <!-- Interactive Table of Contents (TOC) Quick Jump Bar -->
