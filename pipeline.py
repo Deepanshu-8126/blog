@@ -275,6 +275,31 @@ def tmdb_trending():
         return []
 
 
+def fetch_indian_box_office_trends():
+    """Fetches real-time Indian theatrical and OTT movie releases from Google News RSS"""
+    url = "https://news.google.com/rss/search?q=box+office+movie+India+when:5d&hl=en-IN&gl=IN&ceid=IN:en"
+    movies = []
+    try:
+        r = requests.get(url, headers=UA, timeout=20)
+        if r.status_code == 200:
+            import xml.etree.ElementTree as ET
+            root = ET.fromstring(r.content)
+            for item in root.findall(".//item")[:15]:
+                t = item.find("title")
+                desc = item.find("description")
+                link = item.find("link")
+                if t is not None and t.text:
+                    title_text = t.text.split(" - ")[0].strip()
+                    movies.append({
+                        "title": title_text,
+                        "facts": desc.text if desc is not None and desc.text else "Live theatrical box office tracking.",
+                        "url": link.text if link is not None and link.text else "https://news.google.com/"
+                    })
+    except Exception as e:
+        print("[Indian Box Office RSS warning]:", e)
+    return movies
+
+
 def wiki(query):
     try:
         s = requests.get("https://en.wikipedia.org/w/rest.php/v1/search/title",
@@ -321,7 +346,14 @@ AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING:
    - Case B (Shopping/Deal/Loot): Provide a price-to-value verdict, key specs, warranty note, and why this discount matters.
    - Case C (Tech/Gaming/Hardware): Provide performance benchmarks, compatibility requirements, and pros/cons.
    - Case D (Trending Viral/Event): Explain what happened, why it is buzzing in India, and key verified takeaways.
-2. Structure the response in clean, engaging Markdown (450-600 words) using:
+   - Case E (Movies / Cinema & Box Office):
+     Write a deeply humanized, compelling cinematic story that movie lovers actually search for:
+     * Hook & Plot Setup: The story premise, character stakes, and why the plot is captivating (no spoilers).
+     * Star Cast & Power Performances: Key actors and who stole the show.
+     * Box Office Tracker: A neat markdown table with Day 1, Weekend, and Total Worldwide collections.
+     * OTT Streaming Intel: Streaming rights platform (Netflix/Prime Video/Hotstar) and expected digital premiere.
+     * Audience Consensus & Final Ticket Verdict: Should readers book a ticket or wait for OTT?
+2. Structure the response in clean, engaging Markdown (500-650 words) using:
    - ## Catchy, clear subheadings
    - Markdown comparison tables or bulleted checklists where relevant
    - Simple, humanized English with natural Hinglish warmth for Indian audiences
@@ -355,6 +387,15 @@ def process_niche(n):
     # 1. Fetch real-time trends & niche seed expansions
     for q, v in get_trends(seeds).items():
         cands[q] = {"score": v}
+
+    # If Movies niche, scan live Indian box office and theatrical releases
+    if n.get("slug") == "movies":
+        for m in fetch_indian_box_office_trends():
+            cands[m["title"]] = {
+                "score": 98,
+                "facts": m["facts"],
+                "url": m["url"]
+            }
 
     if "tmdb" in fetchers:
         for m in tmdb_trending():
