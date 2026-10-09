@@ -1,6 +1,7 @@
 ---
 import type { Post, Niche } from '../lib/db';
 import Icon from './Icon.astro';
+import { proxyImageUrl } from '../lib/images';
 
 interface Props {
   post: Post;
@@ -24,17 +25,26 @@ const theme = groupThemes[grp] || groupThemes.Tech;
 // Calculate estimated read time based on body length
 const wordCount = (post.body_md || post.summary || '').split(/\s+/).length;
 const readTimeMin = Math.max(2, Math.ceil(wordCount / 180));
+const safeImage = proxyImageUrl(post.image_url);
 ---
 
 <div class={`card-lift group flex flex-col justify-between rounded-3xl bg-white border border-slate-200/90 ${theme.border} p-4 sm:p-5 shadow-xs transition-all duration-300 relative`}>
   <div>
-    <!-- Standardized 16:9 Image Box -->
-    <a href={`/${slug}/${post.slug}`} class="block relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-slate-100">
+    <!-- Standardized 16:9 Image Box (Zero Aspect Ratio Distortion) -->
+    <a href={`/${slug}/${post.slug}`} class="block relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-slate-950 flex items-center justify-center">
       <img
-        src={post.image_url || '/images/ai_tools.jpg'}
+        src={safeImage}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        class="absolute inset-0 w-full h-full object-cover filter blur-xl opacity-40 scale-110 pointer-events-none"
+      />
+      <img
+        src={safeImage}
         alt={post.title}
         loading="lazy"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        class="relative z-10 max-h-full max-w-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-500"
+        onerror="this.onerror=null; this.src='/images/ai_tools.jpg';"
       />
       
       <!-- Top Pills -->

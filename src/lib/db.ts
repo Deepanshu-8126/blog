@@ -211,7 +211,7 @@ export const SEED_PRODUCTS: Product[] = [
     category: 'Processors',
     badge: 'Top Pick',
     keywords: 'ryzen cpu processor amd gaming pc 7800x3d',
-    image_url: '/images/rtx5090.jpg',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/AMD_Ryzen_7_1800X.jpg',
     price: 36999,
     rating: 4.9,
     url: 'https://www.amazon.in/s?k=AMD+Ryzen+7+7800X3D+Processor',

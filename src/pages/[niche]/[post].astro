@@ -94,9 +94,9 @@ const CURATED_NICHE_HERO_IMAGES: Record<string, string> = {
   'ai-tools': '/images/ai_tools.jpg',
   'gold-rate': '/images/gold_24k.jpg',
   'deals': '/images/products/iphone_16_pro.jpg',
-  'cashback': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Visa_2021.svg/960px-Visa_2021.svg.png',
+  'cashback': 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Credit_Card_Chip_%2834684294971%29.jpg',
   'food': 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Tradtional_Thali.jpg',
-  'health': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Yoga_mat_and_dumbbells.jpg/960px-Yoga_mat_and_dumbbells.jpg',
+  'health': 'https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_asana_class%2C_Plage_Pereire%2C_Arcachon%2C_2015.jpg',
   'side-hustles': '/images/ai_tools.jpg',
   'fashion': 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Carolina_Herrera_AW14_12.jpg',
   'movies': 'https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg',
@@ -110,6 +110,8 @@ interface GalleryItem {
   label: string;
   caption: string;
 }
+
+import { proxyImageUrl } from '../../lib/images';
 
 // Verified Entity Multi-Image Galleries (Zero Generic Stock Photos)
 const ENTITY_SPECIFIC_GALLERIES: Record<string, GalleryItem[]> = {
@@ -125,7 +127,7 @@ const ENTITY_SPECIFIC_GALLERIES: Record<string, GalleryItem[]> = {
       caption: 'Ajay Devgn as Vijay Salgaonkar leading the gripping conclusion.'
     },
     {
-      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Mohanlal_at_Vanitha_Film_Awards_2019.jpg/640px-Mohanlal_at_Vanitha_Film_Awards_2019.jpg',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/5/5d/Mohanlal_Viswanathan_BNC.jpg',
       label: '3. Mohanlal (Creator)',
       caption: 'Mohanlal, legendary lead of the original Malayalam cult classic universe.'
     }
@@ -148,9 +150,6 @@ function getSharpImage(imageUrl?: string, nSlug = 'viral'): string {
   if (!imageUrl || imageUrl.length < 10) {
     return CURATED_NICHE_HERO_IMAGES[nSlug] || '/images/ai_tools.jpg';
   }
-  if (imageUrl.includes('wikipedia/commons/thumb/') || imageUrl.includes('wikipedia/en/thumb/')) {
-    return imageUrl.replace(/\/thumb(\/.*)\/[^\/]+$/, '$1');
-  }
   return imageUrl;
 }
 
@@ -160,13 +159,18 @@ const absoluteImageUrl = displayHeroImage.startsWith('http')
   : `${Astro.url.origin}${displayHeroImage}`;
 
 // Build Authentic Gallery: Only show real entity slides, never inject fake stock photos
-const gallerySlides: GalleryItem[] = ENTITY_SPECIFIC_GALLERIES[post.slug] || [
+const rawGallerySlides: GalleryItem[] = ENTITY_SPECIFIC_GALLERIES[post.slug] || [
   {
     url: displayHeroImage,
     label: '1. Verified Visual',
     caption: post.image_credit ? `Source: ${post.image_credit}` : `${post.title} — Verified editorial coverage.`
   }
 ];
+
+const gallerySlides: GalleryItem[] = rawGallerySlides.map(slide => ({
+  ...slide,
+  url: proxyImageUrl(slide.url)
+}));
 
 // 1. Article / NewsArticle Schema
 const articleSchema = {
@@ -375,17 +379,29 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
         <div class="mb-8">
           <div class="rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 shadow-md relative group select-none">
             
-            <!-- Slide Viewport -->
+            <!-- Slide Viewport (Adaptive Aspect Ratio: Ambient Glow + Full Complete Visual) -->
             <div class="relative aspect-video sm:aspect-[16/9] w-full max-h-[520px] overflow-hidden bg-slate-950">
               <div id="gallery-track" class="flex w-full h-full transition-transform duration-500 ease-out">
                 {gallerySlides.map((slide, idx) => (
-                  <div class="w-full h-full shrink-0 relative bg-slate-950 flex items-center justify-center">
+                  <div class="w-full h-full shrink-0 relative bg-slate-950 flex items-center justify-center overflow-hidden">
+                    <!-- Atmospheric Ambient Blurred Glow (Fills widescreen frame with rich matching light) -->
+                    <img
+                      src={slide.url}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                      class="absolute inset-0 w-full h-full object-cover filter blur-2xl opacity-40 scale-110 pointer-events-none"
+                    />
+                    <div class="absolute inset-0 bg-slate-950/30 backdrop-blur-[1px]"></div>
+
+                    <!-- High-Fidelity Foreground Image: 100% Uncut, Zero Stretched Distortion, Full Natural Frame -->
                     <img
                       src={slide.url}
                       alt={`${post.title} - ${slide.label}`}
                       loading={idx === 0 ? "eager" : "lazy"}
                       decoding="async"
-                      class="w-full h-full object-cover object-center filter brightness-[0.98]"
+                      class="relative z-10 max-h-full max-w-full object-contain mx-auto filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)]"
                     />
                   </div>
                 ))}
