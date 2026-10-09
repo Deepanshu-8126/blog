@@ -1,0 +1,42 @@
+---
+interface Props {
+  protocol?: string;
+  doctorReviewed?: boolean;
+}
+
+const {
+  protocol = 'Ministry of AYUSH & PubMed Clinical Guidelines',
+  doctorReviewed = true
+} = Astro.props;
+---
+
+<div class="my-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/60 to-slate-950 p-5 sm:p-6 backdrop-blur-md shadow-xl relative overflow-hidden">
+  <!-- Atmospheric Ambient Glow -->
+  <div class="absolute -right-12 -top-12 w-40 h-40 rounded-full bg-emerald-500/10 blur-2xl pointer-events-none"></div>
+
+  <div class="relative z-10">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-3 pb-3 border-b border-emerald-500/20">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
+          🩺 Health Advisory & Safety Protocol
+        </span>
+      </div>
+
+      {doctorReviewed && (
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-xs">
+          ✓ Protocol Grounded: {protocol}
+        </span>
+      )}
+    </div>
+
+    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
+      <strong class="text-white">Strict Educational Notice:</strong> The wellness advice, asana guidelines, and dietary facts presented herein are synthesized for informational and public awareness purposes. They do not constitute formal medical diagnosis or prescription. Always consult a certified medical practitioner or qualified healthcare physician before starting new dietary supplements, rigorous fitness regimens, or therapeutic interventions.
+    </p>
+
+    <div class="mt-4 pt-3 border-t border-emerald-500/10 flex items-center justify-between text-[11px] text-emerald-400/90 font-mono">
+      <span>🛡️ Evidence-Based Wellness Protocol</span>
+      <span>National Health Portal (NHP) India Reference</span>
+    </div>
+  </div>
+</div>

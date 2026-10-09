@@ -9,6 +9,10 @@ import DisclaimerBar from '../../components/DisclaimerBar.astro';
 import Icon from '../../components/Icon.astro';
 import HypeMeter from '../../components/HypeMeter.astro';
 import FreshnessStamp from '../../components/FreshnessStamp.astro';
+import HealthDisclaimer from '../../components/HealthDisclaimer.astro';
+import BoxOfficeTable from '../../components/BoxOfficeTable.astro';
+import DealPriceStack from '../../components/DealPriceStack.astro';
+import TldrBox from '../../components/TldrBox.astro';
 import { getPost, getPostsByNiche, getProductsByNiche, getNicheBySlug, getTrendingPosts } from '../../lib/db';
 import { marked } from 'marked';
 
@@ -512,41 +516,23 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
           </div>
         )}
 
-        <!-- Key Intel & Executive Summary Card (At-a-Glance Scannability) -->
-        <div class="my-6 p-6 rounded-3xl bg-gradient-to-br from-purple-50/70 via-slate-50 to-emerald-50/50 border border-purple-200/80 shadow-2xs">
-          <div class="flex items-center gap-2 mb-4">
-            <span class="text-lg">⚡</span>
-            <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider">
-              Executive Briefing & Key Takeaways
-            </h3>
-          </div>
-          
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-            <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
-              <span class="text-[10px] font-black uppercase text-brand tracking-wider block mb-1">01. What Happened</span>
-              <p class="text-xs text-slate-700 font-medium leading-relaxed">
-                {post.title} — surging rapidly across nationwide feeds and search radar.
-              </p>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
-              <span class="text-[10px] font-black uppercase text-emerald-600 tracking-wider block mb-1">02. Core Focus</span>
-              <p class="text-xs text-slate-700 font-medium leading-relaxed">
-                Verified telemetry covering vital statistics, squad/market metrics, and user impact.
-              </p>
-            </div>
-            <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
-              <span class="text-[10px] font-black uppercase text-purple-600 tracking-wider block mb-1">03. Audience Verdict</span>
-              <p class="text-xs text-slate-700 font-medium leading-relaxed">
-                Fact-checked editorial data synthesized from authoritative primary dispatches.
-              </p>
-            </div>
-          </div>
+        <!-- Fast Mobile 3-Bullet Executive Digest (TL;DR Express) -->
+        <TldrBox topicTitle={post.title} category={niche.name} readingMinutes={readTime} />
 
-          <div class="pt-3 border-t border-purple-100 flex items-center justify-between text-xs text-slate-600">
-            <span><strong>Primary Category:</strong> {niche.name} ({niche.grp})</span>
-            <span class="text-[11px] text-emerald-700 font-bold">✓ 100% Fact-Checked</span>
-          </div>
-        </div>
+        <!-- Health & Medical Advisory Protocol (Only for Health Niche) -->
+        {niche.slug === 'health' && (
+          <HealthDisclaimer />
+        )}
+
+        <!-- Theatrical Box Office & OTT Release Matrix (Only for Movies Niche) -->
+        {niche.slug === 'movies' && (
+          <BoxOfficeTable movieTitle={post.title} />
+        )}
+
+        <!-- Triple Discount & Bank Offer Price Stack (Only for Deals / Cashback Niches) -->
+        {(niche.slug === 'deals' || niche.slug === 'cashback') && (
+          <DealPriceStack productTitle={post.title} />
+        )}
 
         <!-- Health / Sensitive Disclaimer -->
         {niche.config?.disclaimer && (

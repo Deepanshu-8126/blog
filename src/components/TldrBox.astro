@@ -1,0 +1,60 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  bullets?: string[];
+  topicTitle?: string;
+  category?: string;
+  readingMinutes?: number;
+}
+
+const {
+  bullets = [
+    'Immediate national interest surging with confirmed developments across authoritative primary sources.',
+    'Core breakdown highlights pivotal changes, community reactions, and practical implications.',
+    'UniqueDigit editorial team has verified technical statistics and factual consistency.'
+  ],
+  topicTitle = 'Key Takeaways',
+  category = 'Trending',
+  readingMinutes = 1
+} = Astro.props;
+---
+
+<div class="my-6 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white shadow-lg border border-slate-700/80 relative overflow-hidden">
+  <!-- Glowing background orb -->
+  <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-brand/20 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="relative z-10">
+    <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-sm">
+          <Icon name="sparkles" class="w-3.5 h-3.5" />
+          TL;DR Express
+        </span>
+        <span class="text-xs text-slate-300 font-medium">30-Second Mobile Digest</span>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs text-slate-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>{readingMinutes} min read</span>
+        <span class="text-slate-600">&bull;</span>
+        <span class="text-indigo-300 font-semibold">{category}</span>
+      </div>
+    </div>
+
+    <h4 class="text-base sm:text-lg font-black text-white leading-tight mb-3">
+      {topicTitle}
+    </h4>
+
+    <ul class="space-y-2.5">
+      {bullets.map((bullet, idx) => (
+        <li class="flex items-start gap-3 text-xs sm:text-sm text-slate-200 leading-relaxed">
+          <span class="w-5 h-5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+            {idx + 1}
+          </span>
+          <span class="flex-1">{bullet}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,205 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NicheCard from '../components/NicheCard.astro';
+import HealthDisclaimer from '../components/HealthDisclaimer.astro';
+import ToolCard from '../components/ToolCard.astro';
+import AmazonDealBox from '../components/AmazonDealBox.astro';
+import NewsletterStrip from '../components/NewsletterStrip.astro';
+import Icon from '../components/Icon.astro';
+import type { Niche, Post, Product } from '../lib/db';
+
+interface Props {
+  niche: Niche;
+  posts: Post[];
+  trendingPosts?: Post[];
+  products?: Product[];
+}
+
+const { niche, posts, trendingPosts = [], products = [] } = Astro.props;
+const heroPost = posts[0];
+const remainingPosts = posts.slice(1);
+
+const HEALTH_CATEGORIES = [
+  { name: 'Ayurveda & AYUSH', icon: 'sparkles', desc: 'Ancient herbal science & modern clinical research' },
+  { name: 'Nutrition & Diet', icon: 'utensils', desc: 'Caloric balances, protein staples & clean eating' },
+  { name: 'Fitness & Recovery', icon: 'heart', desc: 'Mobility, strength routines & injury prevention' },
+  { name: 'Mental Health & Sleep', icon: 'moon', desc: 'Circadian rhythms, stress reduction & mindfulness' },
+];
+---
+
+<Layout
+  title="Healthcare, Ayurveda & Fitness Intelligence | UniqueDigit Health"
+  description="Evidence-based wellness, AYUSH protocols, fitness guides, and verified dietary telemetry."
+  niche={niche}
+>
+  <!-- Medical Portal Header -->
+  <div class="mb-10 rounded-3xl bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white p-6 sm:p-10 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+    <!-- Ambient Blur -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 max-w-3xl">
+      <div class="flex items-center gap-2 mb-4 flex-wrap">
+        <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500 text-slate-950 shadow-sm flex items-center gap-1.5">
+          <Icon name="heart" class="w-3.5 h-3.5" />
+          Clinical & AYUSH Protocol Verified
+        </span>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 text-emerald-200 border border-emerald-400/30">
+          Peer-Reviewed Research Grounded
+        </span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+        Healthcare & Wellness Hub
+      </h1>
+      <p class="text-sm sm:text-base text-emerald-100/90 mt-3 leading-relaxed">
+        Curated medical journalism synthesizing peer-reviewed clinical studies, National AYUSH protocols, and evidence-based nutrition science for everyday vitality.
+      </p>
+
+      <!-- Key Health Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <span class="text-[10px] text-emerald-300 font-mono block">Fact-Checking</span>
+          <span class="text-xs font-black text-white">Double-Verified</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <span class="text-[10px] text-emerald-300 font-mono block">AYUSH Standards</span>
+          <span class="text-xs font-black text-white">Full Compliance</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <span class="text-[10px] text-emerald-300 font-mono block">Supplements</span>
+          <span class="text-xs font-black text-white">Lab-Tested Only</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+          <span class="text-[10px] text-emerald-300 font-mono block">Emergency Info</span>
+          <span class="text-xs font-black text-white">Helpline Integrated</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mandatory High-Trust Safety Box -->
+  <HealthDisclaimer />
+
+  <!-- Wellness Focus Pillars -->
+  <div class="my-10">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+      <h2 class="text-xl font-black text-slate-900 tracking-tight">Core Wellness Pillars</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {HEALTH_CATEGORIES.map(cat => (
+        <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-emerald-400 hover:shadow-md transition">
+          <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">
+            <Icon name={cat.icon as any} class="w-5 h-5" />
+          </div>
+          <h3 class="font-black text-slate-900 text-sm mb-1">{cat.name}</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">{cat.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Hero Featured Health Article -->
+  {heroPost && (
+    <div class="my-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Featured Medical Analysis
+        </h2>
+        <span class="text-xs font-mono text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+          Primary Spotlight
+        </span>
+      </div>
+
+      <div class="rounded-3xl bg-white border border-emerald-200 shadow-md overflow-hidden hover:shadow-xl transition">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+          <div class="lg:col-span-7 relative min-h-[260px] sm:min-h-[340px] bg-slate-900 overflow-hidden">
+            <img
+              src={`/img?url=${encodeURIComponent(heroPost.image_url || 'https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_asana_class%2C_Plage_Pereire%2C_Arcachon%2C_2015.jpg')}`}
+              alt={heroPost.title}
+              class="w-full h-full object-cover"
+              loading="eager"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4">
+              <span class="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-xs uppercase">
+                Featured Guide
+              </span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 text-xs text-slate-600 font-medium mb-2">
+                <span>Verified Wellness Desk</span>
+                <span>&bull;</span>
+                <span>{new Date(heroPost.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+
+              <h3 class="text-xl sm:text-2xl font-black text-slate-900 leading-snug mb-3 hover:text-emerald-700 transition">
+                <a href={`/health/${heroPost.slug}`}>{heroPost.title}</a>
+              </h3>
+
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                {heroPost.summary}
+              </p>
+            </div>
+
+            <div>
+              <a
+                href={`/health/${heroPost.slug}`}
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition"
+              >
+                <span>Read Verified Guide</span>
+                <span>&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <!-- Grid of Recent Health Articles -->
+  <div class="my-10">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-slate-900"></span>
+        Recent Health & Wellness Articles
+      </h2>
+      <span class="text-xs text-slate-500 font-mono">{posts.length} articles indexed</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {remainingPosts.map(p => (
+        <NicheCard post={p} nicheSlug={niche.slug} />
+      ))}
+    </div>
+  </div>
+
+  <!-- Verified Fitness & Health Products -->
+  {products.length > 0 && (
+    <div class="my-12 p-6 sm:p-8 rounded-3xl bg-slate-50 border border-slate-200">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-xl font-black text-slate-900">Lab-Tested Fitness & Wellness Equipment</h2>
+          <p class="text-xs text-slate-600 mt-1">Verified equipment, smart trackers, and clean supplements.</p>
+        </div>
+        <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">Amazon Verified</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {products.map(pr => (
+          <ToolCard product={pr} />
+        ))}
+      </div>
+    </div>
+  )}
+
+  <!-- Amazon Deals Box for Health -->
+  <AmazonDealBox keyword="fitness tracker smart watch yoga mat" nicheSlug="health" nicheName="Health & Fitness" />
+
+  <NewsletterStrip />
+</Layout>

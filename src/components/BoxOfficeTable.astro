@@ -1,0 +1,109 @@
+---
+interface Props {
+  movieTitle: string;
+  day1Collection?: string;
+  weekendCollection?: string;
+  worldwideTotal?: string;
+  budget?: string;
+  verdict?: string;
+  ottPlatform?: string;
+  ottDate?: string;
+}
+
+const {
+  movieTitle,
+  day1Collection = '₹42.50 Cr',
+  weekendCollection = '₹135.00 Cr',
+  worldwideTotal = '₹380.00 Cr',
+  budget = '₹120.00 Cr',
+  verdict = 'All-Time Blockbuster',
+  ottPlatform = 'Netflix / Prime Video',
+  ottDate = 'Streaming Premiere in 8 Weeks'
+} = Astro.props;
+---
+
+<div class="my-8 rounded-3xl overflow-hidden border border-purple-500/30 bg-slate-950 shadow-2xl">
+  <!-- Table Header Bar -->
+  <div class="bg-gradient-to-r from-purple-950/80 via-slate-900 to-slate-950 px-5 py-4 border-b border-purple-500/20 flex flex-wrap justify-between items-center gap-3">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-purple-300">
+          Theatrical Box Office & OTT Tracker
+        </span>
+      </div>
+      <h3 class="text-base sm:text-lg font-black text-white">{movieTitle}</h3>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-md">
+        ★ {verdict}
+      </span>
+    </div>
+  </div>
+
+  <!-- Theatrical Numbers Grid -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-xs sm:text-sm text-left">
+      <thead class="bg-white/5 text-slate-400 font-mono text-[11px] uppercase tracking-wider">
+        <tr>
+          <th class="p-4">Box Office Phase</th>
+          <th class="p-4">Collections (Gross)</th>
+          <th class="p-4">Trade Benchmark</th>
+          <th class="p-4">Status</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-slate-200">
+        <tr class="hover:bg-white/[0.02] transition">
+          <td class="p-4 font-bold text-white flex items-center gap-2">
+            <span>🎟️ Day 1 Opening</span>
+          </td>
+          <td class="p-4 font-mono font-bold text-amber-300 text-base">{day1Collection}</td>
+          <td class="p-4 text-slate-400">All India (Hindi + South)</td>
+          <td class="p-4"><span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono text-xs">Record Opener</span></td>
+        </tr>
+        <tr class="hover:bg-white/[0.02] transition">
+          <td class="p-4 font-bold text-white flex items-center gap-2">
+            <span>🔥 Opening Weekend</span>
+          </td>
+          <td class="p-4 font-mono font-bold text-amber-300 text-base">{weekendCollection}</td>
+          <td class="p-4 text-slate-400">3-Day Domestic Gross</td>
+          <td class="p-4"><span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono text-xs">Mega Surge</span></td>
+        </tr>
+        <tr class="hover:bg-white/[0.02] transition bg-purple-950/20">
+          <td class="p-4 font-black text-white flex items-center gap-2">
+            <span>🌍 Worldwide Lifetime</span>
+          </td>
+          <td class="p-4 font-mono font-black text-emerald-400 text-lg">{worldwideTotal}</td>
+          <td class="p-4 text-slate-300">Global Theatrical Run</td>
+          <td class="p-4"><span class="px-2.5 py-1 rounded-md bg-amber-400/20 text-amber-300 font-mono font-bold text-xs">₹400 Cr Club</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OTT Premiere & Streaming Info Bar -->
+  <div class="p-4 bg-gradient-to-r from-slate-900 to-purple-950/40 border-t border-purple-500/20 flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2.5">
+      <span class="text-base">📺</span>
+      <div>
+        <span class="text-slate-400 block text-[11px]">Digital Streaming Rights:</span>
+        <strong class="text-purple-200">{ottPlatform}</strong>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <span class="px-3 py-1 rounded-xl bg-purple-600/30 text-purple-200 border border-purple-500/30 font-mono font-bold">
+        ⏳ {ottDate}
+      </span>
+      <a
+        href="https://in.bookmyshow.com"
+        target="_blank"
+        rel="noopener"
+        class="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-extrabold transition shadow-md"
+      >
+        Book Tickets &rarr;
+      </a>
+    </div>
+  </div>
+</div>

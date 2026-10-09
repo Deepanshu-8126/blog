@@ -5,6 +5,8 @@ import Tools from '../../templates/Tools.astro';
 import Dataset from '../../templates/Dataset.astro';
 import Movies from '../../templates/Movies.astro';
 import DealsHub from '../../templates/DealsHub.astro';
+import HealthHub from '../../templates/HealthHub.astro';
+import NewsHub from '../../templates/NewsHub.astro';
 
 const { niche: nicheSlug } = Astro.params;
 if (!nicheSlug) {
@@ -31,10 +33,16 @@ const [posts, totalCount, trendingPosts, products] = await Promise.all([
 
 const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 const isDealsNiche = niche.slug === 'deals' || niche.slug === 'cashback';
+const isHealthNiche = niche.slug === 'health';
+const isNewsNiche = niche.slug === 'news' || niche.slug === 'viral' || niche.slug === 'breaking';
 ---
 
 {isDealsNiche ? (
   <DealsHub niche={niche} products={products} posts={posts} />
+) : isHealthNiche ? (
+  <HealthHub niche={niche} posts={posts} trendingPosts={trendingPosts} products={products} />
+) : isNewsNiche ? (
+  <NewsHub niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} />
 ) : (
   <>
     {niche.page_type === 'feed' && (

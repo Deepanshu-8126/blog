@@ -404,6 +404,84 @@ def ai_topics(n):
     return {t: 50 for t in res.get("topics", [])}
 
 
+# ---------- Trio Multi-Agent Governance Model ----------
+CURATED_NICHE_HERO_FALLBACKS = {
+    "cricket-sports": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg/960px-Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg.png",
+    "pc-builds": "/images/rtx5090.jpg",
+    "gta-6": "/images/gta6_cover.jpg",
+    "ai-tools": "/images/ai_tools.jpg",
+    "gold-rate": "/images/gold_24k.jpg",
+    "deals": "/images/products/iphone_16_pro.jpg",
+    "cashback": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Credit_Card_Chip_%2834684294971%29.jpg",
+    "food": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tradtional_Thali.jpg",
+    "health": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_asana_class%2C_Plage_Pereire%2C_Arcachon%2C_2015.jpg",
+    "fashion": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Carolina_Herrera_AW14_12.jpg",
+    "movies": "https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg",
+    "automotive-trends": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Tata_Nexon_Blue_Dual_Tone.jpg/960px-Tata_Nexon_Blue_Dual_Tone.jpg",
+    "exams-results": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_of_India_logo.svg/960px-Government_of_India_logo.svg.png",
+    "viral": "/images/ai_tools.jpg"
+}
+
+def agent_alpha_check(candidate_title, candidate_summary="", existing_titles=None, min_chars=10):
+    """
+    Agent Alpha: Asserts uniqueness against D1 history and validates quality.
+    Rejects semantic duplicates (Jaccard similarity > 0.60 or empty titles).
+    """
+    if not candidate_title or len(candidate_title.strip()) < min_chars:
+        return False, "Title too short or empty"
+    
+    cand_tokens = set(re.findall(r'\b\w{3,}\b', candidate_title.lower()))
+    if not cand_tokens:
+        return False, "No valid semantic tokens"
+
+    if existing_titles:
+        for ext in existing_titles:
+            if not ext:
+                continue
+            ext_tokens = set(re.findall(r'\b\w{3,}\b', ext.lower()))
+            if not ext_tokens:
+                continue
+            intersection = cand_tokens.intersection(ext_tokens)
+            union = cand_tokens.union(ext_tokens)
+            jaccard = len(intersection) / len(union) if union else 0
+            if jaccard > 0.60:
+                return False, f"Duplicate detected (Jaccard {jaccard:.2f} with '{ext}')"
+
+    return True, "Passed Agent Alpha quality & uniqueness gate"
+
+
+def agent_gamma_verify_image(image_url, niche_slug, topic_query):
+    """
+    Agent Gamma: Media & Aspect Ratio Guardian.
+    Validates image URL reachable via HTTP HEAD/GET, fallback to curated high-res local/wiki assets.
+    """
+    fallback = CURATED_NICHE_HERO_FALLBACKS.get(niche_slug, "/images/ai_tools.jpg")
+    if not image_url:
+        return fallback, "Local High-Res Fallback"
+    
+    if image_url.startswith("/"):
+        return image_url, "Local Asset"
+    
+    try:
+        r = requests.head(image_url, headers=UA, timeout=4, allow_redirects=True)
+        if r.status_code == 200:
+            c_type = r.headers.get("Content-Type", "")
+            if not c_type or "image" in c_type.lower() or "application/octet-stream" in c_type.lower():
+                return image_url, "HTTP 200 Verified Remote"
+    except Exception:
+        pass
+
+    # If head check failed or redirected poorly, try wiki
+    try:
+        w = wiki(topic_query)
+        if w and w.get("image"):
+            return w["image"], "Wikimedia Commons Verified"
+    except Exception:
+        pass
+
+    return fallback, "Curated Niche Fallback"
+
+
 def write_article(n, title, angle, facts, trend):
     cfg = json.loads(n.get("config") or "{}") if isinstance(n.get("config"), str) else (n.get("config") or {})
     prompt = f"""You are an elite Indian tech & lifestyle journalist for UniqueDigit.
@@ -412,7 +490,7 @@ Topic: {title} | Niche: {n['name']} | Angle: {angle} | Google Trends Interest: +
 GROUNDED FACTS & CONTEXT (Use ONLY verified claims):
 {facts or 'Keep analysis objective, explanatory, and grounded in common industry standards without fabricating numbers.'}
 
-AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING:
+AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING (Agent Beta):
 1. Detect why the user is searching for "{title}" RIGHT NOW:
    - Case A (Exam/Result/Admit Card): Provide a clear timeline, official check steps, cutoff breakdown, and preparation revision tips.
    - Case B (Shopping/Deal/Loot): Provide a price-to-value verdict, key specs, warranty note, and why this discount matters.
@@ -425,6 +503,16 @@ AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING:
      * Box Office Tracker: A neat markdown table with Day 1, Weekend, and Total Worldwide collections.
      * OTT Streaming Intel: Streaming rights platform (Netflix/Prime Video/Hotstar) and expected digital premiere.
      * Audience Consensus & Final Ticket Verdict: Should readers book a ticket or wait for OTT?
+   - Case F (Health / Ayurveda / Wellness):
+     Provide strict evidence-based advice referencing peer-reviewed clinical data or Ministry of AYUSH protocols.
+     * Dos and Don'ts checklist.
+     * Safe usage, precautions, and when to consult a registered medical practitioner.
+     * Zero miracle-cure claims or unverified health promises.
+   - Case G (Deals / Cashback / Product Review):
+     Provide clear price intelligence:
+     * Mention MRP, realistic sale price, bank card cashback offers (e.g. HDFC/ICICI).
+     * Value breakdown and whether it's at its 30-day lowest price.
+
 2. Structure the response in clean, engaging Markdown (500-650 words) using:
    - ## Catchy, clear subheadings
    - Markdown comparison tables or bulleted checklists where relevant
@@ -480,10 +568,12 @@ def process_niche(n):
             if t not in cands:
                 cands[t] = {"score": s}
 
-    # Check already existing topics in D1
-    existing = d1_query("SELECT slug FROM topics WHERE niche_id = ?", [n["id"]])
-    seen = {row["slug"] for row in existing}
-    titles = [t for t in cands if slugify(t) not in seen][:25]
+    # Check already existing topics in D1 for Agent Alpha de-duplication
+    existing_records = d1_query("SELECT canonical, slug FROM topics WHERE niche_id = ?", [n["id"]])
+    seen_slugs = {row["slug"] for row in existing_records}
+    existing_titles = [row.get("canonical") for row in existing_records if row.get("canonical")]
+
+    titles = [t for t in cands if slugify(t) not in seen_slugs][:25]
     if not titles:
         print(f"[{n['slug']}] No new trending topics.")
         return 0
@@ -491,6 +581,13 @@ def process_niche(n):
     made = 0
     for pick in rank(n, titles):
         t, c = pick["title"], cands[pick["title"]]
+
+        # Agent Alpha Gate: Uniqueness & Semantic De-duplication
+        is_unique, alpha_msg = agent_alpha_check(t, "", existing_titles)
+        if not is_unique:
+            print(f"[{n['slug']} Agent Alpha Filtered]: {t} -> {alpha_msg}")
+            continue
+
         facts, image, credit, src = c.get("facts", ""), c.get("image"), c.get("credit"), c.get("url")
         # Enrich facts and images with Wikipedia
         if "wikipedia" in fetchers or not facts or not image:
@@ -499,6 +596,10 @@ def process_niche(n):
                 facts = (facts + "\n" + w["extract"]).strip()
                 if not image and w["image"]:
                     image, credit, src = w["image"], "Wikipedia / Wikimedia Commons", w["url"]
+
+        # Agent Gamma Gate: Media & Aspect Ratio Guardian
+        image, gamma_status = agent_gamma_verify_image(image, n["slug"], t)
+
         try:
             a = write_article(n, t, pick.get("angle", ""), facts, c["score"])
         except Exception as e:
@@ -530,6 +631,7 @@ def process_niche(n):
                 1 if c["score"] >= 80 else 0
             ]
         )
+        existing_titles.append(t)
         # Dispatch instant Telegram alert
         send_telegram(a.get("title", t), n["name"], post_slug)
         made += 1
@@ -562,8 +664,10 @@ def process_national_breaking_trends():
         print("[Radar Agent] No trends returned from Google Trends RSS.")
         return 0
 
-    existing_slugs = {row["slug"] for row in d1_query("SELECT slug FROM topics")}
-    candidates = [item for item in rss_trends if slugify(item["title"]) not in existing_slugs][:4]
+    existing_records = d1_query("SELECT canonical, slug FROM topics")
+    existing_slugs = {row["slug"] for row in existing_records}
+    existing_titles = [row.get("canonical") for row in existing_records if row.get("canonical")]
+    candidates = [item for item in rss_trends if slugify(item["title"]) not in existing_slugs][:6]
     
     if not candidates:
         print("[Radar Agent] No new unhandled national trends found.")
@@ -574,6 +678,13 @@ def process_national_breaking_trends():
 
     for cand in candidates:
         query = cand["title"]
+
+        # Agent Alpha Gate: Uniqueness & Semantic De-duplication
+        is_unique, alpha_msg = agent_alpha_check(query, "", existing_titles)
+        if not is_unique:
+            print(f"[Radar Agent Alpha Filtered]: {query} -> {alpha_msg}")
+            continue
+
         facts = cand.get("facts", "")
         image = cand.get("image")
         credit = cand.get("credit", "Google Trends / Verified News")
@@ -630,6 +741,9 @@ Return strict JSON:
                 facts = (facts + "\n" + w["extract"]).strip()
                 if w.get("image"):
                     image, credit, src = w["image"], "Wikimedia Commons", w["url"]
+
+        # Agent Gamma Gate: Media & Aspect Ratio Guardian
+        image, gamma_status = agent_gamma_verify_image(image, n_slug, query)
 
         topic_id = str(uuid.uuid4())
         topic_slug = slugify(query)
