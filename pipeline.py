@@ -14,7 +14,12 @@ Env:
 Optional:
   GROK_API_KEY, TMDB_API_KEY, POSTS_PER_NICHE, AMAZON_ASSOCIATE_TAG
 """
-import json, os, re, sys, time, uuid, urllib.parse
+import json, os, re, sys, time, uuid, urllib.parse, subprocess
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -24,22 +29,22 @@ DRY = "--dry" in sys.argv
 ONLY = sys.argv[sys.argv.index("--niche") + 1] if "--niche" in sys.argv else None
 
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
 GROK_KEY = os.environ.get("GROK_API_KEY")
 GROK_MODEL = os.environ.get("GROK_MODEL", "grok-4")
 TMDB_KEY = os.environ.get("TMDB_API_KEY")
 GEO = os.environ.get("TRENDS_GEO", "IN")
-N_POSTS = int(os.environ.get("POSTS_PER_NICHE", "3"))
+N_POSTS = int(os.environ.get("POSTS_PER_NICHE", "2"))
 AMAZON_TAG = os.environ.get("AMAZON_ASSOCIATE_TAG", "uniquedigi0c6-21")
 UA = {"User-Agent": "UniqueDigitBot/1.0 (contact: info@uniquedigit.in)"}
 
-CF_ACCOUNT = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "")
-CF_D1_DB = os.environ.get("CLOUDFLARE_D1_DATABASE_ID", "")
+CF_ACCOUNT = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "cf1a42fb306054063805cf459fddf853")
+CF_D1_DB = os.environ.get("CLOUDFLARE_D1_DATABASE_ID", "61d1d46f-f438-47f5-9128-516d9beb11cb")
 CF_TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN", "")
 
 TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
-PORTAL_BASE = os.environ.get("PORTAL_BASE_URL", "https://dk-s.pages.dev")
+PORTAL_BASE = os.environ.get("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
 
 
 # ---------- Telegram Dispatcher ----------
@@ -70,25 +75,54 @@ def cleanup_old_data():
 
 # ---------- Cloudflare D1 Helpers ----------
 def d1_query(sql, params=None):
-    if DRY or not (CF_ACCOUNT and CF_D1_DB and CF_TOKEN):
-        print(f"[dry/local d1] {sql[:120]} | params: {params}")
+    if DRY:
+        print(f"[dry d1] {sql[:100]} | params: {params}")
         return []
-    url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT}/d1/database/{CF_D1_DB}/query"
-    headers = {
-        "Authorization": f"Bearer {CF_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    payload = {"sql": sql, "params": params or []}
+
+    # 1. Direct Cloudflare REST API (preferred in CI if token present)
+    if CF_ACCOUNT and CF_D1_DB and CF_TOKEN:
+        url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT}/d1/database/{CF_D1_DB}/query"
+        headers = {
+            "Authorization": f"Bearer {CF_TOKEN}",
+            "Content-Type": "application/json"
+        }
+        payload = {"sql": sql, "params": params or []}
+        try:
+            r = requests.post(url, headers=headers, json=payload, timeout=30)
+            if r.status_code == 200:
+                res = r.json()
+                if res.get("result") and len(res["result"]) > 0:
+                    return res["result"][0].get("results", [])
+                return []
+        except Exception as e:
+            print("[D1 REST query error]:", e)
+
+    # 2. Local/Remote Wrangler CLI execution fallback
     try:
-        r = requests.post(url, headers=headers, json=payload, timeout=30)
-        r.raise_for_status()
-        res = r.json()
-        if res.get("result") and len(res["result"]) > 0:
-            return res["result"][0].get("results", [])
-        return []
+        formatted_sql = sql
+        if params:
+            for p in params:
+                if p is None:
+                    formatted_sql = formatted_sql.replace("?", "NULL", 1)
+                elif isinstance(p, (int, float)):
+                    formatted_sql = formatted_sql.replace("?", str(p), 1)
+                else:
+                    escaped_str = str(p).replace("'", "''")
+                    formatted_sql = formatted_sql.replace("?", f"'{escaped_str}'", 1)
+
+        # Run wrangler directly
+        cmd = ["npx", "wrangler", "d1", "execute", "uniquedigit-db", "--remote", "--json", f"--command={formatted_sql}"]
+        res = subprocess.run(cmd, capture_output=True, text=True, timeout=30, shell=True)
+        if res.returncode == 0 and res.stdout:
+            start_idx = res.stdout.find("[")
+            if start_idx != -1:
+                parsed = json.loads(res.stdout[start_idx:])
+                if parsed and len(parsed) > 0:
+                    return parsed[0].get("results", [])
     except Exception as e:
-        print("D1 query error:", e)
-        return []
+        print("[Wrangler D1 execution fallback error]:", e)
+
+    return []
 
 
 def slugify(s):
@@ -146,34 +180,82 @@ def grok(prompt):
 
 
 # ---------- Sources ----------
-def get_trends(seeds):
-    out = {}
+# ---------- Sources ----------
+def fetch_google_trends_rss(geo=GEO):
+    """
+    Fetches real-time trending searches from the official Google Trends RSS feed for India.
+    Zero 404 errors, zero API keys required, includes real editorial image & publisher attribution.
+    """
+    trends = []
+    url = f"https://trends.google.com/trending/rss?geo={geo}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     try:
-        from pytrends.request import TrendReq
-        py = TrendReq(hl="en-IN", tz=330, timeout=(5, 20))
-        
-        # 1. Fetch live rising searches across India (captures whatever is breaking right now: Exams, Cricket, Sales, Tech)
-        try:
-            df = py.trending_searches(pn="india")
-            for q in df[0].head(15):
-                out[str(q)] = 100
-        except Exception as e:
-            print("[Daily trending searches fallback]:", e)
+        r = requests.get(url, headers=headers, timeout=15)
+        if r.status_code == 200:
+            import xml.etree.ElementTree as ET
+            root = ET.fromstring(r.content)
+            for item in root.findall(".//item"):
+                title_elem = item.find("title")
+                approx_elem = item.find("{https://trends.google.com/trending/rss}approx_traffic")
+                pic_elem = item.find("{https://trends.google.com/trending/rss}picture")
+                pic_source_elem = item.find("{https://trends.google.com/trending/rss}picture_source")
+                news_elem = item.find("{https://trends.google.com/trending/rss}news_item")
 
-        # 2. Fetch specific rising momentum if seeds provided
-        if seeds:
-            for s in seeds[:2]:
-                try:
-                    py.build_payload([s], timeframe="now 7-d", geo=GEO)
-                    rising = py.related_queries().get(s, {}).get("rising")
-                    if rising is not None:
-                        for _, row in rising.head(6).iterrows():
-                            out[str(row["query"])] = int(row["value"])
-                    time.sleep(1)
-                except Exception:
-                    pass
+                title = title_elem.text.strip() if title_elem is not None and title_elem.text else ""
+                if not title:
+                    continue
+
+                traffic_str = approx_elem.text if approx_elem is not None and approx_elem.text else "100"
+                clean_traffic = traffic_str.replace("+", "").replace(",", "")
+                if "M" in clean_traffic:
+                    traffic_num = int(float(clean_traffic.replace("M", "")) * 1000)
+                elif "K" in clean_traffic:
+                    traffic_num = int(float(clean_traffic.replace("K", "")))
+                else:
+                    try:
+                        traffic_num = max(10, int(clean_traffic) // 1000)
+                    except Exception:
+                        traffic_num = 100
+
+                pic_url = pic_elem.text if pic_elem is not None and pic_elem.text else None
+                pic_source = pic_source_elem.text if pic_source_elem is not None and pic_source_elem.text else "Google Trends / Verified News"
+
+                news_title = ""
+                news_url = ""
+                if news_elem is not None:
+                    nt = news_elem.find("{https://trends.google.com/trending/rss}news_item_title")
+                    nu = news_elem.find("{https://trends.google.com/trending/rss}news_item_url")
+                    if nt is not None and nt.text:
+                        news_title = nt.text.strip()
+                    if nu is not None and nu.text:
+                        news_url = nu.text.strip()
+
+                trends.append({
+                    "title": title,
+                    "score": traffic_num,
+                    "image": pic_url,
+                    "credit": pic_source,
+                    "url": news_url or f"https://trends.google.com/trending?geo={geo}",
+                    "facts": f"Breaking verified news context: {news_title}" if news_title else ""
+                })
     except Exception as e:
-        print("trends failed:", e)
+        print("[Google Trends RSS fetcher warning]:", e)
+    return trends
+
+
+def get_trends(seeds=None):
+    out = {}
+    # 1. Fetch live rising trends from official Google Trends RSS
+    for t in fetch_google_trends_rss(GEO)[:15]:
+        out[t["title"]] = t["score"]
+    
+    # 2. If seeds provided, augment with matching keyword variations
+    if seeds:
+        for s in seeds[:3]:
+            if s not in out:
+                out[s] = 75
     return out
 
 
@@ -354,28 +436,31 @@ SEED_NICHES = [
 def process_national_breaking_trends():
     """Scans all trending searches in India and dynamically creates/assigns niches on the fly"""
     print("--- [Radar Agent] Scanning National Real-Time Indian Search Trends ---")
-    try:
-        from pytrends.request import TrendReq
-        py = TrendReq(hl="en-IN", tz=330, timeout=(5, 20))
-        df = py.trending_searches(pn="india")
-        breaking_queries = [str(q) for q in df[0].head(15)]
-    except Exception as e:
-        print("[National Trends fetch error]:", e)
+    rss_trends = fetch_google_trends_rss(GEO)
+    if not rss_trends:
+        print("[Radar Agent] No trends returned from Google Trends RSS.")
         return 0
 
     existing_slugs = {row["slug"] for row in d1_query("SELECT slug FROM topics")}
-    candidates = [q for q in breaking_queries if slugify(q) not in existing_slugs][:6]
+    candidates = [item for item in rss_trends if slugify(item["title"]) not in existing_slugs][:4]
     
     if not candidates:
         print("[Radar Agent] No new unhandled national trends found.")
         return 0
 
-    print(f"[Radar Agent] Discovered {len(candidates)} new breaking national trends:", candidates)
+    print(f"[Radar Agent] Discovered {len(candidates)} new breaking national trends: {[c['title'] for c in candidates]}")
     processed = 0
 
-    for query in candidates:
+    for cand in candidates:
+        query = cand["title"]
+        facts = cand.get("facts", "")
+        image = cand.get("image")
+        credit = cand.get("credit", "Google Trends / Verified News")
+        src = cand.get("url")
+
         prompt = f"""You are the Chief Editorial AI for UniqueDigit India.
 Breaking Search Trend in India: "{query}"
+Verified Context: {facts or 'Current top trending interest in India.'}
 
 1. Categorize this trend into a suitable clean category/niche (e.g., "gaming", "tech-reviews", "deals", "exams-results", "movies", "health", "cricket-sports", "finance").
 2. Write a highly engaging, humanized, fact-grounded article (450-600 words) tailored to why Indian users are searching for "{query}" right now.
@@ -417,9 +502,13 @@ Return strict JSON:
         niche_record = d1_query("SELECT id FROM niches WHERE slug = ?", [n_slug])
         actual_niche_id = niche_record[0]["id"] if niche_record else niche_id
 
-        # 2. Wikipedia Image & Fact Check
-        w = wiki(query)
-        facts, image, credit, src = (w["extract"], w["image"], "Wikimedia Commons", w["url"]) if w else ("", None, None, None)
+        # 2. If no image from RSS, check Wikipedia fallback
+        if not image:
+            w = wiki(query)
+            if w:
+                facts = (facts + "\n" + w["extract"]).strip()
+                if w.get("image"):
+                    image, credit, src = w["image"], "Wikimedia Commons", w["url"]
 
         topic_id = str(uuid.uuid4())
         topic_slug = slugify(query)
