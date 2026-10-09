@@ -199,6 +199,181 @@ export const SEED_POSTS: Post[] = [
     indexable: true,
     status: 'published',
     published_at: new Date(Date.now() - 3600000 * 2).toISOString()
+  },
+  {
+    id: 'p5',
+    niche_id: '11',
+    slug: 'drishyam-3-the-conclusion-box-office-collection-nears-400-crore-worldwide',
+    kind: 'article',
+    title: 'Drishyam 3: The Conclusion Box Office Collection Nears ₹400 Crore Worldwide',
+    summary: 'Ajay Devgn and Mohanlal franchise closes the definitive crime suspense saga with historical pan-India theatre occupancy.',
+    body_md: `## Box Office Milestones & Historic Pre-Sales\nThe final chapter in the legendary Vijay Salgaonkar saga has set cash registers ringing across Mumbai, Delhi, Gujarat, and South India circuits.\n\n### The Final Relentless Interrogation\nDirector Abhishek Pathak crafts a relentless game of cat-and-mouse that keeps viewers glued till the final climax twist.`,
+    faq: [
+      { q: 'Is Mohanlal in Drishyam 3 Hindi?', a: 'Mohanlal leads the original Malayalam universe with Ajay Devgn helming the Hindi adaptation.' }
+    ],
+    tags: ['Drishyam 3', 'Ajay Devgn', 'Box Office'],
+    sources: [
+      { title: 'Bollymoviereviewz Box Office Tracker', url: 'https://bollymoviereviewz.com' }
+    ],
+    image_url: 'https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg',
+    image_credit: 'Panorama Studios / Official Theatrical Poster',
+    hype: 99,
+    trend_score: 990,
+    views: 24500,
+    is_breaking: true,
+    indexable: true,
+    status: 'published',
+    published_at: new Date(Date.now() - 3600000 * 1).toISOString()
+  },
+  {
+    id: 'p6',
+    niche_id: '11',
+    slug: 'stree-2-ott-release-date-and-box-office-records',
+    kind: 'article',
+    title: 'Stree 2: Sarkate Ka Aatank — Box Office Records & OTT Release Details',
+    summary: 'Rajkummar Rao and Shraddha Kapoor horror-comedy shatters all-time Hindi cinema box office records.',
+    body_md: `## Chanderi Horror Universe Triumphs\nMaddock Films horror universe delivers its biggest blockbuster yet as Stree 2 crosses ₹600 crore net in domestic collections.\n\n### Where to Stream\nThe film is now available on leading streaming platforms following its historic theatrical run.`,
+    faq: [
+      { q: 'Where can I watch Stree 2 on OTT?', a: 'Stree 2 is streaming exclusively on Prime Video.' }
+    ],
+    tags: ['Stree 2', 'Shraddha Kapoor', 'Horror Comedy'],
+    sources: [
+      { title: 'Box Office India Reports', url: 'https://boxofficeindia.com' }
+    ],
+    image_url: 'https://upload.wikimedia.org/wikipedia/en/a/a1/Stree_2.jpg',
+    image_credit: 'Maddock Films Official Artwork',
+    hype: 95,
+    trend_score: 910,
+    views: 18200,
+    is_breaking: false,
+    indexable: true,
+    status: 'published',
+    published_at: new Date(Date.now() - 3600000 * 3).toISOString()
+  },
+  {
+    id: 'p7',
+    niche_id: '4',
+    slug: 'amazon-great-indian-festival-flipkart-bbd-loot-deals',
+    kind: 'article',
+    title: 'Amazon Great Indian Festival vs Flipkart BBD: Live Price Drop & Loot Tracker',
+    summary: 'Verified price glitches, SBI & HDFC 10% instant card discount stacking, and top smartphone flash sales.',
+    body_md: `## Festival Sale Radar 2026\nIndia's biggest e-commerce shopping festival brings massive price drops on Apple iPhones, flagship Androids, and gaming laptops.\n\n### How to Stack Bank Discounts\nPair ICICI/HDFC bank credit cards with exchange bonus tokens to maximize your savings.`,
+    faq: [
+      { q: 'Which credit cards give highest discount?', a: 'HDFC, SBI and ICICI offer instant 10% discounts up to ₹4,500.' }
+    ],
+    tags: ['Deals', 'Big Billion Days', 'Amazon GIF'],
+    sources: [
+      { title: 'DesiDime Live Loot Forum', url: 'https://desidime.com' }
+    ],
+    image_url: '/images/products/iphone_16_pro.jpg',
+    image_credit: 'Verified E-Commerce Price Drop',
+    hype: 97,
+    trend_score: 960,
+    views: 19800,
+    is_breaking: true,
+    indexable: true,
+    status: 'published',
+    published_at: new Date(Date.now() - 3600000 * 5).toISOString()
+  },
+  {
+    id: 'p8',
+    niche_id: '9',
+    slug: 'authentic-indian-thali-traditions-and-health-benefits',
+    kind: 'article',
+    title: 'Traditional Indian Thali: Balanced Nutrition & Regional Flavours Explained',
+    summary: 'Why the ancient Ayurvedic composition of the Indian Thali represents the world’s most balanced culinary design.',
+    body_md: `## The Science of the Indian Thali\nFrom Gujarati to South Indian meals, each component is calibrated for complete digestive balance.\n\n### The 6 Tastes (Shad Rasa)\nSweet, sour, salty, bitter, pungent, and astringent harmoniously packed into one single meal.`,
+    faq: [
+      { q: 'Is Indian Thali nutritionally complete?', a: 'Yes, it provides complex carbohydrates, proteins, fats, and essential minerals.' }
+    ],
+    tags: ['Indian Food', 'Thali', 'Nutrition'],
+    sources: [
+      { title: 'Culinary Research Archives', url: 'https://wikipedia.org' }
+    ],
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Tradtional_Thali.jpg',
+    image_credit: 'Wikimedia Commons Traditional Cuisine',
+    hype: 86,
+    trend_score: 780,
+    views: 7400,
+    is_breaking: false,
+    indexable: true,
+    status: 'published',
+    published_at: new Date(Date.now() - 3600000 * 8).toISOString()
+  },
+  {
+    id: 'p9',
+    niche_id: '8',
+    slug: 'modern-indian-festive-fashion-and-runway-trends',
+    kind: 'article',
+    title: 'Festive Fashion Trends: Handloom Revival & Contemporary Styling',
+    summary: 'From handwoven Banarasi weaves to modern Indo-Western silhouettes, top festive styles for Indian celebrations.',
+    body_md: `## Indian Runway & Festive Aesthetics\nModern festive fashion blends artisanal heritage with lightweight, breathable fabrics for effortless elegance.`,
+    faq: [
+      { q: 'What fabrics are trending this festive season?', a: 'Chanderi silk, organza, and natural linen blends.' }
+    ],
+    tags: ['Fashion', 'Festive Wear', 'Style Guide'],
+    sources: [
+      { title: 'Fashion Design Council of India', url: 'https://fdci.org' }
+    ],
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Carolina_Herrera_AW14_12.jpg',
+    image_credit: 'Fashion Runway Archives',
+    hype: 82,
+    trend_score: 710,
+    views: 6100,
+    is_breaking: false,
+    indexable: true,
+    status: 'published',
+    published_at: new Date(Date.now() - 3600000 * 10).toISOString()
+  },
+  {
+    id: 'p10',
+    niche_id: '7',
+    slug: 'essential-morning-yoga-asanas-for-energy-and-spine-health',
+    kind: 'article',
+    title: 'Essential Morning Yoga Asanas for Daily Energy & Spine Health',
+    summary: 'A 15-minute sequence of Surya Namaskar, Bhujangasana, and Balasana to relieve back pain and boost mental clarity.',
+    body_md: `## Reclaiming Mobility & Mental Wellness\nSedentary screen hours make daily morning stretching vital for joint mobility and postural alignment.`,
+    faq: [
+      { q: 'How long should morning yoga be practiced?', a: 'Just 15-20 minutes of consistent daily practice yields profound wellness benefits.' }
+    ],
+    tags: ['Health', 'Yoga', 'Fitness'],
+    sources: [
+      { title: 'Ministry of Ayush Yoga Protocol', url: 'https://ayush.gov.in' }
+    ],
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_asana_class%2C_Plage_Pereire%2C_Arcachon%2C_2015.jpg',
+    image_credit: 'Wikimedia Commons Physical Culture',
+    hype: 88,
+    trend_score: 820,
+    views: 8900,
+    is_breaking: false,
+    indexable: true,
+    status: 'published',
+    published_at: new Date(Date.now() - 3600000 * 6).toISOString()
+  },
+  {
+    id: 'p11',
+    niche_id: '6',
+    slug: 'best-cashback-credit-cards-for-utilities-and-groceries-india',
+    kind: 'article',
+    title: 'Top Cashback Credit Cards in India: Maximize 5% Flat Savings on Every Spend',
+    summary: 'Compare cashback rates, lounge access, annual fee waivers, and fuel surcharge waivers across top Indian banks.',
+    body_md: `## Credit Card Rewards Strategy\nSmart spenders stack co-branded credit cards for online shopping, dining, and monthly grocery bills.`,
+    faq: [
+      { q: 'Which card gives flat 5% on online shopping?', a: 'Cards like Cashback SBI and Amazon Pay ICICI offer high reward returns.' }
+    ],
+    tags: ['Cashback', 'Credit Cards', 'Personal Finance'],
+    sources: [
+      { title: 'CardInsider Reward Ratings', url: 'https://cardinsider.com' }
+    ],
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Credit_Card_Chip_%2834684294971%29.jpg',
+    image_credit: 'EMV Credit Card Chip Architecture',
+    hype: 87,
+    trend_score: 790,
+    views: 7800,
+    is_breaking: false,
+    indexable: true,
+    status: 'published',
+    published_at: new Date(Date.now() - 3600000 * 9).toISOString()
   }
 ];
 

@@ -12,7 +12,8 @@ if (!post) return null;
 
 const nicheSlug = post.niches?.slug || 'viral';
 const nicheName = post.niches?.name || 'Trending';
-const safeImage = proxyImageUrl(post.image_url);
+const safeImage = proxyImageUrl(post.image_url, nicheSlug);
+const fallbackImage = proxyImageUrl(null, nicheSlug);
 ---
 
 <div class="relative w-full rounded-3xl bg-white border border-line shadow-card overflow-hidden transition-all duration-300 hover:shadow-soft mb-8">
@@ -32,7 +33,7 @@ const safeImage = proxyImageUrl(post.image_url);
         alt={post.title}
         loading="eager"
         class="relative z-10 max-h-full max-w-full object-contain filter drop-shadow-xl group-hover:scale-105 transition-transform duration-500"
-        onerror="this.onerror=null; this.src='/images/ai_tools.jpg';"
+        onerror={`this.onerror=null; this.src='${fallbackImage}';`}
       />
       <div class="absolute inset-0 z-20 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
       
