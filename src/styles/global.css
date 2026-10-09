@@ -158,12 +158,17 @@
   background: #94A3B8;
 }
 
-/* Standardized Responsive Images */
+/* Standardized Responsive Images & Aspect Ratios */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 .img-hero {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 1.25rem;
+  border-radius: 1.5rem;
   background-color: #F1F5F9;
 }
 
@@ -175,10 +180,26 @@
   background-color: #F1F5F9;
 }
 
-.img-thumb {
-  width: 5rem;
-  height: 5rem;
+.img-product {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 1rem;
+  background-color: #F1F5F9;
+}
+
+.img-poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
   border-radius: 0.875rem;
+  background-color: #0F172A;
+}
+
+.img-thumb {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 1rem;
   object-fit: cover;
   background-color: #F1F5F9;
   flex-shrink: 0;
@@ -186,8 +207,8 @@
 
 @media (min-width: 640px) {
   .img-thumb {
-    width: 6rem;
-    height: 6rem;
+    width: 7rem;
+    height: 7rem;
   }
 }
 

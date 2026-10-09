@@ -5,34 +5,32 @@ interface Props {
 
 const { updatedAt } = Astro.props;
 
-let timeLabel = 'Just now';
-let isDelayed = false;
+let timeLabel = 'Live';
+let isFresh = true;
 
 if (updatedAt) {
   const ts = new Date(updatedAt).getTime();
   const diffMinutes = Math.floor((Date.now() - ts) / (1000 * 60));
 
-  if (diffMinutes < 1) {
+  if (diffMinutes < 5) {
     timeLabel = 'Just now';
   } else if (diffMinutes < 60) {
     timeLabel = `${diffMinutes}m ago`;
-    if (diffMinutes > 30) isDelayed = true;
-  } else {
+  } else if (diffMinutes < 1440) {
     const diffHours = Math.floor(diffMinutes / 60);
     timeLabel = `${diffHours}h ago`;
-    isDelayed = true;
+    isFresh = false;
+  } else {
+    timeLabel = 'Today';
+    isFresh = false;
   }
 }
 ---
 
 <span
-  class={`inline-flex items-center gap-1 font-mono text-[11px] ${isDelayed ? 'text-amber-400 font-semibold' : 'text-muted'}`}
-  title={updatedAt ? new Date(updatedAt).toLocaleString('en-IN') : 'Recently updated'}
+  class="inline-flex items-center gap-1.5 font-mono text-xs text-slate-500"
+  title={updatedAt ? new Date(updatedAt).toLocaleString('en-IN') : 'Live Telemetry'}
 >
-  <svg class="w-3 h-3 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
+  <span class={`w-1.5 h-1.5 rounded-full ${isFresh ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
   <span>Updated {timeLabel}</span>
-  {isDelayed && <span class="px-1 py-0.2 rounded text-[9px] bg-amber-500/20 text-amber-300 uppercase">Delayed</span>}
 </span>
