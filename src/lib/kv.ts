@@ -105,7 +105,7 @@ export const SEED_TRENDS: TrendItem[] = [
     deal_product: {
       id: 'pr_rtx_4070_super',
       name: 'GeForce RTX 4070 Super 12GB',
-      aff_url: 'https://www.amazon.in/dp/B0CS9K4X6K?tag=uniquedigi0c6-21',
+      aff_url: 'https://www.amazon.in/s?k=RTX+4070+Super+Graphics+Card&tag=uniquedigi0c6-21',
       price: 59990
     }
   },

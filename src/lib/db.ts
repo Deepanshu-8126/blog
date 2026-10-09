@@ -214,8 +214,8 @@ export const SEED_PRODUCTS: Product[] = [
     image_url: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=600&q=80',
     price: 36999,
     rating: 4.9,
-    url: 'https://www.amazon.in/dp/B0BTZB7F88',
-    aff_url: 'https://www.amazon.in/dp/B0BTZB7F88?tag=uniquedigi0c6-21',
+    url: 'https://www.amazon.in/s?k=AMD+Ryzen+7+7800X3D+Processor',
+    aff_url: 'https://www.amazon.in/s?k=AMD+Ryzen+7+7800X3D+Processor&tag=uniquedigi0c6-21',
     merchant: 'Amazon India',
     active: true,
     sort: 1
@@ -231,8 +231,8 @@ export const SEED_PRODUCTS: Product[] = [
     image_url: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=600&q=80',
     price: 59990,
     rating: 4.8,
-    url: 'https://www.amazon.in/dp/B0CS9K4X6K',
-    aff_url: 'https://www.amazon.in/dp/B0CS9K4X6K?tag=uniquedigi0c6-21',
+    url: 'https://www.amazon.in/s?k=Gigabyte+GeForce+RTX+4070+Super+12GB',
+    aff_url: 'https://www.amazon.in/s?k=Gigabyte+GeForce+RTX+4070+Super+12GB&tag=uniquedigi0c6-21',
     merchant: 'Amazon India',
     active: true,
     sort: 2

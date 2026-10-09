@@ -239,7 +239,7 @@ const multiCartUrl = `https://www.amazon.in/gp/aws/cart/add.html?AssociateTag=${
                 <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-blue-50 text-blue-700">Processor</span>
                 <h4 class="text-sm font-bold text-ink mt-1">{build.cpu}</h4>
               </div>
-              <a href={`https://www.amazon.in/dp/${build.cpuAsin}?tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
+              <a href={`https://www.amazon.in/s?k=${encodeURIComponent(build.cpu)}&tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
                 🛒 Buy on Amazon
               </a>
             </div>
@@ -250,7 +250,7 @@ const multiCartUrl = `https://www.amazon.in/gp/aws/cart/add.html?AssociateTag=${
                 <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-purple-50 text-purple-700">Graphics Card</span>
                 <h4 class="text-sm font-bold text-ink mt-1">{build.gpu}</h4>
               </div>
-              <a href={`https://www.amazon.in/dp/${build.gpuAsin}?tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
+              <a href={`https://www.amazon.in/s?k=${encodeURIComponent(build.gpu)}&tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
                 🛒 Buy on Amazon
               </a>
             </div>
@@ -261,7 +261,7 @@ const multiCartUrl = `https://www.amazon.in/gp/aws/cart/add.html?AssociateTag=${
                 <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-cyan-50 text-cyan-700">Motherboard</span>
                 <h4 class="text-sm font-bold text-ink mt-1">{build.mobo}</h4>
               </div>
-              <a href={`https://www.amazon.in/dp/${build.moboAsin}?tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
+              <a href={`https://www.amazon.in/s?k=${encodeURIComponent(build.mobo)}&tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
                 🛒 Buy on Amazon
               </a>
             </div>
@@ -272,7 +272,7 @@ const multiCartUrl = `https://www.amazon.in/gp/aws/cart/add.html?AssociateTag=${
                 <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-pink-50 text-pink-700">RAM Memory</span>
                 <h4 class="text-sm font-bold text-ink mt-1">{build.ram}</h4>
               </div>
-              <a href={`https://www.amazon.in/dp/${build.ramAsin}?tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
+              <a href={`https://www.amazon.in/s?k=${encodeURIComponent(build.ram)}&tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
                 🛒 Buy on Amazon
               </a>
             </div>
@@ -283,7 +283,7 @@ const multiCartUrl = `https://www.amazon.in/gp/aws/cart/add.html?AssociateTag=${
                 <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-50 text-emerald-700">Storage SSD</span>
                 <h4 class="text-sm font-bold text-ink mt-1">{build.ssd}</h4>
               </div>
-              <a href={`https://www.amazon.in/dp/${build.ssdAsin}?tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
+              <a href={`https://www.amazon.in/s?k=${encodeURIComponent(build.ssd)}&tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
                 🛒 Buy on Amazon
               </a>
             </div>
@@ -294,7 +294,7 @@ const multiCartUrl = `https://www.amazon.in/gp/aws/cart/add.html?AssociateTag=${
                 <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-slate-100 text-slate-700">Case & Power Supply</span>
                 <h4 class="text-sm font-bold text-ink mt-1">{build.psuCase}</h4>
               </div>
-              <a href={`https://www.amazon.in/dp/${build.psuAsin}?tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
+              <a href={`https://www.amazon.in/s?k=${encodeURIComponent(build.psuCase)}&tag=${AMAZON_TAG}`} target="_blank" rel="sponsored nofollow noopener" class="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition self-start sm:self-center shrink-0">
                 🛒 Buy on Amazon
               </a>
             </div>
