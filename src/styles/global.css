@@ -4,38 +4,67 @@
 
 @layer base {
   :root {
+    /* Brand Foundation */
     --brand: #5B2FD0;
     --brand-dark: #3E1FA0;
     --brand-soft: #EFEAFD;
-    --ink: #111827;
-    --muted: #6B7280;
-    --bg: #F6F5FB;
+    --brand-glow: rgba(91, 47, 208, 0.15);
+    
+    /* Neutrals & Surfaces */
+    --ink: #0F172A;
+    --ink-secondary: #475569;
+    --muted: #64748B;
+    --bg: #F8F9FD;
     --card: #FFFFFF;
-    --line: #E8E6F0;
+    --line: #E2E8F0;
+    --line-subtle: #F1F5F9;
+    
+    /* Accents & Signals */
     --breaking: #E11D2E;
     --cta: #FFD21F;
-    --cta-ink: #1A1A1A;
+    --cta-ink: #111827;
     
-    /* Niche group colors */
-    --tech: #2F80ED;
-    --tech-bg: #DCEFFB;
-    --money: #D99A00;
-    --money-bg: #FFF1CC;
-    --life: #1FA971;
-    --life-bg: #DDF5E7;
-    --ent: #E0348B;
-    --ent-bg: #FDE1EE;
+    /* Semantic Category Colors */
+    --tech: #2563EB;
+    --tech-bg: #EFF6FF;
+    --money: #D97706;
+    --money-bg: #FEF3C7;
+    --life: #059669;
+    --life-bg: #ECFDF5;
+    --ent: #DB2777;
+    --ent-bg: #FDF2F8;
     
+    /* Gaming / Cyber Persona */
+    --gaming-bg: #0B0F19;
+    --gaming-card: #111827;
+    --gaming-line: #1E293B;
+    --gaming-neon: #8B5CF6;
+    --gaming-cyan: #06B6D4;
+    
+    /* Gold / Bullion Persona */
+    --gold-primary: #B45309;
+    --gold-gold: #F59E0B;
+    --gold-bg: #FFFBEB;
+    --gold-line: #FDE68A;
+
     --radius: 16px;
     --radius-sm: 10px;
+    --radius-lg: 24px;
   }
 
   .dark {
-    --bg: #0F0D1A;
-    --card: #181528;
-    --ink: #F3F2FA;
-    --muted: #A4A0BC;
-    --line: #2A2644;
+    --bg: #0B0F19;
+    --card: #111827;
+    --ink: #F8FAFC;
+    --ink-secondary: #CBD5E1;
+    --muted: #94A3B8;
+    --line: #1E293B;
+    --brand-soft: rgba(91, 47, 208, 0.25);
+  }
+
+  ::selection {
+    background-color: rgba(91, 47, 208, 0.2);
+    color: #3E1FA0;
   }
 
   body {
@@ -44,10 +73,68 @@
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 }
 
-/* Custom scrollbars and transitions */
+/* Glassmorphism & Elevation */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-nav-brand {
+  background: rgba(91, 47, 208, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(91, 47, 208, 0.04);
+}
+
+.card-lift {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(91, 47, 208, 0.05);
+}
+
+.btn-press {
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Niche-Specific Atmosphere Themes */
+.theme-gaming {
+  background: linear-gradient(180deg, #0B0F19 0%, #111827 100%);
+  color: #F8FAFC;
+}
+.theme-gaming .gaming-card {
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+.theme-gaming .gaming-card:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(139, 92, 246, 0.15);
+}
+
+.theme-gold {
+  background: linear-gradient(180deg, #FFFBEB 0%, #F8F9FD 100%);
+}
+
+/* Custom Scrollbars */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -56,7 +143,22 @@
   scrollbar-width: none;
 }
 
-/* Global Standardized Image Utilities */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Standardized Responsive Images */
 .img-hero {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -89,11 +191,11 @@
   }
 }
 
-/* Rich Editorial Article Typography (prose) */
+/* Editorial Article Typography */
 .prose {
-  color: #1F2937;
+  color: #334155;
   font-size: 1.0625rem;
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4 {
@@ -105,8 +207,8 @@
 .prose h2 {
   font-size: 1.625rem;
   line-height: 1.35;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
+  margin-top: 2.75rem;
+  margin-bottom: 1.15rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid #E2E8F0;
   position: relative;
@@ -117,9 +219,10 @@
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 3rem;
-  height: 2px;
-  background-color: var(--brand);
+  width: 3.5rem;
+  height: 2.5px;
+  background: linear-gradient(90deg, var(--brand), #8B5CF6);
+  border-radius: 9999px;
 }
 
 .prose h3 {
@@ -131,10 +234,10 @@
 }
 
 .prose p {
-  margin-bottom: 1.35rem;
+  margin-bottom: 1.4rem;
   color: #334155;
   font-size: 1.0625rem;
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
 .prose ul {
@@ -149,7 +252,7 @@
   padding-left: 1.75rem;
   margin-bottom: 0.75rem;
   color: #334155;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
 .prose ul li::before {
@@ -174,7 +277,7 @@
   padding-left: 0.5rem;
   margin-bottom: 0.75rem;
   color: #334155;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
 .prose strong {
@@ -185,9 +288,9 @@
 .prose blockquote {
   border-left: 4px solid var(--brand);
   background: linear-gradient(to right, rgba(91, 47, 208, 0.05), transparent);
-  padding: 1rem 1.25rem;
+  padding: 1.15rem 1.5rem;
   border-radius: 0 1rem 1rem 0;
-  margin: 1.5rem 0;
+  margin: 1.75rem 0;
   font-style: italic;
   color: #1E293B;
 }
@@ -196,7 +299,7 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  margin: 1.5rem 0;
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
+  margin: 2rem 0;
 }

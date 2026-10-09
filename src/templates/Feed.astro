@@ -27,25 +27,90 @@ const remainingPosts = posts.slice(1);
   niche={niche}
 >
   <!-- Niche Header Banner -->
-  <div class="mb-8 pb-6 border-b border-line flex flex-col md:flex-row md:items-center justify-between gap-4">
-    <div>
-      <div class="flex items-center gap-2 mb-2">
-        <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
-          <Icon name={niche.icon} class="w-5 h-5" />
-        </div>
-        <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Hub</span>
-      </div>
-      <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name}</h1>
-      <p class="text-sm text-muted mt-1">{niche.tagline}</p>
-    </div>
+  {niche.slug === 'gta-6' ? (
+    <div class="mb-8 rounded-3xl bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white p-6 sm:p-8 border border-purple-500/30 shadow-2xl relative overflow-hidden">
+      <!-- Neon Ambient Blur Glows -->
+      <div class="absolute -top-20 -right-20 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    {niche.config?.review && (
-      <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shrink-0 shadow-2xs">
-        <Icon name="shield-check" class="w-4 h-4 text-amber-600" />
-        <span>Editorial Fact-Checked & Peer Reviewed</span>
-      </span>
-    )}
-  </div>
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="max-w-2xl">
+          <div class="flex items-center gap-2 mb-3 flex-wrap">
+            <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-pink-600 text-white shadow-xs">
+              🎮 Vice City Intelligence
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 text-cyan-300 border border-cyan-400/30">
+              ⚡ 4K 60FPS Target
+            </span>
+            <span class="text-xs text-purple-200 font-mono hidden sm:inline">· Rockstar Wire Corroborated</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+            Grand Theft Auto VI
+          </h1>
+          <p class="text-sm sm:text-base text-purple-200/90 mt-2 leading-relaxed">
+            Unfiltered PC hardware requirements, realistic Indian pricing, ray-traced global illumination benchmarks, and Leonida state leaks.
+          </p>
+
+          <!-- 4 Telemetry Spec Badges -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-6">
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <span class="text-[10px] text-purple-300 font-mono block">Engine Target</span>
+              <span class="text-xs font-black text-white">RAGE 9 Next-Gen</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <span class="text-[10px] text-purple-300 font-mono block">Rec. Memory</span>
+              <span class="text-xs font-black text-cyan-300 font-mono">32GB DDR5</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <span class="text-[10px] text-purple-300 font-mono block">Optimal GPU</span>
+              <span class="text-xs font-black text-pink-300">RTX 4070 Super</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
+              <span class="text-[10px] text-purple-300 font-mono block">Expected Price</span>
+              <span class="text-xs font-black text-amber-300 font-mono">₹4,999 (India)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 shrink-0">
+          <a
+            href="/builds"
+            class="px-5 py-3 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:brightness-110 text-white text-xs font-black transition flex items-center justify-center gap-2 shadow-lg"
+          >
+            <span>🖥️ Test Your PC Rig</span>
+            <Icon name="arrow-right" class="w-4 h-4" />
+          </a>
+          <a
+            href="/pc-builds"
+            class="px-5 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition text-center"
+          >
+            <span>Explore 5 Gaming Builds</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class="mb-8 pb-6 border-b border-line flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
+            <Icon name={niche.icon} class="w-5 h-5" />
+          </div>
+          <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Hub</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name}</h1>
+        <p class="text-sm text-muted mt-1">{niche.tagline}</p>
+      </div>
+
+      {niche.config?.review && (
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold shrink-0 shadow-2xs">
+          <Icon name="shield-check" class="w-4 h-4 text-amber-600" />
+          <span>Editorial Fact-Checked & Peer Reviewed</span>
+        </span>
+      )}
+    </div>
+  )}
 
   {niche.config?.disclaimer && (
     <DisclaimerBar text={niche.config.disclaimer} type={niche.slug === 'health' ? 'health' : 'general'} />

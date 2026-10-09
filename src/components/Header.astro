@@ -2,6 +2,7 @@
 import { getNiches } from '../lib/db';
 import MegaMenu from './MegaMenu.astro';
 import Icon from './Icon.astro';
+import BrandLogo from './BrandLogo.astro';
 
 interface Props {
   activeNiche?: string;
@@ -39,20 +40,14 @@ const isNicheActive = (slug: string) => {
 };
 ---
 
-<header class="sticky top-0 relative z-50 w-full bg-brand text-white shadow-md">
+<header class="sticky top-0 relative z-50 w-full glass-nav-brand text-white shadow-lg transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16 gap-3 sm:gap-4">
       
       <!-- Brand Logo -->
       <div class="flex items-center gap-4 lg:gap-6 shrink-0">
-        <a href="/" class="flex items-center gap-2 group">
-          <div class="w-9 h-9 rounded-xl bg-cta text-cta-ink font-black flex items-center justify-center text-lg shadow-sm group-hover:scale-105 transition shrink-0">
-            UD
-          </div>
-          <div class="flex flex-col">
-            <span class="font-extrabold text-base sm:text-lg tracking-tight leading-none text-white">UniqueDigit</span>
-            <span class="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider text-purple-200">Viral Hub & Intel</span>
-          </div>
+        <a href="/" class="block">
+          <BrandLogo size="md" />
         </a>
 
         <!-- Desktop Navigation: Exactly matching reference mockup -->
@@ -184,10 +179,7 @@ const isNicheActive = (slug: string) => {
       <div class="p-5 border-b border-slate-100">
         <div class="flex items-center justify-between pb-3">
           <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-lg bg-brand text-white font-black flex items-center justify-center text-xs">
-              UD
-            </div>
-            <span class="font-extrabold text-base text-brand">All 12 Intelligence Hubs</span>
+            <BrandLogo size="sm" theme="dark" showTagline={false} />
           </div>
           <button id="close-mobile-sheet" class="p-1.5 rounded-lg text-slate-400 hover:text-ink hover:bg-slate-100 transition cursor-pointer" aria-label="Close menu">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

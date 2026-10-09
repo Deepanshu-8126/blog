@@ -16,40 +16,52 @@ const rankStr = rank < 10 ? `0${rank}` : `${rank}`;
 const postSlug = item.post_slug || item.slug;
 const postLink = postSlug && item.niche_slug ? `/${item.niche_slug}/${postSlug}` : null;
 const dealsLink = item.deal_product?.aff_url || (item.niche_slug ? `/${item.niche_slug}` : '/deals');
+
+// Medal styling for Top 3
+const rankBadges: Record<number, string> = {
+  1: 'bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 text-slate-950 shadow-md ring-2 ring-amber-300/40',
+  2: 'bg-gradient-to-br from-slate-200 via-slate-300 to-slate-400 text-slate-900 shadow-sm ring-1 ring-slate-300/40',
+  3: 'bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-white shadow-sm ring-1 ring-amber-700/30'
+};
+
+const medalClass = rankBadges[rank] || 'bg-slate-100 text-slate-600 border border-slate-200';
 ---
 
 <div
-  class="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl border border-line bg-card hover:bg-brand-soft/30 hover:border-brand/40 transition-all duration-200 shadow-xs"
+  class="group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-white hover:border-brand/40 hover:shadow-sm transition-all duration-200"
   data-trend-id={item.id}
   data-niche={item.niche_slug || ''}
 >
   <!-- Left Side: Rank, Title, Meta -->
   <div class="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
-    <!-- Rank Number -->
-    <span class="font-mono font-black text-lg sm:text-xl text-slate-400 group-hover:text-brand transition flex-shrink-0 w-8">
+    <!-- Rank Number with Medal Elevation -->
+    <div class={`w-9 h-9 rounded-xl flex items-center justify-center font-mono font-black text-sm shrink-0 transition-transform group-hover:scale-105 ${medalClass}`}>
       {rankStr}
-    </span>
+    </div>
 
     <!-- Content Block -->
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2 flex-wrap mb-1">
         <StageBadge stage={item.stage} size="sm" />
+        
         {item.niche && (
-          <span class="text-[11px] font-mono font-semibold text-slate-500 uppercase tracking-wider">
+          <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded-md">
             {item.niche}
           </span>
         )}
+        
         {item.approx_traffic && (
-          <span class="text-[10px] font-mono text-muted">
-            {item.approx_traffic} searches
+          <span class="text-[10px] font-mono font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+            <span>🔥</span>
+            <span>{item.approx_traffic} searches</span>
           </span>
         )}
       </div>
 
       <!-- Title / Link -->
-      <h3 class="font-bold text-ink text-sm sm:text-base leading-snug line-clamp-2 sm:line-clamp-1">
+      <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 sm:line-clamp-1 group-hover:text-brand transition-colors">
         {postLink ? (
-          <a href={postLink} class="hover:text-brand transition">
+          <a href={postLink}>
             {item.title}
           </a>
         ) : (
@@ -65,11 +77,14 @@ const dealsLink = item.deal_product?.aff_url || (item.niche_slug ? `/${item.nich
   </div>
 
   <!-- Right Side: Metrics, Sparkline, CTAs -->
-  <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 flex-shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+  <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
     <!-- Hype Score -->
-    <HypeMeter score={item.hype} size="sm" showLabel={false} />
+    <div class="flex flex-col items-end">
+      <HypeMeter score={item.hype} size="sm" showLabel={false} />
+      <span class="text-[9px] font-mono text-slate-500 mt-0.5">velocity</span>
+    </div>
 
-    <!-- 24h Trend Sparkline (Hidden on tiny screens) -->
+    <!-- 24h Trend Sparkline (Hidden on small screens) -->
     <div class="hidden md:block">
       <Sparkline points={item.spark} width={64} height={22} />
     </div>
@@ -79,7 +94,7 @@ const dealsLink = item.deal_product?.aff_url || (item.niche_slug ? `/${item.nich
       {postLink ? (
         <a
           href={postLink}
-          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand hover:bg-brand-dark text-white text-xs font-bold transition shadow-xs"
+          class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-brand hover:bg-brand-dark text-white text-xs font-bold transition shadow-xs active:scale-95"
         >
           <span>Read</span>
           <Icon name="arrow-right" class="w-3 h-3" />
@@ -89,7 +104,7 @@ const dealsLink = item.deal_product?.aff_url || (item.niche_slug ? `/${item.nich
           href={dealsLink}
           target="_blank"
           rel="sponsored nofollow noopener"
-          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-cta hover:brightness-105 text-cta-ink text-xs font-extrabold transition shadow-xs"
+          class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-xl bg-cta hover:brightness-105 text-cta-ink text-xs font-extrabold transition shadow-xs active:scale-95"
         >
           <span>Deals</span>
           <Icon name="external-link" class="w-3 h-3" />
@@ -97,7 +112,7 @@ const dealsLink = item.deal_product?.aff_url || (item.niche_slug ? `/${item.nich
       ) : (
         <a
           href={item.niche_slug ? `/${item.niche_slug}` : '/trending'}
-          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition active:scale-95"
         >
           <span>Explore</span>
         </a>

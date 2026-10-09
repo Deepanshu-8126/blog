@@ -50,12 +50,12 @@ const categories = Array.from(new Set(products.map(p => p.category).filter(Boole
       </div>
     </div>
 
-    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto">
-      <button class="px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold shrink-0 cursor-pointer">
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto" id="tool-filter-buttons">
+      <button class="tool-filter-btn px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold shrink-0 cursor-pointer transition active:scale-95" data-filter="all">
         All Items ({products.length})
       </button>
       {categories.map(cat => (
-        <button class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold shrink-0 transition cursor-pointer">
+        <button class="tool-filter-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold shrink-0 transition cursor-pointer active:scale-95" data-filter={cat.toLowerCase()}>
           {cat}
         </button>
       ))}
@@ -64,11 +64,18 @@ const categories = Array.from(new Set(products.map(p => p.category).filter(Boole
 
   <!-- Product & Tool Grid -->
   {products.length > 0 ? (
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-      {products.map(pr => (
-        <ToolCard product={pr} />
-      ))}
-    </div>
+    <>
+      <div id="tools-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+        {products.map(pr => (
+          <ToolCard product={pr} />
+        ))}
+      </div>
+      <div id="no-search-results" class="hidden p-12 text-center bg-white rounded-3xl border border-line my-6">
+        <Icon name="search" class="w-8 h-8 text-brand mx-auto mb-3" />
+        <h3 class="text-base font-bold text-ink">No matching items found</h3>
+        <p class="text-xs text-muted mt-1">Try searching with a different keyword or select "All Items".</p>
+      </div>
+    </>
   ) : (
     <div class="p-12 text-center bg-white rounded-3xl border border-line my-6">
       <Icon name="tag" class="w-8 h-8 text-brand mx-auto mb-3" />
@@ -98,4 +105,62 @@ const categories = Array.from(new Set(products.map(p => p.category).filter(Boole
   )}
 
   <NewsletterStrip />
+
+  <script>
+    (function() {
+      const searchInput = document.getElementById('tool-search-input') as HTMLInputElement | null;
+      const filterBtns = document.querySelectorAll('.tool-filter-btn');
+      const cards = document.querySelectorAll('.tool-item-card') as NodeListOf<HTMLElement>;
+      const noResults = document.getElementById('no-search-results');
+
+      let currentCategory = 'all';
+
+      function filterTools() {
+        const query = (searchInput?.value || '').trim().toLowerCase();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const name = card.dataset.name || '';
+          const category = card.dataset.category || '';
+          const keywords = card.dataset.keywords || '';
+
+          const matchesCategory = currentCategory === 'all' || category === currentCategory;
+          const matchesQuery = !query || name.includes(query) || keywords.includes(query) || category.includes(query);
+
+          if (matchesCategory && matchesQuery) {
+            card.style.display = '';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (noResults) {
+          if (visibleCount === 0 && cards.length > 0) {
+            noResults.classList.remove('hidden');
+          } else {
+            noResults.classList.add('hidden');
+          }
+        }
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', filterTools);
+      }
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => {
+            b.classList.remove('bg-brand', 'text-white');
+            b.classList.add('bg-slate-100', 'text-slate-700');
+          });
+          btn.classList.remove('bg-slate-100', 'text-slate-700');
+          btn.classList.add('bg-brand', 'text-white');
+
+          currentCategory = (btn.getAttribute('data-filter') || 'all').toLowerCase();
+          filterTools();
+        });
+      });
+    })();
+  </script>
 </Layout>

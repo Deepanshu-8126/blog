@@ -1,5 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#5B2FD0"/>
-  <rect x="6" y="6" width="20" height="20" rx="4" fill="#FFD21F"/>
-  <text x="16" y="21" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="900" fill="#1A1A1A" text-anchor="middle">UD</text>
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B2FD0"/>
+      <stop offset="100%" stop-color="#3E1FA0"/>
+    </linearGradient>
+  </defs>
+  <!-- Sleek Squircle Shield -->
+  <rect width="32" height="32" rx="9" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Radar Wave Circle -->
+  <circle cx="21" cy="12" r="7" stroke="rgba(255, 210, 31, 0.35)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Precision Vector Monogram UD -->
+  <!-- U stroke -->
+  <path d="M7 8V18C7 21.31 9.69 24 13 24C16.31 24 19 21.31 19 18V8" stroke="#FFD21F" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- D stroke -->
+  <path d="M15 8H20C22.76 8 25 10.24 25 13C25 15.76 22.76 18 20 18H15" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Center Pulse Dot -->
+  <circle cx="20" cy="13" r="2" fill="#FFD21F"/>
 </svg>

@@ -10,7 +10,12 @@ const { product } = Astro.props;
 const buyUrl = product.aff_url || product.url;
 ---
 
-<div class="group flex flex-col justify-between rounded-2xl bg-white border border-line p-5 shadow-card hover:shadow-soft hover:border-brand/40 transition-all duration-300">
+<div
+  class="tool-item-card group flex flex-col justify-between rounded-2xl bg-white border border-line p-5 shadow-card hover:shadow-soft hover:border-brand/40 transition-all duration-300"
+  data-name={product.name.toLowerCase()}
+  data-category={(product.category || '').toLowerCase()}
+  data-keywords={(product.keywords || product.tagline || '').toLowerCase()}
+>
   <div>
     <!-- Top Bar with Image & Badge -->
     <div class="flex items-start justify-between gap-3 mb-4">

@@ -1,6 +1,7 @@
 ---
 import { getNiches } from '../lib/db';
 import Icon from './Icon.astro';
+import BrandLogo from './BrandLogo.astro';
 
 const niches = await getNiches();
 ---
@@ -11,11 +12,8 @@ const niches = await getNiches();
       
       <!-- Brand & Mission -->
       <div class="lg:col-span-2">
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-8 h-8 rounded-lg bg-brand text-white font-black flex items-center justify-center text-sm shadow-xs">
-            UD
-          </div>
-          <span class="font-black text-lg tracking-tight text-ink">UniqueDigit</span>
+        <div class="mb-3">
+          <BrandLogo size="md" theme="dark" />
         </div>
         <p class="text-xs text-muted leading-relaxed max-w-sm mb-4">
           India’s next-generation viral intelligence portal. Grounded hardware reviews, live bullion trends, generative AI directory, and verified loot deals updated daily.
