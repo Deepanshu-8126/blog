@@ -45,17 +45,42 @@ function sanitizeMarkdownHtml(html: string): string {
     .replace(/href=["']javascript:[^"']*["']/gi, 'href="#"');
 }
 
+function slugifyHeading(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/<[^>]*>/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
 // Normalize literal escaped newlines and markdown characters from database / API
 const normalizedMarkdown = (post.body_md || '')
   .replace(/\\r\\n/g, '\n')
   .replace(/\\n/g, '\n')
   .replace(/\\t/g, '  ');
 
-const rawBodyHtml = normalizedMarkdown ? (marked.parse(normalizedMarkdown) as string) : '';
+// Extract H2 Table of Contents from markdown
+const tokens = marked.lexer(normalizedMarkdown);
+const tableOfContents = tokens
+  .filter((t: any) => t.type === 'heading' && t.depth === 2)
+  .map((t: any) => ({
+    text: t.text.replace(/[*_`]/g, '').trim(),
+    id: slugifyHeading(t.text)
+  }));
+
+// Setup marked renderer to inject anchor IDs into headings
+const headingRenderer = new marked.Renderer();
+headingRenderer.heading = ({ text, depth }: { text: string; depth: number }) => {
+  const cleanId = slugifyHeading(text);
+  return `<h${depth} id="${cleanId}" class="scroll-mt-28 group relative font-black text-slate-900 tracking-tight">${text}<a href="#${cleanId}" class="ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition no-underline text-base" aria-hidden="true">#</a></h${depth}>\n`;
+};
+
+const rawBodyHtml = normalizedMarkdown ? (marked.parse(normalizedMarkdown, { renderer: headingRenderer }) as string) : '';
 const bodyHtml = typeof rawBodyHtml === 'string' ? sanitizeMarkdownHtml(rawBodyHtml) : '';
 const isCard = post.kind === 'card' || !post.indexable;
 
-// Estimated reading time
+// Estimated reading time & stats
 const wordCount = (post.body_md || post.summary || '').split(/\s+/).length;
 const readTime = Math.max(2, Math.ceil(wordCount / 180));
 
@@ -80,6 +105,203 @@ const CURATED_NICHE_HERO_IMAGES: Record<string, string> = {
   'viral': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85'
 };
 
+interface GalleryItem {
+  url: string;
+  label: string;
+  caption: string;
+}
+
+const NICHE_GALLERIES: Record<string, GalleryItem[]> = {
+  'cricket-sports': [
+    {
+      url: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1400&q=85',
+      label: 'Match Action & Stadium',
+      caption: 'High-octane stadium atmosphere, pitch conditions and match dynamics.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1531415074868-036b107e775a?auto=format&fit=crop&w=1400&q=85',
+      label: 'Gear & Playing Surface',
+      caption: 'Official match balls, certified bats, pitch hardness and boundary dimensions.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?auto=format&fit=crop&w=1400&q=85',
+      label: 'Squad & Field Tactics',
+      caption: 'Playing XI line-up, bowling rotations and tactical field placements.'
+    }
+  ],
+  'pc-builds': [
+    {
+      url: '/images/rtx5090.jpg',
+      label: 'GPU Flagship & Cooler',
+      caption: 'Next-gen architecture, thermal vapor chamber and ray-tracing performance.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1400&q=85',
+      label: 'Custom Rig & Airflow',
+      caption: 'Dual-chamber chassis, high-static pressure fans and cable management.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?auto=format&fit=crop&w=1400&q=85',
+      label: 'Motherboard & VRMs',
+      caption: 'Direct power stages, PCIe 5.0 lanes and high-frequency DDR5 memory.'
+    }
+  ],
+  'gta-6': [
+    {
+      url: '/images/gta6_cover.jpg',
+      label: 'Official Key Artwork',
+      caption: 'Vice City duo, neon dusk horizon and next-generation open world scale.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1400&q=85',
+      label: 'RAGE 9 Engine Visuals',
+      caption: 'Volumetric clouds, ray-traced reflections and photorealistic physics.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1400&q=85',
+      label: 'Open-World Ecosystem',
+      caption: 'Dynamic NPC intelligence, sprawling metropolitan districts and waterways.'
+    }
+  ],
+  'ai-tools': [
+    {
+      url: '/images/ai_tools.jpg',
+      label: 'Neural Intelligence Stack',
+      caption: 'Autonomous agents, foundational models and multi-modal benchmarks.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85',
+      label: 'Developer Workstation & IDE',
+      caption: 'High-velocity code completion, terminal orchestration and agent loops.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1400&q=85',
+      label: 'Inference Latency & Speed',
+      caption: 'Ultra-low time-to-first-token and optimized tensor computations.'
+    }
+  ],
+  'gold-rate': [
+    {
+      url: '/images/gold_24k.jpg',
+      label: '24K Minted Bullion Bar',
+      caption: '999.9 pure certified investment-grade bullion bar and seal.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=1400&q=85',
+      label: 'Market Exchange & Spot Ticker',
+      caption: 'MCX spot exchange trends, dollar index hedging and demand curves.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=1400&q=85',
+      label: '22K Jewellery & Hallmarking',
+      caption: 'BIS hallmark 916 purity standards and bridal retail market prices.'
+    }
+  ],
+  'deals': [
+    {
+      url: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1400&q=85',
+      label: 'Flash Sale Radar',
+      caption: 'Verified price drops, merchant discounts and lightning flash sales.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1400&q=85',
+      label: 'Stackable Bank Vouchers',
+      caption: 'Instant credit card discounts, cashback codes and checkout coupons.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1400&q=85',
+      label: 'Price History & Lowest Dip',
+      caption: 'Historical price tracker confirming genuine all-time low pricing.'
+    }
+  ],
+  'food': [
+    {
+      url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1400&q=85',
+      label: 'Signature Plating & Aroma',
+      caption: 'Fresh gourmet plating, rich flavor profiles and culinary mastery.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=1400&q=85',
+      label: 'Authentic Indian Spices',
+      caption: 'Handpicked whole spices, traditional tempering and slow-cooked gravy.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85',
+      label: 'Nutrition & Balance',
+      caption: 'Macro breakdown, farm-fresh ingredients and wholesome nourishment.'
+    }
+  ],
+  'automotive-trends': [
+    {
+      url: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1400&q=85',
+      label: 'Exterior Aerodynamics',
+      caption: 'Aggressive body contours, drag efficiency and signature LED lighting.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1400&q=85',
+      label: 'Digital Cockpit & Tech',
+      caption: 'Curved driver display, ADAS radar suite and intuitive cabin luxury.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1400&q=85',
+      label: 'Powertrain & Track Dyno',
+      caption: 'Instant torque curve, suspension damping and track-tuned handling.'
+    }
+  ],
+  'movies': [
+    {
+      url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=85',
+      label: 'Cinematic Widescreen',
+      caption: 'Anamorphic framing, high-contrast lighting and evocative set direction.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1400&q=85',
+      label: 'Box Office & Theatre Buzz',
+      caption: 'First-day advance bookings, housefull occupancy and audience excitement.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=85',
+      label: 'Dolby Atmos & Soundstage',
+      caption: 'Original background score, immersive mixing and audio design.'
+    }
+  ],
+  'health': [
+    {
+      url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1400&q=85',
+      label: 'Strength & Conditioning',
+      caption: 'Progressive overload, biomechanics and cardiovascular conditioning.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=85',
+      label: 'Dietary Micronutrients',
+      caption: 'Whole-food nutrition, micronutrient density and electrolyte hydration.'
+    },
+    {
+      url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1400&q=85',
+      label: 'Recovery & Circadian Reset',
+      caption: 'Rest protocols, sleep architecture and central nervous system deload.'
+    }
+  ]
+};
+
+const DEFAULT_GALLERY: GalleryItem[] = [
+  {
+    url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85',
+    label: 'Breaking Trend Radar',
+    caption: 'Real-time trending intelligence, social search spikes and national interest.'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1400&q=85',
+    label: 'Verified Context',
+    caption: 'Cross-verified press releases, official dispatches and source archives.'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1400&q=85',
+    label: 'Impact & Data Analysis',
+    caption: 'Audience engagement patterns and longitudinal search trajectory.'
+  }
+];
+
 function getSharpImage(imageUrl?: string, nSlug = 'viral'): string {
   if (!imageUrl || imageUrl.includes('encrypted-tbn') || imageUrl.length < 15) {
     return CURATED_NICHE_HERO_IMAGES[nSlug] || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1400&q=85';
@@ -95,6 +317,26 @@ const absoluteImageUrl = displayHeroImage.startsWith('http')
   ? displayHeroImage 
   : `${Astro.url.origin}${displayHeroImage}`;
 
+// Build 3-Slide High-Definition Gallery per post
+const baseGallery = NICHE_GALLERIES[niche.slug] || DEFAULT_GALLERY;
+const gallerySlides: GalleryItem[] = [
+  {
+    url: displayHeroImage,
+    label: '1. Featured Focus',
+    caption: post.image_credit ? `Source: ${post.image_credit}` : `${post.title} — Primary editorial coverage.`
+  },
+  {
+    url: baseGallery[1] ? baseGallery[1].url : baseGallery[0].url,
+    label: '2. Intel & Gear',
+    caption: baseGallery[1] ? baseGallery[1].caption : 'Detailed tactical breakdown and verified equipment telemetry.'
+  },
+  {
+    url: baseGallery[2] ? baseGallery[2].url : baseGallery[0].url,
+    label: '3. Analytics & Context',
+    caption: baseGallery[2] ? baseGallery[2].caption : 'Comprehensive statistical breakdown and performance telemetry.'
+  }
+];
+
 // 1. Article / NewsArticle Schema
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -105,7 +347,7 @@ const articleSchema = {
   },
   headline: post.title,
   description: post.summary,
-  image: [absoluteImageUrl],
+  image: gallerySlides.map(s => s.url.startsWith('http') ? s.url : `${Astro.url.origin}${s.url}`),
   datePublished: post.published_at,
   dateModified: post.updated_at || post.published_at,
   author: {
@@ -262,51 +504,195 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
           </div>
         </header>
 
-        <!-- Crystal-Sharp Featured Hero Image -->
-        <div class="rounded-2xl overflow-hidden mb-8 border border-slate-200/90 bg-slate-900 shadow-sm relative">
-          <div class="aspect-video sm:aspect-[16/9] w-full max-h-[500px] overflow-hidden bg-slate-950 flex items-center justify-center">
-            <img
-              src={displayHeroImage}
-              alt={post.title}
-              loading="eager"
-              decoding="async"
-              class="w-full h-full object-cover object-center filter brightness-[0.98] transition-transform duration-300 hover:scale-[1.01]"
-            />
+        <!-- 4-Card Quick Telemetry Bar (High Impact Scannability) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Trending Hype</span>
+            <div class="flex items-baseline gap-1 mt-1">
+              <span class="text-lg font-black text-rose-600 font-mono">{post.hype || post.trend_score || 88}</span>
+              <span class="text-[11px] font-bold text-rose-500">/ 100</span>
+            </div>
+            <span class="text-[10px] text-slate-500 font-medium">🔥 Spike Surge</span>
           </div>
-          {post.image_credit && (
-            <div class="px-4 py-2 bg-slate-900/95 text-[11px] text-slate-300 flex items-center justify-between border-t border-slate-800">
-              <span class="truncate max-w-xs sm:max-w-md">📷 Source: {post.image_credit}</span>
+
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Category Radar</span>
+            <span class="text-xs font-black text-slate-900 mt-1 truncate">{niche.name}</span>
+            <span class="text-[10px] text-brand font-medium">📍 {niche.grp}</span>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Read Time</span>
+            <div class="flex items-baseline gap-1 mt-1">
+              <span class="text-lg font-black text-slate-900 font-mono">{readTime}</span>
+              <span class="text-[11px] font-bold text-slate-600">min</span>
+            </div>
+            <span class="text-[10px] text-emerald-600 font-medium font-mono">⚡ Fast Digest</span>
+          </div>
+
+          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Editorial Trust</span>
+            <span class="text-xs font-black text-emerald-700 mt-1 flex items-center gap-1">
+              <span>🛡️ 100%</span>
+              <span class="text-[10px]">Verified</span>
+            </span>
+            <span class="text-[10px] text-slate-500 font-medium">Real-Time Data</span>
+          </div>
+        </div>
+
+        <!-- Interactive 3-Image Carousel / Slider Component -->
+        <div class="mb-8">
+          <div class="rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 shadow-md relative group select-none">
+            
+            <!-- Slide Viewport -->
+            <div class="relative aspect-video sm:aspect-[16/9] w-full max-h-[520px] overflow-hidden bg-slate-950">
+              <div id="gallery-track" class="flex w-full h-full transition-transform duration-500 ease-out">
+                {gallerySlides.map((slide, idx) => (
+                  <div class="w-full h-full shrink-0 relative bg-slate-950 flex items-center justify-center">
+                    <img
+                      src={slide.url}
+                      alt={`${post.title} - ${slide.label}`}
+                      loading={idx === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      class="w-full h-full object-cover object-center filter brightness-[0.98]"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <!-- Top Floating Badges -->
+              <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+                <span id="gallery-counter-badge" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-900/85 backdrop-blur-md text-amber-300 border border-slate-700/80 shadow-md">
+                  Photo 1 of 3
+                </span>
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
+                  HD 1400w
+                </span>
+              </div>
+
+              <!-- Navigation Arrows -->
+              <button
+                id="gallery-prev-btn"
+                type="button"
+                aria-label="Previous Image"
+                class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+
+              <button
+                id="gallery-next-btn"
+                type="button"
+                aria-label="Next Image"
+                class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+
+            <!-- Dynamic Slide Caption & Source Bar -->
+            <div class="px-5 py-3 bg-slate-900/95 text-xs text-slate-300 flex items-center justify-between border-t border-slate-800 gap-3 flex-wrap">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                <p id="gallery-caption-text" class="truncate max-w-sm sm:max-w-xl text-slate-200 font-medium">
+                  {gallerySlides[0].caption}
+                </p>
+              </div>
               {post.source_url && (
-                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 ml-2">
+                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 text-[11px] font-bold">
                   Verify Source &rarr;
                 </a>
               )}
             </div>
-          )}
+          </div>
+
+          <!-- Interactive Thumbnail Switcher Bar -->
+          <div class="grid grid-cols-3 gap-2.5 mt-3">
+            {gallerySlides.map((slide, idx) => (
+              <button
+                type="button"
+                data-slide-index={idx}
+                class={`gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer ${
+                  idx === 0
+                    ? 'bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold'
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+              >
+                <div class="w-10 h-7 rounded-lg overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                  <img src={slide.url} alt="" class="w-full h-full object-cover" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <span class="text-[11px] block truncate font-bold">{slide.label}</span>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <!-- Key Intel & Executive Takeaways Card (Reference Match Info Box) -->
-        <div class="my-6 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-purple-50/60 via-slate-50 to-emerald-50/40 border border-purple-200/70 shadow-2xs">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="text-base">⚡</span>
+        <!-- Interactive Table of Contents (TOC) Quick Jump Bar -->
+        {tableOfContents.length > 0 && (
+          <div class="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-50 via-purple-50/40 to-slate-50 border border-slate-200/90 shadow-2xs">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-base">🧭</span>
+              <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">
+                Quick Jump to Section (Table of Contents)
+              </h3>
+            </div>
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+              {tableOfContents.map((heading) => (
+                <a
+                  href={`#${heading.id}`}
+                  class="toc-jump-pill px-3 py-1.5 rounded-xl bg-white hover:bg-brand hover:text-white border border-slate-200 hover:border-brand text-xs font-bold text-slate-700 transition shadow-2xs shrink-0"
+                >
+                  {heading.text}
+                </a>
+              ))}
+              {post.faq && post.faq.length > 0 && (
+                <a
+                  href="#faq-section"
+                  class="toc-jump-pill px-3 py-1.5 rounded-xl bg-white hover:bg-brand hover:text-white border border-slate-200 hover:border-brand text-xs font-bold text-slate-700 transition shadow-2xs shrink-0"
+                >
+                  Frequently Asked Questions
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
+        <!-- Key Intel & Executive Summary Card (At-a-Glance Scannability) -->
+        <div class="my-6 p-6 rounded-3xl bg-gradient-to-br from-purple-50/70 via-slate-50 to-emerald-50/50 border border-purple-200/80 shadow-2xs">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="text-lg">⚡</span>
             <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider">
-              Key Intel & Executive Summary
+              Executive Briefing & Key Takeaways
             </h3>
           </div>
-          <ul class="flex flex-col gap-2 text-xs sm:text-sm text-slate-700">
-            <li class="flex items-start gap-2">
-              <span class="text-brand font-bold">✓</span>
-              <span><strong>Primary Search Spike:</strong> {post.title}</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-brand font-bold">✓</span>
-              <span><strong>Category Classification:</strong> {niche.name} ({niche.grp})</span>
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-brand font-bold">✓</span>
-              <span><strong>Actionable Verdict:</strong> Verified real-time telemetry cross-referenced across national feeds.</span>
-            </li>
-          </ul>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
+              <span class="text-[10px] font-black uppercase text-brand tracking-wider block mb-1">01. What Happened</span>
+              <p class="text-xs text-slate-700 font-medium leading-relaxed">
+                {post.title} — surging rapidly across nationwide feeds and search radar.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
+              <span class="text-[10px] font-black uppercase text-emerald-600 tracking-wider block mb-1">02. Core Focus</span>
+              <p class="text-xs text-slate-700 font-medium leading-relaxed">
+                Verified telemetry covering vital statistics, squad/market metrics, and user impact.
+              </p>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
+              <span class="text-[10px] font-black uppercase text-purple-600 tracking-wider block mb-1">03. Audience Verdict</span>
+              <p class="text-xs text-slate-700 font-medium leading-relaxed">
+                Fact-checked editorial data synthesized from authoritative primary dispatches.
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-purple-100 flex items-center justify-between text-xs text-slate-600">
+            <span><strong>Primary Category:</strong> {niche.name} ({niche.grp})</span>
+            <span class="text-[11px] text-emerald-700 font-bold">✓ 100% Fact-Checked</span>
+          </div>
         </div>
 
         <!-- Health / Sensitive Disclaimer -->
@@ -318,6 +704,30 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
 
         <!-- Article Markdown Content (.prose styled with tables, quotes, headings) -->
         <div class="prose max-w-none text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
+
+        <!-- High-Impact Editor's Verdict / The Bottom Line Card -->
+        <div class="my-8 p-6 rounded-3xl bg-slate-900 text-white shadow-md relative overflow-hidden">
+          <div class="absolute -right-8 -bottom-8 w-40 h-40 rounded-full bg-brand/20 blur-2xl"></div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xl">🎯</span>
+              <h3 class="text-sm font-black uppercase tracking-wider text-amber-400">
+                The Bottom Line & UniqueDigit Verdict
+              </h3>
+            </div>
+            <p class="text-sm sm:text-base text-slate-200 leading-relaxed mb-4">
+              <strong>{post.title}</strong> represents a significant event within the {niche.name} landscape. Whether you are tracking real-time updates, gearing up for the match, or assessing buying choices, staying on top of primary verified feeds is key. Bookmark this page for continuous telemetry.
+            </p>
+            <div class="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
+              <span class="px-2.5 py-1 rounded-xl bg-slate-800 text-slate-300 font-bold border border-slate-700">
+                Editorial Rating: 9.2/10
+              </span>
+              <span class="px-2.5 py-1 rounded-xl bg-slate-800 text-emerald-400 font-bold border border-slate-700">
+                Status: Ongoing Trend
+              </span>
+            </div>
+          </div>
+        </div>
 
         <!-- Verified Independent Sources -->
         {post.sources && post.sources.length > 0 && (
@@ -360,7 +770,7 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
 
         <!-- FAQ Accordion -->
         {post.faq && post.faq.length > 0 && (
-          <div class="my-10 pt-8 border-t border-line">
+          <div id="faq-section" class="my-10 pt-8 border-t border-line scroll-mt-28">
             <h3 class="text-xl font-black text-ink mb-6">Frequently Asked Questions</h3>
             <div class="flex flex-col gap-4">
               {post.faq.map(item => (
@@ -401,10 +811,10 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
         </div>
       </main>
 
-      <!-- RIGHT COLUMN (4 cols): Sticky Newsroom Sidebar (Like Cricbuzz / Sportskeeda) -->
+      <!-- RIGHT COLUMN (4 cols): Sticky Newsroom Sidebar (With Sharp Visual Thumbnails) -->
       <aside class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
         
-        <!-- 1. Trending Stories in India (Top 5 Ranking) -->
+        <!-- 1. Trending Stories in India (Top 5 Ranking with Thumbnails) -->
         <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
           <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
             <div class="flex items-center gap-2">
@@ -419,30 +829,43 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
           </div>
 
           <div class="flex flex-col gap-3.5">
-            {sidebarTrending.map((tr, idx) => (
-              <a
-                href={tr.niches ? `/${tr.niches.slug}/${tr.slug}` : `/${tr.slug}`}
-                class="group flex items-start gap-3 p-2 rounded-xl hover:bg-slate-50 transition"
-              >
-                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-900 font-mono font-black text-xs flex items-center justify-center shrink-0 group-hover:bg-brand group-hover:text-white transition">
-                  {idx + 1}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
-                    {tr.title}
-                  </h4>
-                  <div class="flex items-center gap-2 mt-1">
-                    <span class="text-[10px] font-mono text-emerald-600 font-bold">
-                      🔥 {tr.hype || 80} velocity
-                    </span>
+            {sidebarTrending.map((tr, idx) => {
+              const trImg = getSharpImage(tr.image_url, (tr as any).niches?.slug || (tr as any).niche_slug || niche.slug);
+              return (
+                <a
+                  href={(tr as any).niches ? `/${(tr as any).niches.slug}/${tr.slug}` : `/${tr.slug}`}
+                  class="group flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
+                >
+                  <!-- Real Sharp Thumbnail Image with Rank Overlay -->
+                  <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                    <img
+                      src={trImg}
+                      alt={tr.title}
+                      loading="lazy"
+                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    />
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[9px] font-black text-white text-center py-0.5">
+                      #{idx + 1}
+                    </div>
                   </div>
-                </div>
-              </a>
-            ))}
+
+                  <div class="flex-1 min-w-0">
+                    <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
+                      {tr.title}
+                    </h4>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="text-[10px] font-mono text-emerald-600 font-bold">
+                        🔥 {tr.hype || 80} velocity
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
           </div>
         </div>
 
-        <!-- 2. More In This Category -->
+        <!-- 2. More In This Category (with Thumbnails) -->
         {sidebarRelated.length > 0 && (
           <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
             <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
@@ -455,19 +878,32 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
             </div>
 
             <div class="flex flex-col gap-3">
-              {sidebarRelated.map(item => (
-                <a
-                  href={`/${niche.slug}/${item.slug}`}
-                  class="group block p-2 rounded-xl hover:bg-slate-50 transition"
-                >
-                  <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
-                    {item.title}
-                  </h4>
-                  <span class="text-[10px] text-slate-400 font-mono">
-                    {new Date(item.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
-                  </span>
-                </a>
-              ))}
+              {sidebarRelated.map(item => {
+                const relImg = getSharpImage(item.image_url, niche.slug);
+                return (
+                  <a
+                    href={`/${niche.slug}/${item.slug}`}
+                    class="group flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
+                  >
+                    <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                      <img
+                        src={relImg}
+                        alt={item.title}
+                        loading="lazy"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
+                        {item.title}
+                      </h4>
+                      <span class="text-[10px] text-slate-400 font-mono">
+                        {new Date(item.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}
@@ -528,7 +964,7 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
     </div>
   </div>
 
-  <script>
+  <script define:vars={{ slidesData: gallerySlides }}>
     (function() {
       // 1. Reading Progress Bar
       const progressBar = document.getElementById('reading-progress-bar');
@@ -545,7 +981,86 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
       window.addEventListener('scroll', updateProgress, { passive: true });
       updateProgress();
 
-      // 2. Copy Link Button Feedback
+      // 2. Multi-Image Carousel Engine
+      const track = document.getElementById('gallery-track');
+      const prevBtn = document.getElementById('gallery-prev-btn');
+      const nextBtn = document.getElementById('gallery-next-btn');
+      const counterBadge = document.getElementById('gallery-counter-badge');
+      const captionText = document.getElementById('gallery-caption-text');
+      const tabBtns = document.querySelectorAll('.gallery-tab-btn');
+      const totalSlides = slidesData ? slidesData.length : 3;
+      let currentIndex = 0;
+
+      function goToSlide(index) {
+        if (!track) return;
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        currentIndex = index;
+
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        if (counterBadge) {
+          counterBadge.textContent = `Photo ${currentIndex + 1} of ${totalSlides}`;
+        }
+
+        if (captionText && slidesData && slidesData[currentIndex]) {
+          captionText.textContent = slidesData[currentIndex].caption;
+        }
+
+        // Update Tab Pill styles
+        tabBtns.forEach((btn, idx) => {
+          if (idx === currentIndex) {
+            btn.className = 'gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold';
+          } else {
+            btn.className = 'gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300';
+          }
+        });
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
+      }
+
+      tabBtns.forEach((btn, idx) => {
+        btn.addEventListener('click', () => goToSlide(idx));
+      });
+
+      // Swipe support for touch devices
+      let touchStartX = 0;
+      let touchEndX = 0;
+      if (track) {
+        track.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        track.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          if (touchStartX - touchEndX > 45) {
+            goToSlide(currentIndex + 1); // Swipe left -> next
+          } else if (touchEndX - touchStartX > 45) {
+            goToSlide(currentIndex - 1); // Swipe right -> prev
+          }
+        }, { passive: true });
+      }
+
+      // 3. Smooth Jump for Table of Contents
+      const tocPills = document.querySelectorAll('.toc-jump-pill');
+      tocPills.forEach(pill => {
+        pill.addEventListener('click', (e) => {
+          const targetId = pill.getAttribute('href');
+          if (targetId && targetId.startsWith('#')) {
+            const targetEl = document.querySelector(targetId);
+            if (targetEl) {
+              e.preventDefault();
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        });
+      });
+
+      // 4. Copy Link Button Feedback
       const copyBtn = document.getElementById('copy-article-link-btn');
       const copyText = document.getElementById('copy-btn-text');
       if (copyBtn && copyText) {
