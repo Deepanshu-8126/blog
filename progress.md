@@ -24,3 +24,10 @@
   - [x] Built with zero errors via `npm run build`.
   - [x] Deployed live to Cloudflare Pages (`https://uniquedigit-viral-hub.pages.dev/`).
   - [x] Git committed to `main` branch.
+- **Phase 6 (Global Image Size & Timestamp Polish):** Completed ✅
+  - [x] Removed alarming `DELAYED` badge from `FreshnessStamp.astro`; now shows calm, informative telemetry (`Updated 3h ago`, `Updated Just now`, `Updated 15m ago`).
+  - [x] Overhauled `ToolCard.astro`: Replaced tiny 80px thumbnail boxes with full-width `aspect-[16/10] sm:aspect-[4/3]` showcase frames with `object-cover`, overlay badges (`Top Pick`, rating `★ 4.9`), and clean typography.
+  - [x] Standardized Global Image Tokens in `src/styles/global.css`: `.img-hero` (16:9), `.img-card` (16:9), `.img-product` (4:3), `.img-poster` (2:3), `.img-thumb` (w-24-28).
+  - [x] Enriched `DealRadarCard.astro` image dimensions to `w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover`.
+  - [x] Built & deployed to Cloudflare Pages (`https://uniquedigit-viral-hub.pages.dev/pc-builds`).
+
