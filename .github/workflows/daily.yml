@@ -1,6 +1,6 @@
 name: UniqueDigit 24/7 Autonomous Radar & Deals Pipeline
 
-on:
+'on':
   schedule:
     # Runs at 20 minutes past every hour (Off-peak, 0 GitHub queue delay)
     - cron: '20 * * * *'
