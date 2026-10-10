@@ -63,11 +63,11 @@ const tickerItems = posts.slice(0, 6).map(p => ({
 
       <div class="flex md:flex-col items-center md:items-end gap-2 shrink-0">
         <div class="px-3.5 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs text-right">
-          <span class="text-[10px] text-slate-400 font-mono block uppercase">Radar Frequency</span>
+          <span class="text-xs text-slate-400 font-mono block uppercase">Radar Frequency</span>
           <span class="text-sm font-black text-emerald-400">Hourly Off-Peak Engine</span>
         </div>
         <div class="px-3.5 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs text-right">
-          <span class="text-[10px] text-slate-400 font-mono block uppercase">Fact Standard</span>
+          <span class="text-xs text-slate-400 font-mono block uppercase">Fact Standard</span>
           <span class="text-sm font-black text-white">Tri-Source Verified</span>
         </div>
       </div>
@@ -95,7 +95,7 @@ const tickerItems = posts.slice(0, 6).map(p => ({
               </span>
             </div>
             <div class="absolute bottom-4 left-4 right-4">
-              <span class="text-[11px] text-red-200 font-mono uppercase tracking-wider block mb-1">
+              <span class="text-xs text-red-200 font-mono uppercase tracking-wider block mb-1">
                 {niche.name} &bull; Breaking Dispatch
               </span>
               <h2 class="text-xl sm:text-3xl font-black text-white leading-tight">
@@ -129,7 +129,7 @@ const tickerItems = posts.slice(0, 6).map(p => ({
             <Icon name="sparkles" class="w-3.5 h-3.5 text-red-600" />
             Top Developing Stories
           </h3>
-          <span class="text-[11px] text-slate-500 font-mono">Live</span>
+          <span class="text-xs text-slate-500 font-mono">Live</span>
         </div>
 
         {subFeatured.map(post => (
@@ -138,7 +138,7 @@ const tickerItems = posts.slice(0, 6).map(p => ({
             class="p-4 rounded-2xl bg-white border border-slate-200 hover:border-red-400 hover:shadow-md transition flex flex-col justify-between group"
           >
             <div>
-              <div class="flex items-center gap-2 mb-2 text-[10px] text-slate-500 font-mono">
+              <div class="flex items-center gap-2 mb-2 text-xs text-slate-500 font-mono">
                 <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
                 <span>{new Date(post.published_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
@@ -149,7 +149,7 @@ const tickerItems = posts.slice(0, 6).map(p => ({
                 {post.summary}
               </p>
             </div>
-            <span class="text-[11px] font-bold text-red-600 mt-3 block group-hover:translate-x-1 transition">
+            <span class="text-xs font-bold text-red-600 mt-3 block group-hover:translate-x-1 transition">
               Quick Read &rarr;
             </span>
           </a>

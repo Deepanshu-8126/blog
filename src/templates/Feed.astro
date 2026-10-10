@@ -36,10 +36,10 @@ const remainingPosts = posts.slice(1);
       <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="max-w-2xl">
           <div class="flex items-center gap-2 mb-3 flex-wrap">
-            <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-pink-600 text-white shadow-xs">
+            <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-pink-600 text-white shadow-xs">
               🎮 Vice City Intelligence
             </span>
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 text-cyan-300 border border-cyan-400/30">
+            <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-cyan-300 border border-cyan-400/30">
               ⚡ 4K 60FPS Target
             </span>
             <span class="text-xs text-purple-200 font-mono hidden sm:inline">· Rockstar Wire Corroborated</span>
@@ -55,19 +55,19 @@ const remainingPosts = posts.slice(1);
           <!-- 4 Telemetry Spec Badges -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-6">
             <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <span class="text-[10px] text-purple-300 font-mono block">Engine Target</span>
+              <span class="text-xs text-purple-300 font-mono block">Engine Target</span>
               <span class="text-xs font-black text-white">RAGE 9 Next-Gen</span>
             </div>
             <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <span class="text-[10px] text-purple-300 font-mono block">Rec. Memory</span>
+              <span class="text-xs text-purple-300 font-mono block">Rec. Memory</span>
               <span class="text-xs font-black text-cyan-300 font-mono">32GB DDR5</span>
             </div>
             <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <span class="text-[10px] text-purple-300 font-mono block">Optimal GPU</span>
+              <span class="text-xs text-purple-300 font-mono block">Optimal GPU</span>
               <span class="text-xs font-black text-pink-300">RTX 4070 Super</span>
             </div>
             <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
-              <span class="text-[10px] text-purple-300 font-mono block">Expected Price</span>
+              <span class="text-xs text-purple-300 font-mono block">Expected Price</span>
               <span class="text-xs font-black text-amber-300 font-mono">₹4,999 (India)</span>
             </div>
           </div>
@@ -118,103 +118,103 @@ const remainingPosts = posts.slice(1);
 
   <!-- Quick Topic & Filter Pills (Dynamic Sub-category Filter) -->
   <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-6 no-scrollbar">
-    <span class="px-3.5 py-1.5 rounded-full text-xs font-black bg-brand text-white shadow-xs shrink-0 cursor-pointer">
+    <a href={`/${niche.slug}`} class="px-3.5 py-1.5 rounded-full text-xs font-black bg-brand text-white shadow-xs shrink-0 cursor-pointer">
       All {niche.name}
-    </span>
+    </a>
     {niche.slug === 'health' && (
       <>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        <a href="/search?q=protein" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           💪 Protein & Nutrition
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=diet" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🥗 Diet & Weight Loss
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=workout" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🏋️ Gym Workouts
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=ayurveda" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🌿 Ayurvedic Wellness
-        </span>
+        </a>
       </>
     )}
     {niche.slug === 'food' && (
       <>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        <a href="/search?q=protein" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🍳 High-Protein Meals
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=air+fryer" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🍟 Air Fryer Recipes
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=meal+prep" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🍱 Meal Prep & Macros
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=snacks" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           ☕ Healthy Snacks
-        </span>
+        </a>
       </>
     )}
     {niche.slug === 'fashion' && (
       <>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        <a href="/search?q=sneakers" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           👟 Sneakers Under ₹5,000
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=wardrobe" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           👔 Capsule Wardrobe
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=fashion" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           👕 Everyday Essentials
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=accessories" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🕶️ Accessories & Style
-        </span>
+        </a>
       </>
     )}
     {niche.slug === 'side-hustles' && (
       <>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        <a href="/search?q=ai+tools" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🤖 AI Freelancing & Tools
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=digital+products" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           📦 Digital Products & Templates
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=remote" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           💼 Remote Jobs in India
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=income" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           📈 Passive Income Ideas
-        </span>
+        </a>
       </>
     )}
     {niche.slug === 'gta-6' && (
       <>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        <a href="/builds" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🖥️ PC Specs & Requirements
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=gta+6" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🎮 Vice City Maps & Leaks
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=gta+6+release" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           📅 India Release Date & Pre-Orders
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=ray+tracing" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           ⚡ Ray Tracing & GPU Tests
-        </span>
+        </a>
       </>
     )}
     {niche.slug === 'viral' && (
       <>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        <a href="/trending" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🔥 Google Search Spikes
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/search?q=tech" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           ⚡ Tech & Gadget Drops
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/movies" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🎬 OTT & Entertainment Buzz
-        </span>
-        <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+        </a>
+        <a href="/deals" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
           🏷️ Loot Deals & Price Drops
-        </span>
+        </a>
       </>
     )}
   </div>

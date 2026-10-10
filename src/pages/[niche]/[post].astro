@@ -326,9 +326,9 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
               <div>
                 <div class="flex items-center gap-1.5">
                   <span class="font-bold text-slate-900">UniqueDigit Editorial Desk</span>
-                  <span class="text-emerald-600 font-bold text-[11px] bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">✓ Verified</span>
+                  <span class="text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">✓ Verified</span>
                 </div>
-                <span class="text-[11px] text-slate-500">
+                <span class="text-xs text-slate-500">
                   Published {new Date(post.published_at).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
@@ -394,7 +394,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                 <span id="gallery-counter-badge" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-900/85 backdrop-blur-md text-amber-300 border border-slate-700/80 shadow-md">
                   {gallerySlides.length > 1 ? `Photo 1 of ${gallerySlides.length}` : 'Verified Visual'}
                 </span>
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
                   HD 1400w
                 </span>
               </div>
@@ -408,7 +408,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                     aria-label="Previous Image"
                     class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
                   >
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                   </button>
 
                   <button
@@ -432,7 +432,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                 </p>
               </div>
               {post.source_url && (
-                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 text-[11px] font-bold">
+                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 text-xs font-bold">
                   Verify Source &rarr;
                 </a>
               )}
@@ -456,7 +456,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                     <img src={slide.url} alt="" class="w-full h-full object-cover" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <span class="text-[11px] block truncate font-bold">{slide.label}</span>
+                    <span class="text-xs block truncate font-bold">{slide.label}</span>
                   </div>
                 </button>
               ))}
@@ -551,7 +551,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
           <div class="my-8 p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
             <div class="flex items-center gap-2 mb-3">
               <span class="text-sm">📰</span>
-              <span class="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Verified Source References</span>
+              <span class="font-bold text-slate-900 uppercase tracking-wider text-xs">Verified Source References</span>
             </div>
             <ul class="flex flex-col gap-2">
               {post.sources.map(s => (
@@ -560,7 +560,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                   <a href={s.url} target="_blank" rel="nofollow noopener noreferrer" class="hover:text-brand transition underline truncate font-medium">
                     {s.title}
                   </a>
-                  {s.publisher && <span class="text-[10px] text-muted font-mono">({s.publisher})</span>}
+                  {s.publisher && <span class="text-xs text-muted font-mono font-medium">({s.publisher})</span>}
                 </li>
               ))}
             </ul>
@@ -775,7 +775,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                     href={prod.aff_url || `https://www.amazon.in/s?k=${encodeURIComponent(prod.name)}&tag=uniquedigi0c6-21`}
                     target="_blank"
                     rel="nofollow noopener"
-                    class="mt-2 text-center text-[11px] font-black uppercase py-1.5 px-3 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-500 transition shadow-xs"
+                    class="mt-2 text-center text-xs font-black uppercase py-2 px-3 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-500 transition shadow-xs block"
                   >
                     Check Deal On Amazon &rarr;
                   </a>
@@ -787,7 +787,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
 
         <!-- 4. Telegram / WhatsApp VIP Alert CTA -->
         <div class="rounded-3xl bg-gradient-to-br from-brand-dark via-brand to-purple-800 text-white p-6 shadow-sm">
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-amber-400 text-slate-950 inline-block mb-3">
+          <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-amber-400 text-slate-950 inline-block mb-3">
             Real-Time Radar
           </span>
           <h4 class="font-black text-base mb-2">Never Miss a Trend or Loot Deal</h4>

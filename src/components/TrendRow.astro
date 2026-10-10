@@ -45,13 +45,13 @@ const medalClass = rankBadges[rank] || 'bg-slate-100 text-slate-600 border borde
         <StageBadge stage={item.stage} size="sm" />
         
         {item.niche && (
-          <span class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded-md">
+          <span class="text-xs font-mono font-bold text-slate-600 uppercase tracking-wider bg-slate-100 px-2 py-0.5 rounded-md">
             {item.niche}
           </span>
         )}
         
         {item.approx_traffic && (
-          <span class="text-[10px] font-mono font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+          <span class="text-xs font-mono font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
             <span>🔥</span>
             <span>{item.approx_traffic} searches</span>
           </span>
@@ -59,7 +59,7 @@ const medalClass = rankBadges[rank] || 'bg-slate-100 text-slate-600 border borde
       </div>
 
       <!-- Title / Link -->
-      <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2 sm:line-clamp-1 group-hover:text-brand transition-colors">
+      <h3 class="font-bold text-slate-900 text-base sm:text-lg leading-snug line-clamp-2 sm:line-clamp-1 group-hover:text-brand transition-colors">
         {postLink ? (
           <a href={postLink}>
             {item.title}

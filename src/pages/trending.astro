@@ -17,6 +17,7 @@ const latestUpdate = board[0]?.updated_at || new Date().toISOString();
 const NICHE_GROUP_MAP: Record<string, string> = {
   'pc-builds': 'Tech',
   'ai-tools': 'Tech',
+  'automotive-trends': 'Tech',
   'gold-rate': 'Money',
   'deals': 'Money',
   'side-hustles': 'Money',
@@ -26,19 +27,22 @@ const NICHE_GROUP_MAP: Record<string, string> = {
   'food': 'Lifestyle',
   'gta-6': 'Entertainment',
   'movies': 'Entertainment',
-  'viral': 'Entertainment'
+  'viral': 'Entertainment',
+  'cricket-sports': 'Entertainment',
+  'exams-results': 'Education'
 };
 
 const getGroup = (item: any) => NICHE_GROUP_MAP[item.niche_slug || ''] || item.niche || 'Entertainment';
 
 // Category counters
-const categories = ['All', 'Tech', 'Money', 'Lifestyle', 'Entertainment'];
+const categories = ['All', 'Tech', 'Money', 'Lifestyle', 'Entertainment', 'Education'];
 const counts: Record<string, number> = {
   All: board.length,
   Tech: board.filter(b => getGroup(b) === 'Tech').length,
   Money: board.filter(b => getGroup(b) === 'Money').length,
   Lifestyle: board.filter(b => getGroup(b) === 'Lifestyle').length,
-  Entertainment: board.filter(b => getGroup(b) === 'Entertainment').length
+  Entertainment: board.filter(b => getGroup(b) === 'Entertainment').length,
+  Education: board.filter(b => getGroup(b) === 'Education').length
 };
 
 // ItemList Structured Data for Google Trends Ranking

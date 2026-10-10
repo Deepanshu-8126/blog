@@ -51,7 +51,7 @@ const groupColors: Record<string, { chip: string; bg: string }> = {
             <LiveDot updatedAt={boardUpdate} />
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                   Google Trends Telemetry (India)
                 </span>
                 <span class="text-xs text-slate-500 font-mono hidden sm:inline">· 15-min auto-refresh</span>
@@ -101,83 +101,83 @@ const groupColors: Record<string, { chip: string; bg: string }> = {
     <div class="lg:col-span-4 flex flex-col gap-3.5">
       
       <!-- 1. Live Gold Rate Module -->
-      <a href="/gold-rate" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 shadow-xs hover:border-amber-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+      <a href="/gold-rate" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-amber-400 hover:shadow-sm transition">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1.5">
             <span>🪙</span> Bullion Market
           </span>
-          <span class="text-[10px] font-bold text-emerald-600 font-mono">+₹250 Today</span>
+          <span class="text-xs font-bold text-emerald-600 font-mono">Live Rates</span>
         </div>
         <div class="flex items-baseline justify-between">
           <div>
-            <h3 class="font-extrabold text-sm text-slate-900 group-hover:text-amber-600 transition">24K Gold Rate (10g)</h3>
-            <p class="text-[11px] text-slate-500">Live Mumbai, Delhi & 8 City Rates</p>
+            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-amber-600 transition">24K Gold Rate (10g)</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Mumbai, Delhi & 8 City Trends</p>
           </div>
-          <span class="text-base font-black text-slate-900 font-mono">₹76,850</span>
+          <span class="text-base font-black text-slate-900 font-mono">₹77k+</span>
         </div>
       </a>
 
       <!-- 2. AI Tools Directory Module -->
-      <a href="/ai-tools" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 shadow-xs hover:border-blue-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+      <a href="/ai-tools" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-blue-400 hover:shadow-sm transition">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1.5">
             <span>🤖</span> AI Directory
           </span>
-          <span class="text-[10px] font-bold text-blue-600 font-mono">50+ Vetted</span>
+          <span class="text-xs font-bold text-blue-600 font-mono">50+ Vetted</span>
         </div>
         <div class="flex items-baseline justify-between">
           <div>
-            <h3 class="font-extrabold text-sm text-slate-900 group-hover:text-blue-600 transition">Generative AI Tools</h3>
-            <p class="text-[11px] text-slate-500">Cursor AI, Claude 3.5 & Midjourney</p>
+            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-blue-600 transition">Generative AI Tools</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Top LLMs, Coding & Image Gen</p>
           </div>
           <span class="text-xs font-bold text-brand group-hover:underline">Explore &rarr;</span>
         </div>
       </a>
 
       <!-- 3. PC Builds & Hardware Module -->
-      <a href="/builds" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 shadow-xs hover:border-purple-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1">
+      <a href="/builds" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-purple-400 hover:shadow-sm transition">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
             <span>🖥️</span> Hardware Hub
           </span>
-          <span class="text-[10px] font-bold text-purple-600 font-mono">Tested FPS</span>
+          <span class="text-xs font-bold text-purple-600 font-mono">Tested FPS</span>
         </div>
         <div class="flex items-baseline justify-between">
           <div>
-            <h3 class="font-extrabold text-sm text-slate-900 group-hover:text-purple-600 transition">5 Tested PC Builds</h3>
-            <p class="text-[11px] text-slate-500">₹35k Student Rig to ₹1.5L 4K Beast</p>
+            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-purple-600 transition">5 Tested PC Builds</h3>
+            <p class="text-xs text-slate-500 mt-0.5">₹35k Budget to ₹1.5L 4K Beast</p>
           </div>
           <span class="text-xs font-bold text-brand group-hover:underline">Compare &rarr;</span>
         </div>
       </a>
 
       <!-- 4. Verified Loot Deals & Cashback -->
-      <a href="/deals" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 shadow-xs hover:border-emerald-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+      <a href="/deals" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-emerald-400 hover:shadow-sm transition">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
             <span>🏷️</span> Loot Radar
           </span>
-          <span class="text-[10px] font-bold text-emerald-600 font-mono">Up to 40% Off</span>
+          <span class="text-xs font-bold text-emerald-600 font-mono">Verified Deals</span>
         </div>
         <div class="flex items-baseline justify-between">
           <div>
-            <h3 class="font-extrabold text-sm text-slate-900 group-hover:text-emerald-600 transition">Loot Deals & Cashback</h3>
-            <p class="text-[11px] text-slate-500">Sony XM5, iPads & 5% SBI Card</p>
+            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-emerald-600 transition">Top Deals & Cashback</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Amazon, Flipkart & Card Offers</p>
           </div>
           <span class="text-xs font-bold text-brand group-hover:underline">View Deals &rarr;</span>
         </div>
       </a>
 
       <!-- Quick Category Directory Banner -->
-      <div class="rounded-2xl bg-gradient-to-r from-brand to-brand-dark text-white p-3.5 shadow-xs flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">🌐</span>
+      <div class="rounded-2xl bg-gradient-to-r from-brand to-brand-dark text-white p-4 shadow-xs flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">🌐</span>
           <div>
-            <div class="text-xs font-black text-white">All 12 Specialized Hubs</div>
-            <div class="text-[10px] text-purple-200">Tech • Money • Lifestyle • Entertainment</div>
+            <div class="text-sm font-black text-white">All 13 Specialized Hubs</div>
+            <div class="text-xs text-purple-200">Tech • Money • Lifestyle • Education</div>
           </div>
         </div>
-        <a href="#explore-all" class="px-2.5 py-1 rounded-lg bg-cta text-cta-ink text-[10px] font-black hover:brightness-105 transition">
+        <a href="#explore-all" class="px-3 py-1.5 rounded-xl bg-cta text-cta-ink text-xs font-black hover:brightness-105 transition shadow-xs">
           Browse All &darr;
         </a>
       </div>
@@ -240,7 +240,7 @@ const groupColors: Record<string, { chip: string; bg: string }> = {
 
       <!-- Quick Action Card -->
       <div class="rounded-3xl bg-gradient-to-br from-brand-dark to-brand text-white p-6 shadow-soft">
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-cta text-cta-ink inline-block mb-3">
+        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-cta text-cta-ink inline-block mb-3">
           Tool Directory
         </span>
         <h4 class="font-bold text-base mb-2">Looking for Generative AI or PC Hardware?</h4>
@@ -296,8 +296,8 @@ const groupColors: Record<string, { chip: string; bg: string }> = {
             </div>
             <p class="text-xs text-muted line-clamp-2 leading-relaxed">{n.tagline}</p>
           </div>
-          <span class="text-[11px] font-bold text-brand mt-4 flex items-center gap-1 group-hover:underline">
-            Open Hub <Icon name="arrow-right" class="w-3 h-3 group-hover:translate-x-0.5 transition" />
+          <span class="text-xs font-bold text-brand mt-4 flex items-center gap-1 group-hover:underline">
+            Open Hub <Icon name="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
           </span>
         </a>
       ))}
