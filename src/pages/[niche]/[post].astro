@@ -243,6 +243,20 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
     }
   }))
 } : null;
+
+// Multi-gradient palettes for deduplicated rank badges
+const rankGradients = [
+  'from-rose-500 to-amber-500',
+  'from-purple-600 to-indigo-600',
+  'from-blue-600 to-cyan-500',
+  'from-emerald-500 to-teal-500',
+  'from-fuchsia-600 to-pink-500',
+  'from-amber-500 to-orange-600'
+];
+
+const renderedImages = new Set<string>();
+if (post.image_url) renderedImages.add(post.image_url);
+if (displayHeroImage) renderedImages.add(displayHeroImage);
 ---
 
 <Layout
@@ -263,10 +277,10 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
   </Fragment>
 
   <!-- Main Editorial Container (2-Column Grid) -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <div class="w-full">
     
     <!-- Breadcrumbs -->
-    <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-muted mb-6 px-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+    <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-muted mb-4 sm:mb-6 px-1 overflow-x-auto no-scrollbar whitespace-nowrap">
       <a href="/" class="hover:text-brand transition font-medium">Home</a>
       <span>/</span>
       <a href={`/${niche.slug}`} class="hover:text-brand transition font-medium">{niche.name}</a>
@@ -277,7 +291,7 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
       <!-- LEFT COLUMN (8 cols): Main Newsroom Article Card -->
-      <main class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-10">
+      <article class="lg:col-span-8 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-8 lg:p-10 min-w-0">
         
         <!-- Header Area -->
         <header class="mb-6">
@@ -343,52 +357,16 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
           </div>
         </header>
 
-        <!-- 4-Card Quick Telemetry Bar (High Impact Scannability) -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Trending Hype</span>
-            <div class="flex items-baseline gap-1 mt-1">
-              <span class="text-lg font-black text-rose-600 font-mono">{post.hype || post.trend_score || 88}</span>
-              <span class="text-[11px] font-bold text-rose-500">/ 100</span>
-            </div>
-            <span class="text-[10px] text-slate-500 font-medium">🔥 Spike Surge</span>
-          </div>
-
-          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Category Radar</span>
-            <span class="text-xs font-black text-slate-900 mt-1 truncate">{niche.name}</span>
-            <span class="text-[10px] text-brand font-medium">📍 {niche.grp}</span>
-          </div>
-
-          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Read Time</span>
-            <div class="flex items-baseline gap-1 mt-1">
-              <span class="text-lg font-black text-slate-900 font-mono">{readTime}</span>
-              <span class="text-[11px] font-bold text-slate-600">min</span>
-            </div>
-            <span class="text-[10px] text-emerald-600 font-medium font-mono">⚡ Fast Digest</span>
-          </div>
-
-          <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Editorial Trust</span>
-            <span class="text-xs font-black text-emerald-700 mt-1 flex items-center gap-1">
-              <span>🛡️ 100%</span>
-              <span class="text-[10px]">Verified</span>
-            </span>
-            <span class="text-[10px] text-slate-500 font-medium">Real-Time Data</span>
-          </div>
-        </div>
-
         <!-- Interactive 3-Image Carousel / Slider Component -->
         <div class="mb-8">
-          <div class="rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-950 shadow-md relative group select-none">
+          <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-md relative group select-none">
             
-            <!-- Slide Viewport (Adaptive Aspect Ratio: Ambient Glow + Full Complete Visual) -->
-            <div class="relative aspect-video sm:aspect-[16/9] w-full max-h-[520px] overflow-hidden bg-slate-950">
+            <!-- Slide Viewport (Adaptive Aspect Ratio & Mobile Optimized) -->
+            <div class="relative aspect-[16/10] sm:aspect-[16/9] w-full max-h-[460px] overflow-hidden bg-slate-900">
               <div id="gallery-track" class="flex w-full h-full transition-transform duration-500 ease-out">
                 {gallerySlides.map((slide, idx) => (
-                  <div class="w-full h-full shrink-0 relative bg-slate-950 flex items-center justify-center overflow-hidden">
-                    <!-- Atmospheric Ambient Blurred Glow (Fills widescreen frame with rich matching light) -->
+                  <div class="w-full h-full shrink-0 relative bg-slate-900 flex items-center justify-center overflow-hidden">
+                    <!-- Atmospheric Ambient Blurred Glow -->
                     <img
                       src={slide.url}
                       alt=""
@@ -397,15 +375,15 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
                       decoding="async"
                       class="absolute inset-0 w-full h-full object-cover filter blur-2xl opacity-40 scale-110 pointer-events-none"
                     />
-                    <div class="absolute inset-0 bg-slate-950/30 backdrop-blur-[1px]"></div>
+                    <div class="absolute inset-0 bg-slate-950/25"></div>
 
-                    <!-- High-Fidelity Foreground Image: 100% Uncut, Zero Stretched Distortion, Full Natural Frame -->
+                    <!-- Foreground Image: Mobile full-bleed cover, desktop contain -->
                     <img
                       src={slide.url}
                       alt={`${post.title} - ${slide.label}`}
                       loading={idx === 0 ? "eager" : "lazy"}
                       decoding="async"
-                      class="relative z-10 max-h-full max-w-full object-contain mx-auto filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)]"
+                      class="relative z-10 w-full h-full object-cover sm:object-contain mx-auto"
                     />
                   </div>
                 ))}
@@ -648,7 +626,7 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
         <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs mt-8">
           <strong>Transparency Note:</strong> UniqueDigit publishes independent research and benchmark analysis. When you purchase via outbound links on this page, we may earn an affiliate commission at zero additional cost to you.
         </div>
-      </main>
+      </article>
 
       <!-- RIGHT COLUMN (4 cols): Sticky Newsroom Sidebar (With Sharp Visual Thumbnails) -->
       <aside class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
@@ -669,31 +647,46 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
 
           <div class="flex flex-col gap-3.5">
             {sidebarTrending.map((tr, idx) => {
-              const trImg = getSharpImage(tr.image_url, (tr as any).niches?.slug || (tr as any).niche_slug || niche.slug);
+              const hasUniqueThumb = tr.image_url && 
+                tr.image_url.trim().length > 10 && 
+                !tr.image_url.includes('ai_tools.jpg') && 
+                !renderedImages.has(tr.image_url);
+
+              if (hasUniqueThumb && tr.image_url) {
+                renderedImages.add(tr.image_url);
+              }
+
               return (
                 <a
                   href={(tr as any).niches ? `/${(tr as any).niches.slug}/${tr.slug}` : `/${tr.slug}`}
-                  class="group flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
+                  class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
                 >
-                  <!-- Real Sharp Thumbnail Image with Rank Overlay -->
-                  <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                    <img
-                      src={trImg}
-                      alt={tr.title}
-                      loading="lazy"
-                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                    />
-                    <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[9px] font-black text-white text-center py-0.5">
-                      #{idx + 1}
+                  <!-- Deduplicated Visual: Real Unique Photo OR Vibrant Rank Gradient -->
+                  {hasUniqueThumb ? (
+                    <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                      <img
+                        src={proxyImageUrl(tr.image_url)}
+                        alt={tr.title}
+                        loading="lazy"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                      <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[10px] font-black text-white text-center py-0.5 font-mono">
+                        #{idx + 1}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div class={`w-14 h-14 rounded-xl shrink-0 flex flex-col items-center justify-center bg-gradient-to-tr ${rankGradients[idx % rankGradients.length]} text-white font-black shadow-xs border border-white/20 group-hover:scale-105 transition duration-300`}>
+                      <span class="text-sm font-mono font-black">#{idx + 1}</span>
+                      <span class="text-[9px] uppercase tracking-wider font-extrabold opacity-90">HOT</span>
+                    </div>
+                  )}
 
                   <div class="flex-1 min-w-0">
-                    <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
+                    <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
                       {tr.title}
                     </h4>
                     <div class="flex items-center gap-2 mt-1">
-                      <span class="text-[10px] font-mono text-emerald-600 font-bold">
+                      <span class="text-xs font-mono text-emerald-600 font-bold">
                         🔥 {tr.hype || 80} velocity
                       </span>
                     </div>
@@ -717,26 +710,40 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
             </div>
 
             <div class="flex flex-col gap-3">
-              {sidebarRelated.map(item => {
-                const relImg = getSharpImage(item.image_url, niche.slug);
+              {sidebarRelated.map((item, rIdx) => {
+                const hasUniqueRelThumb = item.image_url && 
+                  item.image_url.trim().length > 10 && 
+                  !item.image_url.includes('ai_tools.jpg') && 
+                  !renderedImages.has(item.image_url);
+
+                if (hasUniqueRelThumb && item.image_url) {
+                  renderedImages.add(item.image_url);
+                }
+
                 return (
                   <a
                     href={`/${niche.slug}/${item.slug}`}
-                    class="group flex items-center gap-3 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
+                    class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
                   >
-                    <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                      <img
-                        src={relImg}
-                        alt={item.title}
-                        loading="lazy"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                    </div>
+                    {hasUniqueRelThumb ? (
+                      <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                        <img
+                          src={proxyImageUrl(item.image_url)}
+                          alt={item.title}
+                          loading="lazy"
+                          class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      </div>
+                    ) : (
+                      <div class={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center bg-gradient-to-tr ${rankGradients[(rIdx + 2) % rankGradients.length]} text-white font-black text-xs shadow-xs group-hover:scale-105 transition duration-300`}>
+                        {niche.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
                     <div class="flex-1 min-w-0">
-                      <h4 class="text-xs font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
+                      <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
                         {item.title}
                       </h4>
-                      <span class="text-[10px] text-slate-400 font-mono">
+                      <span class="text-xs text-slate-400 font-mono">
                         {new Date(item.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
                       </span>
                     </div>

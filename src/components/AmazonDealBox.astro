@@ -40,7 +40,9 @@ const contextualDeals = getContextualDeals(nicheSlug);
 
     <!-- Title & Value Pitch -->
     <h3 class="text-xl sm:text-2xl font-black text-slate-900 leading-snug mb-2">
-      {customTitle || `Handpicked Deals & Verified Offers for ${cleanKeyword}`}
+      {customTitle || (['deals', 'cashback', 'pc-builds', 'ai-tools'].includes(nicheSlug)
+        ? `Handpicked Deals & Verified Offers for ${cleanKeyword.slice(0, 45)}`
+        : `Trending Deals & Reader Favorites`)}
     </h3>
 
     <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">

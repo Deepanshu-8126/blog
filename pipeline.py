@@ -694,17 +694,22 @@ def process_national_breaking_trends():
 Breaking Search Trend in India: "{query}"
 Verified Context: {facts or 'Current top trending interest in India.'}
 
-1. Categorize this trend into a suitable clean category/niche (e.g., "gaming", "tech-reviews", "deals", "exams-results", "movies", "health", "cricket-sports", "finance").
-2. Write a highly engaging, humanized, fact-grounded article (450-600 words) tailored to why Indian users are searching for "{query}" right now.
-3. Include FAQ schema and tags.
+EDITORIAL GUIDELINES:
+1. Categorize this trend into a suitable category: "cricket-sports", "movies", "exams-results", "gaming", "tech-reviews", "deals", "health", "finance", or "viral".
+   - If topic mentions cricket, sports, teams, scores, or matches -> MUST be "cricket-sports".
+   - If topic mentions movies, actors, trailers, box office -> MUST be "movies".
+   - If topic mentions official exams, CBSE, UPSC, SSC, NEET, JEE, sarkari result, admit card -> MUST be "exams-results".
+2. STRICT RULE: DO NOT force unrelated hybrid angles (NEVER convert a cricket match or movie into an exam prep or student time management guide). Stay 100% focused on what the user searched for.
+3. Write a highly engaging, humanized, fact-grounded article (450-600 words) tailored to why Indian users are searching for "{query}" right now.
+4. Include FAQ schema and tags.
 
 Return strict JSON:
 {{
   "niche_slug": "clean-kebab-slug",
-  "niche_name": "Display Name (e.g., Gaming, Cricket, Tech)",
+  "niche_name": "Display Name (e.g., Cricket & Sports, Movies, Tech)",
   "niche_tagline": "Short 1-line description",
   "niche_group": "Tech | Entertainment | Lifestyle | Money | Education",
-  "niche_icon": "gamepad | sparkles | cpu | book-open | tag | heart | clapperboard",
+  "niche_icon": "gamepad | sparkles | cpu | book-open | tag | heart | clapperboard | trophy",
   "title": "Engaging, click-worthy, non-clickbait headline",
   "summary": "Meta summary under 160 characters",
   "body_md": "Full markdown with ## subheadings, comparison points, and guides",
@@ -717,11 +722,36 @@ Return strict JSON:
             print(f"[Universal Radar failed for {query}]:", e)
             continue
 
-        n_slug = slugify(res.get("niche_slug") or "viral")
-        n_name = res.get("niche_name") or n_slug.title()
+        q_lower = query.lower()
+        # Deterministic Guardrails to prevent misclassification
+        if any(w in q_lower for w in ["cricket", "t20", "odi", "ipl", "bcci", "match", "wicket", "ind vs", "test series", "world cup"]):
+            n_slug = "cricket-sports"
+            n_name = "Cricket & Sports"
+            n_grp = "Entertainment"
+            n_icon = "trophy"
+        elif any(w in q_lower for w in ["trailer", "box office", "teaser", "cinema", "movie review"]):
+            n_slug = "movies"
+            n_name = "Movies"
+            n_grp = "Entertainment"
+            n_icon = "clapperboard"
+        elif any(w in q_lower for w in ["ssc", "upsc", "neet", "jee", "cbse", "admit card", "sarkari", "cutoff", "answer key", "syllabus", "hall ticket"]):
+            n_slug = "exams-results"
+            n_name = "Exams & Results"
+            n_grp = "Education"
+            n_icon = "book-open"
+        else:
+            n_slug = slugify(res.get("niche_slug") or "viral")
+            if n_slug == "exams-results" and not any(w in q_lower for w in ["exam", "result", "admit", "card", "board", "neet", "jee", "ssc", "upsc", "cbse", "sarkari"]):
+                n_slug = "viral"
+                n_name = "Viral"
+                n_grp = "Entertainment"
+                n_icon = "rocket"
+            else:
+                n_name = res.get("niche_name") or n_slug.title()
+                n_grp = res.get("niche_group") or "Entertainment"
+                n_icon = res.get("niche_icon") or "sparkles"
+
         n_tagline = res.get("niche_tagline") or f"Latest updates on {n_name}"
-        n_grp = res.get("niche_group") or "Entertainment"
-        n_icon = res.get("niche_icon") or "sparkles"
 
         # 1. Auto-create Niche in D1 if it doesn't already exist
         niche_id = str(uuid.uuid4())

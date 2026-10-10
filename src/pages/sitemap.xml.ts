@@ -48,6 +48,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const allEntries: SitemapEntry[] = [...staticUrls, ...nicheUrls, ...postUrls];
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allEntries.map(e => `  <url>
     <loc>${e.loc}</loc>
