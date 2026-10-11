@@ -256,7 +256,7 @@ export const SEED_POSTS: Post[] = [
     slug: 'amazon-great-indian-festival-flipkart-bbd-loot-deals',
     kind: 'article',
     title: 'Amazon Great Indian Festival vs Flipkart BBD: Live Price Drop & Loot Tracker',
-    summary: 'Verified price glitches, SBI & HDFC 10% instant card discount stacking, and top smartphone flash sales.',
+    summary: 'Live price glitches, SBI & HDFC 10% instant card discount stacking, and top smartphone flash sales.',
     body_md: `## Festival Sale Radar 2026\nIndia's biggest e-commerce shopping festival brings massive price drops on Apple iPhones, flagship Androids, and gaming laptops.\n\n### How to Stack Bank Discounts\nPair ICICI/HDFC bank credit cards with exchange bonus tokens to maximize your savings.`,
     faq: [
       { q: 'Which credit cards give highest discount?', a: 'HDFC, SBI and ICICI offer instant 10% discounts up to ₹4,500.' }
@@ -266,7 +266,7 @@ export const SEED_POSTS: Post[] = [
       { title: 'DesiDime Live Loot Forum', url: 'https://desidime.com' }
     ],
     image_url: '/images/products/iphone_16_pro.jpg',
-    image_credit: 'Verified E-Commerce Price Drop',
+    image_credit: 'Live E-Commerce Price Drop',
     hype: 97,
     trend_score: 960,
     views: 19800,
@@ -428,6 +428,170 @@ export const SEED_PRODUCTS: Product[] = [
     merchant: 'Cursor',
     active: true,
     sort: 1
+  },
+  // DEALS NICHE (niche_id: '4') - Multi-store loot drops
+  {
+    id: 'pr4',
+    niche_id: '4',
+    name: 'HP Victus 15 Gaming Laptop RTX 3050 6GB',
+    tagline: 'All-Time Low: ₹48,490 with SBI Card on Amazon',
+    category: 'Gaming Laptops',
+    badge: 'PRICE GLITCH',
+    keywords: 'hp victus gaming laptop rtx 3050 budget gaming',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/8/8d/HP_Victus_16_d0000_Notebook.jpg',
+    price: 48490,
+    rating: 4.5,
+    url: 'https://www.amazon.in/s?k=HP+Victus+RTX+3050',
+    aff_url: 'https://www.amazon.in/s?k=HP+Victus+RTX+3050&tag=uniquedigi0c6-21',
+    merchant: 'Amazon India',
+    active: true,
+    clicks: 2340,
+    sort: 1
+  },
+  {
+    id: 'pr5',
+    niche_id: '4',
+    name: 'Realme Buds Wireless 3 ANC',
+    tagline: 'Price Glitch: ₹999 on Flipkart (MRP ₹2,499)',
+    category: 'Audio & Wearables',
+    badge: 'LOOT DROP',
+    keywords: 'realme buds wireless anc bluetooth neckband',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/5/51/Realme_Buds_Wireless_3.jpg',
+    price: 999,
+    rating: 4.3,
+    url: 'https://www.flipkart.com/search?q=Realme+Buds+Wireless+3+ANC',
+    aff_url: 'https://www.flipkart.com/search?q=Realme+Buds+Wireless+3+ANC&affid=uniquedigit',
+    merchant: 'Flipkart',
+    active: true,
+    clicks: 4120,
+    sort: 2
+  },
+  {
+    id: 'pr6',
+    niche_id: '4',
+    name: 'Anime Oversized T-Shirts (Pack of 3)',
+    tagline: 'Meesho Budget Loot: ₹189 Total',
+    category: 'Fashion & Apparel',
+    badge: 'UNDER ₹499',
+    keywords: 'anime oversized tshirt meesho budget fashion',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/8/83/T-shirt_plain_white_front.jpg',
+    price: 189,
+    rating: 4.1,
+    url: 'https://www.meesho.com/search?q=anime+oversized+tshirt',
+    aff_url: 'https://www.meesho.com/search?q=anime+oversized+tshirt&affid=uniquedigit',
+    merchant: 'Meesho',
+    active: true,
+    clicks: 890,
+    sort: 3
+  },
+  {
+    id: 'pr7',
+    niche_id: '4',
+    name: 'Puma Smash V2 Sneakers',
+    tagline: 'Ajio All Stars: Flat 65% + ₹300 Coupon',
+    category: 'Footwear',
+    badge: 'FLASH SALE',
+    keywords: 'puma smash sneakers ajio sale footwear',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/7/73/Puma_Suede_Classic.jpg',
+    price: 1499,
+    rating: 4.4,
+    url: 'https://www.ajio.com/search?q=Puma+Smash',
+    aff_url: 'https://www.ajio.com/search?q=Puma+Smash&affid=uniquedigit',
+    merchant: 'Ajio',
+    active: true,
+    clicks: 1560,
+    sort: 4
+  },
+  {
+    id: 'pr8',
+    niche_id: '4',
+    name: 'Samsung Galaxy M55 5G (8GB/128GB)',
+    tagline: 'Amazon Prime Early Access: ₹24,999 with HDFC 10%',
+    category: 'Smartphones',
+    badge: 'BANK OFFER',
+    keywords: 'samsung galaxy m55 5g smartphone midrange',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Samsung_Galaxy_S23_Ultra.jpg',
+    price: 24999,
+    rating: 4.2,
+    url: 'https://www.amazon.in/s?k=Samsung+Galaxy+M55+5G',
+    aff_url: 'https://www.amazon.in/s?k=Samsung+Galaxy+M55+5G&tag=uniquedigi0c6-21',
+    merchant: 'Amazon India',
+    active: true,
+    clicks: 3210,
+    sort: 5
+  },
+  {
+    id: 'pr9',
+    niche_id: '4',
+    name: 'boAt Airdopes 141 ANC TWS',
+    tagline: 'Flipkart Deal: ₹1,299 (50% Off + Bank Offer)',
+    category: 'Audio & Wearables',
+    badge: 'FLASH DROP',
+    keywords: 'boat airdopes tws anc bluetooth earbuds',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Boat_Airdopes_141.jpg',
+    price: 1299,
+    rating: 4.0,
+    url: 'https://www.flipkart.com/search?q=boAt+Airdopes+141+ANC',
+    aff_url: 'https://www.flipkart.com/search?q=boAt+Airdopes+141+ANC&affid=uniquedigit',
+    merchant: 'Flipkart',
+    active: true,
+    clicks: 2890,
+    sort: 6
+  },
+  // CASHBACK NICHE (niche_id: '6') - Credit cards & rewards
+  {
+    id: 'pr10',
+    niche_id: '6',
+    name: 'Amazon Pay ICICI Credit Card',
+    tagline: '5% Cashback on Amazon + 2% on Swiggy/Uber',
+    category: 'Credit Cards',
+    badge: 'TOP PICK',
+    keywords: 'amazon pay icici credit card cashback rewards',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Credit_Card_Chip_%2834684294971%29.jpg',
+    price: 0,
+    rating: 4.7,
+    url: 'https://www.amazon.in/b?ie=UTF8&node=20840949031',
+    aff_url: 'https://www.amazon.in/b?ie=UTF8&node=20840949031&tag=uniquedigi0c6-21',
+    merchant: 'ICICI Bank',
+    active: true,
+    clicks: 12400,
+    sort: 1
+  },
+  {
+    id: 'pr11',
+    niche_id: '6',
+    name: 'HDFC Millennia Credit Card',
+    tagline: '5% Cashback on Online Spend + 1% on Everything',
+    category: 'Credit Cards',
+    badge: 'BEST FLAT RATE',
+    keywords: 'hdfc millennia credit card cashback online shopping',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/HDFC_Bank_Logo.svg',
+    price: 1000,
+    rating: 4.6,
+    url: 'https://www.hdfcbank.com/personal/pay/cards/credit-cards/millennia',
+    aff_url: 'https://www.hdfcbank.com/personal/pay/cards/credit-cards/millennia?ref=uniquedigit',
+    merchant: 'HDFC Bank',
+    active: true,
+    clicks: 9800,
+    sort: 2
+  },
+  {
+    id: 'pr12',
+    niche_id: '6',
+    name: 'Flipkart Axis Bank Credit Card',
+    tagline: '5% Unlimited Cashback on Flipkart + Myntra',
+    category: 'Credit Cards',
+    badge: 'E-COMMERCE KING',
+    keywords: 'flipkart axis bank credit card cashback myntra',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/3/3c/Axis_Bank_Logo.svg',
+    price: 500,
+    rating: 4.5,
+    url: 'https://www.axisbank.com/retail/cards/credit-card/flipkart',
+    aff_url: 'https://www.axisbank.com/retail/cards/credit-card/flipkart?ref=uniquedigit',
+    merchant: 'Axis Bank',
+    active: true,
+    clicks: 8700,
+    sort: 3
   }
 ];
 
@@ -508,19 +672,20 @@ export async function getNiches(runtimeEnv?: any): Promise<Niche[]> {
   return SEED_NICHES;
 }
 
-/** 2. Get single niche by slug */
+/** 2. Get single niche by slug (case-insensitive) */
 export async function getNicheBySlug(slug: string, runtimeEnv?: any): Promise<Niche | null> {
+  const normalizedSlug = slug?.toLowerCase();
   const db = getD1(runtimeEnv);
   if (db && typeof db.prepare === 'function') {
     try {
-      const row = await db.prepare('SELECT * FROM niches WHERE slug = ? AND active = 1 LIMIT 1').bind(slug).first();
+      const row = await db.prepare('SELECT * FROM niches WHERE LOWER(slug) = ? AND active = 1 LIMIT 1').bind(normalizedSlug).first();
       if (row) return mapNicheRow(row);
     } catch (err) {
       console.warn('[D1 getNicheBySlug fallback]:', err);
     }
   }
   const niches = await getNiches(runtimeEnv);
-  return niches.find(n => n.slug === slug) || null;
+  return niches.find(n => n.slug.toLowerCase() === normalizedSlug) || null;
 }
 
 /** 3. Get published posts for a niche with pagination support */
