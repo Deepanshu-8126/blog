@@ -1,0 +1,105 @@
+---
+import { NicheNavTab, getNicheNavTabs } from '../lib/niche-nav';
+import Icon from './Icon.astro';
+
+interface Props {
+  niche: {
+    slug: string;
+    name: string;
+    page_type: string;
+    grp: string;
+  };
+  activeTab?: string;
+}
+
+const { niche, activeTab = 'latest' } = Astro.props;
+const tabs = getNicheNavTabs(niche.page_type);
+
+const groupColors: Record<string, { bg: string; text: string; border: string; glow: string }> = {
+  Tech: { bg: 'bg-tech-bg', text: 'text-tech', border: 'border-tech/30', glow: 'bg-tech/10' },
+  Money: { bg: 'bg-money-bg', text: 'text-money', border: 'border-money/30', glow: 'bg-money/10' },
+  Lifestyle: { bg: 'bg-life-bg', text: 'text-life', border: 'border-life/30', glow: 'bg-life/10' },
+  Entertainment: { bg: 'bg-ent-bg', text: 'text-ent', border: 'border-ent/30', glow: 'bg-ent/10' },
+  Education: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-300', glow: 'bg-blue-100' },
+};
+
+const color = groupColors[niche.grp] || groupColors.Tech;
+---
+
+<style>
+  .niche-subnav {
+    position: sticky;
+    top: 4rem;
+    z-index: 40;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .niche-subnav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--brand), transparent);
+    opacity: 0.3;
+  }
+
+  @media (max-width: 768px) {
+    .niche-subnav {
+      top: 3.5rem;
+    }
+  }
+
+  .subnav-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .subnav-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .subnav-tab {
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .subnav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0.75rem;
+    right: 0.75rem;
+    height: 2.5px;
+    border-radius: 9999px;
+    background: var(--brand);
+    box-shadow: 0 0 8px var(--brand-glow);
+  }
+</style>
+
+<div class="niche-subnav bg-white/90 dark:bg-slate-950/90 border-b border-slate-200/60 dark:border-slate-800/60 relative">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="subnav-scroll flex items-center gap-1 overflow-x-auto py-2.5 pb-3" role="tablist" aria-label={`${niche.name} sections`}>
+      {tabs.map(tab => {
+        const isActive = activeTab === tab.id;
+        const href = tab.href || `/${niche.slug}?tab=${tab.id}`;
+        return (
+          <a
+            href={href}
+            role="tab"
+            aria-selected={isActive}
+            class={`subnav-tab flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+              isActive
+                ? 'text-brand bg-brand-soft/50 shadow-sm'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/50'
+            }`}
+          >
+            {tab.icon && <Icon name={tab.icon} class="w-3.5 h-3.5 shrink-0" />}
+            <span>{tab.label}</span>
+          </a>
+        );
+      })}
+    </nav>
+  </div>
+</div>

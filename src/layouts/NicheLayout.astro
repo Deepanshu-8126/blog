@@ -1,0 +1,172 @@
+---
+import { GROUP_NICHES } from '../lib/niche-nav';
+import NicheSubNav from '../components/NicheSubNav.astro';
+import Icon from '../components/Icon.astro';
+import Header from '../components/Header.astro';
+
+interface Props {
+  niche: {
+    id: string;
+    slug: string;
+    name: string;
+    tagline: string;
+    grp: string;
+    page_type: string;
+    icon: string;
+    is_new?: boolean;
+    pin?: boolean;
+  };
+  activeTab?: string;
+  children: any;
+  showBreadcrumb?: boolean;
+}
+
+const { niche, activeTab = 'latest', children, showBreadcrumb = true } = Astro.props;
+
+const groupColors: Record<string, { bg: string; text: string; border: string; ring: string; gradient: string }> = {
+  Tech: { bg: 'bg-tech-bg', text: 'text-tech', border: 'border-tech/30', ring: 'ring-tech/20', gradient: 'from-tech via-tech/80 to-blue-600' },
+  Money: { bg: 'bg-money-bg', text: 'text-money', border: 'border-money/30', ring: 'ring-money/20', gradient: 'from-money via-money/80 to-amber-600' },
+  Lifestyle: { bg: 'bg-life-bg', text: 'text-life', border: 'border-life/30', ring: 'ring-life/20', gradient: 'from-life via-life/80 to-emerald-600' },
+  Entertainment: { bg: 'bg-ent-bg', text: 'text-ent', border: 'border-ent/30', ring: 'ring-ent/20', gradient: 'from-ent via-ent/80 to-pink-600' },
+  Education: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-300', ring: 'ring-blue-200', gradient: 'from-blue-100 via-blue-200 to-blue-400' },
+};
+
+const color = groupColors[niche.grp] || groupColors.Tech;
+const siblingNiches = GROUP_NICHES[niche.grp] || [];
+const pathname = Astro.url.pathname;
+
+// Generate breadcrumbs for header
+const breadcrumbs = [
+  { label: niche.grp, href: `/#${niche.grp.toLowerCase()}` },
+  { label: niche.name }
+];
+---
+
+<style>
+  .niche-header {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .niche-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 0%, var(--brand-glow-lg) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .niche-header-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent 0%, var(--brand-glow) 50%, transparent 100%);
+    animation: rotateGlow 20s linear infinite;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+
+  @keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .breadcrumb-item::after {
+    content: '/';
+    margin-left: 0.5rem;
+    color: var(--muted);
+  }
+  .breadcrumb-item:last-child::after {
+    content: '';
+  }
+
+  .sibling-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.1);
+  }
+</style>
+
+<!-- Global Header with niche context -->
+<Header activeNiche={niche.slug} activeGroup={niche.grp} breadcrumbs={breadcrumbs} />
+
+<!-- Niche Brand Header -->
+<header class="niche-header relative rounded-3xl bg-white border border-slate-200/80 dark:border-slate-700/80 shadow-sm mb-6">
+  <div class="niche-header-glow" aria-hidden="true"></div>
+
+  <div class="relative p-5 sm:p-6 lg:p-8">
+    <!-- Breadcrumb -->
+    {showBreadcrumb && (
+      <nav class="mb-4 flex flex-wrap items-center gap-1.5 text-xs" aria-label="Breadcrumb">
+        <a href="/" class="flex items-center gap-1 text-muted hover:text-brand transition">
+          <Icon name="home" class="w-3.5 h-3.5" />
+          Home
+        </a>
+        <span class="text-muted">{niche.grp}</span>
+        <span class="font-bold text-ink dark:text-white" aria-current="page">{niche.name}</span>
+      </nav>
+    )}
+
+    <!-- Niche Identity -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class={`shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${color.bg} ${color.text} flex items-center justify-center shadow-lg ring-2 ring-white dark:ring-slate-900 ${color.ring}`}>
+          <Icon name={niche.icon} class="w-7 h-7 sm:w-8 sm:h-8" />
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-ink dark:text-white tracking-tight">
+              {niche.name}
+            </h1>
+            {niche.is_new && (
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black uppercase tracking-tighter bg-breaking text-white animate-pulse">
+                NEW
+              </span>
+            )}
+            {niche.pin && (
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-tighter bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 flex items-center gap-1">
+                <Icon name="pin" class="w-3 h-3" />
+                Pinned
+              </span>
+            )}
+          </div>
+          <p class="mt-1.5 text-sm text-muted leading-relaxed max-w-2xl">
+            {niche.tagline}
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Actions / Sibling Niches -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 shrink-0">
+        <div class="hidden sm:flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-xl px-3 py-2">
+          <span class="text-xs font-bold text-muted uppercase tracking-wider">Quick Switch</span>
+          <div class="flex items-center gap-1">
+            {siblingNiches.filter(s => s !== niche.slug).slice(0, 3).map(sib => (
+              <a
+                href={`/${sib}`}
+                class="sibling-chip px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-brand-soft hover:text-brand dark:hover:bg-brand-soft/20 transition-all duration-200 whitespace-nowrap"
+              >
+                {sib.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+              </a>
+            ))}
+            {siblingNiches.length > 4 && (
+              <a href={`/#explore-all`} class="px-3 py-1.5 rounded-lg text-xs font-bold text-brand bg-brand-soft hover:bg-brand/10 transition whitespace-nowrap">
+                +{siblingNiches.length - 3} more
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Sticky Sub-Navigation -->
+<NicheSubNav niche={{ ...niche, page_type: niche.page_type }} activeTab={activeTab} />
+
+<!-- Main Content -->
+<main id="niche-content" class="relative">
+  {children}
+</main>

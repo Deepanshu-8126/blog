@@ -7,6 +7,7 @@ import Movies from '../../templates/Movies.astro';
 import DealsHub from '../../templates/DealsHub.astro';
 import HealthHub from '../../templates/HealthHub.astro';
 import NewsHub from '../../templates/NewsHub.astro';
+import NicheLayout from '../../layouts/NicheLayout.astro';
 
 const { niche: nicheSlug } = Astro.params;
 if (!nicheSlug) {
@@ -21,6 +22,7 @@ if (!niche) {
 
 const pageQuery = parseInt(Astro.url.searchParams.get('page') || '1', 10);
 const currentPage = isNaN(pageQuery) || pageQuery < 1 ? 1 : pageQuery;
+const tabQuery = Astro.url.searchParams.get('tab') || 'latest';
 const pageSize = 12;
 const offset = (currentPage - 1) * pageSize;
 
@@ -32,33 +34,39 @@ const [posts, totalCount, trendingPosts, products] = await Promise.all([
 ]);
 
 const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-const isDealsNiche = niche.slug === 'deals' || niche.slug === 'cashback';
-const isHealthNiche = niche.slug === 'health';
+const isDealsPageType = niche.page_type === 'deals';
+const isHealthPageType = niche.page_type === 'health';
 const isNewsNiche = niche.slug === 'news' || niche.slug === 'viral' || niche.slug === 'breaking';
 ---
 
-{isDealsNiche ? (
-  <DealsHub niche={niche} products={products} posts={posts} />
-) : isHealthNiche ? (
-  <HealthHub niche={niche} posts={posts} trendingPosts={trendingPosts} products={products} />
+{isDealsPageType ? (
+  <NicheLayout niche={niche} activeTab={tabQuery}>
+    <DealsHub niche={niche} products={products} posts={posts} activeTab={tabQuery} />
+  </NicheLayout>
+) : isHealthPageType ? (
+  <NicheLayout niche={niche} activeTab={tabQuery}>
+    <HealthHub niche={niche} posts={posts} trendingPosts={trendingPosts} products={products} activeTab={tabQuery} />
+  </NicheLayout>
 ) : isNewsNiche ? (
-  <NewsHub niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} />
+  <NicheLayout niche={niche} activeTab={tabQuery}>
+    <NewsHub niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} activeTab={tabQuery} />
+  </NicheLayout>
 ) : (
-  <>
+  <NicheLayout niche={niche} activeTab={tabQuery}>
     {niche.page_type === 'feed' && (
-      <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} />
+      <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} activeTab={tabQuery} />
     )}
 
     {niche.page_type === 'tools' && (
-      <Tools niche={niche} products={products} posts={posts} />
+      <Tools niche={niche} products={products} posts={posts} activeTab={tabQuery} />
     )}
 
     {niche.page_type === 'dataset' && (
-      <Dataset niche={niche} posts={posts} />
+      <Dataset niche={niche} posts={posts} activeTab={tabQuery} />
     )}
 
     {niche.page_type === 'movies' && (
-      <Movies niche={niche} posts={posts} />
+      <Movies niche={niche} posts={posts} activeTab={tabQuery} />
     )}
-  </>
+  </NicheLayout>
 )}
