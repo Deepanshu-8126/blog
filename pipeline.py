@@ -58,7 +58,7 @@ AFFILIATE_DISCLAIMER = "\n\n---\n*Disclaimer: UniqueDigit participates in affili
 
 
 # ---------- Dual-Destination Telegram Dispatcher ----------
-def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=None):
+def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=None, deal_meta=None):
     if not TG_BOT_TOKEN:
         return
 
@@ -82,76 +82,138 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
             print("[Admin Telegram alert failed]:", e)
 
     # 2. Public Loot Deals Channel (ONLY for Deals, Loot, and Discount Drops!)
-    is_loot_deal = (niche_slug in ["deals", "cashback"]) or any(
-        kw in safe_title.lower() for kw in ["deal", "loot", "discount", "off", "price drop", "glitch", "coupon", "steal"]
+    is_loot_deal = (niche_slug in ["deals", "cashback"]) or bool(deal_meta) or any(
+        kw in safe_title.lower() for kw in ["deal", "loot", "discount", "off", "price drop", "glitch", "coupon", "steal", "sale"]
     )
 
-    target_channel = TG_DEALS_CHANNEL
-    # Only broadcast to deals destinations if it is actually a deal, never spam general blogs!
-    if is_loot_deal:
-        deal_text = (
-            f"⚡ <b>[0-MINUTE PRICE GLITCH ALERT]</b> ⚡\n\n"
-            f"🛍️ <b>{safe_title}</b>\n\n"
-            f"🏷️ <b>Category:</b> {safe_niche}\n"
-            f"🟢 <b>Loot Score:</b> 9.8/10 (Verified 90-Day All-Time Low)\n"
-            f"💳 <b>Bank Hack:</b> Extra Instant Card / UPI Discount Active\n\n"
-            f"✂️ <b>HOW TO CLAIM LOOT:</b>\n"
-            f"1. Tap the deal button below.\n"
-            f"2. Apply the coupon box on store page.\n"
-            f"3. Pay via UPI/Card for final lowest price!\n\n"
-            f"🚨 <i>Limited Stock! Buy before price increases or stock ends.</i>"
-        )
+    if not is_loot_deal:
+        return
 
-        reply_markup = {
-            "inline_keyboard": [
-                [
-                    {"text": "🛍️ GRAB LOOT ON STORE ➔", "url": post_url}
-                ],
-                [
-                    {"text": "🧭 Top Pinned Menu", "url": "https://t.me/uniquedigit_deals/6"},
-                    {"text": "🔐 Secret Loot Vault", "url": f"{PORTAL_BASE}/vault"}
-                ]
+    # Extract dynamic deal intelligence if provided
+    dm = deal_meta or {}
+    mrp = dm.get("mrp")
+    steal_price = dm.get("steal_price")
+    discount = dm.get("discount", "Steal Drop")
+    loot_score = dm.get("loot_score", "9.8/10")
+    bank_hack = dm.get("bank_hack", "Extra Instant Card / UPI Discount Active")
+    store_name = dm.get("store", "STORE").upper()
+    aff_url = dm.get("aff_url") or post_url
+
+    price_block = ""
+    if mrp and steal_price:
+        price_block = f"📉 <b>MRP:</b> <s>{mrp}</s> ➡️ <b>Steal Price:</b> {steal_price} ({discount})\n"
+    elif steal_price:
+        price_block = f"📉 <b>Steal Price:</b> {steal_price} ({discount})\n"
+
+    deal_caption = (
+        f"⚡ <b>[0-MINUTE PRICE GLITCH ALERT]</b> ⚡\n\n"
+        f"🛍️ <b>{safe_title}</b>\n\n"
+        f"{price_block}"
+        f"🏷️ <b>Category:</b> {safe_niche}\n"
+        f"🟢 <b>Loot Score:</b> {loot_score}\n"
+        f"💳 <b>Bank Hack / Trick:</b> {bank_hack}\n\n"
+        f"✂️ <b>HOW TO CLAIM LOOT:</b>\n"
+        f"1. Tap the deal button below.\n"
+        f"2. Apply coupon/code on store page if available.\n"
+        f"3. Pay via UPI/Card for final lowest price!\n\n"
+        f"🚨 <i>Limited Stock! Buy before price increases or stock ends.</i>"
+    )
+
+    reply_markup = {
+        "inline_keyboard": [
+            [
+                {"text": f"🛍️ GRAB ON {store_name} ➔", "url": aff_url}
+            ],
+            [
+                {"text": "🧭 Top Category Tabs", "url": "https://t.me/uniquedigit_deals/6"},
+                {"text": "🔐 Secret Loot Vault", "url": f"{PORTAL_BASE}/vault"}
             ]
-        }
+        ]
+    }
 
-        # Destination A: Broadcast to Main Deals Channel
-        if target_channel:
-            try:
-                url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-                requests.post(url, json={
-                    "chat_id": target_channel,
-                    "text": deal_text,
+    # Fetch photo bytes if image available
+    photo_bytes = None
+    if image_url:
+        try:
+            if str(image_url).startswith("http"):
+                r_img = requests.get(image_url, headers=UA, timeout=7)
+                if r_img.status_code == 200 and len(r_img.content) > 1000:
+                    photo_bytes = r_img.content
+            elif os.path.exists(image_url):
+                with open(image_url, "rb") as f:
+                    photo_bytes = f.read()
+        except Exception as e:
+            print("[Image fetch for Telegram failed]:", e)
+
+    # Fallback to local default product image if no remote image
+    if not photo_bytes and os.path.exists("public/images/products/iphone_16_pro.jpg"):
+        try:
+            with open("public/images/products/iphone_16_pro.jpg", "rb") as f:
+                photo_bytes = f.read()
+        except Exception:
+            pass
+
+    def dispatch_tg(chat_id, thread_id=None):
+        try:
+            if photo_bytes:
+                data = {
+                    "chat_id": chat_id,
+                    "caption": deal_caption,
                     "parse_mode": "HTML",
-                    "reply_markup": reply_markup
-                }, timeout=10)
-                print(f"[Public Deals Channel Broadcast Sent]: {safe_title}")
-            except Exception as e:
-                print("[Public Deals Channel broadcast failed]:", e)
-
-        # Destination B: Smart AI Forum Topic Routing in Community Group
-        if TG_DEALS_GROUP_ID:
-            lower_str = (safe_title + " " + safe_niche).lower()
-            if any(w in lower_str for w in ["clothe", "fashion", "shirt", "shoe", "sneaker", "kurti", "wear", "dress", "saree", "jeans"]):
-                thread_id = TOPIC_IDS["fashion"]
-            elif any(w in lower_str for w in ["laptop", "phone", "mobile", "tech", "earphone", "headphone", "buds", "gpu", "rtx", "ssd", "monitor", "pc"]):
-                thread_id = TOPIC_IDS["tech"]
-            elif any(w in lower_str for w in ["appliance", "tv", "washing machine", "fridge", "kitchen", "air fryer", "cooker", "geyser"]):
-                thread_id = TOPIC_IDS["home"]
+                    "reply_markup": json.dumps(reply_markup)
+                }
+                if thread_id:
+                    data["message_thread_id"] = thread_id
+                files = {"photo": ("deal.jpg", photo_bytes, "image/jpeg")}
+                res = requests.post(f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendPhoto", data=data, files=files, timeout=15)
             else:
-                thread_id = TOPIC_IDS["loots"]
-
-            try:
-                url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-                requests.post(url, json={
-                    "chat_id": TG_DEALS_GROUP_ID,
-                    "message_thread_id": thread_id,
-                    "text": deal_text,
+                payload = {
+                    "chat_id": chat_id,
+                    "text": deal_caption,
                     "parse_mode": "HTML",
                     "reply_markup": reply_markup
-                }, timeout=10)
-                print(f"[Forum Topic Routed -> Thread {thread_id}]: {safe_title}")
-            except Exception as e:
-                print(f"[Forum Topic {thread_id} broadcast failed]:", e)
+                }
+                if thread_id:
+                    payload["message_thread_id"] = thread_id
+                res = requests.post(f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage", json=payload, timeout=10)
+            
+            resp_json = res.json()
+            if resp_json.get("ok"):
+                msg_id = resp_json.get("result", {}).get("message_id")
+                # Auto-pin mega price glitch loots
+                if msg_id and any(kw in safe_title.lower() for kw in ["glitch", "free", "all-time low", "steal"]):
+                    requests.post(
+                        f"https://api.telegram.org/bot{TG_BOT_TOKEN}/pinChatMessage",
+                        json={"chat_id": chat_id, "message_id": msg_id, "disable_notification": False},
+                        timeout=5
+                    )
+                return True
+            else:
+                print(f"[Telegram send failed to {chat_id}]:", resp_json.get("description"))
+                return False
+        except Exception as e:
+            print(f"[Telegram dispatch error {chat_id}]:", e)
+            return False
+
+    # Destination A: Broadcast to Main Deals Channel
+    if TG_DEALS_CHANNEL:
+        if dispatch_tg(TG_DEALS_CHANNEL):
+            print(f"[Public Deals Channel Broadcast Sent]: {safe_title}")
+
+    # Destination B: Smart AI Forum Topic Routing in Community Group (200k members)
+    if TG_DEALS_GROUP_ID:
+        lower_str = (safe_title + " " + safe_niche).lower()
+        if any(w in lower_str for w in ["clothe", "fashion", "shirt", "shoe", "sneaker", "kurti", "wear", "dress", "saree", "jeans"]):
+            thread_id = TOPIC_IDS["fashion"]
+        elif any(w in lower_str for w in ["laptop", "phone", "mobile", "tech", "earphone", "headphone", "buds", "gpu", "rtx", "ssd", "monitor", "pc"]):
+            thread_id = TOPIC_IDS["tech"]
+        elif any(w in lower_str for w in ["appliance", "tv", "washing machine", "fridge", "kitchen", "air fryer", "cooker", "geyser"]):
+            thread_id = TOPIC_IDS["home"]
+        else:
+            thread_id = TOPIC_IDS["loots"]
+
+        if dispatch_tg(TG_DEALS_GROUP_ID, thread_id=thread_id):
+            print(f"[Forum Topic Routed -> Thread {thread_id}]: {safe_title}")
 
 
 # ---------- Storage Optimization (Prevent 5GB D1 Bloat) ----------
@@ -613,7 +675,18 @@ Return strict JSON:
     {{"q": "Second popular search query", "a": "Direct, helpful 2-sentence answer"}},
     {{"q": "Third question regarding cutoff/pricing/dates", "a": "Direct, helpful 2-sentence answer"}}
   ],
-  "tags": ["Tag1", "Tag2", "Tag3", "Tag4"]
+  "tags": ["Tag1", "Tag2", "Tag3", "Tag4"],
+  "deal_intel": {{
+    "is_deal": true,
+    "product_name": "Specific Product Name",
+    "mrp": "₹24,999",
+    "steal_price": "₹14,490",
+    "discount": "42% OFF",
+    "loot_score": "9.7/10",
+    "bank_hack": "Extra Instant Card / UPI discount or coupon box hack",
+    "store": "Amazon India",
+    "aff_url": "https://www.amazon.in/s?k=Search+Product&tag=uniquedigi0c6-21"
+  }}
 }}"""
     return gemini(prompt)
 
@@ -717,7 +790,7 @@ def process_niche(n):
         )
         existing_titles.append(t)
         # Dispatch instant Telegram alert
-        send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image)
+        send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image, deal_meta=a.get("deal_intel"))
         made += 1
         time.sleep(1)
     return made
@@ -882,7 +955,7 @@ Return strict JSON:
             ]
         )
 
-        send_telegram(res.get("title", query), n_name, post_slug, niche_slug=n_slug, image_url=image)
+        send_telegram(res.get("title", query), n_name, post_slug, niche_slug=n_slug, image_url=image, deal_meta=res.get("deal_intel"))
         print(f"[Radar Agent Published]: {res.get('title')} -> /{n_slug}/{post_slug}")
         processed += 1
         time.sleep(1)
