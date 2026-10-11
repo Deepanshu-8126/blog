@@ -101,15 +101,8 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
                     {"text": "🛍️ GRAB LOOT ON STORE ➔", "url": post_url}
                 ],
                 [
-                    {"text": "💻 Tech Deals", "url": f"{PORTAL_BASE}/pc-builds"},
-                    {"text": "👗 Fashion Loots", "url": f"{PORTAL_BASE}/deals?category=fashion"}
-                ],
-                [
-                    {"text": "🏠 Home Appliances", "url": f"{PORTAL_BASE}/deals?category=appliances"},
-                    {"text": "⚡ Under ₹299 Drops", "url": f"{PORTAL_BASE}/deals?category=under-499"}
-                ],
-                [
-                    {"text": "🔐 OPEN SECRET LOOT VAULT", "url": f"{PORTAL_BASE}/vault"}
+                    {"text": "🧭 Top Pinned Menu", "url": "https://t.me/uniquedigit_deals/6"},
+                    {"text": "🔐 Secret Loot Vault", "url": f"{PORTAL_BASE}/vault"}
                 ]
             ]
         }
