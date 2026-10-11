@@ -99,25 +99,32 @@ CREATE TABLE IF NOT EXISTS post_tags (
 CREATE INDEX IF NOT EXISTS idx_tags ON post_tags(tag);
 
 CREATE TABLE IF NOT EXISTS products (
-  id        TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
-  niche_id  TEXT NOT NULL REFERENCES niches(id) ON DELETE CASCADE,
-  name      TEXT NOT NULL,
-  tagline   TEXT,
-  category  TEXT,
-  badge     TEXT,
-  keywords  TEXT NOT NULL DEFAULT '',                -- space-separated, for Deal Radar match
-  image_url TEXT,
-  price     REAL,
-  rating    REAL,
-  url       TEXT NOT NULL,
-  aff_url   TEXT,
-  merchant  TEXT,
-  clicks    INTEGER NOT NULL DEFAULT 0,
-  active    INTEGER NOT NULL DEFAULT 1,
-  sort      INTEGER NOT NULL DEFAULT 0,
-  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
+  id             TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+  niche_id       TEXT NOT NULL REFERENCES niches(id) ON DELETE CASCADE,
+  name           TEXT NOT NULL,
+  tagline        TEXT,
+  category       TEXT,
+  badge          TEXT,
+  keywords       TEXT NOT NULL DEFAULT '',                -- space-separated, for Deal Radar match
+  image_url      TEXT,
+  price          REAL,                                    -- Current Steal / Offer price
+  mrp            REAL,                                    -- Original MRP
+  discount_pct   INTEGER NOT NULL DEFAULT 0,              -- Calculated % off
+  cpa_payout     REAL NOT NULL DEFAULT 0,                 -- Admin commission payout (₹)
+  cashback_user  REAL NOT NULL DEFAULT 0,                 -- Cashback given to user (₹)
+  coupon_code    TEXT,                                    -- Secret coupon / bank code
+  deal_type      TEXT NOT NULL DEFAULT 'ecom',            -- 'ecom' | 'cpa_finance' | 'glitch' | 'freebie'
+  rating         REAL,
+  url            TEXT NOT NULL,
+  aff_url        TEXT,
+  merchant       TEXT,
+  clicks         INTEGER NOT NULL DEFAULT 0,
+  active         INTEGER NOT NULL DEFAULT 1,
+  sort           INTEGER NOT NULL DEFAULT 0,
+  created_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
 CREATE INDEX IF NOT EXISTS idx_products_niche ON products(niche_id, active, sort);
+CREATE INDEX IF NOT EXISTS idx_products_earning ON products(active, cpa_payout DESC, clicks DESC);
 
 CREATE TABLE IF NOT EXISTS affiliate_rules (
   id       TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),

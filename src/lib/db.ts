@@ -62,6 +62,12 @@ export interface Product {
   keywords?: string;
   image_url?: string;
   price?: number;
+  mrp?: number;
+  discount_pct?: number;
+  cpa_payout?: number;
+  cashback_user?: number;
+  coupon_code?: string;
+  deal_type?: string;
   rating?: number;
   url: string;
   aff_url?: string;
@@ -745,13 +751,13 @@ export async function getTrendingPosts(limit = 5, runtimeEnv?: any): Promise<Pos
   return [...SEED_POSTS].sort((a, b) => (b.hype || b.trend_score) - (a.hype || a.trend_score)).slice(0, limit);
 }
 
-/** 5. Get products / tools for a niche */
+/** 5. Get products / tools for a niche (Optimized for Highest Monetization & Conversions) */
 export async function getProductsByNiche(nicheId: string, runtimeEnv?: any): Promise<Product[]> {
   const db = getD1(runtimeEnv);
   if (db && typeof db.prepare === 'function') {
     try {
       const res = await db.prepare(
-        'SELECT * FROM products WHERE niche_id = ? AND active = 1 ORDER BY sort ASC'
+        'SELECT * FROM products WHERE niche_id = ? AND active = 1 ORDER BY cpa_payout DESC, clicks DESC, sort ASC'
       ).bind(nicheId).all();
       if (res.results && res.results.length > 0) {
         return res.results as Product[];
@@ -763,13 +769,13 @@ export async function getProductsByNiche(nicheId: string, runtimeEnv?: any): Pro
   return SEED_PRODUCTS.filter(pr => pr.niche_id === nicheId);
 }
 
-/** 5b. Get all active products across niches */
+/** 5b. Get all active products across niches (Highest Revenue Payout First) */
 export async function getAllProducts(runtimeEnv?: any): Promise<Product[]> {
   const db = getD1(runtimeEnv);
   if (db && typeof db.prepare === 'function') {
     try {
       const res = await db.prepare(
-        'SELECT * FROM products WHERE active = 1 ORDER BY sort ASC'
+        'SELECT * FROM products WHERE active = 1 ORDER BY cpa_payout DESC, clicks DESC, sort ASC'
       ).all();
       if (res.results && res.results.length > 0) {
         return res.results as Product[];
