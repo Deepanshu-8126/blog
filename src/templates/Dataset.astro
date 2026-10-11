@@ -15,12 +15,6 @@ interface Props {
 
 const { niche, posts } = Astro.props;
 ---
-
-<Layout
-  title={`${niche.name} Today (24K & 22K) — Live Indian Bullion Rates | UniqueDigit`}
-  description={niche.tagline || 'Live 24 Karat and 22 Karat gold rates in Mumbai, Delhi, Bengaluru, Chennai and major Indian cities.'}
-  niche={niche}
->
   <div class="mb-6">
     <div class="flex items-center gap-2 mb-2">
       <div class="w-10 h-10 rounded-xl bg-brand text-white flex items-center justify-center shadow-xs">
@@ -59,4 +53,3 @@ const { niche, posts } = Astro.props;
 
   <AdSlot position="mid" />
   <NewsletterStrip />
-</Layout>

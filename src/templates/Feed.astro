@@ -20,12 +20,6 @@ const { niche, posts, trendingPosts, currentPage = 1, totalPages = 1 } = Astro.p
 const heroPost = posts[0];
 const remainingPosts = posts.slice(1);
 ---
-
-<Layout
-  title={`${niche.name} — ${niche.tagline || 'Daily Updates'} | UniqueDigit`}
-  description={niche.tagline || `Latest ${niche.name} insights, real-time guides, and viral updates in India.`}
-  niche={niche}
->
   <!-- Niche Header Banner -->
   {niche.slug === 'gta-6' ? (
     <div class="mb-8 rounded-3xl bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white p-6 sm:p-8 border border-purple-500/30 shadow-2xl relative overflow-hidden">
@@ -291,4 +285,3 @@ const remainingPosts = posts.slice(1);
   </div>
 
   <NewsletterStrip />
-</Layout>

@@ -42,34 +42,27 @@ const [posts, totalCount, trendingPosts, products] = await Promise.all([
 const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 ---
 
-{isDealsPageType ? (
-  <NicheLayout niche={niche} activeTab={tabQuery}>
+<NicheLayout niche={niche} activeTab={tabQuery}>
+  {isDealsPageType ? (
     <DealsHub niche={niche} products={products} posts={posts} activeTab={tabQuery} />
-  </NicheLayout>
-) : isHealthPageType ? (
-  <NicheLayout niche={niche} activeTab={tabQuery}>
+  ) : isHealthPageType ? (
     <HealthHub niche={niche} posts={posts} trendingPosts={trendingPosts} products={products} activeTab={tabQuery} />
-  </NicheLayout>
-) : isNewsNiche ? (
-  <NicheLayout niche={niche} activeTab={tabQuery}>
+  ) : isNewsNiche ? (
     <NewsHub niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} activeTab={tabQuery} />
-  </NicheLayout>
-) : (
-  <NicheLayout niche={niche} activeTab={tabQuery}>
-    {niche.page_type === 'feed' && (
-      <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} activeTab={tabQuery} />
-    )}
-
-    {niche.page_type === 'tools' && (
-      <Tools niche={niche} products={products} posts={posts} activeTab={tabQuery} />
-    )}
-
-    {niche.page_type === 'dataset' && (
-      <Dataset niche={niche} posts={posts} activeTab={tabQuery} />
-    )}
-
-    {niche.page_type === 'movies' && (
-      <Movies niche={niche} posts={posts} activeTab={tabQuery} />
-    )}
-  </NicheLayout>
-)}
+  ) : (
+    <>
+      {niche.page_type === 'feed' && (
+        <Feed niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} activeTab={tabQuery} />
+      )}
+      {niche.page_type === 'tools' && (
+        <Tools niche={niche} products={products} posts={posts} activeTab={tabQuery} />
+      )}
+      {niche.page_type === 'dataset' && (
+        <Dataset niche={niche} posts={posts} activeTab={tabQuery} />
+      )}
+      {niche.page_type === 'movies' && (
+        <Movies niche={niche} posts={posts} activeTab={tabQuery} />
+      )}
+    </>
+  )}
+</NicheLayout>

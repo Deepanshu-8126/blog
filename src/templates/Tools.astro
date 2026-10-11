@@ -18,12 +18,6 @@ const { niche, products, posts } = Astro.props;
 // Extract categories for sidebar filters
 const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean))) as string[];
 ---
-
-<Layout
-  title={`${niche.name} Directory & Buying Guides | UniqueDigit`}
-  description={niche.tagline || `Discover top curated ${niche.name} tools, specifications, price comparisons, and buying guides in India.`}
-  niche={niche}
->
   <!-- Niche Header Banner -->
   <div class="mb-8 pb-6 border-b border-line">
     <div class="flex items-center gap-2 mb-2">
@@ -163,4 +157,3 @@ const categories = Array.from(new Set(products.map(p => p.category).filter(Boole
       });
     })();
   </script>
-</Layout>
