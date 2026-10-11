@@ -23,3 +23,9 @@
 - **Cloud & Mobile-First Execution**: When deployed to Vercel/Render or accessed via mobile, media generation must route via direct cloud REST APIs (`POST /api/studio/generate-photo`), never relying on local desktop GUI browser windows.
 - **Multimodal Reference Garment Ingestion**: The studio engine must anchor to reference garment photos (URL/base64) using Gemini Vision (`gemini-2.5-flash`) to preserve neckline, embroidery, fabric drape, and silhouette.
 - **8K Natural Optical Super-Sampling**: Portra 400 skin calibration + organic micro-grain (preserving authentic skin pores, zero plastic AI look, zero digital crunch).
+
+## 5. Dual Telegram & Community Strategy (Loot Focus vs Admin/Blog Stream)
+- **Public Loot Deals Channel Exclusivity**: Public deals channels (Telegram/WhatsApp) must ONLY broadcast high-converting shopping loot deals, Amazon/Flipkart price drops, and glitches. General informational articles (cricket, exams, health, movies) must NEVER be sent to the deals channel to avoid audience fatigue.
+- **Admin Private Bot Stream**: The private admin bot chat (`TG_CHAT_ID`) receives real-time pings for ALL articles across all niches so admin has continuous radar visibility.
+- **Future Roadmap (Saved in Memory)**: Expansion into a dedicated daily news/editorial WhatsApp channel once traffic scales.
+- **Active Operational Focus**: Amazon/Flipkart loot deals monetization & price drop conversions.

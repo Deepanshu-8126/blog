@@ -45,29 +45,59 @@ CF_KV_ID = os.environ.get("CLOUDFLARE_KV_NAMESPACE_ID", "2ab0d1c56e1c471fa658e52
 
 TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+TG_DEALS_CHANNEL = os.environ.get("TELEGRAM_DEALS_CHANNEL", "")
 PORTAL_BASE = os.environ.get("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
 AFFILIATE_DISCLAIMER = "\n\n---\n*Disclaimer: UniqueDigit participates in affiliate programs including Amazon Associates. When you purchase through links on our site, we may earn an affiliate commission at no extra cost to you.*"
 
 
-# ---------- Telegram Dispatcher ----------
-def send_telegram(title, niche_name, post_slug):
-    if not (TG_BOT_TOKEN and TG_CHAT_ID):
+# ---------- Dual-Destination Telegram Dispatcher ----------
+def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=None):
+    if not TG_BOT_TOKEN:
         return
-    post_url = f"{PORTAL_BASE}/{post_slug}"
+
+    post_url = f"{PORTAL_BASE}/{niche_slug}/{post_slug}"
     safe_title = str(title).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     safe_niche = str(niche_name).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-    text = (
-        f"🔥 <b>New Trend Live on UniqueDigit</b>\n\n"
-        f"📌 <b>Category:</b> {safe_niche}\n"
-        f"📝 <b>Title:</b> {safe_title}\n"
-        f"🔗 <b>Link:</b> <a href=\"{post_url}\">{post_url}</a>\n\n"
-        f"⚡ <i>Auto-published with verified deals &amp; schema</i>"
+
+    # 1. Admin Private Channel (Always receives ALL posts: cricket, exam, health, deals)
+    if TG_CHAT_ID:
+        admin_text = (
+            f"📡 <b>[ADMIN RADAR] Published Live</b>\n\n"
+            f"📌 <b>Category:</b> {safe_niche} (<code>{niche_slug}</code>)\n"
+            f"📝 <b>Title:</b> {safe_title}\n"
+            f"🔗 <b>URL:</b> <a href=\"{post_url}\">{post_url}</a>\n\n"
+            f"⚡ <i>Auto-synced to Cloudflare D1</i>"
+        )
+        try:
+            url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+            requests.post(url, json={"chat_id": TG_CHAT_ID, "text": admin_text, "parse_mode": "HTML"}, timeout=10)
+        except Exception as e:
+            print("[Admin Telegram alert failed]:", e)
+
+    # 2. Public Loot Deals Channel (ONLY for Deals, Loot, and Discount Drops!)
+    is_loot_deal = (niche_slug in ["deals", "cashback"]) or any(
+        kw in safe_title.lower() for kw in ["deal", "loot", "discount", "off", "price drop", "glitch", "coupon", "steal"]
     )
-    try:
-        url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-        requests.post(url, json={"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "HTML"}, timeout=10)
-    except Exception as e:
-        print("[Telegram notify failed]:", e)
+
+    target_channel = TG_DEALS_CHANNEL or TG_CHAT_ID
+    # Only broadcast to deals channel if it is actually a deal, never spam general blogs!
+    if TG_DEALS_CHANNEL and is_loot_deal:
+        deal_text = (
+            f"🔥 <b>[0-MINUTE LOOT DROP ALERT]</b> 🔥\n\n"
+            f"🛍️ <b>{safe_title}</b>\n\n"
+            f"⚡ <b>Store:</b> Amazon / Flipkart Loot\n"
+            f"📉 <b>Pricing:</b> All-Time Low / Price Cut Tracked\n"
+            f"💳 <b>Bank:</b> Instant Card / UPI Discount Active\n\n"
+            f"👉 <b>GRAB LOOT HERE:</b>\n"
+            f"🔗 <a href=\"{post_url}\">{post_url}</a>\n\n"
+            f"🚨 <i>Limited Stock! Buy before price increases or stock ends.</i>"
+        )
+        try:
+            url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+            requests.post(url, json={"chat_id": TG_DEALS_CHANNEL, "text": deal_text, "parse_mode": "HTML"}, timeout=10)
+            print(f"[Public Deals Channel Broadcast Sent]: {safe_title}")
+        except Exception as e:
+            print("[Public Deals Channel broadcast failed]:", e)
 
 
 # ---------- Storage Optimization (Prevent 5GB D1 Bloat) ----------
@@ -633,7 +663,7 @@ def process_niche(n):
         )
         existing_titles.append(t)
         # Dispatch instant Telegram alert
-        send_telegram(a.get("title", t), n["name"], post_slug)
+        send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image)
         made += 1
         time.sleep(1)
     return made
@@ -798,7 +828,7 @@ Return strict JSON:
             ]
         )
 
-        send_telegram(res.get("title", query), n_name, post_slug)
+        send_telegram(res.get("title", query), n_name, post_slug, niche_slug=n_slug, image_url=image)
         print(f"[Radar Agent Published]: {res.get('title')} -> /{n_slug}/{post_slug}")
         processed += 1
         time.sleep(1)
