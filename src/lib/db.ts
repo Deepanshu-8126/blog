@@ -763,6 +763,24 @@ export async function getProductsByNiche(nicheId: string, runtimeEnv?: any): Pro
   return SEED_PRODUCTS.filter(pr => pr.niche_id === nicheId);
 }
 
+/** 5b. Get all active products across niches */
+export async function getAllProducts(runtimeEnv?: any): Promise<Product[]> {
+  const db = getD1(runtimeEnv);
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const res = await db.prepare(
+        'SELECT * FROM products WHERE active = 1 ORDER BY sort ASC'
+      ).all();
+      if (res.results && res.results.length > 0) {
+        return res.results as Product[];
+      }
+    } catch (err) {
+      console.warn('[D1 getAllProducts fallback]:', err);
+    }
+  }
+  return SEED_PRODUCTS;
+}
+
 /** 6. Get post by niche slug and post slug */
 export async function getPost(nicheSlug: string, postSlug: string, runtimeEnv?: any): Promise<Post | null> {
   const niche = await getNicheBySlug(nicheSlug, runtimeEnv);

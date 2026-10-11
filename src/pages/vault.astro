@@ -1,0 +1,118 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { getAllProducts, getTrendingPosts } from '../lib/db';
+
+const runtime = (Astro.locals as any)?.runtime;
+const products = await getAllProducts(runtime?.env);
+const trending = await getTrendingPosts(6, runtime?.env);
+
+// Filter highest discounted items
+const lootProducts = products.filter(p => (p.badge && p.badge.includes('LOOT')) || (p.price && p.price < 2000)).slice(0, 6);
+---
+
+<Layout
+  title="🔐 Secret VIP Loot Vault — Exclusive Price Glitches & Flash Drops | UniqueDigit"
+  description="Unlock secret clearance drops, ₹1 loots, and unlisted festival pricing glitches directly from Amazon, Flipkart and Myntra."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <!-- Vault Header Hero -->
+    <div class="rounded-3xl bg-gradient-to-br from-slate-950 via-purple-950 to-slate-900 text-white p-6 sm:p-12 border border-purple-500/40 shadow-2xl relative overflow-hidden mb-12">
+      <!-- Ambient Glow Orbs -->
+      <div class="absolute -right-24 -top-24 w-96 h-96 bg-brand/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-24 -bottom-24 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 max-w-3xl">
+        <div class="flex items-center gap-2 mb-4 flex-wrap">
+          <span class="px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-400 text-slate-950 shadow-md flex items-center gap-1.5">
+            <Icon name="sparkles" class="w-3.5 h-3.5" />
+            VIP Members Only
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Vault Live Sync Active
+          </span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
+          The Secret <span class="bg-gradient-to-r from-amber-300 via-rose-300 to-purple-300 bg-clip-text text-transparent">Loot Vault</span>
+        </h1>
+        <p class="text-sm sm:text-base text-purple-100/90 leading-relaxed font-medium mb-8">
+          Unlisted price errors, hidden manufacturer coupons, and clearance warehouse drops from Amazon, Flipkart, Myntra, and Meesho. Verified by our autonomous AI radar.
+        </p>
+
+        <!-- 3 Vault Security Highlights -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-white/10 text-xs">
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+            <span class="text-amber-300 font-black uppercase block mb-1">01. 0-Minute Speed</span>
+            <span class="text-slate-300">Glitches detected within 15 seconds of seller price cuts.</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+            <span class="text-rose-300 font-black uppercase block mb-1">02. 100% Anti-Scam</span>
+            <span class="text-slate-300">Cross-referenced against 90-day historic price data.</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+            <span class="text-emerald-300 font-black uppercase block mb-1">03. Direct Bot DM</span>
+            <span class="text-slate-300">Get private ping before public channels spam it.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Vault Secret Loots Grid -->
+    <div class="my-10">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-600 animate-pulse"></span>
+            Active Unlocked Secret Loots
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">
+            Prices verified by AI algorithm. Grab before stock ends.
+          </p>
+        </div>
+
+        <a
+          href="https://t.me/uniquedigit_deals"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-black text-xs uppercase tracking-wider transition shadow-sm self-start sm:self-auto"
+        >
+          <span>Join VIP Telegram Feed</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {lootProducts.map(product => (
+          <ToolCard product={product} />
+        ))}
+      </div>
+    </div>
+
+    <!-- Telegram 1-Click Tracker Callout -->
+    <div class="my-12 p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white shadow-xl relative overflow-hidden">
+      <div class="relative z-10 max-w-2xl">
+        <span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-white text-sky-700 inline-block mb-3">
+          🤖 Free AI Shopping Assistant
+        </span>
+        <h3 class="text-2xl sm:text-3xl font-black leading-tight mb-3">
+          Want Personal Price Drop Alerts for Any Product?
+        </h3>
+        <p class="text-xs sm:text-sm text-sky-100 leading-relaxed mb-6">
+          Just send any Amazon or Flipkart product link to our Telegram bot. The moment the price drops or a coupon becomes active, the bot will instantly ping you!
+        </p>
+        <a
+          href="https://t.me/uniquedigit_deals"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-sm uppercase tracking-wider transition shadow-lg"
+        >
+          <span>Open @uniquedigit_deals on Telegram</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

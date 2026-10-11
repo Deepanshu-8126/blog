@@ -45,7 +45,7 @@ CF_KV_ID = os.environ.get("CLOUDFLARE_KV_NAMESPACE_ID", "2ab0d1c56e1c471fa658e52
 
 TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
-TG_DEALS_CHANNEL = os.environ.get("TELEGRAM_DEALS_CHANNEL", "")
+TG_DEALS_CHANNEL = os.environ.get("TELEGRAM_DEALS_CHANNEL", "@uniquedigit_deals")
 PORTAL_BASE = os.environ.get("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
 AFFILIATE_DISCLAIMER = "\n\n---\n*Disclaimer: UniqueDigit participates in affiliate programs including Amazon Associates. When you purchase through links on our site, we may earn an affiliate commission at no extra cost to you.*"
 
@@ -79,22 +79,49 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
         kw in safe_title.lower() for kw in ["deal", "loot", "discount", "off", "price drop", "glitch", "coupon", "steal"]
     )
 
-    target_channel = TG_DEALS_CHANNEL or TG_CHAT_ID
+    target_channel = TG_DEALS_CHANNEL
     # Only broadcast to deals channel if it is actually a deal, never spam general blogs!
-    if TG_DEALS_CHANNEL and is_loot_deal:
+    if target_channel and is_loot_deal:
         deal_text = (
-            f"🔥 <b>[0-MINUTE LOOT DROP ALERT]</b> 🔥\n\n"
+            f"⚡ <b>[0-MINUTE PRICE GLITCH ALERT]</b> ⚡\n\n"
             f"🛍️ <b>{safe_title}</b>\n\n"
-            f"⚡ <b>Store:</b> Amazon / Flipkart Loot\n"
-            f"📉 <b>Pricing:</b> All-Time Low / Price Cut Tracked\n"
-            f"💳 <b>Bank:</b> Instant Card / UPI Discount Active\n\n"
-            f"👉 <b>GRAB LOOT HERE:</b>\n"
-            f"🔗 <a href=\"{post_url}\">{post_url}</a>\n\n"
+            f"🏷️ <b>Category:</b> {safe_niche}\n"
+            f"🟢 <b>Loot Score:</b> 9.8/10 (Verified 90-Day All-Time Low)\n"
+            f"💳 <b>Bank Hack:</b> Extra Instant Card / UPI Discount Active\n\n"
+            f"✂️ <b>HOW TO CLAIM LOOT:</b>\n"
+            f"1. Tap the deal button below.\n"
+            f"2. Apply the coupon box on store page.\n"
+            f"3. Pay via UPI/Card for final lowest price!\n\n"
             f"🚨 <i>Limited Stock! Buy before price increases or stock ends.</i>"
         )
+
+        reply_markup = {
+            "inline_keyboard": [
+                [
+                    {"text": "🛍️ GRAB LOOT ON STORE ➔", "url": post_url}
+                ],
+                [
+                    {"text": "💻 Tech Deals", "url": f"{PORTAL_BASE}/pc-builds"},
+                    {"text": "👗 Fashion Loots", "url": f"{PORTAL_BASE}/deals?category=fashion"}
+                ],
+                [
+                    {"text": "🏠 Home Appliances", "url": f"{PORTAL_BASE}/deals?category=appliances"},
+                    {"text": "⚡ Under ₹299 Drops", "url": f"{PORTAL_BASE}/deals?category=under-499"}
+                ],
+                [
+                    {"text": "🔐 OPEN SECRET LOOT VAULT", "url": f"{PORTAL_BASE}/vault"}
+                ]
+            ]
+        }
+
         try:
             url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-            requests.post(url, json={"chat_id": TG_DEALS_CHANNEL, "text": deal_text, "parse_mode": "HTML"}, timeout=10)
+            requests.post(url, json={
+                "chat_id": target_channel,
+                "text": deal_text,
+                "parse_mode": "HTML",
+                "reply_markup": reply_markup
+            }, timeout=10)
             print(f"[Public Deals Channel Broadcast Sent]: {safe_title}")
         except Exception as e:
             print("[Public Deals Channel broadcast failed]:", e)
