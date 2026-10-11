@@ -63,7 +63,7 @@ const itemListSchema = {
 
 <Layout
   title="Trending Now in India — Real-Time Multi-Signal Hype Board | UniqueDigit"
-  description="Live tracking top trending searches, viral news, tech drops and deals across India. Multi-source verified from Google Trends, Wikipedia, YouTube and News."
+  description="Live tracking top trending searches, viral news, tech drops and deals across India. Multi-source from Google Trends, Wikipedia, YouTube and News."
 >
   <Fragment slot="head">
     <script type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
@@ -188,7 +188,7 @@ const itemListSchema = {
       const res = await fetch('/api/trending');
       if (res.ok) {
         // Silently update live indicators if fresh
-        console.log('[HypeBoard]: Verified background sync ok');
+        console.log('[HypeBoard]: Live background sync ok');
       }
     } catch (e) {
       // Silent error ignore

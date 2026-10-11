@@ -14,7 +14,7 @@ interface Props {
 
 const { niche, posts } = Astro.props;
 
-// Verified trending cinema releases with authentic theatrical posters
+// Curated trending cinema releases with authentic theatrical posters
 const TMDB_SAMPLE_MOVIES = [
   {
     title: 'Drishyam 3: The Conclusion',
@@ -64,7 +64,7 @@ const TMDB_SAMPLE_MOVIES = [
       <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Hub</span>
     </div>
     <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name} & OTT Radar</h1>
-    <p class="text-sm text-muted mt-1">{niche.tagline} • Trending theatrical runs, OTT release dates, and verified reviews.</p>
+    <p class="text-sm text-muted mt-1">{niche.tagline} • Trending theatrical runs, OTT release dates, and curated reviews.</p>
   </div>
 
   <!-- TMDB Trending Posters Row -->
@@ -74,7 +74,7 @@ const TMDB_SAMPLE_MOVIES = [
         <span class="w-2.5 h-2.5 rounded-full bg-ent"></span>
         <span>Now Trending on OTT & Theatres</span>
       </h2>
-      <span class="text-xs text-muted font-mono">TMDB Verified</span>
+      <span class="text-xs text-muted font-mono">TMDB Official</span>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">

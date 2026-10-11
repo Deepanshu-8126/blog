@@ -20,9 +20,15 @@ if (!niche) {
   return Astro.redirect('/404');
 }
 
+console.log('[index.astro] niche from DB:', { slug: niche.slug, name: niche.name, page_type: niche.page_type, grp: niche.grp });
+
+const isDealsPageType = niche.page_type === 'deals';
+const isHealthPageType = niche.page_type === 'health';
+const isNewsNiche = niche.slug === 'news' || niche.slug === 'viral' || niche.slug === 'breaking';
+
 const pageQuery = parseInt(Astro.url.searchParams.get('page') || '1', 10);
 const currentPage = isNaN(pageQuery) || pageQuery < 1 ? 1 : pageQuery;
-const tabQuery = Astro.url.searchParams.get('tab') || 'latest';
+const tabQuery = Astro.url.searchParams.get('tab') || (isDealsPageType ? 'live' : 'latest');
 const pageSize = 12;
 const offset = (currentPage - 1) * pageSize;
 
@@ -34,9 +40,6 @@ const [posts, totalCount, trendingPosts, products] = await Promise.all([
 ]);
 
 const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-const isDealsPageType = niche.page_type === 'deals';
-const isHealthPageType = niche.page_type === 'health';
-const isNewsNiche = niche.slug === 'news' || niche.slug === 'viral' || niche.slug === 'breaking';
 ---
 
 {isDealsPageType ? (

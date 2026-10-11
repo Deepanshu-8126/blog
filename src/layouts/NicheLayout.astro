@@ -23,6 +23,8 @@ interface Props {
 
 const { niche, activeTab = 'latest', children, showBreadcrumb = true } = Astro.props;
 
+console.log('[NicheLayout] Received niche:', { slug: niche.slug, name: niche.name, page_type: niche.page_type, grp: niche.grp });
+
 const groupColors: Record<string, { bg: string; text: string; border: string; ring: string; gradient: string }> = {
   Tech: { bg: 'bg-tech-bg', text: 'text-tech', border: 'border-tech/30', ring: 'ring-tech/20', gradient: 'from-tech via-tech/80 to-blue-600' },
   Money: { bg: 'bg-money-bg', text: 'text-money', border: 'border-money/30', ring: 'ring-money/20', gradient: 'from-money via-money/80 to-amber-600' },
@@ -86,6 +88,39 @@ const breadcrumbs = [
   .sibling-chip:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.1);
+  }
+
+  .sibling-chip:active {
+    transform: scale(0.97);
+  }
+
+  /* Mobile improvements */
+  @media (max-width: 640px) {
+    .niche-header {
+      border-radius: 0 0 1.5rem 1.5rem;
+      margin: 0 -1rem 1.5rem;
+    }
+
+    .niche-header > div:last-child {
+      padding: 1rem;
+    }
+
+    .breadcrumb {
+      font-size: 0.7rem;
+    }
+
+    .sibling-chip {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .niche-header-glow {
+      animation: none;
+    }
   }
 </style>
 

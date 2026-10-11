@@ -1,5 +1,4 @@
 ---
-import NicheLayout from '../layouts/NicheLayout.astro';
 import NicheCard from '../components/NicheCard.astro';
 import AdSlot from '../components/AdSlot.astro';
 import Icon from '../components/Icon.astro';
@@ -27,12 +26,97 @@ const STORES = [
 ];
 ---
 
-<NicheLayout niche={niche} activeTab={activeTab}>
+<style>
+  /* Mobile-first responsive improvements */
+  .deal-card {
+    min-height: 0;
+  }
+
+  .deal-card img {
+    max-height: 200px;
+    width: auto;
+  }
+
+  @media (max-width: 640px) {
+    .deal-card {
+      margin: 0 -0.5rem;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+    }
+
+    .deal-card:first-child {
+      border-top: none;
+    }
+
+    .deal-card:last-child {
+      border-bottom: none;
+    }
+
+    .deal-card img {
+      max-height: 160px;
+    }
+
+    /* Stack filter buttons vertically on very small screens */
+    .merchant-filter-btn {
+      flex: 1 0 auto;
+      min-width: 0;
+    }
+
+    /* Better tap targets for mobile */
+    .subnav-tab {
+      min-height: 44px;
+      padding: 0.75rem 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .live-radar-bar {
+      font-size: 0.65rem;
+    }
+
+    .hero-stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* Touch feedback */
+  .deal-card:active,
+  .merchant-filter-btn:active,
+  .category-card:active {
+    transform: scale(0.98);
+  }
+
+  .grab-loot-btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .live-radar-bar .animate-ping,
+    .animate-pulse,
+    .animate-spin {
+      animation: none !important;
+    }
+    .deal-card img {
+      transition: none !important;
+    }
+  }
+
+  /* Focus visible for accessibility */
+  .merchant-filter-btn:focus-visible,
+  .subnav-tab:focus-visible,
+  .category-card:focus-visible,
+  .grab-loot-btn:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+</style>
 
   <!-- TAB: LIVE DEALS -->
   {activeTab === 'live' && (
     <>
-      <div class="bg-slate-950 text-white border-b border-slate-800 py-2.5 px-4 overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 mb-6">
+      <div class="live-radar-bar bg-slate-950 text-white border-b border-slate-800 py-2.5 px-4 overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 mb-6">
         <div class="max-w-7xl mx-auto flex items-center gap-3">
           <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-rose-600 text-white shrink-0 animate-pulse flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
@@ -88,7 +172,7 @@ const STORES = [
           </h1>
 
           <p class="text-sm sm:text-base text-purple-100/90 max-w-3xl leading-relaxed mb-6 font-medium">
-            Our autonomous bot continuously cross-references price glitches, bank discount stacking, and flash drops across <strong>Amazon India, Flipkart, Myntra, Ajio, and Meesho</strong>. Get verified all-time lowest prices before stock runs out.
+            Our autonomous bot continuously cross-references price glitches, bank discount stacking, and flash drops across <strong>Amazon India, Flipkart, Myntra, Ajio, and Meesho</strong>. Get live all-time lowest prices before stock runs out.
           </p>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-white/10 text-xs">
@@ -234,7 +318,7 @@ const STORES = [
                       </p>
                     ) : (
                       <div class="flex items-baseline justify-between">
-                        <span class="text-slate-500">Verified Drop:</span>
+                        <span class="text-slate-500">Live Drop:</span>
                         <span class="font-bold text-slate-900">All-Time Low Pricing</span>
                       </div>
                     )}
@@ -310,7 +394,7 @@ const STORES = [
           <div class="flex items-center justify-between mb-6">
             <div>
               <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                Verified Shopping Guides & Festival Analysis
+                Curated Shopping Guides & Festival Analysis
               </h2>
               <p class="text-xs sm:text-sm text-slate-500 mt-1">
                 Independent benchmark breakdowns, warranty checks, and best buying time analysis.
@@ -457,7 +541,7 @@ const STORES = [
                       </p>
                     ) : (
                       <div class="flex items-baseline justify-between">
-                        <span class="text-slate-500">Verified Drop:</span>
+                        <span class="text-slate-500">Live Drop:</span>
                         <span class="font-bold text-slate-900">All-Time Low Pricing</span>
                       </div>
                     )}
@@ -645,8 +729,6 @@ const STORES = [
       </div>
     </div>
   )}
-
-</NicheLayout>
 
 <script>
   (function() {

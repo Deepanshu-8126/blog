@@ -13,7 +13,9 @@ interface Props {
 }
 
 const { niche, activeTab = 'latest' } = Astro.props;
+console.log('[NicheSubNav] Received niche:', { slug: niche.slug, name: niche.name, page_type: niche.page_type, grp: niche.grp });
 const tabs = getNicheNavTabs(niche.page_type);
+console.log('[NicheSubNav] Tabs for page_type', niche.page_type, ':', tabs.map(t => t.id));
 
 const groupColors: Record<string, { bg: string; text: string; border: string; glow: string }> = {
   Tech: { bg: 'bg-tech-bg', text: 'text-tech', border: 'border-tech/30', glow: 'bg-tech/10' },
@@ -55,14 +57,46 @@ const color = groupColors[niche.grp] || groupColors.Tech;
   .subnav-scroll {
     scrollbar-width: none;
     -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
   .subnav-scroll::-webkit-scrollbar {
     display: none;
   }
 
+  /* Gradient fade edges for horizontal scroll hint */
+  .subnav-scroll::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 48px;
+    background: linear-gradient(90deg, transparent, var(--card-bg, white));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .subnav-scroll.has-scroll::after {
+    opacity: 1;
+  }
+  .dark .subnav-scroll::after {
+    background: linear-gradient(90deg, transparent, var(--card-bg-dark, #0d1117));
+  }
+
   .subnav-tab {
     position: relative;
     white-space: nowrap;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .subnav-tab:first-child {
+    margin-left: 0;
+  }
+
+  .subnav-tab:last-child {
+    margin-right: 0;
   }
 
   .subnav-tab.active::after {
@@ -76,7 +110,29 @@ const color = groupColors[niche.grp] || groupColors.Tech;
     background: var(--brand);
     box-shadow: 0 0 8px var(--brand-glow);
   }
+
+  /* Touch feedback */
+  .subnav-tab:active {
+    transform: scale(0.98);
+  }
 </style>
+
+<script>
+  // Client-side scroll indicator
+  document.addEventListener('DOMContentLoaded', () => {
+    const scrollContainer = document.querySelector('.subnav-scroll');
+    if (!scrollContainer) return;
+
+    const checkScroll = () => {
+      const hasScroll = scrollContainer.scrollWidth > scrollContainer.clientWidth;
+      scrollContainer.classList.toggle('has-scroll', hasScroll);
+    };
+
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    scrollContainer.addEventListener('scroll', checkScroll);
+  });
+</script>
 
 <div class="niche-subnav bg-white/90 dark:bg-slate-950/90 border-b border-slate-200/60 dark:border-slate-800/60 relative">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

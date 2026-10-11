@@ -31,7 +31,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       affUrl: `https://www.amazon.in/s?k=daily+grocery+household+deals&tag=${AMAZON_TAG}`,
       icon: 'tag',
       priceNote: 'Live in Top 20 Indian Cities',
-      trustTag: 'Verified Today'
+      trustTag: 'Live Today'
     },
     {
       title: 'Amazon Lightning Deals: Electronics, Laptops & Smartphones Under ₹9,999',
@@ -79,7 +79,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       merchant: 'Amazon',
       affUrl: `https://www.amazon.in/s?k=graphic+card+rtx+4060&tag=${AMAZON_TAG}`,
       icon: 'cpu',
-      priceNote: 'Verified Sellers Only',
+      priceNote: 'Trusted Sellers Only',
       trustTag: 'Brand Indian Warranty'
     },
     {
@@ -221,7 +221,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       affUrl: `https://www.amazon.in/s?k=mobile+recharge+offers&tag=${AMAZON_TAG}`,
       icon: 'percent',
       priceNote: 'Valid on Airtel, Jio, VI',
-      trustTag: 'Verified Today'
+      trustTag: 'Live Today'
     }
   ],
 
@@ -265,7 +265,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       trustTag: '2-Year Warranty'
     },
     {
-      title: 'Today Food Loot: Swiggy & Zomato Verified Promo Codes & Cashback',
+      title: 'Today Food Loot: Swiggy & Zomato Promo Codes & Cashback',
       category: 'Food Delivery Loot',
       badge: '🔥 Flat 60% Off Code',
       discount: 'On Orders Above ₹199',
@@ -273,7 +273,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       affUrl: `https://www.amazon.in/s?k=gourmet+chocolates+snacks+offers&tag=${AMAZON_TAG}`,
       icon: 'utensils',
       priceNote: 'Auto-Refreshed Daily',
-      trustTag: 'Verified Working Codes'
+      trustTag: 'Working Codes'
     }
   ],
 
@@ -298,7 +298,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       merchant: 'EarnKaro',
       affUrl: `https://www.amazon.in/s?k=exam+study+notes+handbook&tag=${AMAZON_TAG}`,
       icon: 'book-open',
-      priceNote: 'Flipkart & Meesho Verified Sellers',
+      priceNote: 'Flipkart & Meesho Trusted Sellers',
       trustTag: 'Easy 7-Day Return'
     },
     {

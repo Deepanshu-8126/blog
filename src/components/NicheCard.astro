@@ -6,6 +6,8 @@ import { proxyImageUrl } from '../lib/images';
 interface Props {
   post: Post;
   niche?: Niche;
+  class?: string;
+  rank?: number;
 }
 
 const { post, niche } = Astro.props;
@@ -37,9 +39,10 @@ const nicheGradients: Record<string, string> = {
   education: 'from-indigo-600 via-purple-700 to-slate-900'
 };
 const cardGrad = nicheGradients[grp.toLowerCase()] || 'from-purple-700 via-indigo-800 to-slate-950';
+const safeImage = post.image_url ? proxyImageUrl(post.image_url) : '/images/placeholder.jpg';
 ---
 
-<div class={`card-lift group flex flex-col justify-between rounded-3xl bg-white border border-slate-200/90 ${theme.border} p-4 sm:p-5 shadow-xs transition-all duration-300 relative`}>
+<div class={`card-lift group flex flex-col justify-between rounded-3xl bg-white border border-slate-200/90 ${theme.border} p-4 sm:p-5 shadow-xs transition-all duration-300 relative ${Astro.props.class || ''}`}>
   <div>
     <!-- Standardized 16:9 Image Box (Zero Aspect Ratio Distortion & No Duplicate Stock) -->
     <a href={`/${slug}/${post.slug}`} class="block relative aspect-video w-full rounded-2xl overflow-hidden mb-4 bg-slate-900 flex items-center justify-center">

@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS niches (
   tagline       TEXT,
   grp           TEXT NOT NULL,                       -- Tech | Money | Lifestyle | Entertainment (mega-menu column)
   icon          TEXT,
-  page_type     TEXT NOT NULL CHECK (page_type IN ('feed','tools','dataset','movies')),
+  page_type     TEXT NOT NULL CHECK (page_type IN ('feed','tools','dataset','movies','health','deals')),
   seed_keywords TEXT NOT NULL DEFAULT '[]',          -- JSON array (routing hints for classifier)
   fetchers      TEXT NOT NULL DEFAULT '["trends","wikipedia"]',
   config        TEXT NOT NULL DEFAULT '{}',          -- JSON {disclaimer, review, dataset_url, value_path, ...}

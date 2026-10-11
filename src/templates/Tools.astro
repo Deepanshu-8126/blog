@@ -21,7 +21,7 @@ const categories = Array.from(new Set(products.map(p => p.category).filter(Boole
 
 <Layout
   title={`${niche.name} Directory & Buying Guides | UniqueDigit`}
-  description={niche.tagline || `Discover top verified ${niche.name} tools, specifications, price comparisons, and buying guides in India.`}
+  description={niche.tagline || `Discover top curated ${niche.name} tools, specifications, price comparisons, and buying guides in India.`}
   niche={niche}
 >
   <!-- Niche Header Banner -->
@@ -33,7 +33,7 @@ const categories = Array.from(new Set(products.map(p => p.category).filter(Boole
       <span class="text-xs font-bold uppercase tracking-wider text-muted font-mono">{niche.grp} Directory</span>
     </div>
     <h1 class="text-3xl sm:text-4xl font-black text-ink tracking-tight">{niche.name}</h1>
-    <p class="text-sm text-muted mt-1">{niche.tagline} • Verified specs, Indian pricing, and zero-clutter links.</p>
+    <p class="text-sm text-muted mt-1">{niche.tagline} • Curated specs, Indian pricing, and zero-clutter links.</p>
   </div>
 
   <!-- Search & Filter Bar -->
@@ -80,7 +80,7 @@ const categories = Array.from(new Set(products.map(p => p.category).filter(Boole
     <div class="p-12 text-center bg-white rounded-3xl border border-line my-6">
       <Icon name="tag" class="w-8 h-8 text-brand mx-auto mb-3" />
       <h3 class="text-base font-bold text-ink">Catalog updating</h3>
-      <p class="text-xs text-muted mt-1">Live verified products & deals for {niche.name} are being synced from database.</p>
+      <p class="text-xs text-muted mt-1">Live curated products & deals for {niche.name} are being synced from database.</p>
     </div>
   )}
 

@@ -117,7 +117,7 @@ interface GalleryItem {
 
 import { proxyImageUrl } from '../../lib/images';
 
-// Verified Entity Multi-Image Galleries (Zero Generic Stock Photos)
+// Curated Entity Multi-Image Galleries (Zero Generic Stock Photos)
 const ENTITY_SPECIFIC_GALLERIES: Record<string, GalleryItem[]> = {
   'drishyam-3-the-conclusion-box-office-collection-nears-400-crore-worldwide': [
     {
@@ -166,8 +166,8 @@ const absoluteImageUrl = displayHeroImage.startsWith('http')
 const rawGallerySlides: GalleryItem[] = ENTITY_SPECIFIC_GALLERIES[post.slug] || [
   {
     url: displayHeroImage,
-    label: '1. Verified Visual',
-    caption: post.image_credit ? `Source: ${post.image_credit}` : `${post.title} — Verified editorial coverage.`
+    label: '1. Curated Visual',
+    caption: post.image_credit ? `Source: ${post.image_credit}` : `${post.title} — Curated editorial coverage.`
   }
 ];
 
@@ -267,7 +267,209 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
   niche={niche}
 >
   <!-- Reading Progress Bar -->
-  <div id="reading-progress-bar" class="fixed top-0 left-0 h-[3.5px] bg-gradient-to-r from-brand via-purple-500 to-emerald-500 z-50 transition-all duration-75 w-0"></div>
+  <div id="reading-progress-bar" class="fixed top-0 left-0 h-[2px] bg-gradient-to-r from-brand via-purple-500 to-emerald-500 z-50 transition-all duration-75 w-0"></div>
+
+  <!-- Mobile Sidebar Overlay (Fixed Position - Outside Grid) -->
+  <div
+    id="sidebar-panel"
+    class="fixed inset-0 z-40 hidden"
+    aria-hidden="true"
+  >
+    <!-- Backdrop Overlay -->
+    <div class="sidebar-backdrop absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 invisible transition-all duration-300"></div>
+    <!-- Sidebar Panel -->
+    <div class="sidebar-panel absolute inset-y-0 right-0 w-full max-w-[360px] bg-white rounded-tl-3xl shadow-2xl flex flex-col overflow-y-auto transform translate-x-full transition-transform duration-300 ease-out lg:translate-x-0 lg:static lg:shadow-none lg:rounded-none lg:bg-transparent">
+      <!-- Sidebar Close Button (Mobile Only) -->
+      <button
+        id="sidebar-close-btn"
+        type="button"
+        class="lg:hidden absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shadow-lg active:scale-95 transition"
+        aria-label="Close sidebar"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+
+      <!-- Mobile Sidebar Content -->
+      <div class="flex-1 p-4 sm:p-6 overflow-y-auto">
+
+        <!-- 1. Trending Stories in India (Top 5 Ranking with Thumbnails) -->
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6 mb-6">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+              <h3 class="font-black text-slate-900 text-sm uppercase tracking-wider">
+                Trending in India
+              </h3>
+            </div>
+            <a href="/trending" class="text-xs font-bold text-brand hover:underline">
+              Radar &rarr;
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-3.5">
+            {sidebarTrending.map((tr, idx) => {
+              const hasUniqueThumb = tr.image_url &&
+                tr.image_url.trim().length > 10 &&
+                !tr.image_url.includes('ai_tools.jpg') &&
+                !renderedImages.has(tr.image_url);
+
+              if (hasUniqueThumb && tr.image_url) {
+                renderedImages.add(tr.image_url);
+              }
+
+              return (
+                <a
+                  href={(tr as any).niches ? `/${(tr as any).niches.slug}/${tr.slug}` : `/${tr.slug}`}
+                  class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
+                >
+                  <!-- Deduplicated Visual: Real Unique Photo OR Vibrant Rank Gradient -->
+                  {hasUniqueThumb ? (
+                    <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                      <img
+                        src={proxyImageUrl(tr.image_url)}
+                        alt={tr.title}
+                        loading="lazy"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                      <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[10px] font-black text-white text-center py-0.5 font-mono">
+                        #{idx + 1}
+                      </div>
+                    </div>
+                  ) : (
+                    <div class={`w-14 h-14 rounded-xl shrink-0 flex flex-col items-center justify-center bg-gradient-to-tr ${rankGradients[idx % rankGradients.length]} text-white font-black shadow-xs border border-white/20 group-hover:scale-105 transition duration-300`}>
+                      <span class="text-sm font-mono font-black">#{idx + 1}</span>
+                      <span class="text-[9px] uppercase tracking-wider font-extrabold opacity-90">HOT</span>
+                    </div>
+                  )}
+
+                  <div class="flex-1 min-w-0">
+                    <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
+                      {tr.title}
+                    </h4>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="text-xs font-mono text-emerald-600 font-bold">
+                        🔥 {tr.hype || 80} velocity
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+
+        <!-- 2. More In This Category (with Thumbnails) -->
+        {sidebarRelated.length > 0 && (
+          <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6 mb-6">
+            <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+              <h3 class="font-black text-slate-900 text-sm uppercase tracking-wider">
+                More in {niche.name}
+              </h3>
+              <a href={`/${niche.slug}`} class="text-xs font-bold text-brand hover:underline">
+                View All &rarr;
+              </a>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              {sidebarRelated.map((item, rIdx) => {
+                const hasUniqueRelThumb = item.image_url &&
+                  item.image_url.trim().length > 10 &&
+                  !item.image_url.includes('ai_tools.jpg') &&
+                  !renderedImages.has(item.image_url);
+
+                if (hasUniqueRelThumb && item.image_url) {
+                  renderedImages.add(item.image_url);
+                }
+
+                return (
+                  <a
+                    href={`/${niche.slug}/${item.slug}`}
+                    class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
+                  >
+                    {hasUniqueRelThumb ? (
+                      <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                        <img
+                          src={proxyImageUrl(item.image_url)}
+                          alt={item.title}
+                          loading="lazy"
+                          class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        />
+                      </div>
+                    ) : (
+                      <div class={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center bg-gradient-to-tr ${rankGradients[(rIdx + 2) % rankGradients.length]} text-white font-black text-xs shadow-xs group-hover:scale-105 transition duration-300`}>
+                        {niche.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div class="flex-1 min-w-0">
+                      <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
+                        {item.title}
+                      </h4>
+                      <span class="text-xs text-slate-400 font-mono">
+                        {new Date(item.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+                      </span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <!-- 3. Handpicked Deals & Gear Widget -->
+        {products.length > 0 && (
+          <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6 mb-6">
+            <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100">
+              <span class="text-sm">🏷️</span>
+              <h3 class="font-black text-slate-900 text-sm uppercase tracking-wider">
+                Top Deals in {niche.name}
+              </h3>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              {products.slice(0, 3).map(prod => (
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                  <div class="flex items-center justify-between gap-2 mb-1.5">
+                    <span class="text-xs font-bold text-slate-900 line-clamp-1">{prod.name}</span>
+                    {prod.price && <span class="text-xs font-black text-emerald-600 font-mono">₹{prod.price.toLocaleString('en-IN')}</span>}
+                  </div>
+                  <a
+                    href={prod.aff_url || `https://www.amazon.in/s?k=${encodeURIComponent(prod.name)}&tag=uniquedigi0c6-21`}
+                    target="_blank"
+                    rel="nofollow noopener"
+                    class="mt-2 text-center text-xs font-black uppercase py-2 px-3 rounded-xl bg-amber-400 text-slate-950 hover:bg-amber-500 transition shadow-xs block"
+                  >
+                    Check Deal On Amazon &rarr;
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- 4. Telegram / WhatsApp VIP Alert CTA -->
+        <div class="rounded-3xl bg-gradient-to-br from-brand-dark via-brand to-purple-800 text-white p-6 shadow-sm mb-6">
+          <span class="px-2.5 py-1 rounded-full text-xs font-black uppercase bg-amber-400 text-slate-950 inline-block mb-3">
+            Real-Time Radar
+          </span>
+          <h4 class="font-black text-base mb-2">Never Miss a Trend or Loot Deal</h4>
+          <p class="text-xs text-purple-100 leading-relaxed mb-4">
+            Instant updates on breaking sports, tech benchmarks, gold rates, and price-drop alerts.
+          </p>
+          <a
+            href="https://t.me/uniquedigit"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-center py-2 px-4 rounded-xl bg-white text-brand font-black text-xs hover:bg-slate-100 transition shadow-xs"
+          >
+            Join Telegram Alert Channel
+          </a>
+        </div>
+
+        <AdSlot position="sidebar" />
+
+      </div>
+    </div>
+  </div>
 
   <Fragment slot="head">
     {isCard && <meta name="robots" content="noindex, follow" />}
@@ -294,53 +496,53 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
       <article class="lg:col-span-8 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-8 lg:p-10 min-w-0">
         
         <!-- Header Area -->
-        <header class="mb-6">
-          <div class="flex items-center gap-2.5 mb-4 flex-wrap">
+        <header class="mb-8 sm:mb-12">
+          <div class="flex items-center gap-2.5 mb-5 flex-wrap">
             <a
               href={`/${niche.slug}`}
-              class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand text-white shadow-xs hover:bg-brand-dark transition"
+              class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider bg-brand text-white shadow-xs hover:bg-brand-dark transition"
             >
               {niche.name}
             </a>
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
+            <span class="px-3 py-1 rounded-full text-xs sm:text-sm font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
               ⏱️ {readTime} min read
             </span>
             <HypeMeter score={post.hype || post.trend_score || 75} size="sm" />
             <FreshnessStamp updatedAt={post.updated_at || post.published_at} />
           </div>
 
-          <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 leading-tight tracking-tight mb-4">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight mb-5 sm:mb-6">
             {post.title}
           </h1>
 
-          <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-6 font-medium">
+          <p class="text-lg sm:text-xl text-slate-600 leading-relaxed mb-8 font-medium max-w-3xl">
             {post.summary}
           </p>
 
           <!-- Byline & Social Actions -->
-          <div class="flex items-center justify-between py-4 border-y border-slate-100 text-xs text-slate-500 flex-wrap gap-4">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand to-purple-500 text-white font-extrabold flex items-center justify-center text-sm shadow-xs">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-5 border-y border-slate-100 text-sm text-slate-500 flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-brand to-purple-500 text-white font-extrabold flex items-center justify-center text-base shadow-xs shrink-0">
                 UD
               </div>
               <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="font-bold text-slate-900">UniqueDigit Editorial Desk</span>
-                  <span class="text-emerald-600 font-bold text-xs bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">✓ Verified</span>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="font-bold text-slate-900 text-base">UniqueDigit Editorial Desk</span>
+                  <span class="text-emerald-600 font-bold text-xs sm:text-sm bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">✓ Curated</span>
                 </div>
-                <span class="text-xs text-slate-500">
+                <span class="text-sm text-slate-500">
                   Published {new Date(post.published_at).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
             </div>
 
             <!-- Share Buttons -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
               <a
                 href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${post.title}\nRead more: ${Astro.url.href}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold hover:bg-emerald-100 transition active:scale-95"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-bold hover:bg-emerald-100 transition active:scale-95"
                 title="Share on WhatsApp"
               >
                 <span>💬 WhatsApp</span>
@@ -348,7 +550,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
               <button
                 id="copy-article-link-btn"
                 type="button"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition active:scale-95 cursor-pointer"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition active:scale-95 cursor-pointer"
                 title="Copy article link"
               >
                 <span id="copy-btn-text">🔗 Copy Link</span>
@@ -358,11 +560,11 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         </header>
 
         <!-- Interactive 3-Image Carousel / Slider Component -->
-        <div class="mb-8">
+        <div class="mb-8 sm:mb-12">
           <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-md relative group select-none">
-            
+
             <!-- Slide Viewport (Adaptive Aspect Ratio & Mobile Optimized) -->
-            <div class="relative aspect-[16/10] sm:aspect-[16/9] w-full max-h-[460px] overflow-hidden bg-slate-900">
+            <div class="relative aspect-[4/3] sm:aspect-[16/9] w-full max-h-[380px] sm:max-h-[460px] overflow-hidden bg-slate-900">
               <div id="gallery-track" class="flex w-full h-full transition-transform duration-500 ease-out">
                 {gallerySlides.map((slide, idx) => (
                   <div class="w-full h-full shrink-0 relative bg-slate-900 flex items-center justify-center overflow-hidden">
@@ -391,8 +593,8 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
 
               <!-- Top Floating Badges -->
               <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
-                <span id="gallery-counter-badge" class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-900/85 backdrop-blur-md text-amber-300 border border-slate-700/80 shadow-md">
-                  {gallerySlides.length > 1 ? `Photo 1 of ${gallerySlides.length}` : 'Verified Visual'}
+                <span id="gallery-counter-badge" class="px-3 py-1 rounded-full text-xs sm:text-sm font-mono font-bold bg-slate-900/85 backdrop-blur-md text-amber-300 border border-slate-700/80 shadow-md">
+                  {gallerySlides.length > 1 ? `Photo 1 of ${gallerySlides.length}` : 'Curated Visual'}
                 </span>
                 <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
                   HD 1400w
@@ -406,7 +608,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                     id="gallery-prev-btn"
                     type="button"
                     aria-label="Previous Image"
-                    class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
+                    class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-0 group-hover:opacity-100 cursor-pointer"
                   >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                   </button>
@@ -415,7 +617,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                     id="gallery-next-btn"
                     type="button"
                     aria-label="Next Image"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-90 sm:opacity-0 group-hover:opacity-100 cursor-pointer"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-0 group-hover:opacity-100 cursor-pointer"
                   >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                   </button>
@@ -424,16 +626,17 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
             </div>
 
             <!-- Dynamic Slide Caption & Source Bar -->
-            <div class="px-5 py-3 bg-slate-900/95 text-xs text-slate-300 flex items-center justify-between border-t border-slate-800 gap-3 flex-wrap">
-              <div class="flex items-center gap-2 min-w-0">
+            <div class="px-5 py-4 bg-slate-900/95 text-sm text-slate-300 flex items-center justify-between border-t border-slate-800 gap-3 flex-wrap">
+              <div class="flex items-center gap-3 min-w-0">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-                <p id="gallery-caption-text" class="truncate max-w-sm sm:max-w-xl text-slate-200 font-medium">
+                <p id="gallery-caption-text" class="truncate max-w-sm sm:max-w-xl text-slate-200 font-medium leading-relaxed">
                   {gallerySlides[0].caption}
                 </p>
               </div>
               {post.source_url && (
-                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 text-xs font-bold">
-                  Verify Source &rarr;
+                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 text-sm font-bold flex items-center gap-1">
+                  <span>Verify Source</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 </a>
               )}
             </div>
@@ -441,22 +644,22 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
 
           <!-- Interactive Thumbnail Switcher Bar (Shown only if multiple authentic slides) -->
           {gallerySlides.length > 1 && (
-            <div class={`grid ${gallerySlides.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-2.5 mt-3`}>
+            <div class={`grid ${gallerySlides.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-3 mt-4`}>
               {gallerySlides.map((slide, idx) => (
                 <button
                   type="button"
                   data-slide-index={idx}
-                  class={`gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer ${
+                  class={`gallery-tab-btn flex items-center gap-3 p-3 rounded-2xl border transition text-left cursor-pointer min-h-[72px] ${
                     idx === 0
                       ? 'bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold'
                       : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
                   }`}
                 >
-                  <div class="w-10 h-7 rounded-lg overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                  <div class="w-14 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
                     <img src={slide.url} alt="" class="w-full h-full object-cover" />
                   </div>
                   <div class="min-w-0 flex-1">
-                    <span class="text-xs block truncate font-bold">{slide.label}</span>
+                    <span class="text-sm block truncate font-bold">{slide.label}</span>
                   </div>
                 </button>
               ))}
@@ -466,18 +669,18 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
 
         <!-- Interactive Table of Contents (TOC) Quick Jump Bar -->
         {tableOfContents.length > 0 && (
-          <div class="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-50 via-purple-50/40 to-slate-50 border border-slate-200/90 shadow-2xs">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="text-base">🧭</span>
-              <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">
+          <div class="mb-8 sm:mb-12 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-50 via-purple-50/40 to-slate-50 border border-slate-200/90 shadow-2xs">
+            <div class="flex items-center gap-2.5 mb-4">
+              <span class="text-lg">🧭</span>
+              <h3 class="text-sm sm:text-base font-black text-slate-900 uppercase tracking-wider">
                 Quick Jump to Section (Table of Contents)
               </h3>
             </div>
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-2 scroll-snap-x">
               {tableOfContents.map((heading) => (
                 <a
                   href={`#${heading.id}`}
-                  class="toc-jump-pill px-3 py-1.5 rounded-xl bg-white hover:bg-brand hover:text-white border border-slate-200 hover:border-brand text-xs font-bold text-slate-700 transition shadow-2xs shrink-0"
+                  class="toc-jump-pill px-4 py-2 rounded-xl bg-white hover:bg-brand hover:text-white border border-slate-200 hover:border-brand text-sm font-bold text-slate-700 transition shadow-2xs shrink-0 scroll-snap-start"
                 >
                   {heading.text}
                 </a>
@@ -485,7 +688,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
               {post.faq && post.faq.length > 0 && (
                 <a
                   href="#faq-section"
-                  class="toc-jump-pill px-3 py-1.5 rounded-xl bg-white hover:bg-brand hover:text-white border border-slate-200 hover:border-brand text-xs font-bold text-slate-700 transition shadow-2xs shrink-0"
+                  class="toc-jump-pill px-4 py-2 rounded-xl bg-white hover:bg-brand hover:text-white border border-slate-200 hover:border-brand text-sm font-bold text-slate-700 transition shadow-2xs shrink-0 scroll-snap-start"
                 >
                   Frequently Asked Questions
                 </a>
@@ -520,38 +723,41 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         )}
 
         <!-- Article Markdown Content (.prose styled with tables, quotes, headings) -->
-        <div class="prose max-w-none text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
+        <article class="main-content prose text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
 
         <!-- High-Impact Editor's Verdict / The Bottom Line Card -->
-        <div class="my-8 p-6 rounded-3xl bg-slate-900 text-white shadow-md relative overflow-hidden">
-          <div class="absolute -right-8 -bottom-8 w-40 h-40 rounded-full bg-brand/20 blur-2xl"></div>
+        <div class="my-10 sm:my-14 p-7 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-xl relative overflow-hidden">
+          <div class="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-brand/20 blur-2xl"></div>
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand via-purple-500 to-emerald-500"></div>
           <div class="relative z-10">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="text-xl">🎯</span>
-              <h3 class="text-sm font-black uppercase tracking-wider text-amber-400">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-brand/20 flex items-center justify-center">
+                <span class="text-xl">🎯</span>
+              </div>
+              <h3 class="text-base sm:text-lg font-black uppercase tracking-wider text-white">
                 The Bottom Line & UniqueDigit Verdict
               </h3>
             </div>
-            <p class="text-sm sm:text-base text-slate-200 leading-relaxed mb-4">
-              <strong>{post.title}</strong> represents a significant event within the {niche.name} landscape. Whether you are tracking real-time updates, gearing up for the match, or assessing buying choices, staying on top of primary verified feeds is key. Bookmark this page for continuous telemetry.
+            <p class="text-base sm:text-lg text-slate-200 leading-relaxed mb-5 max-w-2xl">
+              <strong>{post.title}</strong> represents a significant event within the {niche.name} landscape. Whether you are tracking real-time updates, gearing up for the match, or assessing buying choices, staying on top of primary curated feeds is key. Bookmark this page for continuous telemetry.
             </p>
-            <div class="flex items-center gap-3 text-xs text-slate-400 flex-wrap">
-              <span class="px-2.5 py-1 rounded-xl bg-slate-800 text-slate-300 font-bold border border-slate-700">
+            <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
+              <span class="px-3 py-1.5 rounded-xl bg-slate-800/50 text-slate-200 font-bold border border-slate-700/50">
                 Editorial Rating: 9.2/10
               </span>
-              <span class="px-2.5 py-1 rounded-xl bg-slate-800 text-emerald-400 font-bold border border-slate-700">
+              <span class="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
                 Status: Ongoing Trend
               </span>
             </div>
           </div>
         </div>
 
-        <!-- Verified Independent Sources -->
+        <!-- Curated Independent Sources -->
         {post.sources && post.sources.length > 0 && (
           <div class="my-8 p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs shadow-2xs">
             <div class="flex items-center gap-2 mb-3">
               <span class="text-sm">📰</span>
-              <span class="font-bold text-slate-900 uppercase tracking-wider text-xs">Verified Source References</span>
+              <span class="font-bold text-slate-900 uppercase tracking-wider text-xs">Curated Source References</span>
             </div>
             <ul class="flex flex-col gap-2">
               {post.sources.map(s => (
@@ -575,7 +781,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
           <div class="my-10 p-6 sm:p-8 rounded-3xl bg-slate-50 border border-line">
             <div class="flex items-center gap-2 mb-4">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <h3 class="text-lg font-black text-ink tracking-tight">Verified Gear & Deals in {niche.name}</h3>
+              <h3 class="text-lg font-black text-ink tracking-tight">Curated Gear & Deals in {niche.name}</h3>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {products.slice(0, 2).map(pr => (
@@ -587,21 +793,37 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
 
         <!-- FAQ Accordion -->
         {post.faq && post.faq.length > 0 && (
-          <div id="faq-section" class="my-10 pt-8 border-t border-line scroll-mt-28">
-            <h3 class="text-xl font-black text-ink mb-6">Frequently Asked Questions</h3>
-            <div class="flex flex-col gap-4">
-              {post.faq.map(item => (
-                <div class="p-5 rounded-2xl bg-white border border-line shadow-card">
-                  <h4 class="font-bold text-sm sm:text-base text-ink mb-2 flex items-start gap-2">
-                    <span class="text-brand font-black">Q:</span>
-                    <span>{item.q}</span>
-                  </h4>
-                  <p class="text-xs sm:text-sm text-muted leading-relaxed pl-5">
-                    {item.a}
-                  </p>
-                </div>
+          <div id="faq-section" class="my-12 sm:my-16 pt-10 border-t border-line scroll-mt-28">
+            <h3 class="text-2xl sm:text-3xl font-black text-ink mb-8">Frequently Asked Questions</h3>
+            <div class="flex flex-col gap-3">
+              {post.faq.map((item, idx) => (
+                <details class="group faq-item bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300" open={idx === 0}>
+                  <summary class="flex items-center justify-between p-5 sm:p-6 cursor-pointer list-none select-none">
+                    <div class="flex items-start gap-3 flex-1 pr-4">
+                      <span class="text-brand font-black text-lg sm:text-xl shrink-0 mt-0.5">Q</span>
+                      <h4 class="font-bold text-base sm:text-lg text-ink leading-snug">{item.q}</h4>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                  </summary>
+                  <div class="faq-answer px-5 sm:px-6 pb-5 sm:pb-6 pt-0 border-t border-slate-100 animate-slide-down">
+                    <p class="text-sm sm:text-base text-muted leading-relaxed text-slate-600">{item.a}</p>
+                  </div>
+                </details>
               ))}
             </div>
+            <style>
+              {`
+                .faq-item summary::-webkit-details-marker { display: none; }
+                .faq-item summary::marker { display: none; }
+                .faq-answer { animation: slideDown 0.3s ease-out; }
+                @keyframes slideDown {
+                  from { opacity: 0; transform: translateY(-8px); }
+                  to { opacity: 1; transform: translateY(0); }
+                }
+                .faq-item[open] .faq-answer { animation: slideDown 0.3s ease-out; }
+                .faq-item:not([open]) .faq-answer { display: none; }
+              `}
+            </style>
           </div>
         )}
 
@@ -628,8 +850,25 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         </div>
       </article>
 
+      <!-- Mobile Sidebar Toggle Button -->
+      <button
+        id="sidebar-toggle"
+        type="button"
+        class="sidebar-toggle lg:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-2xl bg-brand text-white font-bold shadow-xl active:scale-95 transition"
+        aria-label="Open sidebar"
+        aria-expanded="false"
+        aria-controls="sidebar-panel"
+      >
+        <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
       <!-- RIGHT COLUMN (4 cols): Sticky Newsroom Sidebar (With Sharp Visual Thumbnails) -->
-      <aside class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24">
+      <aside
+        id="sidebar-panel-desktop"
+        class="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24 hidden lg:block"
+      >
         
         <!-- 1. Trending Stories in India (Top 5 Ranking with Thumbnails) -->
         <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
@@ -919,6 +1158,56 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
             }, 2000);
           } catch {
             copyText.textContent = 'Link Copied';
+          }
+        });
+      }
+
+      // 5. Mobile Sidebar Toggle
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebarPanel = document.getElementById('sidebar-panel');
+      const sidebarBackdrop = sidebarPanel?.querySelector('.sidebar-backdrop');
+      const sidebarInner = sidebarPanel?.querySelector('.sidebar-panel');
+      const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+      if (sidebarToggle && sidebarPanel && sidebarBackdrop && sidebarInner) {
+        function openSidebar() {
+          sidebarPanel.classList.remove('hidden');
+          // Force reflow to enable transition
+          sidebarBackdrop.offsetHeight;
+          sidebarBackdrop.classList.remove('opacity-0', 'invisible');
+          sidebarBackdrop.classList.add('opacity-100', 'visible');
+          sidebarInner.classList.remove('translate-x-full');
+          sidebarToggle.setAttribute('aria-expanded', 'true');
+          sidebarToggle.innerHTML = '<svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+        }
+        function closeSidebar() {
+          sidebarBackdrop.classList.add('opacity-0', 'invisible');
+          sidebarBackdrop.classList.remove('opacity-100', 'visible');
+          sidebarInner.classList.add('translate-x-full');
+          sidebarToggle.setAttribute('aria-expanded', 'false');
+          sidebarToggle.innerHTML = '<svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>';
+          setTimeout(() => {
+            if (sidebarInner.classList.contains('translate-x-full')) {
+              sidebarPanel.classList.add('hidden');
+            }
+          }, 300);
+        }
+        sidebarToggle.addEventListener('click', () => {
+          if (sidebarInner.classList.contains('translate-x-full')) {
+            openSidebar();
+          } else {
+            closeSidebar();
+          }
+        });
+        // Close button handler
+        if (sidebarCloseBtn) {
+          sidebarCloseBtn.addEventListener('click', closeSidebar);
+        }
+        // Close on backdrop click
+        sidebarBackdrop.addEventListener('click', closeSidebar);
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !sidebarInner.classList.contains('translate-x-full')) {
+            closeSidebar();
           }
         });
       }

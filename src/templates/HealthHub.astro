@@ -1,5 +1,4 @@
 ---
-import NicheLayout from '../layouts/NicheLayout.astro';
 import NicheCard from '../components/NicheCard.astro';
 import HealthDisclaimer from '../components/HealthDisclaimer.astro';
 import ToolCard from '../components/ToolCard.astro';
@@ -37,20 +36,146 @@ const EMERGENCY_CONTACTS = [
 ];
 ---
 
-<NicheLayout niche={niche} activeTab={activeTab}>
+<style>
+  /* Mobile-first responsive improvements */
+  .deal-card {
+    min-height: 0;
+  }
+
+  .deal-card img {
+    max-height: 200px;
+    width: auto;
+  }
+
+  @media (max-width: 640px) {
+    .deal-card {
+      margin: 0 -0.5rem;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+    }
+
+    .deal-card:first-child {
+      border-top: none;
+    }
+
+    .deal-card:last-child {
+      border-bottom: none;
+    }
+
+    .deal-card img {
+      max-height: 160px;
+    }
+
+    /* Stack filter buttons vertically on very small screens */
+    .merchant-filter-btn {
+      flex: 1 0 auto;
+      min-width: 0;
+    }
+
+    /* Better tap targets for mobile */
+    .subnav-tab {
+      min-height: 44px;
+      padding: 0.75rem 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .live-radar-bar {
+      font-size: 0.65rem;
+    }
+
+    .hero-stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* Touch feedback */
+  .deal-card:active,
+  .merchant-filter-btn:active,
+  .category-card:active {
+    transform: scale(0.98);
+  }
+
+  .grab-loot-btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .live-radar-bar .animate-ping,
+    .animate-pulse,
+    .animate-spin {
+      animation: none !important;
+    }
+    .deal-card img {
+      transition: none !important;
+    }
+  }
+
+  /* Focus visible for accessibility */
+  .merchant-filter-btn:focus-visible,
+  .subnav-tab:focus-visible,
+  .category-card:focus-visible,
+  .grab-loot-btn:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  /* Health-specific mobile improvements */
+  @media (max-width: 640px) {
+    .health-hero {
+      border-radius: 0 0 1.5rem 1.5rem;
+      margin: 0 -1rem 1.5rem;
+    }
+
+    .health-hero .absolute {
+      display: none;
+    }
+
+    .health-category-card {
+      padding: 1rem;
+    }
+
+    .emergency-card {
+      margin: 0 -0.5rem;
+      border-radius: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .health-hero h1 {
+      font-size: 1.75rem;
+    }
+
+    .emergency-card {
+      padding: 1rem;
+    }
+
+    .emergency-card .flex {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .emergency-card a {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
 
   <!-- TAB: LATEST -->
   {activeTab === 'latest' && (
     <>
       <!-- Medical Portal Header -->
-      <div class="mb-10 rounded-3xl bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white p-6 sm:p-10 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+      <div class="health-hero mb-10 rounded-3xl bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white p-6 sm:p-10 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
         <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="relative z-10 max-w-3xl">
           <div class="flex items-center gap-2 mb-4 flex-wrap">
             <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500 text-slate-950 shadow-sm flex items-center gap-1.5">
               <Icon name="heart" class="w-3.5 h-3.5" />
-              Clinical & AYUSH Protocol Verified
+              Clinical & AYUSH Protocol Validated
             </span>
             <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-emerald-200 border border-emerald-400/30">
               Peer-Reviewed Research Grounded
@@ -67,7 +192,7 @@ const EMERGENCY_CONTACTS = [
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
             <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
               <span class="text-xs text-emerald-300 font-mono block">Fact-Checking</span>
-              <span class="text-xs font-black text-white">Double-Verified</span>
+              <span class="text-xs font-black text-white">Double-Checked</span>
             </div>
             <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
               <span class="text-xs text-emerald-300 font-mono block">AYUSH Standards</span>
@@ -94,7 +219,7 @@ const EMERGENCY_CONTACTS = [
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {HEALTH_CATEGORIES.map(cat => (
-            <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-emerald-400 hover:shadow-md transition">
+            <div class="health-category-card p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-emerald-400 hover:shadow-md transition">
               <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3">
                 <Icon name={cat.icon as any} class="w-5 h-5" />
               </div>
@@ -137,7 +262,7 @@ const EMERGENCY_CONTACTS = [
               <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center gap-2 text-xs text-slate-600 font-medium mb-2">
-                    <span>Verified Wellness Desk</span>
+                    <span>Curated Wellness Desk</span>
                     <span>&bull;</span>
                     <span>{new Date(heroPost.published_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
@@ -156,7 +281,7 @@ const EMERGENCY_CONTACTS = [
                     href={`/health/${heroPost.slug}`}
                     class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition"
                   >
-                    <span>Read Verified Guide</span>
+                    <span>Read Expert Guide</span>
                     <span>&rarr;</span>
                   </a>
                 </div>
@@ -187,9 +312,9 @@ const EMERGENCY_CONTACTS = [
           <div class="flex items-center justify-between mb-6">
             <div>
               <h2 class="text-xl font-black text-slate-900">Lab-Tested Fitness & Wellness Equipment</h2>
-              <p class="text-xs text-slate-600 mt-1">Verified equipment, smart trackers, and clean supplements.</p>
+              <p class="text-xs text-slate-600 mt-1">Lab-tested equipment, smart trackers, and clean supplements.</p>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">Amazon Verified</span>
+            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">Amazon Fulfilled</span>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -238,7 +363,7 @@ const EMERGENCY_CONTACTS = [
           <div class="flex items-center justify-between mb-6">
             <div>
               <h2 class="text-xl font-black text-slate-900">Equipment by Category</h2>
-              <p class="text-xs text-slate-600 mt-1">Shop verified wellness gear organized by use case.</p>
+              <p class="text-xs text-slate-600 mt-1">Shop curated wellness gear organized by use case.</p>
             </div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -259,7 +384,7 @@ const EMERGENCY_CONTACTS = [
           Wellness Equipment & Tools
         </h2>
         <p class="mt-3 text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Lab-tested fitness trackers, recovery tools, smart scales, and clean supplements — verified by our wellness desk.
+          Lab-tested fitness trackers, recovery tools, smart scales, and clean supplements — curated by our wellness desk.
         </p>
       </div>
 
@@ -299,7 +424,7 @@ const EMERGENCY_CONTACTS = [
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {EMERGENCY_CONTACTS.map(contact => (
-          <div class="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-red-400 hover:shadow-md transition relative overflow-hidden">
+          <div class="emergency-card p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-red-400 hover:shadow-md transition relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
             <div class="flex items-start gap-4">
               <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
@@ -332,5 +457,3 @@ const EMERGENCY_CONTACTS = [
       </div>
     </div>
   )}
-
-</NicheLayout>
