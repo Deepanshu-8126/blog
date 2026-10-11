@@ -46,6 +46,13 @@ CF_KV_ID = os.environ.get("CLOUDFLARE_KV_NAMESPACE_ID", "2ab0d1c56e1c471fa658e52
 TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 TG_DEALS_CHANNEL = os.environ.get("TELEGRAM_DEALS_CHANNEL", "@uniquedigit_deals")
+TG_DEALS_GROUP_ID = os.environ.get("TELEGRAM_DEALS_GROUP_ID", "-1004335990773")
+TOPIC_IDS = {
+    "loots": 3,      # ⚡ 0-Minute Loots & Glitches
+    "tech": 4,       # 💻 Tech, Laptops & Mobiles
+    "fashion": 5,    # 👔 Clothes, Shoes & Fashion
+    "home": 6        # 🏠 Home Appliances & TV
+}
 PORTAL_BASE = os.environ.get("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
 AFFILIATE_DISCLAIMER = "\n\n---\n*Disclaimer: UniqueDigit participates in affiliate programs including Amazon Associates. When you purchase through links on our site, we may earn an affiliate commission at no extra cost to you.*"
 
@@ -80,8 +87,8 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
     )
 
     target_channel = TG_DEALS_CHANNEL
-    # Only broadcast to deals channel if it is actually a deal, never spam general blogs!
-    if target_channel and is_loot_deal:
+    # Only broadcast to deals destinations if it is actually a deal, never spam general blogs!
+    if is_loot_deal:
         deal_text = (
             f"⚡ <b>[0-MINUTE PRICE GLITCH ALERT]</b> ⚡\n\n"
             f"🛍️ <b>{safe_title}</b>\n\n"
@@ -107,17 +114,44 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
             ]
         }
 
-        try:
-            url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
-            requests.post(url, json={
-                "chat_id": target_channel,
-                "text": deal_text,
-                "parse_mode": "HTML",
-                "reply_markup": reply_markup
-            }, timeout=10)
-            print(f"[Public Deals Channel Broadcast Sent]: {safe_title}")
-        except Exception as e:
-            print("[Public Deals Channel broadcast failed]:", e)
+        # Destination A: Broadcast to Main Deals Channel
+        if target_channel:
+            try:
+                url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+                requests.post(url, json={
+                    "chat_id": target_channel,
+                    "text": deal_text,
+                    "parse_mode": "HTML",
+                    "reply_markup": reply_markup
+                }, timeout=10)
+                print(f"[Public Deals Channel Broadcast Sent]: {safe_title}")
+            except Exception as e:
+                print("[Public Deals Channel broadcast failed]:", e)
+
+        # Destination B: Smart AI Forum Topic Routing in Community Group
+        if TG_DEALS_GROUP_ID:
+            lower_str = (safe_title + " " + safe_niche).lower()
+            if any(w in lower_str for w in ["clothe", "fashion", "shirt", "shoe", "sneaker", "kurti", "wear", "dress", "saree", "jeans"]):
+                thread_id = TOPIC_IDS["fashion"]
+            elif any(w in lower_str for w in ["laptop", "phone", "mobile", "tech", "earphone", "headphone", "buds", "gpu", "rtx", "ssd", "monitor", "pc"]):
+                thread_id = TOPIC_IDS["tech"]
+            elif any(w in lower_str for w in ["appliance", "tv", "washing machine", "fridge", "kitchen", "air fryer", "cooker", "geyser"]):
+                thread_id = TOPIC_IDS["home"]
+            else:
+                thread_id = TOPIC_IDS["loots"]
+
+            try:
+                url = f"https://api.telegram.org/bot{TG_BOT_TOKEN}/sendMessage"
+                requests.post(url, json={
+                    "chat_id": TG_DEALS_GROUP_ID,
+                    "message_thread_id": thread_id,
+                    "text": deal_text,
+                    "parse_mode": "HTML",
+                    "reply_markup": reply_markup
+                }, timeout=10)
+                print(f"[Forum Topic Routed -> Thread {thread_id}]: {safe_title}")
+            except Exception as e:
+                print(f"[Forum Topic {thread_id} broadcast failed]:", e)
 
 
 # ---------- Storage Optimization (Prevent 5GB D1 Bloat) ----------
