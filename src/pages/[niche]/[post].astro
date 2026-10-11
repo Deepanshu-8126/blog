@@ -947,11 +947,11 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         </div>
       </article>
 
-      <!-- Mobile Sidebar Toggle Button -->
+      <!-- Mobile Sidebar Toggle Button (Floats cleanly above bottom bar) -->
       <button
         id="sidebar-toggle"
         type="button"
-        class="sidebar-toggle lg:hidden fixed bottom-6 right-6 z-40 w-14 h-14 rounded-2xl bg-brand text-white font-bold shadow-xl active:scale-95 transition"
+        class="sidebar-toggle lg:hidden fixed bottom-20 right-4 z-40 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-brand text-white font-bold shadow-xl active:scale-95 transition flex items-center justify-center cursor-pointer"
         aria-label="Open sidebar"
         aria-expanded="false"
         aria-controls="sidebar-panel"
@@ -1146,12 +1146,12 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
     </div>
   </div>
 
-  <!-- Floating Back to Top Button -->
+  <!-- Floating Back to Top Button (Floats cleanly above sidebar toggle) -->
   <button
     id="back-to-top-btn"
     type="button"
     aria-label="Back to top"
-    class="fixed bottom-24 right-6 z-30 w-11 h-11 rounded-full bg-slate-900/80 hover:bg-brand text-white flex items-center justify-center shadow-lg backdrop-blur-md border border-white/20 opacity-0 pointer-events-none transition-all duration-300 cursor-pointer active:scale-90"
+    class="fixed bottom-36 right-5 lg:bottom-24 lg:right-6 z-30 w-11 h-11 rounded-full bg-slate-900/80 hover:bg-brand text-white flex items-center justify-center shadow-lg backdrop-blur-md border border-white/20 opacity-0 pointer-events-none transition-all duration-300 cursor-pointer active:scale-90"
   >
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7-7"/></svg>
   </button>
@@ -1159,181 +1159,199 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
   <script define:vars={{ slidesData: gallerySlides }}>
     (function() {
       // 1. Reading Progress Bar
-      const progressBar = document.getElementById('reading-progress-bar');
-      function updateProgress() {
-        if (!progressBar) return;
-        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-        if (totalHeight <= 0) {
-          progressBar.style.width = '0%';
-          return;
+      try {
+        const progressBar = document.getElementById('reading-progress-bar');
+        function updateProgress() {
+          if (!progressBar) return;
+          const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+          if (totalHeight <= 0) {
+            progressBar.style.width = '0%';
+            return;
+          }
+          const progress = Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100));
+          progressBar.style.width = `${progress}%`;
         }
-        const progress = Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100));
-        progressBar.style.width = `${progress}%`;
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
+      } catch (err) {
+        console.warn('[Progress Bar Init Error]:', err);
       }
-      window.addEventListener('scroll', updateProgress, { passive: true });
-      updateProgress();
 
       // 2. Multi-Image Carousel Engine
-      const track = document.getElementById('gallery-track');
-      const prevBtn = document.getElementById('gallery-prev-btn');
-      const nextBtn = document.getElementById('gallery-next-btn');
-      const counterBadge = document.getElementById('gallery-counter-badge');
-      const captionText = document.getElementById('gallery-caption-text');
-      const tabBtns = document.querySelectorAll('.gallery-tab-btn');
-      const totalSlides = slidesData ? slidesData.length : 3;
-      let currentIndex = 0;
+      try {
+        const track = document.getElementById('gallery-track');
+        const prevBtn = document.getElementById('gallery-prev-btn');
+        const nextBtn = document.getElementById('gallery-next-btn');
+        const counterBadge = document.getElementById('gallery-counter-badge');
+        const captionText = document.getElementById('gallery-caption-text');
+        const tabBtns = document.querySelectorAll('.gallery-tab-btn');
+        const totalSlides = slidesData ? slidesData.length : 3;
+        let currentIndex = 0;
 
-      function goToSlide(index) {
-        if (!track) return;
-        if (index < 0) index = totalSlides - 1;
-        if (index >= totalSlides) index = 0;
-        currentIndex = index;
+        function goToSlide(index) {
+          if (!track) return;
+          if (index < 0) index = totalSlides - 1;
+          if (index >= totalSlides) index = 0;
+          currentIndex = index;
 
-        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+          track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
-        if (counterBadge) {
-          counterBadge.textContent = `Photo ${currentIndex + 1} of ${totalSlides}`;
+          if (counterBadge) {
+            counterBadge.textContent = `Photo ${currentIndex + 1} of ${totalSlides}`;
+          }
+
+          if (captionText && slidesData && slidesData[currentIndex]) {
+            captionText.textContent = slidesData[currentIndex].caption;
+          }
+
+          tabBtns.forEach((btn, idx) => {
+            if (idx === currentIndex) {
+              btn.className = 'gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold';
+            } else {
+              btn.className = 'gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300';
+            }
+          });
         }
 
-        if (captionText && slidesData && slidesData[currentIndex]) {
-          captionText.textContent = slidesData[currentIndex].caption;
+        if (prevBtn) {
+          prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
         }
 
-        // Update Tab Pill styles
         tabBtns.forEach((btn, idx) => {
-          if (idx === currentIndex) {
-            btn.className = 'gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold';
-          } else {
-            btn.className = 'gallery-tab-btn flex items-center gap-2 p-2.5 rounded-2xl border transition text-left cursor-pointer bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300';
-          }
+          btn.addEventListener('click', () => goToSlide(idx));
         });
-      }
 
-      if (prevBtn) {
-        prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-      }
-      if (nextBtn) {
-        nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
-      }
-
-      tabBtns.forEach((btn, idx) => {
-        btn.addEventListener('click', () => goToSlide(idx));
-      });
-
-      // Swipe support for touch devices
-      let touchStartX = 0;
-      let touchEndX = 0;
-      if (track) {
-        track.addEventListener('touchstart', (e) => {
-          touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-        track.addEventListener('touchend', (e) => {
-          touchEndX = e.changedTouches[0].screenX;
-          if (touchStartX - touchEndX > 45) {
-            goToSlide(currentIndex + 1); // Swipe left -> next
-          } else if (touchEndX - touchStartX > 45) {
-            goToSlide(currentIndex - 1); // Swipe right -> prev
-          }
-        }, { passive: true });
+        let touchStartX = 0;
+        let touchEndX = 0;
+        if (track) {
+          track.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+          }, { passive: true });
+          track.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 45) {
+              goToSlide(currentIndex + 1);
+            } else if (touchEndX - touchStartX > 45) {
+              goToSlide(currentIndex - 1);
+            }
+          }, { passive: true });
+        }
+      } catch (err) {
+        console.warn('[Gallery Init Error]:', err);
       }
 
       // 3. Smooth Jump for Table of Contents
-      const tocPills = document.querySelectorAll('.toc-jump-pill');
-      tocPills.forEach(pill => {
-        pill.addEventListener('click', (e) => {
-          const targetId = pill.getAttribute('href');
-          if (targetId && targetId.startsWith('#')) {
-            const targetEl = document.querySelector(targetId);
-            if (targetEl) {
-              e.preventDefault();
-              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      try {
+        const tocPills = document.querySelectorAll('.toc-jump-pill');
+        tocPills.forEach(pill => {
+          pill.addEventListener('click', (e) => {
+            const targetId = pill.getAttribute('href');
+            if (targetId && targetId.startsWith('#')) {
+              const targetEl = document.querySelector(targetId);
+              if (targetEl) {
+                e.preventDefault();
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
             }
-          }
+          });
         });
-      });
+      } catch (err) {
+        console.warn('[TOC Init Error]:', err);
+      }
 
       // 4. Copy Link Button Feedback
-      const copyBtn = document.getElementById('copy-article-link-btn');
-      const copyText = document.getElementById('copy-btn-text');
-      if (copyBtn && copyText) {
-        copyBtn.addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(window.location.href);
-            copyText.textContent = '✅ Copied!';
-            setTimeout(() => {
-              copyText.textContent = '🔗 Copy Link';
-            }, 2000);
-          } catch {
-            copyText.textContent = 'Link Copied';
-          }
-        });
+      try {
+        const copyBtn = document.getElementById('copy-article-link-btn');
+        const copyText = document.getElementById('copy-btn-text');
+        if (copyBtn && copyText) {
+          copyBtn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(window.location.href);
+              copyText.textContent = '✅ Copied!';
+              setTimeout(() => {
+                copyText.textContent = '🔗 Copy Link';
+              }, 2000);
+            } catch {
+              copyText.textContent = 'Link Copied';
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('[Copy Link Init Error]:', err);
       }
 
       // 5. Mobile Sidebar Toggle
-      const sidebarToggle = document.getElementById('sidebar-toggle');
-      const sidebarPanel = document.getElementById('sidebar-panel');
-      const sidebarBackdrop = sidebarPanel?.querySelector('.sidebar-backdrop');
-      const sidebarInner = sidebarPanel?.querySelector('.sidebar-panel');
-      const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
-      if (sidebarToggle && sidebarPanel && sidebarBackdrop && sidebarInner) {
-        function openSidebar() {
-          sidebarPanel.classList.remove('hidden');
-          // Force reflow to enable transition
-          sidebarBackdrop.offsetHeight;
-          sidebarBackdrop.classList.remove('opacity-0', 'invisible');
-          sidebarBackdrop.classList.add('opacity-100', 'visible');
-          sidebarInner.classList.remove('translate-x-full');
-          sidebarToggle.setAttribute('aria-expanded', 'true');
-          sidebarToggle.innerHTML = '<svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
-        }
-        function closeSidebar() {
-          sidebarBackdrop.classList.add('opacity-0', 'invisible');
-          sidebarBackdrop.classList.remove('opacity-100', 'visible');
-          sidebarInner.classList.add('translate-x-full');
-          sidebarToggle.setAttribute('aria-expanded', 'false');
-          sidebarToggle.innerHTML = '<svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>';
-          setTimeout(() => {
+      try {
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarPanel = document.getElementById('sidebar-panel');
+        const sidebarBackdrop = sidebarPanel?.querySelector('.sidebar-backdrop');
+        const sidebarInner = sidebarPanel?.querySelector('.sidebar-panel');
+        const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+        if (sidebarToggle && sidebarPanel && sidebarBackdrop && sidebarInner) {
+          function openSidebar() {
+            sidebarPanel.classList.remove('hidden');
+            sidebarBackdrop.offsetHeight;
+            sidebarBackdrop.classList.remove('opacity-0', 'invisible');
+            sidebarBackdrop.classList.add('opacity-100', 'visible');
+            sidebarInner.classList.remove('translate-x-full');
+            sidebarToggle.setAttribute('aria-expanded', 'true');
+            sidebarToggle.innerHTML = '<svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+          }
+          function closeSidebar() {
+            sidebarBackdrop.classList.add('opacity-0', 'invisible');
+            sidebarBackdrop.classList.remove('opacity-100', 'visible');
+            sidebarInner.classList.add('translate-x-full');
+            sidebarToggle.setAttribute('aria-expanded', 'false');
+            sidebarToggle.innerHTML = '<svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>';
+            setTimeout(() => {
+              if (sidebarInner.classList.contains('translate-x-full')) {
+                sidebarPanel.classList.add('hidden');
+              }
+            }, 300);
+          }
+          sidebarToggle.addEventListener('click', () => {
             if (sidebarInner.classList.contains('translate-x-full')) {
-              sidebarPanel.classList.add('hidden');
+              openSidebar();
+            } else {
+              closeSidebar();
             }
-          }, 300);
-        }
-        sidebarToggle.addEventListener('click', () => {
-          if (sidebarInner.classList.contains('translate-x-full')) {
-            openSidebar();
-          } else {
-            closeSidebar();
+          });
+          if (sidebarCloseBtn) {
+            sidebarCloseBtn.addEventListener('click', closeSidebar);
           }
-        });
-        // Close button handler
-        if (sidebarCloseBtn) {
-          sidebarCloseBtn.addEventListener('click', closeSidebar);
+          sidebarBackdrop.addEventListener('click', closeSidebar);
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !sidebarInner.classList.contains('translate-x-full')) {
+              closeSidebar();
+            }
+          });
         }
-        // Close on backdrop click
-        sidebarBackdrop.addEventListener('click', closeSidebar);
-        // Close on escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && !sidebarInner.classList.contains('translate-x-full')) {
-            closeSidebar();
-          }
-        });
+      } catch (err) {
+        console.warn('[Sidebar Toggle Init Error]:', err);
       }
 
       // 6. Floating Back to Top Button
-      const backToTopBtn = document.getElementById('back-to-top-btn');
-      if (backToTopBtn) {
-        window.addEventListener('scroll', () => {
-          if (window.scrollY > 400) {
-            backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
-            backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
-          } else {
-            backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
-            backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
-          }
-        }, { passive: true });
-        backToTopBtn.addEventListener('click', () => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+      try {
+        const backToTopBtn = document.getElementById('back-to-top-btn');
+        if (backToTopBtn) {
+          window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+              backToTopBtn.classList.remove('opacity-0', 'pointer-events-none');
+              backToTopBtn.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+              backToTopBtn.classList.add('opacity-0', 'pointer-events-none');
+              backToTopBtn.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+          }, { passive: true });
+          backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      } catch (err) {
+        console.warn('[Back to Top Init Error]:', err);
       }
     })();
   </script>
