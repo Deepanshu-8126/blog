@@ -751,6 +751,29 @@ export async function getTrendingPosts(limit = 5, runtimeEnv?: any): Promise<Pos
   return [...SEED_POSTS].sort((a, b) => (b.hype || b.trend_score) - (a.hype || a.trend_score)).slice(0, limit);
 }
 
+/** 4b. Get all published posts for full XML sitemap indexing */
+export async function getAllPublishedPosts(limit = 1000, runtimeEnv?: any): Promise<Post[]> {
+  const db = getD1(runtimeEnv);
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const res = await db.prepare(`
+        SELECT posts.*, niches.slug as niche_slug, niches.name as niche_name, niches.grp as niche_grp 
+        FROM posts 
+        LEFT JOIN niches ON posts.niche_id = niches.id 
+        WHERE posts.status = "published" AND (posts.indexable = 1 OR posts.indexable IS NULL)
+        ORDER BY posts.published_at DESC 
+        LIMIT ?
+      `).bind(limit).all();
+      if (res.results && res.results.length > 0) {
+        return res.results.map((r: any) => mapPostRow(r));
+      }
+    } catch (err) {
+      console.warn('[D1 getAllPublishedPosts fallback]:', err);
+    }
+  }
+  return SEED_POSTS.filter(p => p.status === 'published' && p.indexable !== false);
+}
+
 /** 5. Get products / tools for a niche (Optimized for Highest Monetization & Conversions) */
 export async function getProductsByNiche(nicheId: string, runtimeEnv?: any): Promise<Product[]> {
   const db = getD1(runtimeEnv);

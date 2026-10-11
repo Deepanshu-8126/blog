@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getNiches, getTrendingPosts } from '../lib/db';
+import { getNiches, getAllPublishedPosts } from '../lib/db';
 
 export const GET: APIRoute = async ({ request, locals }) => {
   const url = new URL(request.url);
@@ -8,7 +8,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
   const runtime = (locals as any)?.runtime;
   const niches = await getNiches(runtime?.env);
-  const posts = await getTrendingPosts(50, runtime?.env);
+  const posts = await getAllPublishedPosts(1000, runtime?.env);
 
   const staticUrls = [
     { loc: `${baseUrl}/`, priority: '1.0', changefreq: 'daily' },

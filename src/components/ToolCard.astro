@@ -25,6 +25,7 @@ const buyUrl = product.aff_url || product.url;
           alt={product.name}
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
+          onerror="this.onerror=null;this.src='/images/ai_tools.jpg';"
         />
       ) : (
         <div class="w-full h-full flex items-center justify-center bg-slate-100">
@@ -64,9 +65,26 @@ const buyUrl = product.aff_url || product.url;
     </h3>
 
     {product.tagline && (
-      <p class="text-xs text-slate-500 leading-relaxed line-clamp-2 mb-4">
+      <p class="text-xs text-slate-500 leading-relaxed line-clamp-2 mb-3">
         {product.tagline}
       </p>
+    )}
+
+    {product.coupon_code && (
+      <div class="mb-3.5 p-2 rounded-xl bg-purple-50 border border-purple-200/80 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="text-xs">🎟️</span>
+          <span class="text-[11px] font-mono font-bold text-brand uppercase truncate">Code: {product.coupon_code}</span>
+        </div>
+        <button
+          type="button"
+          class="coupon-copy-btn px-2.5 py-1 rounded-lg bg-white hover:bg-brand hover:text-white border border-purple-200 text-brand text-[10px] font-black uppercase transition active:scale-95 shadow-2xs cursor-pointer"
+          data-coupon={product.coupon_code}
+          title="Copy coupon code"
+        >
+          <span>Copy</span>
+        </button>
+      </div>
     )}
   </div>
 
@@ -97,3 +115,22 @@ const buyUrl = product.aff_url || product.url;
     </a>
   </div>
 </div>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement)?.closest('.coupon-copy-btn') as HTMLButtonElement | null;
+    if (!btn) return;
+    const code = btn.dataset.coupon;
+    if (code) {
+      navigator.clipboard.writeText(code).then(() => {
+        const origText = btn.innerHTML;
+        btn.innerHTML = '<span>Copied! 🎉</span>';
+        btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+        setTimeout(() => {
+          btn.innerHTML = origText;
+          btn.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
+        }, 2000);
+      });
+    }
+  });
+</script>
