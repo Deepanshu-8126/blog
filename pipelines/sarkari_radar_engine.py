@@ -238,22 +238,41 @@ def generate_sarkari_article(item):
     title = item["title"]
     entity = item.get("entity", "Conducting Board")
     category = item.get("category", "Sarkari Alert")
-    official_domain = item.get("official_domain") or f"{urllib.parse.quote(entity)} official portal"
-    source = item.get("source", "Official Notification")
+    # Clean direct official portal URL
+    target_link = item.get("link") or ""
+    if not target_link.startswith("http"):
+        if official_domain and "." in official_domain and not official_domain.startswith("http"):
+            target_link = f"https://{official_domain.strip('/')}"
+        elif official_domain and official_domain.startswith("http"):
+            target_link = official_domain
+        else:
+            target_link = f"https://www.google.com/search?q={urllib.parse.quote(entity + ' official website portal')}"
 
-    prompt = f"""You are India's top senior education editor and career journalist writing for 'Sarkari Result & Exam Alert' (all-sarkari-result-2k0.blogspot.com).
+    prompt = f"""You are India's top senior education editor and investigative career journalist writing for 'Sarkari Result & Exam Alert' (all-sarkari-result-2k0.blogspot.com).
 Topic: {title}
-Entity: {entity} | Category: {category} | Official Domain: {official_domain} | Source: {source}
+Entity: {entity} | Category: {category} | Official Domain: {official_domain} | Direct Link: {target_link}
 
-WRITING STYLE & TONE GUIDELINES:
-1. LANGUAGE: 100% Natural, Engaging Conversational HINGLISH (Roman Hindi blended with standard English keywords like Cutoff, Scorecard, Admit Card, Direct Link, Eligibility, Merit List, Official Portal, Registration, Counseling).
-2. WRITE LIKE AN EXPERT SENIOR JOURNALIST talking directly to an Indian candidate who urgently needs to check their result or apply for the scheme.
-3. ABSOLUTELY BANNED AI SLOP CLICHES:
-   - "In conclusion", "delve into", "tapestry", "beacon", "it is important to note", "furthermore", "moreover", "game-changer", "testament to", "fast-paced world".
-   - Use lively, real transitions: "Yahan hai direct update", "Asli baat yeh hai", "Candidates ko dhyan rakhna chahiye", "Direct process yeh hai".
+CORE JOURNALISTIC & HUMANIZATION PRINCIPLES (Anti-AI Bot Craft):
+1. LANGUAGE: 100% Natural, Engaging Conversational HINGLISH (Fluent blend of Roman Hindi with standard English education keywords like Scorecard, Cutoff, Merit List, Admit Card, Direct Link, Counseling, Eligibility).
+2. DIVERSE, AUTHENTIC INTROS (BANNED REPETITION):
+   - STRICT BAN: DO NOT start every article with "Are yaar! Agar aapne bhi...". Vary your opening hook every single time!
+   - Examples of natural openers:
+     * "Candidates who appeared for {title} can finally breathe a sigh of relief as the official announcement is here."
+     * "Agar aap bhi {entity} ke is update ka intezaar kar rahe the, toh board ne official portal par fresh notification release kar diya hai."
+     * "The wait is officially over for thousands of students across the state."
+3. HEADLINE DIVERSITY (DO NOT USE RIGID REPETITIVE PREFIXES):
+   - NEVER put "[Direct Link Active]" on every single post! Especially NOT on quizzes, current affairs, syllabus, or general notices!
+   - Craft a compelling, journalistic headline tailored to what this actually is:
+     * If Result: "{entity} {title}: Marks Declared, How to Check Scorecard & Cutoff Details"
+     * If Admit Card: "{entity} Admit Card 2026: Hall Ticket Download Link & Exam Shift Guidelines"
+     * If Job/Bharti: "{entity} Recruitment 2026: {title} - Eligibility Criteria, Vacancies & Application Steps"
+     * If Quiz/Notes: "Daily Preparation Capsule: {title} - Key Questions with Detailed Solutions"
+     * If Cutoff: "{entity} Expected & Final Cutoff 2026: Category-Wise Breakdown"
+4. STRICT CLICHE BAN:
+   - "In conclusion", "delve into", "tapestry", "beacon", "it is important to remember", "furthermore", "moreover", "game-changer", "testament to", "fast-paced world".
 
 ARTICLE STRUCTURE (600 to 750 words):
-- ## Catchy Headline: High CTR, e.g. "[Direct Link Active] {title}: Yahan se download karein scorecard/form, category-wise details & process dekhein"
+- ## Natural, Catchy Journalistic Headline (No robotic brackets)
 - ## ⚡ Quick Highlights Box:
   A clean markdown table with:
   | Detail | Information |
@@ -262,25 +281,24 @@ ARTICLE STRUCTURE (600 to 750 words):
   | **Conducting Authority** | {entity} |
   | **Current Status** | 🟢 Declared / Active |
   | **Category** | {category} |
-  | **Official Portal** | {official_domain} |
-- ## 📋 Step-by-Step Complete Procedure (Aise Karein Check / Apply):
-  Clear numbered 1-2-3-4 steps in conversational Hinglish.
+  | **Official Portal** | {official_domain or 'Official Website'} |
+- ## 📋 Step-by-Step Procedure (How to Check / Apply):
+  Practical, clear steps candidates need to take on the official website.
 - ## 📊 Category-Wise Cutoff / Eligibility Criteria:
-  A clean markdown table for General (UR), OBC, EWS, SC, ST or required qualification/age criteria.
+  Markdown table with realistic figures for General, OBC, SC, ST, EWS.
 - ## 🔗 Official Direct Link Callout:
-  A prominent direct link box:
-  `👉 [Official Website Direct Link - Click Here To Check / Apply](https://www.google.com/search?q={urllib.parse.quote(entity + ' ' + category + ' official portal')})`
+  `👉 [Official Website Direct Link - Click Here To Access Official Portal]({target_link})`
 - ## ⚠️ Important Documents & Advisory:
-  Essential documents needed (Aadhaar, Roll No, Registration Slip) and warning against phishing sites/fake agents.
+  What to verify on the scorecard / application (QR code, Name spelling, Marks) and warning against fake fraud sites.
 - ## ❓ Frequently Asked Questions (Top FAQs):
-  3 direct questions candidates search on Google with crisp 2-sentence answers.
+  3 direct questions users search with crisp 2-sentence answers.
 
 Return strict JSON:
 {{
-  "title": "Clear High-CTR headline with status tag like [Direct Link Active] or [Official Notice Out]",
+  "title": "Natural, professional headline matching topic intent (zero repetitive boilerplate)",
   "summary": "Compelling meta description under 155 chars for Google Search SERP",
-  "body_md": "Full markdown content with tables, bold highlights, numbered steps and FAQs",
-  "tags": ["{category}", "Sarkari Result", "{entity}", "Direct Link", "Govt Jobs 2026"]
+  "body_md": "Full markdown content with tables, bold highlights, numbered steps, official link, and FAQs",
+  "tags": ["{category}", "Sarkari Result", "{entity}", "Govt Jobs 2026"]
 }}"""
 
     try:

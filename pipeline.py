@@ -879,7 +879,7 @@ AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING (Agent Beta):
 1. Detect why the user is searching for "{title}" RIGHT NOW:
    - Case A (Exam/Result/Admit Card/Sarkari - TONE: NATURAL CONVERSATIONAL HINGLISH):
      * TONE & LANGUAGE: Write in 100% natural, authentic Hinglish (Roman Hindi mixed with English keywords, exactly like Jagran Josh, Live Hindustan, and Amar Ujala).
-     * HEADLINE FORMAT: "[Direct Link Active] {title}: Scorecard aise karein download, yahan dekhein category-wise cutoff marks"
+     * HEADLINE FORMAT: Natural, engaging headline matching the specific event (Results, Admit Card, or Notification). Avoid repetitive bracket prefixes like "[Direct Link Active]" on every post.
      * SECTION 1 (⚡ Quick Highlights Box): Markdown table with Exam Name, Conducting Authority, Status: 🟢 Declared / Active, Required Login Details, and Official Portal Link.
      * SECTION 2 (📋 Step-by-Step Scorecard Check Karne Ka Tarika): Numbered 1-2-3-4 steps in clear, friendly Hinglish.
      * SECTION 3 (📊 Expected Category-Wise Cutoff): Markdown table for General (UR), OBC, EWS, SC, ST.
