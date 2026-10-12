@@ -18,6 +18,7 @@ import sys
 import json
 import re
 import time
+import uuid
 import hashlib
 import urllib.parse
 import xml.etree.ElementTree as ET
@@ -291,25 +292,56 @@ Return strict JSON:
 # ======================================================================================
 # 🌐 CLOUDFLARE D1 MAIN WEBSITE PUBLISHER
 # ======================================================================================
-def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url):
-    """Stores article in D1 SQLite so it shows live on uniquedigit-viral-hub.pages.dev"""
+def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_url="", official_domain=""):
+    """
+    Stores article in Cloudflare D1 SQLite database to go live instantly on
+    https://uniquedigit-viral-hub.pages.dev/exams-results/
+    """
     if not (CF_ACCOUNT and CF_D1_DB and CF_TOKEN):
+        print("⚠️ [Cloudflare D1]: Missing CF credentials in environment.")
         return False
 
     slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')[:80]
+    post_id = uuid.uuid4().hex[:16]
+    sources_json = json.dumps([{"title": official_domain or "Official Authority", "url": source_url or ""}])
+    faq_json = json.dumps([])
+
     sql = """
-    INSERT INTO posts (slug, title, summary, body_md, image_url, niche_id, tags, published_at, view_count)
-    VALUES (?, ?, ?, ?, ?, (SELECT id FROM niches WHERE slug = 'exams-results' LIMIT 1), ?, datetime('now'), 0)
-    ON CONFLICT(slug) DO UPDATE SET title=excluded.title, body_md=excluded.body_md;
+    INSERT INTO posts (
+        id, niche_id, slug, kind, title, summary, body_md, faq, sources,
+        image_url, image_credit, source_url, hype, views, is_breaking, indexable, status,
+        published_at, updated_at
+    )
+    VALUES (
+        ?,
+        (SELECT id FROM niches WHERE slug = 'exams-results' LIMIT 1),
+        ?, 'article', ?, ?, ?, ?, ?,
+        ?, 'Official Verified Emblem', ?, 88.0, 25, 1, 1, 'published',
+        strftime('%Y-%m-%dT%H:%M:%SZ', 'now'),
+        strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+    )
+    ON CONFLICT(niche_id, slug) DO UPDATE SET
+        title = excluded.title,
+        summary = excluded.summary,
+        body_md = excluded.body_md,
+        image_url = excluded.image_url,
+        updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now');
     """
-    params = [slug, title, summary, body_md, image_url, json.dumps(tags)]
+    params = [post_id, slug, title, summary, body_md, faq_json, sources_json, image_url, source_url]
 
     url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT}/d1/database/{CF_D1_DB}/query"
     headers = {"Authorization": f"Bearer {CF_TOKEN}", "Content-Type": "application/json"}
     try:
         r = requests.post(url, headers=headers, json={"sql": sql, "params": params}, timeout=20)
-        return r.status_code == 200
-    except Exception:
+        res_json = r.json() if r.status_code == 200 else {}
+        if r.status_code == 200 and res_json.get("success"):
+            print(f"✅ [Cloudflare Main Site]: Live at https://uniquedigit-viral-hub.pages.dev/exams-results/{slug}")
+            return True
+        else:
+            print(f"❌ [Cloudflare D1 Error]: HTTP {r.status_code} - {r.text[:200]}")
+            return False
+    except Exception as e:
+        print(f"❌ [Cloudflare D1 Exception]: {e}")
         return False
 
 # ======================================================================================
@@ -344,7 +376,8 @@ def run_sarkari_radar(max_posts=3):
         entity = item.get("entity", "")
         topic_hash = hashlib.md5(topic_title.lower().encode("utf-8")).hexdigest()
 
-        if topic_hash in cache:
+        # If already published to both Blogger and Cloudflare, skip
+        if topic_hash in cache and cache[topic_hash].get("blogger_url") and cache[topic_hash].get("cf_live"):
             continue
 
         print(f"\n⚡ [Processing Post {published_count + 1}/{max_posts}]: {topic_title}")
@@ -366,34 +399,46 @@ def run_sarkari_radar(max_posts=3):
         print(f"🖼️ Media Resolved: {real_img[:70]}... ({img_type})")
 
         # 5. Publish to Google Blogger
-        content_html = markdown.markdown(body_md, extensions=['extra', 'tables'])
-        blogger_res = publish_to_blogger(
-            final_title,
-            content_html,
-            labels=tags,
-            is_draft=False,
-            featured_image=real_img,
-            target_blog_id=SARKARI_BLOG_ID
+        blogger_url = None
+        try:
+            content_html = markdown.markdown(body_md, extensions=['extra', 'tables'])
+            blogger_res = publish_to_blogger(
+                final_title,
+                content_html,
+                labels=tags,
+                is_draft=False,
+                featured_image=real_img,
+                target_blog_id=SARKARI_BLOG_ID
+            )
+            blogger_url = blogger_res.get("url") if blogger_res.get("success") else None
+        except Exception as e:
+            print(f"⚠️ [Blogger Catch]: {e}")
+
+        # 6. Publish to Cloudflare Main Site (ALWAYS GUARANTEED)
+        cf_success = publish_to_cloudflare_d1(
+            final_title, summary, body_md, tags, real_img,
+            source_url=item.get("link", ""),
+            official_domain=item.get("official_domain", "")
         )
 
-        blogger_url = blogger_res.get("url") if blogger_res.get("success") else None
+        # 7. Update Cache if successfully pushed to Blogger OR Cloudflare
+        if blogger_url or cf_success:
+            cache[topic_hash] = {
+                "title": final_title,
+                "entity": entity,
+                "published_at": datetime.now().isoformat(),
+                "blogger_url": blogger_url,
+                "image": real_img,
+                "cf_live": cf_success
+            }
+            save_cache(cache)
+            published_count += 1
+            print(f"✨ [Success]: Published post '{final_title[:45]}...'")
+        else:
+            print(f"❌ [Failed]: Could not push to Blogger or Cloudflare.")
 
-        # 6. Publish to Cloudflare Main Site
-        cf_success = publish_to_cloudflare_d1(final_title, summary, body_md, tags, real_img)
-        if cf_success:
-            print(f"✅ [Cloudflare Main Site]: Live on uniquedigit-viral-hub.pages.dev")
-
-        # 7. Update Cache
-        cache[topic_hash] = {
-            "title": final_title,
-            "entity": entity,
-            "published_at": datetime.now().isoformat(),
-            "blogger_url": blogger_url,
-            "image": real_img
-        }
-        save_cache(cache)
-        published_count += 1
-        time.sleep(2)
+        # Rate-limiting cushion between articles to protect Blogger quotas
+        time.sleep(10)
 
     print("\n" + "=" * 70)
     print(f"🎉 SARKARI RADAR COMPLETED: Successfully published {published_count} new posts!")
@@ -402,3 +447,4 @@ def run_sarkari_radar(max_posts=3):
 if __name__ == "__main__":
     count = int(sys.argv[1]) if len(sys.argv) > 1 else 2
     run_sarkari_radar(max_posts=count)
+

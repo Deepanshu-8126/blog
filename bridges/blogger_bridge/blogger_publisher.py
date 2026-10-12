@@ -22,6 +22,7 @@ if sys.platform == "win32":
     except Exception:
         pass
 
+import time
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
@@ -71,7 +72,7 @@ def get_blogger_service():
 
 def publish_to_blogger(title, content_html, labels=None, is_draft=False, featured_image=None, target_blog_id=None):
     """
-    Publishes an article directly to Google Blogger.
+    Publishes an article directly to Google Blogger with auto-retry on 429 rate limits.
     
     Args:
         title (str): Post title.
@@ -111,24 +112,32 @@ def publish_to_blogger(title, content_html, labels=None, is_draft=False, feature
         "labels": labels or ["Trending", "UniqueDigit"]
     }
 
-    try:
-        post = service.posts().insert(
-            blogId=blog_id,
-            body=body,
-            isDraft=is_draft
-        ).execute()
+    max_retries = 2
+    for attempt in range(max_retries + 1):
+        try:
+            post = service.posts().insert(
+                blogId=blog_id,
+                body=body,
+                isDraft=is_draft
+            ).execute()
 
-        post_url = post.get("url", "")
-        post_id = post.get("id", "")
-        print(f"🎉 [Blogger Published]: {title} -> {post_url}")
-        return {
-            "success": True,
-            "post_id": post_id,
-            "url": post_url
-        }
-    except Exception as e:
-        print(f"❌ [Blogger Error]: {e}")
-        return {"success": False, "error": str(e)}
+            post_url = post.get("url", "")
+            post_id = post.get("id", "")
+            print(f"🎉 [Blogger Published]: {title} -> {post_url}")
+            return {
+                "success": True,
+                "post_id": post_id,
+                "url": post_url
+            }
+        except Exception as e:
+            err_str = str(e)
+            if ("429" in err_str or "rateLimitExceeded" in err_str or "quota" in err_str.lower()) and attempt < max_retries:
+                wait_time = 12 * (attempt + 1)
+                print(f"⚠️ [Blogger 429 Quota/Rate Limit]: Waiting {wait_time}s before retry {attempt+1}/{max_retries}...")
+                time.sleep(wait_time)
+                continue
+            print(f"❌ [Blogger Error]: {e}")
+            return {"success": False, "error": err_str}
 
 if __name__ == "__main__":
     # Test connection
