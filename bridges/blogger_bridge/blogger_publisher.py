@@ -94,6 +94,10 @@ def publish_to_blogger(title, content_html, labels=None, is_draft=False, feature
     if featured_image and "pollinations.ai" in featured_image.lower():
         featured_image = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop"
 
+    # HARD LOCK: Block expiring telesco.pe mobile preview thumbnails
+    if featured_image and "telesco.pe" in featured_image.lower():
+        featured_image = None
+
     # Prepend responsive featured image / emblem
     final_content = content_html
     if featured_image and featured_image.startswith("http") and featured_image not in content_html:

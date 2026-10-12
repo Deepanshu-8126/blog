@@ -101,12 +101,12 @@ VIRAL_FESTIVE_REGISTRY = {
     "B0CHX1W1XY": {
         "title": "Apple iPhone 15 Plus (128 GB) - Blue",
         "mrp": 79900, "deal_price": 64999,
-        "image": "https://m.media-amazon.com/images/I/71bEwvRAnqL._SL1500_.jpg"
+        "image": "https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg"
     },
     "B0DGH5Z3L2": {
         "title": "Apple iPhone 16 (128 GB) - Teal",
         "mrp": 79900, "deal_price": 69999,
-        "image": "https://m.media-amazon.com/images/I/712SqC-8mBL._SL1500_.jpg"
+        "image": "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/iphone-16.png"
     },
     "B0CX24C6F1": {
         "title": "Apple MacBook Air M3 Chip (13-inch, 8GB Unified Memory, 256GB SSD)",
@@ -121,7 +121,7 @@ VIRAL_FESTIVE_REGISTRY = {
     "B0CRVK2SZ5": {
         "title": "Samsung Galaxy S24 5G (8GB RAM, 128GB Storage) - Onyx Black",
         "mrp": 79999, "deal_price": 54999,
-        "image": "https://m.media-amazon.com/images/I/71r348d38VL._SL1500_.jpg"
+        "image": "https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg"
     },
     "B0CZ7MQN4F": {
         "title": "OnePlus 12R (16GB RAM, 256GB Storage) - Cool Blue",
@@ -131,22 +131,22 @@ VIRAL_FESTIVE_REGISTRY = {
     "B0D77Y9B7P": {
         "title": "OnePlus Nord 4 5G (8GB RAM, 256GB Storage) - Mercurial Silver",
         "mrp": 32999, "deal_price": 27999,
-        "image": "https://m.media-amazon.com/images/I/617b7uO1W5L._SL1500_.jpg"
+        "image": "https://fdn2.gsmarena.com/vv/bigpic/oneplus-nord4.jpg"
     },
     "B0C77K13X5": {
         "title": "Sony WH-1000XM5 Wireless Industry Leading Noise Canceling Headphones",
         "mrp": 34990, "deal_price": 25990,
-        "image": "https://m.media-amazon.com/images/I/61Vbkh468kL._SL1500_.jpg"
+        "image": "https://m.media-amazon.com/images/I/61+btxzpfDL._SL1500_.jpg"
     },
-    "B0BNVBXQJ1": {
+    "B09N3XMZ5F": {
         "title": "boAt Airdopes 141 ANC TWS Earbuds (42H Playtime, 32dB ANC)",
         "mrp": 4490, "deal_price": 1299,
-        "image": "https://m.media-amazon.com/images/I/61Yy7lq3VGL._SL1500_.jpg"
+        "image": "https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg"
     },
     "B0CX5CYW9N": {
         "title": "Xiaomi 43-inch Smart Google TV 4K Ultra HD (Dolby Vision, 30W Speakers)",
         "mrp": 42999, "deal_price": 21999,
-        "image": "https://m.media-amazon.com/images/I/71d5fMDqqXL._SL1500_.jpg"
+        "image": "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-smart-4k-tv-f-43-2025/m-in/3728e5c6352918e127883e9b0ab45f90.png"
     }
 }
 
