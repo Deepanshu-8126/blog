@@ -1104,11 +1104,14 @@ def process_niche(n):
                 1 if c["score"] >= 80 else 0
             ]
         )
-        existing_titles.append(t)
+        post_tags = list(a.get("tags") or [n["name"]])
+        if credit and "reddit" in credit.lower() and "Reddit Discussion" not in post_tags:
+            post_tags.append("Reddit Discussion")
+
         # Dispatch instant Telegram alert
         send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image, deal_meta=a.get("deal_intel"))
         # Dispatch instant Google Blogger cross-post
-        send_blogger(a.get("title", t), a.get("body_md", ""), tags=a.get("tags", [n["name"]]), image_url=image, niche_slug=n.get("slug"))
+        send_blogger(a.get("title", t), a.get("body_md", ""), tags=post_tags, image_url=image, niche_slug=n.get("slug"))
         made += 1
         time.sleep(1)
     return made
@@ -1133,10 +1136,10 @@ SEED_NICHES = [
 # ---------- Universal Autonomous Trend Discovery (Auto-Niche Creation) ----------
 def process_national_breaking_trends():
     """Scans all trending searches in India and dynamically creates/assigns niches on the fly"""
-    print("--- [Radar Agent] Scanning National Real-Time Indian Search Trends ---")
-    rss_trends = fetch_google_trends_rss(GEO)
+    print("--- [Radar Agent] Scanning National Real-Time Indian Search Trends & Viral Reddit Hubs ---")
+    rss_trends = (fetch_google_trends_rss(GEO) or []) + (fetch_reddit_viral_trends("viral", GEO) or [])
     if not rss_trends:
-        print("[Radar Agent] No trends returned from Google Trends RSS.")
+        print("[Radar Agent] No trends returned from Google Trends / Reddit RSS.")
         return 0
 
     existing_records = d1_query("SELECT canonical, slug FROM topics")
@@ -1311,9 +1314,13 @@ Return strict JSON:
             ]
         )
 
+        radar_tags = list(res.get("tags") or [n_name])
+        if credit and "reddit" in credit.lower() and "Reddit Discussion" not in radar_tags:
+            radar_tags.append("Reddit Discussion")
+
         send_telegram(res.get("title", query), n_name, post_slug, niche_slug=n_slug, image_url=image, deal_meta=res.get("deal_intel"))
         # Dispatch instant Google Blogger cross-post
-        send_blogger(res.get("title", query), res.get("body_md", ""), tags=res.get("tags", [n_name]), image_url=image, niche_slug=n_slug)
+        send_blogger(res.get("title", query), res.get("body_md", ""), tags=radar_tags, image_url=image, niche_slug=n_slug)
         print(f"[Radar Agent Published]: {res.get('title')} -> /{n_slug}/{post_slug}")
         processed += 1
         time.sleep(1)
