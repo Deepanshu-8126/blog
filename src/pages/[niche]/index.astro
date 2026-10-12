@@ -29,7 +29,7 @@ const isNewsNiche = niche.slug === 'news' || niche.slug === 'viral' || niche.slu
 const pageQuery = parseInt(Astro.url.searchParams.get('page') || '1', 10);
 const currentPage = isNaN(pageQuery) || pageQuery < 1 ? 1 : pageQuery;
 const tabQuery = Astro.url.searchParams.get('tab') || (isDealsPageType ? 'live' : 'latest');
-const pageSize = 12;
+const pageSize = isDealsPageType ? 6 : 12;
 const offset = (currentPage - 1) * pageSize;
 
 let posts: any[] = [];
