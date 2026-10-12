@@ -61,6 +61,8 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8594213665:AAHWPNHEzrC9Chp
 TELEGRAM_DEALS_CHANNEL = os.getenv("TELEGRAM_DEALS_CHANNEL", "@uniquedigit_deals")
 TELEGRAM_DEALS_GROUP_ID = os.getenv("TELEGRAM_DEALS_GROUP_ID", "-1004335990773")
 AMAZON_TAG = os.getenv("AMAZON_AFFILIATE_TAG", "uniquedigi0c6-21")
+EARNKARO_USER_ID = os.getenv("EARNKARO_USER_ID", "3360368")
+MEESHO_CREATOR_ID = os.getenv("MEESHO_CREATOR_ID", "374453404")
 PORTAL_BASE = os.getenv("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
 
 TOPIC_IDS = {
@@ -293,23 +295,44 @@ def security_clean_text(text):
     return t.strip()
 
 def convert_to_affiliate(url, tag=AMAZON_TAG):
-    """Converts any Amazon URL into a clean affiliate URL with our tag and zero leaks."""
+    """Converts any store link (Amazon, Flipkart, Myntra, Meesho, Ajio) into a clean monetized affiliate URL."""
     if not url:
         return ""
-    # Extract ASIN
+
+    url_lower = url.lower()
+
+    # 1. Amazon India (Direct Associate Tag)
     asin_match = re.search(r'/(?:dp|gp/product|d)/([A-Z0-9]{10})', url)
     if asin_match:
         asin = asin_match.group(1)
         return f"https://www.amazon.in/dp/{asin}?tag={tag}"
-    if "amazon.in" in url:
+    if "amazon.in" in url_lower:
         parsed = urllib.parse.urlparse(url)
         q = urllib.parse.parse_qs(parsed.query)
         q["tag"] = [tag]
-        # Remove any third-party tracking tags
         for unwanted in ["ascsubtag", "linkCode", "camp", "creative", "ref"]:
             q.pop(unwanted, None)
         new_query = urllib.parse.urlencode(q, doseq=True)
         return urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
+
+    # 2. Meesho (Direct Creator / Affiliate Monetization)
+    if "meesho.com" in url_lower:
+        parsed = urllib.parse.urlparse(url)
+        q = urllib.parse.parse_qs(parsed.query)
+        if MEESHO_CREATOR_ID:
+            q["creator_id"] = [MEESHO_CREATOR_ID]
+        new_query = urllib.parse.urlencode(q, doseq=True)
+        return urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
+
+    # 3. Myntra, Flipkart, Ajio, Nykaa (EarnKaro Affiliate 1-Wallet)
+    if any(m in url_lower for m in ["flipkart.com", "myntra.com", "ajio.com", "nykaa.com"]):
+        parsed = urllib.parse.urlparse(url)
+        # Clean product URL without competitor affiliate tags
+        clean_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+        if EARNKARO_USER_ID:
+            return f"https://earnkaro.com/deals?r={EARNKARO_USER_ID}&url={urllib.parse.quote(clean_url)}"
+        return clean_url
+
     return url
 
 # =============================================================================
@@ -356,14 +379,16 @@ class TelegramChannelSpy:
                 links = [a["href"] for a in wrap.find_all("a", href=True)
                          if "http" in a["href"] and "t.me" not in a["href"]]
 
-                if not links and "amazon" not in raw_text.lower() and "flipkart" not in raw_text.lower():
+                store_keywords = ["amazon", "flipkart", "myntra", "meesho", "ajio"]
+                store_domains = ["amazon.in", "flipkart.com", "myntra.com", "meesho.com", "ajio.com", "/dp/"]
+                if not links and not any(k in raw_text.lower() for k in store_keywords):
                     continue
 
                 # Find the primary deal link
                 target_url = ""
                 for link in links:
                     resolved = resolve_unshorten_url(link, timeout=5)
-                    if "amazon.in" in resolved or "flipkart.com" in resolved or "/dp/" in resolved:
+                    if any(dom in resolved.lower() for dom in store_domains):
                         target_url = resolved
                         break
 
@@ -509,6 +534,8 @@ class FestiveCommunityRadar:
         "https://www.desidime.com/feed/deals",
         "https://news.google.com/rss/search?q=Amazon+Great+Indian+Festival+deals+offer&hl=en-IN&gl=IN&ceid=IN:en",
         "https://news.google.com/rss/search?q=Flipkart+Big+Billion+Days+discount+loot&hl=en-IN&gl=IN&ceid=IN:en",
+        "https://news.google.com/rss/search?q=Myntra+Big+Fashion+Festival+sale+deals&hl=en-IN&gl=IN&ceid=IN:en",
+        "https://news.google.com/rss/search?q=Meesho+mega+blockbuster+sale+loot+deals&hl=en-IN&gl=IN&ceid=IN:en",
     ]
 
     def __init__(self):
@@ -521,7 +548,7 @@ class FestiveCommunityRadar:
             if not html:
                 continue
             soup = BeautifulSoup(html, "xml" if "xml" in html[:100] else "html.parser")
-            for entry in soup.find_all("item")[:15]:
+            for entry in soup.find_all("item")[:10]:
                 title_tag = entry.find("title")
                 link_tag = entry.find("link")
                 if not title_tag:
@@ -547,7 +574,7 @@ Task: Extract or infer the primary product deal from this headline.
 - deal_price: Estimated festive offer price in INR (integer, e.g. 54999)
 - mrp: Original retail price in INR (integer, e.g. 69900)
 - discount_percent: Integer discount percentage (e.g. 21)
-- platform: "amazon" or "flipkart"
+- platform: "amazon" | "flipkart" | "myntra" | "meesho" | "ajio"
 - search_keyword: best search keyword for this product
 
 Return ONLY valid JSON:
@@ -576,15 +603,27 @@ If completely unrelated to shopping, return {{"is_deal": false}}.
         for item in raw_items[:6]: # Process up to 6 items per cycle
             parsed = self.parse_with_gemini(item["title"], item["link"])
             if parsed:
+                platform = parsed.get("platform", "amazon").lower()
+                prod_q = urllib.parse.quote(parsed.get('search_keyword', parsed['product_name']))
+
+                if "myntra" in platform:
+                    aff_url = convert_to_affiliate(f"https://www.myntra.com/{prod_q}")
+                elif "meesho" in platform:
+                    aff_url = convert_to_affiliate(f"https://www.meesho.com/search?q={prod_q}")
+                elif "flipkart" in platform:
+                    aff_url = convert_to_affiliate(f"https://www.flipkart.com/search?q={prod_q}")
+                else:
+                    aff_url = convert_to_affiliate(f"https://www.amazon.in/s?k={prod_q}")
+
                 deals.append({
                     "id": item["title"],
-                    "pillar": "Pillar 3: Community & Festive RSS",
+                    "pillar": f"Pillar 3: Festive Radar ({platform.capitalize()})",
                     "title": parsed["product_name"],
                     "deal_price": parsed.get("deal_price", 0),
                     "mrp": parsed.get("mrp", 0),
                     "discount": parsed.get("discount_percent", 0),
-                    "affiliate_url": f"https://www.amazon.in/s?k={urllib.parse.quote(parsed.get('search_keyword', parsed['product_name']))}&tag={AMAZON_TAG}",
-                    "photo_url": "https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg" # Default studio fallback
+                    "affiliate_url": aff_url,
+                    "photo_url": "https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg"
                 })
         return deals
 
