@@ -1,0 +1,50 @@
+name: 24/7 God-Level Loot Engine (Unlimited Cloud)
+
+on:
+  schedule:
+    # Runs every 5 minutes 24/7 (Continuous cloud loop, zero downtime)
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      duration_minutes:
+        description: 'Duration to run in minutes (default: 6 for seamless overlap)'
+        required: false
+        default: '6'
+
+concurrency:
+  group: god-loot-247
+  cancel-in-progress: false
+
+jobs:
+  run-god-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install beautifulsoup4 python-dotenv
+
+      - name: Run 24/7 God-Level Loot Engine
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8594213665:AAHWPNHEzrC9ChpK5vqYyyy8fFkq1BgPCik' }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '@uniquedigit_deals' }}
+          AMAZON_AFFILIATE_TAG: ${{ secrets.AMAZON_AFFILIATE_TAG || 'uniquedigi0c6-21' }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID || '61d1d46f-f438-47f5-9128-516d9beb11cb' }}
+          DEALS_NICHE_ID: ${{ secrets.DEALS_NICHE_ID || '5cf8114c0bc3eb20c87ce3dcfc1ff185' }}
+        run: |
+          # Runs continuous 20s scanner loop for 330 seconds (5.5 min) to seamlessly overlap with the 5-min cron
+          python god_level_loot_engine.py --duration 330 --interval 20
