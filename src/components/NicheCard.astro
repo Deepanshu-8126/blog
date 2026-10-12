@@ -29,8 +29,8 @@ const theme = groupThemes[grp] || groupThemes.Tech;
 const wordCount = (post.body_md || post.summary || '').split(/\s+/).length;
 const readTimeMin = Math.max(2, Math.ceil(wordCount / 180));
 
-// Resolve real web news photo, or null for clean CSS gradient
-const safeImage = proxyImageUrl(post.image_url, slug);
+// Resolve real web news photo, or curated high-res editorial photo for the niche
+const safeImage = proxyImageUrl(post.image_url, slug, post.slug);
 const hasRealImage = Boolean(safeImage);
 
 const nicheGradients: Record<string, string> = {
