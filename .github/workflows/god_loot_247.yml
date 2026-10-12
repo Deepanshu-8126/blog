@@ -1,15 +1,17 @@
 name: 24/7 God-Level Loot Engine (Unlimited Cloud)
 
-on:
+'on':
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/god_loot_247.yml'
   schedule:
     # Runs every 5 minutes 24/7 (Continuous cloud loop, zero downtime)
     - cron: '*/5 * * * *'
   workflow_dispatch:
-    inputs:
-      duration_minutes:
-        description: 'Duration to run in minutes (default: 6 for seamless overlap)'
-        required: false
-        default: '6'
+  repository_dispatch:
+    types: [loot-trigger, 247-radar]
 
 concurrency:
   group: god-loot-247
@@ -38,8 +40,12 @@ jobs:
       - name: Run 24/7 God-Level Loot Engine
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8594213665:AAHWPNHEzrC9ChpK5vqYyyy8fFkq1BgPCik' }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '@uniquedigit_deals' }}
+          TELEGRAM_DEALS_CHANNEL: ${{ secrets.TELEGRAM_DEALS_CHANNEL || '@uniquedigit_deals' }}
+          TELEGRAM_DEALS_GROUP_ID: ${{ secrets.TELEGRAM_DEALS_GROUP_ID || '-1004335990773' }}
           AMAZON_AFFILIATE_TAG: ${{ secrets.AMAZON_AFFILIATE_TAG || 'uniquedigi0c6-21' }}
+          EARNKARO_USER_ID: ${{ secrets.EARNKARO_USER_ID || '3360368' }}
+          MEESHO_CREATOR_ID: ${{ secrets.MEESHO_CREATOR_ID || '374453404' }}
+          WHATSAPP_CHANNEL_URL: ${{ secrets.WHATSAPP_CHANNEL_URL || 'https://whatsapp.com/channel/0029Vb90gso4dTnKKpcf7M1E' }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
