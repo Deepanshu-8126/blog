@@ -11,18 +11,21 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const itemsXml = posts.map(p => {
     const slug = p.niches?.slug || 'viral';
     const itemUrl = `${baseUrl}/${slug}/${p.slug}`;
+    const imageTag = p.image_url ? `
+      <enclosure url="${p.image_url}" length="0" type="image/jpeg" />
+      <media:content url="${p.image_url}" medium="image" />` : '';
     return `    <item>
       <title><![CDATA[${p.title}]]></title>
       <link>${itemUrl}</link>
       <guid isPermaLink="true">${itemUrl}</guid>
       <pubDate>${new Date(p.published_at).toUTCString()}</pubDate>
       <description><![CDATA[${p.summary}]]></description>
-      <category>${p.niches?.name || 'Tech'}</category>
+      <category>${p.niches?.name || 'Tech'}</category>${imageTag}
     </item>`;
   }).join('\n');
 
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>UniqueDigit - Viral Tech, Deals &amp; Real-Time Intelligence</title>
     <link>${baseUrl}</link>
