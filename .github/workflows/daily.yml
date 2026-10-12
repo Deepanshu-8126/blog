@@ -31,6 +31,21 @@ jobs:
           pip install -r requirements.txt
           npm install -g wrangler
 
+      - name: Master Sentinel Pre-Flight Audit
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          AMAZON_ASSOCIATE_TAG: "uniquedigi0c6-21"
+          EARNKARO_USER_ID: "3360368"
+          MEESHO_CREATOR_ID: "374453404"
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || 'cf1a42fb306054063805cf459fddf853' }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID || '61d1d46f-f438-47f5-9128-516d9beb11cb' }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "🛡️ Master Sentinel: Running Autonomous Quality & Security Audit..."
+          python pipelines/master_sentinel_agent.py
+
       - name: Execute Multi-Source Trend Radar & Publish Live to D1
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || 'cf1a42fb306054063805cf459fddf853' }}
