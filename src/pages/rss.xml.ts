@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>UniqueDigit — Viral Tech, Deals &amp; Real-Time Intelligence</title>
+    <title>UniqueDigit - Viral Tech, Deals &amp; Real-Time Intelligence</title>
     <link>${baseUrl}</link>
     <description>Daily India tech trends, hardware benchmarks, AI tools directory, and bullion pricing.</description>
     <language>en-in</language>
