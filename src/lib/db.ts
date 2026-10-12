@@ -100,8 +100,36 @@ export const SEED_NICHES: Niche[] = [
   { id: '9', slug: 'food', name: 'Food', tagline: 'Recipes & cooking guides', grp: 'Lifestyle', icon: 'utensils', page_type: 'feed', pin: false, is_new: false, sort: 9, active: true },
   { id: '10', slug: 'gta-6', name: 'GTA 6', tagline: 'News, updates & guides', grp: 'Entertainment', icon: 'gamepad', page_type: 'feed', pin: true, is_new: true, sort: 10, active: true },
   { id: '11', slug: 'movies', name: 'Movies', tagline: 'Reviews, OTT & trailers', grp: 'Entertainment', icon: 'clapperboard', page_type: 'movies', pin: false, is_new: false, sort: 11, active: true },
-  { id: '12', slug: 'viral', name: 'Viral', tagline: 'Trending internet moments', grp: 'Entertainment', icon: 'rocket', page_type: 'feed', pin: false, is_new: false, sort: 12, active: true }
+  { id: '12', slug: 'viral', name: 'Viral', tagline: 'Trending internet moments', grp: 'Entertainment', icon: 'rocket', page_type: 'feed', pin: false, is_new: false, sort: 12, active: true },
+  { id: '13', slug: 'cricket-sports', name: 'Cricket Sports', tagline: 'Live scores, match analysis & team updates', grp: 'Lifestyle', icon: 'trophy', page_type: 'feed', pin: true, is_new: true, sort: 13, active: true },
+  { id: '14', slug: 'football-sports', name: 'Football & Sports', tagline: 'ISL, Premier League & global football', grp: 'Lifestyle', icon: 'trophy', page_type: 'feed', pin: false, is_new: false, sort: 14, active: true },
+  { id: '15', slug: 'automotive-trends', name: 'Automotive', tagline: 'EVs, bikes & new car launches in India', grp: 'Lifestyle', icon: 'car', page_type: 'feed', pin: false, is_new: false, sort: 15, active: true },
+  { id: '16', slug: 'exams-results', name: 'Exams & Results', tagline: 'Govt jobs, admit cards & board results', grp: 'Education', icon: 'book', page_type: 'feed', pin: false, is_new: false, sort: 16, active: true },
+  { id: '17', slug: 'entertainment-celebrity', name: 'Entertainment & Lifestyle', tagline: 'Celebrity news, red carpets & lifestyle buzz', grp: 'Entertainment', icon: 'film', page_type: 'feed', pin: false, is_new: false, sort: 17, active: true },
+  { id: '18', slug: 'finance', name: 'Finance', tagline: 'Markets, SIPs, banking & personal finance', grp: 'Money', icon: 'trending-up', page_type: 'feed', pin: false, is_new: false, sort: 18, active: true }
 ];
+
+export const SLUG_ALIASES: Record<string, string> = {
+  'cricket': 'cricket-sports',
+  'sports': 'cricket-sports',
+  'football': 'football-sports',
+  'builds': 'pc-builds',
+  'pc': 'pc-builds',
+  'gold': 'gold-rate',
+  'ai': 'ai-tools',
+  'auto': 'automotive-trends',
+  'automotive': 'automotive-trends',
+  'cars': 'automotive-trends',
+  'bikes': 'automotive-trends',
+  'exam': 'exams-results',
+  'exams': 'exams-results',
+  'results': 'exams-results',
+  'ent': 'entertainment-celebrity',
+  'celebrity': 'entertainment-celebrity',
+  'bollywood': 'movies',
+  'cinema': 'movies',
+  'tech': 'pc-builds'
+};
 export const SEED_POSTS: Post[] = [];
 
 export const SEED_PRODUCTS: Product[] = [
@@ -399,20 +427,21 @@ export async function getNiches(runtimeEnv?: any): Promise<Niche[]> {
   return SEED_NICHES;
 }
 
-/** 2. Get single niche by slug (case-insensitive) */
+/** 2. Get single niche by slug (case-insensitive with alias fallback) */
 export async function getNicheBySlug(slug: string, runtimeEnv?: any): Promise<Niche | null> {
-  const normalizedSlug = slug?.toLowerCase();
+  const rawSlug = slug?.toLowerCase();
+  const normalizedSlug = SLUG_ALIASES[rawSlug] || rawSlug;
   const db = getD1(runtimeEnv);
   if (db && typeof db.prepare === 'function') {
     try {
-      const row = await db.prepare('SELECT * FROM niches WHERE LOWER(slug) = ? AND active = 1 LIMIT 1').bind(normalizedSlug).first();
+      const row = await db.prepare('SELECT * FROM niches WHERE (LOWER(slug) = ? OR LOWER(slug) = ?) AND active = 1 LIMIT 1').bind(rawSlug, normalizedSlug).first();
       if (row) return mapNicheRow(row);
     } catch (err) {
       console.warn('[D1 getNicheBySlug fallback]:', err);
     }
   }
   const niches = await getNiches(runtimeEnv);
-  return niches.find(n => n.slug.toLowerCase() === normalizedSlug) || null;
+  return niches.find(n => n.slug.toLowerCase() === normalizedSlug || n.slug.toLowerCase() === rawSlug) || null;
 }
 
 /** 3. Get published posts for a niche with pagination support */

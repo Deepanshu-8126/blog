@@ -211,6 +211,70 @@ const remainingPosts = posts.slice(1);
         </a>
       </>
     )}
+    {(niche.slug === 'cricket-sports' || niche.slug === 'cricket') && (
+      <>
+        <a href="/search?q=ipl" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🏆 IPL & WPL Updates
+        </a>
+        <a href="/search?q=india+vs" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🏏 Team India Fixtures
+        </a>
+        <a href="/search?q=world+cup" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🌍 ICC World Cup
+        </a>
+        <a href="/search?q=score" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ⚡ Live Scores & Wire
+        </a>
+      </>
+    )}
+    {(niche.slug === 'automotive-trends' || niche.slug === 'automotive') && (
+      <>
+        <a href="/search?q=ev" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ⚡ Electric Vehicles (EV)
+        </a>
+        <a href="/search?q=suv" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🚙 Compact SUVs
+        </a>
+        <a href="/search?q=bike" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🏍️ Two-Wheeler Launches
+        </a>
+        <a href="/search?q=mileage" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ⛽ Mileage & Price Specs
+        </a>
+      </>
+    )}
+    {(niche.slug === 'exams-results' || niche.slug === 'exams') && (
+      <>
+        <a href="/search?q=upsc" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🏛️ UPSC & Civil Services
+        </a>
+        <a href="/search?q=ssc" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📋 SSC CGL & CHSL
+        </a>
+        <a href="/search?q=admit+card" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🎫 Admit Cards & Hall Tickets
+        </a>
+        <a href="/search?q=answer+key" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          ✅ Answer Keys & Cutoffs
+        </a>
+      </>
+    )}
+    {(niche.slug === 'finance' || niche.slug === 'money') && (
+      <>
+        <a href="/search?q=sip" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📈 Best SIP Mutual Funds
+        </a>
+        <a href="/search?q=tax" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          📑 Income Tax Saving
+        </a>
+        <a href="/gold-rate" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🪙 Bullion & Gold Index
+        </a>
+        <a href="/search?q=fd" class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-white hover:bg-slate-100 text-ink border border-line shrink-0 cursor-pointer transition">
+          🏦 High-Yield Bank FDs
+        </a>
+      </>
+    )}
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -232,10 +296,19 @@ const remainingPosts = posts.slice(1);
           ))}
         </div>
       ) : (
-        <div class="p-12 text-center bg-white rounded-3xl border border-line my-6">
-          <Icon name="sparkles" class="w-8 h-8 text-brand mx-auto mb-3" />
-          <h3 class="text-base font-bold text-ink">New articles are currently being generated</h3>
-          <p class="text-xs text-muted mt-1">Our daily pipeline fetches fresh trends for {niche.name} every morning.</p>
+        <div class="p-8 sm:p-10 text-center bg-slate-950 text-white rounded-3xl border border-slate-800 my-6 shadow-xl relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-950/30 to-slate-950 pointer-events-none"></div>
+          <div class="relative z-10">
+            <span class="text-3xl block mb-2">📡</span>
+            <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 inline-flex items-center gap-1.5 font-mono mb-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              {niche.name} HARVESTER ARMED
+            </span>
+            <h3 class="text-base sm:text-lg font-bold text-white mt-1">Editorial Desk Standing By</h3>
+            <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+              Our automated scrape-first engine is configured to monitor primary national sources for {niche.name}. New grounded stories will broadcast here automatically.
+            </p>
+          </div>
         </div>
       )}
 
