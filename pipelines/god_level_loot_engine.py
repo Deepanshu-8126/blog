@@ -66,6 +66,7 @@ AMAZON_TAG = os.getenv("AMAZON_AFFILIATE_TAG", "uniquedigi0c6-21")
 EARNKARO_USER_ID = os.getenv("EARNKARO_USER_ID", "3360368")
 MEESHO_CREATOR_ID = os.getenv("MEESHO_CREATOR_ID", "374453404")
 PORTAL_BASE = os.getenv("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
+WHATSAPP_CHANNEL_URL = os.getenv("WHATSAPP_CHANNEL_URL", "https://whatsapp.com/channel/0029Vb90gso4dTnKKpcf7M1E")
 
 TOPIC_IDS = {
     "loots": 3,      # ⚡ 0-Minute Loots & Glitches
@@ -697,7 +698,10 @@ class TelegramBroadcaster:
                     {"text": "🛍️ GRAB LOOT DEAL ➔", "url": affiliate_url}
                 ],
                 [
-                    {"text": "🧭 Top Category Tabs", "url": "https://t.me/uniquedigit_deals/6"},
+                    {"text": "🟢 Join WhatsApp Channel", "url": WHATSAPP_CHANNEL_URL},
+                    {"text": "🧭 Category Tabs", "url": "https://t.me/uniquedigit_deals/6"}
+                ],
+                [
                     {"text": "🔐 Secret Loot Vault", "url": f"{PORTAL_BASE}/vault"}
                 ]
             ]
