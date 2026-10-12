@@ -148,6 +148,42 @@ VIRAL_FESTIVE_REGISTRY = {
 # =============================================================================
 # PERSISTENT DEDUP CACHE
 # =============================================================================
+def extract_asin(url):
+    """Extracts 10-character Amazon ASIN from any URL."""
+    if not url:
+        return None
+    m = re.search(r'/(?:dp|gp/product|d)/([A-Z0-9]{10})', url)
+    return m.group(1) if m else None
+
+def normalize_product_title(text):
+    """Normalizes titles to base product identity (e.g. 'Apple iPhone 16 (128GB) - Teal' -> 'apple iphone 16')."""
+    if not text:
+        return ""
+    t = text.lower()
+    # Remove storage specs like 128gb, 256gb, 512gb, 8gb, 16gb
+    t = re.sub(r'\b\d+\s*(?:gb|tb|mb|ram|rom)\b', '', t)
+    # Remove colors and accessories details inside parentheses or after hyphens
+    t = re.sub(r'\(.*?\)', '', t)
+    t = re.sub(r'[-|–].*$', '', t)
+    # Remove discount percentages
+    t = re.sub(r'\b\d{1,2}%\s*(?:off|discount)?\b', '', t)
+    # Remove non-alphanumeric except spaces
+    t = re.sub(r'[^a-z0-9\s]', '', t)
+    tokens = [w for w in t.split() if w not in ["deal", "deals", "loot", "sale", "upto", "flat", "off", "pack", "with", "for", "new"]]
+    return " ".join(tokens[:5]) # Core 5 tokens identify the product
+
+def is_generic_discount_title(title):
+    """Checks if title is just a discount percentage without product name."""
+    clean = (title or "").strip().lower()
+    if re.match(r'^(?:flat\s*|upto\s*)?\d{1,2}%\s*(?:off|discount)?$', clean):
+        return True
+    if len(clean) < 10 and any(w in clean for w in ["off", "deal", "loot", "sale", "drop"]):
+        return True
+    return False
+
+# =============================================================================
+# PERSISTENT MULTI-KEY DEDUP CACHE (ZERO DUPLICATES GUARANTEE)
+# =============================================================================
 class DedupManager:
     def __init__(self, cache_path=CACHE_FILE):
         self.cache_path = cache_path
@@ -176,16 +212,42 @@ class DedupManager:
         clean = re.sub(r'[^a-zA-Z0-9]', '', (text or '').lower()[:60])
         return hashlib.sha256(clean.encode()).hexdigest()[:16]
 
-    def is_seen(self, deal_id_or_title):
-        h = self.get_hash(deal_id_or_title)
-        return h in self.cache
+    def is_seen(self, deal_or_key):
+        """Checks if deal is seen by deal_id, exact title, normalized product name, or ASIN."""
+        if isinstance(deal_or_key, dict):
+            keys = [
+                deal_or_key.get("id"),
+                deal_or_key.get("title"),
+                normalize_product_title(deal_or_key.get("title", "")),
+                extract_asin(deal_or_key.get("affiliate_url", ""))
+            ]
+        else:
+            keys = [str(deal_or_key), normalize_product_title(str(deal_or_key))]
 
-    def mark_seen(self, deal_id_or_title, title=""):
-        h = self.get_hash(deal_id_or_title)
-        self.cache[h] = {
-            "title": title[:80],
-            "timestamp": datetime.now().isoformat()
-        }
+        for k in keys:
+            if k and self.get_hash(k) in self.cache:
+                return True
+        return False
+
+    def mark_seen(self, deal):
+        """Registers all product identity keys simultaneously to prevent any duplicate."""
+        if isinstance(deal, dict):
+            deal_id = deal.get("id")
+            title = deal.get("title", "")
+            norm_title = normalize_product_title(title)
+            asin = extract_asin(deal.get("affiliate_url", ""))
+
+            keys_to_mark = [k for k in [deal_id, title, norm_title, asin] if k]
+        else:
+            keys_to_mark = [str(deal)]
+
+        now = datetime.now().isoformat()
+        for k in keys_to_mark:
+            h = self.get_hash(k)
+            self.cache[h] = {
+                "key": str(k)[:80],
+                "timestamp": now
+            }
         self._save()
 
 dedup = DedupManager()
@@ -319,13 +381,21 @@ class TelegramChannelSpy:
                 lines = [l.strip() for l in clean_text.splitlines() if l.strip()]
                 clean_body = "\n".join(lines[:4])
 
-                # Extract title and price
+                # Extract title and price (skip generic headers like 79% off, 84% off)
                 title = ""
                 for l in lines:
                     cleaned_line = re.sub(r'^[^\w\s]+', '', l).strip()[:80]
+                    if is_generic_discount_title(cleaned_line):
+                        continue
                     if len(cleaned_line) >= 5:
                         title = cleaned_line
                         break
+                if not title:
+                    for l in lines:
+                        cleaned_line = re.sub(r'^[^\w\s]+', '', l).strip()[:80]
+                        if len(cleaned_line) >= 5:
+                            title = cleaned_line
+                            break
                 if not title:
                     title = "⚡ Mega Festive Loot Deal"
 
@@ -690,14 +760,13 @@ class GodLevelLootEngine:
         cycle_sent = 0
 
         for deal in candidates:
-            deal_id = deal.get("id") or deal["title"]
-            if dedup.is_seen(deal_id) or dedup.is_seen(deal["title"]):
+            if dedup.is_seen(deal):
                 continue
 
             print(f"  🔄 Broadcasting: {deal['title'][:45]}... [{deal['pillar']}]")
             ok = broadcaster.send_deal(deal)
             if ok:
-                dedup.mark_seen(deal_id, deal["title"])
+                dedup.mark_seen(deal)
                 cycle_sent += 1
                 self.total_sent += 1
                 print(f"    ✅ SENT TO TELEGRAM ({deal['title'][:35]})")

@@ -26,3 +26,5 @@ Thumbs.db
 .wrangler/
 scratch/
 *.log
+*.cache.json
+sent_loot_cache.json
