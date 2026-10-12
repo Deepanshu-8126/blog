@@ -65,8 +65,31 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
       {leadStory ? (
         <HeroFeature post={leadStory} class="h-full flex flex-col justify-between" />
       ) : (
-        <div class="p-8 bg-white rounded-3xl border border-slate-200">
-          <p class="text-slate-500">Loading top lead editorial story...</p>
+        <div class="relative w-full rounded-3xl bg-slate-950 border border-slate-800 text-white p-8 sm:p-10 flex flex-col justify-between min-h-[380px] overflow-hidden shadow-2xl">
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-950/40 via-slate-950 to-slate-950 pointer-events-none"></div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                NEWSROOM DESK ACTIVE
+              </span>
+              <span class="text-xs font-mono text-slate-500">12 Hubs Connected</span>
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight max-w-xl">
+              India's Real-Time News, Tech &amp; Deal Intelligence Portal
+            </h2>
+            <p class="text-sm text-slate-400 mt-3 max-w-lg leading-relaxed">
+              Curated independent reporting across Indian cricket, artificial intelligence tools, PC builds, live bullion rates, and verified loot deals.
+            </p>
+          </div>
+          <div class="relative z-10 pt-6 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-400 font-medium">Explore Hubs:</span>
+            <a href="/cricket" class="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition">🏏 Cricket</a>
+            <a href="/ai-tools" class="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition">⚡ AI Tools</a>
+            <a href="/gold-rate" class="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition">🪙 Gold Rate</a>
+            <a href="/builds" class="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition">🖥️ PC Rig</a>
+            <a href="/deals" class="px-3 py-1 rounded-xl bg-cta text-cta-ink text-xs font-black transition hover:brightness-105">🏷️ Loot Deals</a>
+          </div>
         </div>
       )}
     </div>
@@ -92,28 +115,36 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
 
         <!-- Live Wire Items (01, 02, 03, 04) -->
         <div class="flex flex-col divide-y divide-slate-100">
-          {liveWirePosts.map((post, idx) => {
-            const rank = String(idx + 1).padStart(2, '0');
-            const slug = post.niches?.slug || 'viral';
-            return (
-              <a
-                href={`/${slug}/${post.slug}`}
-                class="group py-3.5 flex items-start gap-3 hover:bg-slate-50/80 rounded-xl px-2 transition-colors"
-              >
-                <span class="font-mono font-black text-sm text-slate-400 group-hover:text-brand transition shrink-0 mt-0.5">
-                  {rank}
-                </span>
-                <div class="flex-1 min-w-0">
-                  <span class="inline-block px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-700 font-mono mb-1">
-                    {post.niches?.name || 'Trending'}
+          {liveWirePosts.length > 0 ? (
+            liveWirePosts.map((post, idx) => {
+              const rank = String(idx + 1).padStart(2, '0');
+              const slug = post.niches?.slug || 'viral';
+              return (
+                <a
+                  href={`/${slug}/${post.slug}`}
+                  class="group py-3.5 flex items-start gap-3 hover:bg-slate-50/80 rounded-xl px-2 transition-colors"
+                >
+                  <span class="font-mono font-black text-sm text-slate-400 group-hover:text-brand transition shrink-0 mt-0.5">
+                    {rank}
                   </span>
-                  <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-brand transition leading-snug line-clamp-2">
-                    {post.title}
-                  </h3>
-                </div>
-              </a>
-            );
-          })}
+                  <div class="flex-1 min-w-0">
+                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-700 font-mono mb-1">
+                      {post.niches?.name || 'Trending'}
+                    </span>
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-brand transition leading-snug line-clamp-2">
+                      {post.title}
+                    </h3>
+                  </div>
+                </a>
+              );
+            })
+          ) : (
+            <div class="py-8 px-4 text-center">
+              <span class="text-3xl block mb-2">📡</span>
+              <p class="text-xs font-bold text-slate-700">Autonomous Wire Standby</p>
+              <p class="text-[11px] text-slate-400 mt-1">Ready to receive first broadcast wire from grounded publishers.</p>
+            </div>
+          )}
         </div>
       </div>
 

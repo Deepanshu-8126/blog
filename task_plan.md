@@ -1,44 +1,40 @@
-# 📋 Task Plan: Comprehensive UI/UX Design System Overhaul & 100+ Flaw Resolution
+# 📋 Task Plan: 12-Niche Media Architecture & Newsroom UI Overhaul
 
-**Created:** 2026-10-09  
-**Status:** In Execution  
-**Objective:** Complete design transformation of UniqueDigit into a world-class, premium intelligence hub with distinct niche personalities, sleek vector branding, unified design tokens, and resolution of all UI/UX deficiencies.
-
----
-
-## Phase 1: Comprehensive UI/UX Audit & Architecture (Current)
-- [x] **1.1** Conduct full-spectrum audit of 100+ UI/UX flaws across all views (documented in `findings.md`).
-- [ ] **1.2** Architect unified Design System tokens in `src/styles/global.css` (HSL semantic scales, elevation layers, glassmorphism, typography rhythm).
-- [ ] **1.3** Establish Niche Persona styling rules (Dark Cyberpunk for Gaming/GTA-6, Bullion Gold for Gold Rate, Silicon Minimal for AI Tools, Emerald Deal Matrix for Deals & Cashback).
+**PRD Reference:** [PRD_ARCHITECTURE.md](file:///d:/affi;ate/PRD_ARCHITECTURE.md)  
+**Status:** In Execution (Phase 1 Locked)  
+**Objective:** Evolve UniqueDigit into a world-class, multi-niche publication (The Verge × Bloomberg style) with 100% grounded news crawling, real editorial media, zero 404 breakages, and premium newsroom UI.
 
 ---
 
-## Phase 2: Brand Identity & Master Navigation Overhaul
-- [ ] **2.1** Design modern SVG Vector Brand Insignia (replacing generic box logo with precision geometric "UD" Radar Monogram).
-- [ ] **2.2** Rebuild `Header.astro` with premium floating glassmorphism, active indicator pills, smooth search trigger, and distinct group accents.
-- [ ] **2.3** Refactor `MegaMenu.astro` with rich preview cards, category icons, and high-contrast typography.
-- [ ] **2.4** Modernize Mobile Bottom Sheet and sticky thumb navigation.
+## Phase 1: Architecture & PRD Lock (Completed ✅)
+- [x] **1.1** Define 12 dedicated niche harvester sources in [PRD_ARCHITECTURE.md](file:///d:/affi;ate/PRD_ARCHITECTURE.md).
+- [x] **1.2** Design 4-Agent Quality Engine (Deduplication, Scrape-First, Grounded LLM, Media & SEO Guardrail).
+- [x] **1.3** Wipe old test database to a clean slate (0 posts, schema intact).
 
 ---
 
-## Phase 3: Specialized Niche Vibe & Hub Templates
-- [ ] **3.1** Overhaul `gta-6` and Gaming UI with custom dark/neon esports telemetry cards, benchmark badges, and high-impact visual design.
-- [ ] **3.2** Overhaul `gold-rate` UI with live bullion ticker, interactive city price comparator, and hallmark authenticity badges.
-- [ ] **3.3** Overhaul `ai-tools` and `pc-builds` (`Tools.astro`) with real-time instant JavaScript search/filter, category pills, and clean specs grid.
-- [ ] **3.4** Overhaul `movies` (`Movies.astro`) with modern OTT streaming platform badges, cinema poster cards, and watchlist filters.
-- [ ] **3.5** Overhaul `health`, `food`, `fashion`, `side-hustles` (`Feed.astro`) with contextual reading tags, author fact-check badges, and clean editorial cards.
+## Phase 2: Newsroom UI & Navigation Modernization (Next)
+- [ ] **2.1** Rebuild `Header.astro` into a sleek, floating glass newsroom navbar (Bloomberg/The Verge aesthetic) with active category indicators, live breaking ticker, and search modal trigger.
+- [ ] **2.2** Modernize typography & color tokens in `src/styles/global.css` (Inter/Outfit, strict UI consistency lock).
+- [ ] **2.3** Upgrade `src/pages/index.astro` layout with a high-impact Lead Spotlight hero, 4-column editorial grid, and trending leaderboard.
 
 ---
 
-## Phase 4: Core Components & Reading Experience
-- [ ] **4.1** Upgrade `NicheCard.astro` with subtle micro-interactions, standardized image aspect ratios, elevation hover states, and clear typography.
-- [ ] **4.2** Upgrade `TrendRow.astro` with rank glow badges (#1 gold, #2 silver, #3 bronze), live traffic pills, and responsive action triggers.
-- [ ] **4.3** Redesign `AmazonDealBox.astro` into a high-trust shopping module with live discount highlights, merchant tags, and verified store badges.
-- [ ] **4.4** Enhance `[post].astro` article reading experience with reading progress bar, estimated read time, table of contents, and refined typography.
+## Phase 3: Niche-Specific Editorial Hubs & Reading Experience
+- [ ] **3.1** Polish `src/pages/[niche].astro` dynamic hub templates so all 12 categories feel like distinct, world-class news sections.
+- [ ] **3.2** Refine `src/pages/[niche]/[post].astro` article reading layout (clean bylines, responsive table of contents, verified source badges, reading progress indicator).
+- [ ] **3.3** Verify zero 404 broken routes across all 18 niches and categories.
 
 ---
 
-## Phase 5: Verification, Build & Deployment
-- [ ] **5.1** Run full TypeScript & Astro production build check (`npm run build`).
-- [ ] **5.2** Verify all 12 category routes and article pages live.
-- [ ] **5.3** Deploy live to Cloudflare Pages and commit all changes to Git.
+## Phase 4: Multi-Engine Pipeline & Agent Verification
+- [ ] **4.1** Verify `pipeline.py` scrape-first engine with live real-time trend batches.
+- [ ] **4.2** Confirm zero local JPGs, real 1200x630 editorial images, and valid JSON-LD schemas.
+
+---
+
+## Phase 5: Production Build, Testing & Cloudflare Deployment
+- [ ] **5.1** Run `npm run build` to verify 0 SSR or TypeScript errors.
+- [ ] **5.2** Deploy production bundle to Cloudflare Pages.
+- [ ] **5.3** Commit all changes to GitHub `main`.
+
