@@ -15,6 +15,9 @@ concurrency:
   group: god-loot-247
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   run-god-engine:
     runs-on: ubuntu-latest
@@ -52,3 +55,20 @@ jobs:
         run: |
           # Continuous ultra-fast 5s scanner loop for 1 hour (3600s) of non-stop real-time loot catching
           python god_level_loot_engine.py --duration 3600 --interval 5
+
+      - name: Lifetime Anti-Suspension Pulse (Never Sleeps)
+        if: always()
+        run: |
+          # Commits a tiny heartbeat once every 7 days so GitHub never suspends scheduled crons for inactivity
+          HEARTBEAT_FILE=".keep_alive"
+          NOW=$(date +%s)
+          LAST_MOD=$(stat -c %Y "$HEARTBEAT_FILE" 2>/dev/null || echo 0)
+          DIFF=$((NOW - LAST_MOD))
+          if [ $DIFF -gt 604800 ]; then
+            git config --global user.name "UniqueDigit-Bot"
+            git config --global user.email "bot@uniquedigit.internal"
+            echo "lifetime_pulse: $(date -u)" > .keep_alive
+            git add .keep_alive
+            git commit -m "chore(heartbeat): maintain 24/7 lifetime autonomous pulse [skip ci]" || true
+            git push origin main || true
+          fi
