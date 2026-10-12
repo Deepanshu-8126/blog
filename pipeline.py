@@ -845,16 +845,23 @@ def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", t
         except Exception:
             pass
 
+    # STRICT PERMANENT LOCK: Never use Pollinations.ai or AI-generated cartoon images
+    if target and "pollinations.ai" in target.lower():
+        target = None
+
     if target and isinstance(target, str) and target.startswith("http") and not is_thumbnail(target):
         return target, "Verified Real Web Media"
 
-    # Dynamic High-Resolution Editorial Banner (Ensures 100% unique, topic-specific 1200x630 visual for every post)
-    if topic_query:
-        clean_topic = re.sub(r'[^a-zA-Z0-9\s]', '', topic_query).strip()[:80]
-        encoded = urllib.parse.quote(f"{clean_topic} Indian students examination educational news photograph high quality banner")
-        return f"https://image.pollinations.ai/prompt/{encoded}?width=1200&height=630&nologo=true", "Dynamic Editorial AI Banner"
-
-    return None, "No Real Media (Clean Gradient Card)"
+    # Real Authentic Editorial Media Fallback (Zero AI generated cartoons)
+    REAL_MEDIA_POOL = [
+        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop",
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=630&fit=crop",
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=630&fit=crop",
+        "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=1200&h=630&fit=crop",
+        "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&h=630&fit=crop"
+    ]
+    idx = abs(hash(topic_query or niche_slug)) % len(REAL_MEDIA_POOL)
+    return REAL_MEDIA_POOL[idx], "Real Authentic Editorial Web Photography"
 
 
 def write_article(n, title, angle, facts, trend):
