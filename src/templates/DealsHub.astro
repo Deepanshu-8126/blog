@@ -10,9 +10,20 @@ interface Props {
   products: Product[];
   posts: Post[];
   activeTab?: string;
+  currentPage?: number;
+  totalPages?: number;
+  totalDeals?: number;
 }
 
-const { niche, products, posts, activeTab = 'live' } = Astro.props;
+const {
+  niche,
+  products,
+  posts,
+  activeTab = 'live',
+  currentPage = 1,
+  totalPages = 1,
+  totalDeals = products.length
+} = Astro.props;
 
 const merchants = ['All', 'Amazon', 'Flipkart', 'Myntra', 'Ajio', 'Meesho'];
 const categories = ['All', 'Laptops', 'Smartphones', 'Audio', 'Fashion', 'Under ₹499'];
@@ -363,6 +374,68 @@ const STORES = [
         );
       })}
     </div>
+
+    <!-- Dynamic Pagination Controls -->
+    {totalPages > 1 && (
+      <nav aria-label="Deals Pagination" class="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 sm:p-5 mb-8 bg-white rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+          {currentPage > 1 ? (
+            <a
+              href={`/${niche.slug}?page=${currentPage - 1}&tab=${activeTab}`}
+              class="px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 transition flex items-center gap-1.5 active:scale-95 shadow-2xs"
+            >
+              <span>&larr;</span>
+              <span>Previous</span>
+            </a>
+          ) : (
+            <span class="px-4 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold text-slate-300 cursor-not-allowed flex items-center gap-1.5">
+              <span>&larr;</span>
+              <span>Previous</span>
+            </span>
+          )}
+
+          {currentPage < totalPages ? (
+            <a
+              href={`/${niche.slug}?page=${currentPage + 1}&tab=${activeTab}`}
+              class="px-4 py-2 rounded-xl bg-brand hover:bg-brand-dark text-white text-xs font-bold transition shadow-xs flex items-center gap-1.5 active:scale-95"
+            >
+              <span>Next</span>
+              <span>&rarr;</span>
+            </a>
+          ) : (
+            <span class="px-4 py-2 rounded-xl bg-slate-50 border border-slate-100 text-xs font-bold text-slate-300 cursor-not-allowed flex items-center gap-1.5">
+              <span>Next</span>
+              <span>&rarr;</span>
+            </span>
+          )}
+        </div>
+
+        <!-- Dynamic Page Numbers List -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => {
+            const isCurrent = p === currentPage;
+            return (
+              <a
+                href={`/${niche.slug}?page=${p}&tab=${activeTab}`}
+                class={`w-8 h-8 rounded-xl text-xs font-bold flex items-center justify-center transition shrink-0 ${
+                  isCurrent
+                    ? 'bg-brand text-white shadow-xs'
+                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
+                }`}
+                aria-current={isCurrent ? 'page' : undefined}
+              >
+                {p}
+              </a>
+            );
+          })}
+        </div>
+
+        <!-- Deals Stats Counter Summary -->
+        <div class="text-xs text-slate-500 font-mono text-center sm:text-right w-full sm:w-auto">
+          Page <strong class="text-slate-900 font-bold">{currentPage}</strong> of <strong class="text-slate-900 font-bold">{totalPages}</strong> ({totalDeals} Deals Active)
+        </div>
+      </nav>
+    )}
 
     <!-- Empty State -->
     <div id="no-deals-found" class="hidden p-12 text-center bg-white rounded-3xl border border-slate-200 my-8">

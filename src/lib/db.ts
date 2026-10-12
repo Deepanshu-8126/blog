@@ -569,14 +569,23 @@ export async function getPostsByGroup(grp: string, limit = 4, excludeSlugs: stri
   return [];
 }
 
-/** 5. Get products / tools for a niche (Optimized for Highest Monetization & Conversions) */
-export async function getProductsByNiche(nicheId: string, runtimeEnv?: any): Promise<Product[]> {
-  const db = getD1(runtimeEnv);
+/** 5. Get products / tools for a niche with optional limit & offset pagination */
+export async function getProductsByNiche(
+  nicheId: string,
+  limitOrEnv?: number | any,
+  runtimeEnv?: any,
+  offset = 0
+): Promise<Product[]> {
+  const isLimitNumber = typeof limitOrEnv === 'number';
+  const limit = isLimitNumber ? limitOrEnv : 12;
+  const env = isLimitNumber ? runtimeEnv : limitOrEnv;
+
+  const db = getD1(env);
   if (db && typeof db.prepare === 'function') {
     try {
       const res = await db.prepare(
-        'SELECT * FROM products WHERE niche_id = ? AND active = 1 ORDER BY cpa_payout DESC, clicks DESC, sort ASC'
-      ).bind(nicheId).all();
+        'SELECT * FROM products WHERE niche_id = ? AND active = 1 ORDER BY cpa_payout DESC, clicks DESC, sort ASC LIMIT ? OFFSET ?'
+      ).bind(nicheId, limit, offset).all();
       if (res.results && res.results.length > 0) {
         return res.results as Product[];
       }
@@ -584,7 +593,26 @@ export async function getProductsByNiche(nicheId: string, runtimeEnv?: any): Pro
       console.warn('[D1 getProductsByNiche fallback]:', err);
     }
   }
-  return SEED_PRODUCTS.filter(pr => pr.niche_id === nicheId);
+  const filtered = SEED_PRODUCTS.filter(pr => pr.niche_id === nicheId);
+  return filtered.slice(offset, offset + limit);
+}
+
+/** 5a. Get total count of active products in a niche */
+export async function getProductsCountByNiche(nicheId: string, runtimeEnv?: any): Promise<number> {
+  const db = getD1(runtimeEnv);
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const res = await db.prepare(
+        'SELECT COUNT(*) as count FROM products WHERE niche_id = ? AND active = 1'
+      ).bind(nicheId).first();
+      if (res && typeof (res as any).count === 'number') {
+        return (res as any).count;
+      }
+    } catch (err) {
+      console.warn('[D1 getProductsCountByNiche error]:', err);
+    }
+  }
+  return SEED_PRODUCTS.filter(pr => pr.niche_id === nicheId).length;
 }
 
 /** 5b. Get all active products across niches (Highest Revenue Payout First) */

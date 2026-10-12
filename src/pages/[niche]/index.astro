@@ -1,5 +1,5 @@
 ---
-import { getNicheBySlug, getPostsByNiche, getPostsCountByNiche, getTrendingPosts, getProductsByNiche } from '../../lib/db';
+import { getNicheBySlug, getPostsByNiche, getPostsCountByNiche, getTrendingPosts, getProductsByNiche, getProductsCountByNiche } from '../../lib/db';
 import Feed from '../../templates/Feed.astro';
 import Tools from '../../templates/Tools.astro';
 import Dataset from '../../templates/Dataset.astro';
@@ -32,20 +32,49 @@ const tabQuery = Astro.url.searchParams.get('tab') || (isDealsPageType ? 'live' 
 const pageSize = 12;
 const offset = (currentPage - 1) * pageSize;
 
-const [posts, totalCount, trendingPosts, products] = await Promise.all([
-  getPostsByNiche(niche.id, pageSize, runtime?.env, offset),
-  getPostsCountByNiche(niche.id, runtime?.env),
-  getTrendingPosts(5, runtime?.env),
-  getProductsByNiche(niche.id, runtime?.env)
-]);
+let posts: any[] = [];
+let totalCount = 0;
+let trendingPosts: any[] = [];
+let products: any[] = [];
+
+if (isDealsPageType) {
+  const [dealProducts, dealCount, relatedPosts] = await Promise.all([
+    getProductsByNiche(niche.id, pageSize, runtime?.env, offset),
+    getProductsCountByNiche(niche.id, runtime?.env),
+    getPostsByNiche(niche.id, 6, runtime?.env, 0)
+  ]);
+  products = dealProducts;
+  totalCount = dealCount;
+  posts = relatedPosts;
+} else {
+  const [feedPosts, feedCount, trending, feedProducts] = await Promise.all([
+    getPostsByNiche(niche.id, pageSize, runtime?.env, offset),
+    getPostsCountByNiche(niche.id, runtime?.env),
+    getTrendingPosts(5, runtime?.env),
+    getProductsByNiche(niche.id, runtime?.env)
+  ]);
+  posts = feedPosts;
+  totalCount = feedCount;
+  trendingPosts = trending;
+  products = feedProducts;
+}
 
 const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 ---
 
 <NicheLayout niche={niche} activeTab={tabQuery}>
   {isDealsPageType ? (
-    <DealsHub niche={niche} products={products} posts={posts} activeTab={tabQuery} />
-  ) : isHealthPageType ? (
+    <DealsHub
+      niche={niche}
+      products={products}
+      posts={posts}
+      activeTab={tabQuery}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalDeals={totalCount}
+    />
+  ) :
+ isHealthPageType ? (
     <HealthHub niche={niche} posts={posts} trendingPosts={trendingPosts} products={products} activeTab={tabQuery} />
   ) : isNewsNiche ? (
     <NewsHub niche={niche} posts={posts} trendingPosts={trendingPosts} currentPage={currentPage} totalPages={totalPages} activeTab={tabQuery} />
