@@ -56,8 +56,18 @@ load_dotenv()
 # CREDENTIALS & CONFIGURATION
 # =============================================================================
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8594213665:AAHWPNHEzrC9ChpK5vqYyyy8fFkq1BgPCik")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "@uniquedigit_deals")
+TELEGRAM_DEALS_CHANNEL = os.getenv("TELEGRAM_DEALS_CHANNEL", "@uniquedigit_deals")
+TELEGRAM_DEALS_GROUP_ID = os.getenv("TELEGRAM_DEALS_GROUP_ID", "-1004335990773")
 AMAZON_TAG = os.getenv("AMAZON_AFFILIATE_TAG", "uniquedigi0c6-21")
+PORTAL_BASE = os.getenv("PORTAL_BASE_URL", "https://uniquedigit-viral-hub.pages.dev")
+
+TOPIC_IDS = {
+    "loots": 3,      # ⚡ 0-Minute Loots & Glitches
+    "tech": 4,       # 💻 Tech, Laptops & Mobiles
+    "fashion": 5,    # 👔 Clothes, Shoes & Fashion
+    "home": 6        # 🏠 Home Appliances & TV
+}
+
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 CF_ACCOUNT_ID = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
 CF_API_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
@@ -280,10 +290,11 @@ class TelegramChannelSpy:
                 # Convert to our affiliate link
                 affiliate_link = convert_to_affiliate(target_url)
 
-                # Clean the raw text (remove competitor branding/handles)
+                # Clean the raw text (remove competitor branding/handles thoroughly)
                 clean_text = re.sub(r'@[a-zA-Z0-9_]+', '', raw_text)
                 clean_text = re.sub(r'https?://[^\s]+', '', clean_text)
-                clean_text = re.sub(r'(join|channel|telegram|subscribe).*', '', clean_text, flags=re.IGNORECASE)
+                clean_text = re.sub(r'(?i)\b(dealsmagnet|desidime|dealbee|looter|freestuff|indiafreestuff|fkm)\b', '', clean_text)
+                clean_text = re.sub(r'(?i)(join|channel|telegram|subscribe|whatsapp).*', '', clean_text)
                 lines = [l.strip() for l in clean_text.splitlines() if l.strip()]
                 clean_body = "\n".join(lines[:4])
 
@@ -489,78 +500,137 @@ If completely unrelated to shopping, return {{"is_deal": false}}.
 # =============================================================================
 # TELEGRAM BROADCASTER ENGINE
 # =============================================================================
+# =============================================================================
+# TELEGRAM BROADCASTER ENGINE (DUAL DISPATCH: CHANNEL + GROUP TOPICS)
+# =============================================================================
 class TelegramBroadcaster:
-    """Sends high-converting, styled Telegram deal cards with photos."""
+    """Sends high-converting deal cards to Main Channel AND routes to Group Category Topics."""
 
-    def __init__(self, bot_token=TELEGRAM_BOT_TOKEN, chat_id=TELEGRAM_CHAT_ID):
+    def __init__(self, bot_token=TELEGRAM_BOT_TOKEN,
+                 channel_id=TELEGRAM_DEALS_CHANNEL,
+                 group_id=TELEGRAM_DEALS_GROUP_ID):
         self.bot_token = bot_token
-        self.chat_id = chat_id
+        self.channel_id = channel_id
+        self.group_id = group_id
 
-    def format_caption(self, deal):
+    def detect_category(self, title, body=""):
+        s = (title + " " + body).lower()
+        if any(w in s for w in ["shoe", "sneaker", "clothe", "fashion", "shirt", "wear", "kurti", "dress", "saree", "jeans", "tshirt", "t-shirt", "footwear", "sandal"]):
+            return TOPIC_IDS["fashion"], "👔 Fashion & Footwear"
+        elif any(w in s for w in ["laptop", "phone", "mobile", "tech", "earphone", "headphone", "buds", "gpu", "monitor", "pc", "samsung m5", "smartwatch", "apple", "iphone"]):
+            return TOPIC_IDS["tech"], "💻 Tech, Laptops & Mobiles"
+        elif any(w in s for w in ["appliance", "tv", "washing machine", "fridge", "kitchen", "mixer", "cooker", "geyser", "furniture", "air fryer"]):
+            return TOPIC_IDS["home"], "🏠 Home & Kitchen Appliances"
+        return TOPIC_IDS["loots"], "⚡ 0-Minute Price Glitch"
+
+    def format_caption(self, deal, category_name):
         title = deal["title"].strip()
+        safe_title = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         price = deal.get("deal_price")
         mrp = deal.get("mrp")
         discount = deal.get("discount")
-        link = deal["affiliate_url"]
-        pillar = deal.get("pillar", "Loot Radar")
 
-        caption_lines = [
-            f"🔥 <b>LOOT DEAL ALERT!</b>",
-            f"📦 <b>{title}</b>\n"
-        ]
-
+        price_line = ""
         if price:
-            p_str = f"💰 <b>Deal Price:</b> ₹{price:,}"
+            price_line = f"📉 <b>Deal Price:</b> ₹{price:,}"
             if mrp and mrp > price:
-                p_str += f" <s>₹{mrp:,}</s>"
+                price_line += f" <s>₹{mrp:,}</s>"
             if discount:
-                p_str += f" <b>({discount}% OFF)</b>"
-            caption_lines.append(p_str)
+                price_line += f" <b>({discount}% OFF)</b>"
+            price_line += "\n"
         elif deal.get("body"):
-            caption_lines.append(f"⚡ {deal['body'][:160]}\n")
+            clean_b = deal["body"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")[:140]
+            price_line = f"⚡ <b>Details:</b> {clean_b}\n"
 
-        caption_lines.append(f"🛒 <a href=\"{link}\"><b>👉 CLICK HERE TO BUY NOW</b></a>\n")
-        caption_lines.append(f"⚡ <i>Fastest Deals: @uniquedigit_deals</i>")
+        caption = (
+            f"⚡ <b>[0-MINUTE PRICE GLITCH ALERT]</b> ⚡\n\n"
+            f"🛍️ <b>{safe_title}</b>\n\n"
+            f"{price_line}"
+            f"🏷️ <b>Category:</b> {category_name}\n"
+            f"🟢 <b>Loot Score:</b> 9.9/10 🔥\n"
+            f"💳 <b>Trick:</b> Extra Bank / UPI Discount Active\n\n"
+            f"✂️ <b>HOW TO CLAIM LOOT:</b>\n"
+            f"1. Tap 'GRAB LOOT DEAL' button below.\n"
+            f"2. Apply store coupon if available.\n"
+            f"3. Order fast before price changes!\n\n"
+            f"🚨 <i>Limited Stock! Buy before price increases or stock ends.</i>"
+        )
+        return caption
 
-        return "\n".join(caption_lines)
+    def build_markup(self, affiliate_url):
+        return {
+            "inline_keyboard": [
+                [
+                    {"text": "🛍️ GRAB LOOT DEAL ➔", "url": affiliate_url}
+                ],
+                [
+                    {"text": "🧭 Top Category Tabs", "url": "https://t.me/uniquedigit_deals/6"},
+                    {"text": "🔐 Secret Loot Vault", "url": f"{PORTAL_BASE}/vault"}
+                ]
+            ]
+        }
 
-    def send_deal(self, deal):
-        caption = self.format_caption(deal)
-        photo_url = deal.get("photo_url")
-
-        # 1. Try sending as Photo
+    def _post(self, chat_id, caption, photo_url, reply_markup, thread_id=None):
+        """Helper to post photo or message with optional topic thread ID."""
+        # 1. Try sending Photo with buttons
         if photo_url and photo_url.startswith("http"):
             try:
                 endpoint = f"https://api.telegram.org/bot{self.bot_token}/sendPhoto"
-                payload = json.dumps({
-                    "chat_id": self.chat_id,
+                payload = {
+                    "chat_id": chat_id,
                     "photo": photo_url,
                     "caption": caption,
-                    "parse_mode": "HTML"
-                }).encode("utf-8")
-                req = urllib.request.Request(endpoint, data=payload, headers={"Content-Type": "application/json"})
+                    "parse_mode": "HTML",
+                    "reply_markup": reply_markup
+                }
+                if thread_id:
+                    payload["message_thread_id"] = thread_id
+                data = json.dumps(payload).encode("utf-8")
+                req = urllib.request.Request(endpoint, data=data, headers={"Content-Type": "application/json"})
                 with urllib.request.urlopen(req, timeout=10) as resp:
                     res = json.loads(resp.read().decode("utf-8"))
                     if res.get("ok"):
                         return True
             except Exception:
-                pass # Fallback to text message
+                pass
 
-        # 2. Fallback to Text Message
+        # 2. Fallback to Text Message with buttons
         try:
             endpoint = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
-            payload = json.dumps({
-                "chat_id": self.chat_id,
+            payload = {
+                "chat_id": chat_id,
                 "text": caption,
                 "parse_mode": "HTML",
-                "disable_web_page_preview": False
-            }).encode("utf-8")
-            req = urllib.request.Request(endpoint, data=payload, headers={"Content-Type": "application/json"})
+                "disable_web_page_preview": False,
+                "reply_markup": reply_markup
+            }
+            if thread_id:
+                payload["message_thread_id"] = thread_id
+            data = json.dumps(payload).encode("utf-8")
+            req = urllib.request.Request(endpoint, data=data, headers={"Content-Type": "application/json"})
             with urllib.request.urlopen(req, timeout=10) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 return res.get("ok", False)
         except Exception:
             return False
+
+    def send_deal(self, deal):
+        affiliate_url = deal["affiliate_url"]
+        photo_url = deal.get("photo_url")
+        thread_id, cat_name = self.detect_category(deal["title"], deal.get("body", ""))
+        caption = self.format_caption(deal, cat_name)
+        reply_markup = self.build_markup(affiliate_url)
+
+        sent_main = False
+        # Destination A: Main Deals Channel (@uniquedigit_deals)
+        if self.channel_id:
+            sent_main = self._post(self.channel_id, caption, photo_url, reply_markup)
+
+        # Destination B: Community Group (Routed to specific category Topic/Thread)
+        if self.group_id:
+            self._post(self.group_id, caption, photo_url, reply_markup, thread_id=thread_id)
+
+        return sent_main or bool(self.group_id)
 
 broadcaster = TelegramBroadcaster()
 
