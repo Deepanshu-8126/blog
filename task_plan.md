@@ -21,10 +21,10 @@
 
 ---
 
-## Phase 3: Niche-Specific Editorial Hubs & Reading Experience
-- [ ] **3.1** Polish `src/pages/[niche].astro` dynamic hub templates so all 12 categories feel like distinct, world-class news sections.
-- [ ] **3.2** Refine `src/pages/[niche]/[post].astro` article reading layout (clean bylines, responsive table of contents, verified source badges, reading progress indicator).
-- [ ] **3.3** Verify zero 404 broken routes across all 18 niches and categories.
+## Phase 3: Niche-Specific Editorial Hubs & Reading Experience (Completed ✅)
+- [x] **3.1** Polish `src/pages/[niche]/index.astro` and `src/templates/Feed.astro` dynamic hub templates with 18 distinct categories, tailored pills, and standby states.
+- [x] **3.2** Refine `src/pages/[niche]/[post].astro` article reading layout (clean bylines, responsive table of contents, verified source badges, reading progress indicator).
+- [x] **3.3** Verify zero 404 broken routes across all 18 niches and categories with comprehensive `SLUG_ALIASES` resolution (tested live `/cricket`, `/auto`, `/exams`).
 
 ---
 
