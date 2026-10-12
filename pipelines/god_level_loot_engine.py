@@ -47,8 +47,10 @@ from dotenv import load_dotenv
 # Force UTF-8 encoding for Windows terminals
 if sys.platform == "win32":
     try:
-        sys.stdout.reconfigure(encoding="utf-8")
-        sys.stderr.reconfigure(encoding="utf-8")
+        if hasattr(sys.stdout, "reconfigure"):
+            getattr(sys.stdout, "reconfigure")(encoding="utf-8")
+        if hasattr(sys.stderr, "reconfigure"):
+            getattr(sys.stderr, "reconfigure")(encoding="utf-8")
     except Exception:
         pass
 
@@ -371,7 +373,8 @@ class TelegramChannelSpy:
                 photo_el = wrap.find("a", class_="tgme_widget_message_photo_wrap")
                 photo_url = ""
                 if photo_el and "style" in photo_el.attrs:
-                    m = re.search(r"url\('([^']+)'\)", photo_el["style"])
+                    style_str = str(photo_el.get("style", ""))
+                    m = re.search(r"url\('([^']+)'\)", style_str)
                     if m:
                         photo_url = m.group(1)
 
