@@ -816,7 +816,7 @@ class GodLevelLootEngine:
                 cycle_sent += 1
                 self.total_sent += 1
                 print(f"    ✅ SENT TO TELEGRAM ({deal['title'][:35]})")
-                time.sleep(3) # Anti-flood pause
+                time.sleep(0.8) # Ultra-fast sub-second pacing
                 if cycle_sent >= max_deals_per_cycle:
                     break
             else:
@@ -825,10 +825,10 @@ class GodLevelLootEngine:
         print(f"⏱️ Cycle finished — Sent {cycle_sent} deals this round.")
         return cycle_sent
 
-    def run_loop(self, interval=25, duration=None):
-        """Runs the loop continuously or for a fixed duration in seconds."""
+    def run_loop(self, interval=5, duration=None):
+        """Runs the loop continuously in 0-second lightning mode (default: 5s)."""
         start_time = time.time()
-        print(f"🚀 GOD-LEVEL LOOT ENGINE STARTED 24/7 (Interval: {interval}s)")
+        print(f"⚡ INSTANT 0-SECOND LIGHTNING ENGINE ACTIVE (Interval: {interval}s)")
         if duration:
             print(f"⏳ Run Duration: {duration} seconds")
 

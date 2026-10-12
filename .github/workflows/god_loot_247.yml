@@ -52,5 +52,5 @@ jobs:
           CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID || '61d1d46f-f438-47f5-9128-516d9beb11cb' }}
           DEALS_NICHE_ID: ${{ secrets.DEALS_NICHE_ID || '5cf8114c0bc3eb20c87ce3dcfc1ff185' }}
         run: |
-          # Runs continuous 20s scanner loop for 330 seconds (5.5 min) to seamlessly overlap with the 5-min cron
-          python god_level_loot_engine.py --duration 330 --interval 20
+          # Continuous ultra-fast 5s scanner loop for 330 seconds (5.5 min) to seamlessly overlap with 5-min cron
+          python god_level_loot_engine.py --duration 330 --interval 5
