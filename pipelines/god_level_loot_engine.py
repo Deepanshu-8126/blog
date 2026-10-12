@@ -320,12 +320,23 @@ def convert_to_affiliate(url, tag=AMAZON_TAG):
 
     # 2. Meesho (Direct Creator / Affiliate Monetization)
     if "meesho.com" in url_lower:
-        parsed = urllib.parse.urlparse(url)
-        q = urllib.parse.parse_qs(parsed.query)
-        if MEESHO_CREATOR_ID:
-            q["creator_id"] = [MEESHO_CREATOR_ID]
-        new_query = urllib.parse.urlencode(q, doseq=True)
-        return urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
+        # If competitor shared an af_invite link, swap competitor ID with our MEESHO_CREATOR_ID
+        if "/af_invite/" in url:
+            new_url = re.sub(r'/af_invite/\d+:', f'/af_invite/{MEESHO_CREATOR_ID}:', url)
+            new_url = re.sub(r'utm_source=[^&]+', 'utm_source=telegram_deals', new_url)
+            return new_url
+
+        # Check if product ID (p_id) is in query or URL
+        pid_match = re.search(r'[?&]p_id=(\d+)', url) or re.search(r'/p/(\d+)', url)
+        if pid_match:
+            pid = pid_match.group(1)
+            return f"https://www.meesho.com/af_invite/{MEESHO_CREATOR_ID}:telegram:deals?p_id={pid}&utm_source=telegram_deals"
+
+        # Fallback to EarnKaro wallet which also monetizes Meesho
+        if EARNKARO_USER_ID:
+            clean_url = url.split("?")[0]
+            return f"https://earnkaro.com/deals?r={EARNKARO_USER_ID}&url={urllib.parse.quote(clean_url)}"
+        return url
 
     # 3. Myntra, Flipkart, Ajio, Nykaa (EarnKaro Affiliate 1-Wallet)
     if any(m in url_lower for m in ["flipkart.com", "myntra.com", "ajio.com", "nykaa.com"]):
