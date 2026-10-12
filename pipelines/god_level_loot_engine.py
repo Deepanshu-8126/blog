@@ -694,10 +694,8 @@ class TelegramBroadcaster:
             f"🏷️ <b>Category:</b> {category_name}\n"
             f"🟢 <b>Loot Score:</b> 9.9/10 🔥\n"
             f"💳 <b>Trick:</b> Extra Bank / UPI Discount Active\n\n"
-            f"✂️ <b>HOW TO CLAIM LOOT:</b>\n"
-            f"1. Tap 'GRAB LOOT DEAL' button below.\n"
-            f"2. Apply store coupon if available.\n"
-            f"3. Order fast before price changes!\n\n"
+            f"🛒 <b>DIRECT BUY LINK:</b>\n"
+            f"👉 {affiliate_url}\n\n"
             f"🚨 <i>Limited Stock! Buy before price increases or stock ends.</i>"
         )
         return caption
