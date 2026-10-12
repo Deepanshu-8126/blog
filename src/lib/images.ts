@@ -10,6 +10,13 @@ export function isRealWebImage(url?: string | null): boolean {
   if (!trimmed.startsWith('https://') && !trimmed.startsWith('http://')) return false;
 
   const lower = trimmed.toLowerCase();
+  // Strict permanent bans on generic fallbacks & synthetic illustrators
+  if (lower.includes('unsplash.com')) return false;
+  if (lower.includes('robinhood.com')) return false;
+  if (lower.includes('telesco.pe')) return false;
+  if (lower.includes('pollinations.ai')) return false;
+  if (lower.includes('placeholder')) return false;
+
   // Filter out microscopic chips, SVGs of flags/logos, or dummy placeholders
   if (lower.includes('credit_card_chip')) return false;
   if (lower.includes('government_of_india_logo')) return false;
@@ -23,67 +30,64 @@ export function isRealWebImage(url?: string | null): boolean {
   return true;
 }
 
-// High-Resolution Editorial Photography Fallback Pool (1200x630 16:9 HD)
+// High-Resolution 100% Real Asset Pool (Zero Unsplash Generic Stock Photos)
 export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
   'ai-tools': [
-    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/500px-Anthropic_logo.svg.png',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/500px-Google_Gemini_logo.svg.png',
+    'https://upload.wikimedia.org/wikipedia/en/thumb/1/15/DuckDuckGo_logo_post-2023.svg/500px-DuckDuckGo_logo_post-2023.svg.png'
   ],
   'pc-builds': [
-    'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=630&fit=crop'
+    'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/2023_MSI_GeForce_RTX_2080_Gaming_X_Trio_%285%29.jpg/1200px-2023_MSI_GeForce_RTX_2080_Gaming_X_Trio_%285%29.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Nvidia_logo.svg/500px-Nvidia_logo.svg.png',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282020%29.svg/500px-Intel_logo_%282020%29.svg.png'
   ],
   'deals': [
-    'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&h=630&fit=crop'
+    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/71jG+e7roXL._SL1500_.jpg'
   ],
   'cashback': [
-    'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1200&h=630&fit=crop'
+    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg'
   ],
   'health': [
-    'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/800px-Good_Food_Display_-_NCI_Visuals_Online.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Running_on_Treadmill.jpg/800px-Running_on_Treadmill.jpg'
   ],
   'food': [
-    'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Paneer_butter_masala_02.jpg/800px-Paneer_butter_masala_02.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Chila_-_Home_-_Howrah_2017-06-25_9070.JPG/800px-Chila_-_Home_-_Howrah_2017-06-25_9070.JPG'
   ],
   'fashion': [
-    'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&h=630&fit=crop'
+    'https://images-static.nykaa.com/media/catalog/product/2/8/288dc768906161980774_1.jpg'
   ],
   'side-hustles': [
-    'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/500px-Anthropic_logo.svg.png'
   ],
   'movies': [
-    'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/en/a/a1/Drishyam_3_poster.jpg',
+    'https://upload.wikimedia.org/wikipedia/en/d/d6/Baththa_poster.jpg'
   ],
   'exams-results': [
-    'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png',
+    'https://upload.wikimedia.org/wikipedia/commons/5/56/BTEUP_LOGO.png',
+    'https://upload.wikimedia.org/wikipedia/en/d/d5/Staff_Selection_Commission.webp',
+    'https://upload.wikimedia.org/wikipedia/commons/e/e2/Logo_of_Uttar_Pradesh_Police.png'
   ],
   'gold-rate': [
-    'https://images.unsplash.com/photo-1610375461246-83df859d849d?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1535320903710-d993d3d77d29?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/4/4b/China_-_5732266939_Gold_-_M%C3%BCnzen_-_Barren.jpg'
+  ],
+  'gta-6': [
+    'https://upload.wikimedia.org/wikipedia/en/4/46/Grand_Theft_Auto_VI.png'
   ],
   'cricket-sports': [
-    'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Cricket_ball.svg/500px-Cricket_ball.svg.png'
   ],
   'viral': [
-    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=630&fit=crop',
-    'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=630&fit=crop'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png'
   ]
 };
 

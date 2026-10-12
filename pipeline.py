@@ -902,15 +902,19 @@ AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING (Agent Beta):
      * Feature comparison table with alternatives.
      * Step-by-step getting started guide.
 
-2. HUMANIZATION & STRICT ANTI-AI SLOP RULES:
-   - WRITE LIKE A PASSIONATE, EXPERT INDIAN BLOGGER TALKING TO A SMART FRIEND.
-   - BANNED CLICHES (NEVER USE): "In conclusion", "delve into", "tapestry", "beacon", "testament to", "fast-paced world", "it is important to remember", "furthermore", "moreover", "revolutionize", "game-changer".
-   - Use punchy, engaging human transitions: "Here is the real deal", "The bottom line", "Why everyone is buzzing about this", "What you should actually do".
-   - Structure the response in clean, engaging Markdown (550-700 words) using:
-     * ## Catchy, clear subheadings
-     * Markdown comparison tables or bulleted checklists
-     * Natural conversational flow tailored for Indian readers.
-     * Zero clickbait, zero hallucinated claims{', include standard safety note' if cfg.get('disclaimer') else ''}.
+2. HUMANIZATION & ELITE BLOG ARCHITECTURE (ANTI-AI SLOP):
+   - WRITE LIKE A PASSIONATE, EXPERT INDIAN BLOGGER TALKING TO A SMART FRIEND OVER CHAI.
+   - MANDATORY 5-PART BLOG STRUCTURE:
+     1. Relatable Opening Hook: Address the reader directly. Why is this topic trending right now? Why should they care? (No textbook definitions).
+     2. ⚡ Quick Highlights Box: A clean 3-bullet callout box right after the intro with the absolute bottom-line facts.
+     3. Honest Deep-Dive: Use conversational subheadings (e.g. "## Ground Reality: Asli Baat Kya Hai?", "## What Works & What Doesn't").
+     4. Data / Specs / Pricing Table: Clean, readable Markdown table with INR prices, comparison metrics, or dates.
+     5. Final Verdict & Clear Action: Direct, opinionated conclusion answering "Is it worth your time/money?".
+   - STRICTLY BANNED CLICHES (INSTANT REJECTION):
+     "In conclusion", "delve into", "tapestry", "beacon", "testament to", "fast-paced world", "it is important to remember", "furthermore", "moreover", "in the realm of", "revolutionize", "game-changer", "dive deep", "navigating the landscape".
+   - USE NATURAL HUMAN TRANSITIONS:
+     "Here is the real deal", "Let's be completely honest", "The bottom line is simple", "Before you make a decision", "What you actually need to know".
+   - Structure in clean, readable Markdown (550-750 words){', include standard safety note' if cfg.get('disclaimer') else ''}.
 
 Return strict JSON:
 {{
@@ -1157,8 +1161,16 @@ STRICT EDITORIAL GROUNDING GUIDELINES:
    - If topic mentions cricket, sports, teams, scores, or matches -> MUST be "cricket-sports".
    - If topic mentions movies, actors, trailers, box office -> MUST be "movies".
    - If topic mentions official exams, CBSE, UPSC, SSC, NEET, JEE, sarkari result, admit card -> MUST be "exams-results".
-4. Write a highly engaging, humanized, fact-grounded article (450-600 words) tailored to why Indian users are searching for "{query}" right now.
-5. Include FAQ schema and tags.
+4. ELITE BLOG ARCHITECTURE & HUMANIZATION (ANTI-AI SLOP):
+   - Write like a passionate, expert Indian editor explaining the ground reality to a friend over chai.
+   - MANDATORY STRUCTURE:
+     * Relatable Opening Hook (why people across India are searching for "{query}" right now).
+     * ⚡ Quick Highlights Box (3 crisp bullet points answering the core question).
+     * Conversational Subheadings (## Ground Reality, ## Key Details & What It Means).
+     * Clean Markdown Table (dates, scores, metrics, or comparisons).
+     * Honest Final Verdict / Practical Next Step.
+   - BANNED CLICHES: "In conclusion", "delve into", "tapestry", "beacon", "testament to", "fast-paced world", "furthermore", "moreover", "revolutionize", "game-changer".
+5. Include FAQ schema (3 real questions) and tags.
 
 Return strict JSON:
 {{
