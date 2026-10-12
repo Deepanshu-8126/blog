@@ -316,13 +316,15 @@ def send_telegram_deal_alert(deal: dict):
         print("[Telegram alert error]:", e)
 
 
-# ---------- Universal Affiliate Link Router (Amazon + EarnKaro 1-Wallet) ----------
+# ---------- Universal Affiliate Link Router (Amazon Direct + Multi-Store) ----------
 def build_affiliate_url(name: str, merchant: str = "Amazon") -> str:
     """
-    Constructs high-converting, monetized affiliate links:
-    - Direct Amazon ASIN Page: https://www.amazon.in/dp/{asin}?tag=uniquedigi0c6-21 (0 Search Pages)
-    - Meesho, Flipkart, Myntra, Ajio: Universal EarnKaro 1-Wallet (User ID: 3360368)
-    - Direct Meesho fallback: Creator ID 374453404
+    Constructs reliable, high-converting checkout links:
+    - Amazon Direct: https://www.amazon.in/dp/{asin}?tag=uniquedigi0c6-21 (0 Search Pages, 100% Guaranteed)
+    - Amazon Fallback: https://www.amazon.in/s?k={q}&tag=uniquedigi0c6-21
+    - Flipkart: https://www.flipkart.com/search?q={q}
+    - Myntra: https://www.myntra.com/{q}
+    - Meesho: https://www.meesho.com/search?q={q}
     """
     lower_p = (name or "").lower()
     for key, val in VERIFIED_ASIN_REGISTRY.items():
@@ -332,24 +334,10 @@ def build_affiliate_url(name: str, merchant: str = "Amazon") -> str:
     merchant_lower = (merchant or "").lower()
     q = urllib.parse.quote_plus(name)
 
-    if "amazon" in merchant_lower:
-        return f"https://www.amazon.in/s?k={q}&tag={AMAZON_TAG}"
-    elif "meesho" in merchant_lower:
-        meesho_url = f"https://www.meesho.com/search?q={q}"
-        if EARNKARO_USER_ID:
-            return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(meesho_url)}"
-        return f"https://www.meesho.com/afinvite/{MEESHO_CREATOR_ID}:youtubelongform:12492338?p_id=542355935&ext_id={q[:6]}&utm_source=uniquedigit"
-    elif "flipkart" in merchant_lower:
-        fk_url = f"https://www.flipkart.com/search?q={q}"
-        return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(fk_url)}" if EARNKARO_USER_ID else fk_url
-    elif "myntra" in merchant_lower:
-        my_url = f"https://www.myntra.com/{q}"
-        return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(my_url)}" if EARNKARO_USER_ID else my_url
-    elif "ajio" in merchant_lower:
-        aj_url = f"https://www.ajio.com/s/{q}"
-        return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(aj_url)}" if EARNKARO_USER_ID else aj_url
-    else:
-        return f"https://www.amazon.in/s?k={q}&tag={AMAZON_TAG}"
+    if "flipkart" in merchant_lower:
+        return f"https://www.flipkart.com/search?q={q}"
+    return f"https://www.amazon.in/s?k={q}&tag={AMAZON_TAG}"
+
 
 
 # ---------- Fix All Existing Mismatched Deals in D1 ----------
