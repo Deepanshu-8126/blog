@@ -69,7 +69,7 @@ def get_blogger_service():
     service = build("blogger", "v3", credentials=creds)
     return service, blog_id
 
-def publish_to_blogger(title, content_html, labels=None, is_draft=False, featured_image=None):
+def publish_to_blogger(title, content_html, labels=None, is_draft=False, featured_image=None, target_blog_id=None):
     """
     Publishes an article directly to Google Blogger.
     
@@ -79,11 +79,13 @@ def publish_to_blogger(title, content_html, labels=None, is_draft=False, feature
         labels (list): Category tags (e.g. ['Tech', 'Deals', 'India']).
         is_draft (bool): True to save as draft, False to publish immediately.
         featured_image (str): Optional top image URL to prepend.
+        target_blog_id (str): Optional blog ID override to target specific niche blogs.
     
     Returns:
         dict: Result with post ID and live Blogger URL.
     """
-    service, blog_id = get_blogger_service()
+    service, default_blog_id = get_blogger_service()
+    blog_id = target_blog_id or default_blog_id
     if not service or not blog_id:
         return {"success": False, "error": "Blogger credentials not configured or incomplete"}
 

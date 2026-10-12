@@ -218,22 +218,41 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
 
 
 # ---------- Google Blogger Multi-Destination Publisher ----------
-BLOGGER_ALLOWED_NICHES = ["ai-tools", "pc-builds", "side-hustles", "tech", "deals", "viral"]
+BLOGGER_ROUTING = {
+    # 1. Exams & Sarkari Results -> Dedicated Sarkari Result & Exam Alert Blog
+    "exams-results": os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024"),
+    
+    # 2. Tech, AI, PC Builds, Deals, Side-Hustles -> Primary AI Tools Hub Blog
+    "ai-tools": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
+    "pc-builds": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
+    "side-hustles": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
+    "tech": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
+    "deals": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
+    "viral": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
+}
 
 def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
-    """Automatically cross-publishes targeted High-CPC Tech/AI articles to Google Blogger."""
-    if niche_slug and niche_slug not in BLOGGER_ALLOWED_NICHES:
-        # Keep Blogger 100% focused on AI & Tech topical authority
+    """Automatically cross-publishes targeted articles to specific Google Blogger blogs."""
+    target_blog_id = BLOGGER_ROUTING.get(niche_slug)
+    if not target_blog_id:
+        # Keep Blogger topical authority clean
         return None
 
     try:
         from bridges.blogger_bridge.blogger_publisher import publish_to_blogger
         import markdown
         content_html = markdown.markdown(body_md or "", extensions=['extra', 'tables'])
-        res = publish_to_blogger(title, content_html, labels=tags, is_draft=False, featured_image=image_url)
+        res = publish_to_blogger(
+            title, 
+            content_html, 
+            labels=tags, 
+            is_draft=False, 
+            featured_image=image_url,
+            target_blog_id=target_blog_id
+        )
         return res
     except Exception as e:
-        print("[Blogger cross-publish skipped/failed]:", e)
+        print(f"[Blogger cross-publish error for {niche_slug}]:", e)
         return None
 
 
@@ -829,12 +848,20 @@ def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", t
     if target and isinstance(target, str) and target.startswith("http") and not is_thumbnail(target):
         return target, "Verified Real Web Media"
 
+    # Dynamic High-Resolution Editorial Banner (Ensures 100% unique, topic-specific 1200x630 visual for every post)
+    if topic_query:
+        clean_topic = re.sub(r'[^a-zA-Z0-9\s]', '', topic_query).strip()[:80]
+        encoded = urllib.parse.quote(f"{clean_topic} Indian students examination educational news photograph high quality banner")
+        return f"https://image.pollinations.ai/prompt/{encoded}?width=1200&height=630&nologo=true", "Dynamic Editorial AI Banner"
+
     return None, "No Real Media (Clean Gradient Card)"
 
 
 def write_article(n, title, angle, facts, trend):
     cfg = json.loads(n.get("config") or "{}") if isinstance(n.get("config"), str) else (n.get("config") or {})
-    prompt = f"""You are an elite Indian tech & lifestyle journalist for UniqueDigit.
+    is_exam = n.get("slug") == "exams-results" or "result" in title.lower() or "exam" in title.lower() or "admit card" in title.lower()
+    
+    prompt = f"""You are an elite Indian journalist and education editor for UniqueDigit & Sarkari Result Alert.
 Topic: {title} | Niche: {n['name']} | Angle: {angle} | Google Trends Interest: +{trend}k.
 
 GROUNDED FACTS & CONTEXT (Use ONLY verified claims):
@@ -842,11 +869,15 @@ GROUNDED FACTS & CONTEXT (Use ONLY verified claims):
 
 AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING (Agent Beta):
 1. Detect why the user is searching for "{title}" RIGHT NOW:
-   - Case A (Exam/Result/Admit Card/Sarkari):
-     * Official website check steps (ssc.gov.in, cbse.nic.in, nta.ac.in).
-     * Clear 4-step procedure to check scorecard / download admit card.
-     * Category-wise Expected Cutoff Table (UR, OBC, SC, ST, EWS).
-     * Next stage timeline (Tier 2, Physical test, Counseling).
+   - Case A (Exam/Result/Admit Card/Sarkari - TONE: NATURAL CONVERSATIONAL HINGLISH):
+     * TONE & LANGUAGE: Write in 100% natural, authentic Hinglish (Roman Hindi mixed with English keywords, exactly like Jagran Josh, Live Hindustan, and Amar Ujala).
+     * HEADLINE FORMAT: "[Direct Link Active] {title}: Scorecard aise karein download, yahan dekhein category-wise cutoff marks"
+     * SECTION 1 (⚡ Quick Highlights Box): Markdown table with Exam Name, Conducting Authority, Status: 🟢 Declared / Active, Required Login Details, and Official Portal Link.
+     * SECTION 2 (📋 Step-by-Step Scorecard Check Karne Ka Tarika): Numbered 1-2-3-4 steps in clear, friendly Hinglish.
+     * SECTION 3 (📊 Expected Category-Wise Cutoff): Markdown table for General (UR), OBC, EWS, SC, ST.
+     * SECTION 4 (🔗 Official Direct Link Callout): Prominent action callout box with direct official website URL.
+     * SECTION 5 (⚠️ Scorecard Verification & Advisory): What details to check (Name, Marks, QR Code) and warning against fake websites.
+     * SECTION 6 (❓ Important FAQs): 3 direct user questions answered in crisp 2 sentences each.
    - Case B (Shopping/Deal/Loot): Provide a price-to-value verdict, key specs, warranty note, and why this discount matters.
    - Case C (Tech/Gaming/Hardware): Provide performance benchmarks, compatibility requirements, and pros/cons.
    - Case D (Trending Viral/Event): Explain what happened, why it is buzzing in India, and key verified takeaways.
