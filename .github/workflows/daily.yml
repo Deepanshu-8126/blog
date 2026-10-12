@@ -43,6 +43,10 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           PORTAL_BASE_URL: "https://uniquedigit-viral-hub.pages.dev"
           POSTS_PER_NICHE: "2"
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
         run: |
           echo "🔥 Running Newsroom Trend Ingestion & Editorial Blog Pipeline..."
           python pipeline.py

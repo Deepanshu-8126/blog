@@ -1,0 +1,15 @@
+{
+  "name": "uniquedigit-whatsapp-bridge",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "100% Free & Unlimited Telegram to WhatsApp Channel Auto-Poster Bridge",
+  "main": "bridge.js",
+  "scripts": {
+    "start": "node bridge.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.19",
+    "qrcode-terminal": "^0.12.0",
+    "pino": "^9.6.0"
+  }
+}

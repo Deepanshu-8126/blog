@@ -217,6 +217,20 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
             print(f"[Forum Topic Routed -> Thread {thread_id}]: {safe_title}")
 
 
+# ---------- Google Blogger Multi-Destination Publisher ----------
+def send_blogger(title, body_md, tags=None, image_url=None):
+    """Automatically cross-publishes the humanized article to Google Blogger."""
+    try:
+        from bridges.blogger_bridge.blogger_publisher import publish_to_blogger
+        import markdown
+        content_html = markdown.markdown(body_md or "", extensions=['extra', 'tables'])
+        res = publish_to_blogger(title, content_html, labels=tags, is_draft=False, featured_image=image_url)
+        return res
+    except Exception as e:
+        print("[Blogger cross-publish skipped/failed]:", e)
+        return None
+
+
 # ---------- Storage Optimization (Prevent 5GB D1 Bloat) ----------
 def cleanup_old_data():
     """Retains last 90 days of posts to keep D1 SQLite lightweight and fast"""
@@ -936,6 +950,8 @@ def process_niche(n):
         existing_titles.append(t)
         # Dispatch instant Telegram alert
         send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image, deal_meta=a.get("deal_intel"))
+        # Dispatch instant Google Blogger cross-post
+        send_blogger(a.get("title", t), a.get("body_md", ""), tags=a.get("tags", [n["name"]]), image_url=image)
         made += 1
         time.sleep(1)
     return made
@@ -1131,6 +1147,8 @@ Return strict JSON:
         )
 
         send_telegram(res.get("title", query), n_name, post_slug, niche_slug=n_slug, image_url=image, deal_meta=res.get("deal_intel"))
+        # Dispatch instant Google Blogger cross-post
+        send_blogger(res.get("title", query), res.get("body_md", ""), tags=res.get("tags", [n_name]), image_url=image)
         print(f"[Radar Agent Published]: {res.get('title')} -> /{n_slug}/{post_slug}")
         processed += 1
         time.sleep(1)
