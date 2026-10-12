@@ -156,14 +156,7 @@ const ENTITY_SPECIFIC_GALLERIES: Record<string, GalleryItem[]> = {
   ]
 };
 
-function getSharpImage(imageUrl?: string, nSlug = 'viral'): string {
-  if (!imageUrl || imageUrl.length < 10) {
-    return CURATED_NICHE_HERO_IMAGES[nSlug] || '/images/ai_tools.jpg';
-  }
-  return imageUrl;
-}
-
-const displayHeroImage = getSharpImage(post.image_url, niche.slug);
+const displayHeroImage = proxyImageUrl(post.image_url, niche.slug, post.slug);
 const absoluteImageUrl = displayHeroImage.startsWith('http') 
   ? displayHeroImage 
   : `${Astro.url.origin}${displayHeroImage}`;
@@ -361,39 +354,24 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
 
           <div class="flex flex-col gap-3.5">
             {sidebarTrending.map((tr, idx) => {
-              const hasUniqueThumb = tr.image_url &&
-                tr.image_url.trim().length > 10 &&
-                !tr.image_url.includes('ai_tools.jpg') &&
-                !renderedImages.has(tr.image_url);
-
-              if (hasUniqueThumb && tr.image_url) {
-                renderedImages.add(tr.image_url);
-              }
+              const trThumb = proxyImageUrl(tr.image_url, (tr as any).niches?.slug, tr.slug);
 
               return (
                 <a
                   href={(tr as any).niches ? `/${(tr as any).niches.slug}/${tr.slug}` : `/${tr.slug}`}
                   class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
                 >
-                  <!-- Deduplicated Visual: Real Unique Photo OR Vibrant Rank Gradient -->
-                  {hasUniqueThumb ? (
-                    <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                      <img
-                        src={proxyImageUrl(tr.image_url)}
-                        alt={tr.title}
-                        loading="lazy"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[10px] font-black text-white text-center py-0.5 font-mono">
-                        #{idx + 1}
-                      </div>
+                  <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                    <img
+                      src={trThumb}
+                      alt={tr.title}
+                      loading="lazy"
+                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    />
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[10px] font-black text-white text-center py-0.5 font-mono">
+                      #{idx + 1}
                     </div>
-                  ) : (
-                    <div class={`w-14 h-14 rounded-xl shrink-0 flex flex-col items-center justify-center bg-gradient-to-tr ${rankGradients[idx % rankGradients.length]} text-white font-black shadow-xs border border-white/20 group-hover:scale-105 transition duration-300`}>
-                      <span class="text-sm font-mono font-black">#{idx + 1}</span>
-                      <span class="text-[9px] uppercase tracking-wider font-extrabold opacity-90">HOT</span>
-                    </div>
-                  )}
+                  </div>
 
                   <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
@@ -424,35 +402,22 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
             </div>
 
             <div class="flex flex-col gap-3">
-              {sidebarRelated.map((item, rIdx) => {
-                const hasUniqueRelThumb = item.image_url &&
-                  item.image_url.trim().length > 10 &&
-                  !item.image_url.includes('ai_tools.jpg') &&
-                  !renderedImages.has(item.image_url);
-
-                if (hasUniqueRelThumb && item.image_url) {
-                  renderedImages.add(item.image_url);
-                }
+              {sidebarRelated.map((item) => {
+                const itemThumb = proxyImageUrl(item.image_url, niche.slug, item.slug);
 
                 return (
                   <a
                     href={`/${niche.slug}/${item.slug}`}
                     class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
                   >
-                    {hasUniqueRelThumb ? (
-                      <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                        <img
-                          src={proxyImageUrl(item.image_url)}
-                          alt={item.title}
-                          loading="lazy"
-                          class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                        />
-                      </div>
-                    ) : (
-                      <div class={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center bg-gradient-to-tr ${rankGradients[(rIdx + 2) % rankGradients.length]} text-white font-black text-xs shadow-xs group-hover:scale-105 transition duration-300`}>
-                        {niche.name.slice(0, 2).toUpperCase()}
-                      </div>
-                    )}
+                    <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                      <img
+                        src={itemThumb}
+                        alt={item.title}
+                        loading="lazy"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    </div>
                     <div class="flex-1 min-w-0">
                       <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
                         {item.title}
@@ -1012,39 +977,24 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
 
           <div class="flex flex-col gap-3.5">
             {sidebarTrending.map((tr, idx) => {
-              const hasUniqueThumb = tr.image_url && 
-                tr.image_url.trim().length > 10 && 
-                !tr.image_url.includes('ai_tools.jpg') && 
-                !renderedImages.has(tr.image_url);
-
-              if (hasUniqueThumb && tr.image_url) {
-                renderedImages.add(tr.image_url);
-              }
+              const trThumb = proxyImageUrl(tr.image_url, (tr as any).niches?.slug, tr.slug);
 
               return (
                 <a
                   href={(tr as any).niches ? `/${(tr as any).niches.slug}/${tr.slug}` : `/${tr.slug}`}
                   class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
                 >
-                  <!-- Deduplicated Visual: Real Unique Photo OR Vibrant Rank Gradient -->
-                  {hasUniqueThumb ? (
-                    <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                      <img
-                        src={proxyImageUrl(tr.image_url)}
-                        alt={tr.title}
-                        loading="lazy"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[10px] font-black text-white text-center py-0.5 font-mono">
-                        #{idx + 1}
-                      </div>
+                  <div class="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                    <img
+                      src={trThumb}
+                      alt={tr.title}
+                      loading="lazy"
+                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    />
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-xs text-[10px] font-black text-white text-center py-0.5 font-mono">
+                      #{idx + 1}
                     </div>
-                  ) : (
-                    <div class={`w-14 h-14 rounded-xl shrink-0 flex flex-col items-center justify-center bg-gradient-to-tr ${rankGradients[idx % rankGradients.length]} text-white font-black shadow-xs border border-white/20 group-hover:scale-105 transition duration-300`}>
-                      <span class="text-sm font-mono font-black">#{idx + 1}</span>
-                      <span class="text-[9px] uppercase tracking-wider font-extrabold opacity-90">HOT</span>
-                    </div>
-                  )}
+                  </div>
 
                   <div class="flex-1 min-w-0">
                     <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition">
@@ -1075,35 +1025,22 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
             </div>
 
             <div class="flex flex-col gap-3">
-              {sidebarRelated.map((item, rIdx) => {
-                const hasUniqueRelThumb = item.image_url && 
-                  item.image_url.trim().length > 10 && 
-                  !item.image_url.includes('ai_tools.jpg') && 
-                  !renderedImages.has(item.image_url);
-
-                if (hasUniqueRelThumb && item.image_url) {
-                  renderedImages.add(item.image_url);
-                }
+              {sidebarRelated.map((item) => {
+                const itemThumb = proxyImageUrl(item.image_url, niche.slug, item.slug);
 
                 return (
                   <a
                     href={`/${niche.slug}/${item.slug}`}
                     class="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
                   >
-                    {hasUniqueRelThumb ? (
-                      <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                        <img
-                          src={proxyImageUrl(item.image_url)}
-                          alt={item.title}
-                          loading="lazy"
-                          class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                        />
-                      </div>
-                    ) : (
-                      <div class={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center bg-gradient-to-tr ${rankGradients[(rIdx + 2) % rankGradients.length]} text-white font-black text-xs shadow-xs group-hover:scale-105 transition duration-300`} aria-hidden="true">
-                        <span>{niche.name.slice(0, 2).toUpperCase()}</span>
-                      </div>
-                    )}
+                    <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                      <img
+                        src={itemThumb}
+                        alt={item.title}
+                        loading="lazy"
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    </div>
                     <div class="flex-1 min-w-0">
                       <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-brand transition mb-1">
                         {item.title}

@@ -1,7 +1,7 @@
 ---
 import type { Post } from '../lib/db';
 import Icon from './Icon.astro';
-import { proxyImageUrl } from '../lib/images';
+import { proxyImageUrl, get4KCuratedImage } from '../lib/images';
 
 interface Props {
   post: Post;
@@ -13,8 +13,8 @@ if (!post) return null;
 
 const nicheSlug = post.niches?.slug || 'viral';
 const nicheName = post.niches?.name || 'Trending';
-const safeImage = proxyImageUrl(post.image_url, nicheSlug);
-const fallbackImage = proxyImageUrl(null, nicheSlug);
+const safeImage = proxyImageUrl(post.image_url, nicheSlug, post.slug || post.title);
+const fallbackImage = get4KCuratedImage(post.slug || post.title, nicheSlug);
 ---
 
 <div class:list={["relative w-full rounded-3xl bg-white border border-slate-200/90 shadow-card overflow-hidden transition-all duration-300 hover:shadow-soft", className]}>

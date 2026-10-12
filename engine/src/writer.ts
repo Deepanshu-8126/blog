@@ -81,7 +81,7 @@ async function resolveTopicImage(
     }
   }
 
-  // 2. Wikipedia Summary API Thumbnail
+  // 2. Wikipedia Summary API Thumbnail (Prioritize 4K / originalimage)
   try {
     const wikiClean = title.trim().replace(/\s+/g, '_');
     const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiClean)}`;
@@ -90,9 +90,16 @@ async function resolveTopicImage(
     });
     if (wikiRes.ok) {
       const data = await wikiRes.json() as any;
-      if (data?.thumbnail?.source) {
+      if (data?.originalimage?.source) {
         return {
-          url: data.thumbnail.source,
+          url: data.originalimage.source,
+          credit: 'Wikimedia Commons / Wikipedia (HD)'
+        };
+      }
+      if (data?.thumbnail?.source) {
+        const upscaled = data.thumbnail.source.replace(/\/(\d+)px-([^/]+)$/, '/1600px-$2');
+        return {
+          url: upscaled,
           credit: 'Wikimedia Commons / Wikipedia'
         };
       }

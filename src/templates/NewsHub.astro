@@ -6,6 +6,7 @@ import AmazonDealBox from '../components/AmazonDealBox.astro';
 import NewsletterStrip from '../components/NewsletterStrip.astro';
 import Icon from '../components/Icon.astro';
 import type { Niche, Post } from '../lib/db';
+import { proxyImageUrl } from '../lib/images';
 
 interface Props {
   niche: Niche;
@@ -18,6 +19,7 @@ interface Props {
 
 const { niche, posts, trendingPosts = [], currentPage = 1, totalPages = 1, activeTab = 'latest' } = Astro.props;
 const heroPost = posts[0];
+const heroImage = heroPost ? proxyImageUrl(heroPost.image_url, niche.slug, heroPost.slug) : '';
 const subFeatured = posts.slice(1, 4);
 const streamPosts = posts.slice(4);
 
@@ -150,7 +152,7 @@ const NEWS_CATEGORIES = [
             <div>
               <div class="relative h-64 sm:h-96 bg-slate-900 overflow-hidden hero-lead-story">
                 <img
-                  src={`/img?url=${encodeURIComponent(heroPost.image_url || '/images/ai_tools.jpg')}`}
+                  src={heroImage}
                   alt={heroPost.title}
                   class="w-full h-full object-cover group-hover:scale-102 transition duration-500"
                   loading="eager"
