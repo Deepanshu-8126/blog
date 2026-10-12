@@ -2,279 +2,289 @@
 import Layout from '../layouts/Layout.astro';
 import BreakingTicker from '../components/BreakingTicker.astro';
 import HeroFeature from '../components/HeroFeature.astro';
-import CategoryGridCard from '../components/CategoryGridCard.astro';
 import NicheCard from '../components/NicheCard.astro';
-import TrendingList from '../components/TrendingList.astro';
 import AdSlot from '../components/AdSlot.astro';
 import NewsletterStrip from '../components/NewsletterStrip.astro';
 import Icon from '../components/Icon.astro';
-import { getNiches, getTrendingPosts, getPostsByNiche, type Niche, type Post } from '../lib/db';
-import { getBoard } from '../lib/kv';
-import TrendRow from '../components/TrendRow.astro';
-import LiveDot from '../components/LiveDot.astro';
-import FreshnessStamp from '../components/FreshnessStamp.astro';
+import { getNiches, getTrendingPosts, getPostsByGroup, type Niche, type Post } from '../lib/db';
 
 const runtime = (Astro.locals as any)?.runtime;
 const niches = await getNiches(runtime?.env);
-const trendingPosts = await getTrendingPosts(8, runtime?.env);
-const heroPost = trendingPosts[0];
-const subTrending = trendingPosts.slice(1);
-const board = await getBoard(runtime?.env);
-const top6Hype = board.slice(0, 6);
-const boardUpdate = board[0]?.updated_at;
 
-// Group samples (one top post per group)
-const groups = ['Tech', 'Money', 'Lifestyle', 'Entertainment'];
-const groupColors: Record<string, { chip: string; bg: string }> = {
-  Tech: { chip: 'bg-tech text-white', bg: 'bg-tech-bg/30' },
-  Money: { chip: 'bg-money text-white', bg: 'bg-money-bg/30' },
-  Lifestyle: { chip: 'bg-life text-white', bg: 'bg-life-bg/30' },
-  Entertainment: { chip: 'bg-ent text-white', bg: 'bg-ent-bg/30' }
-};
+// 1. Fetch Top Trending Stories for Ticker and Lead Hero Feature
+const trendingPosts = await getTrendingPosts(10, runtime?.env);
+
+// Track all rendered slugs to guarantee ZERO duplicate headlines on the homepage!
+const renderedSlugs = new Set<string>();
+
+// Lead Hero Story (The #1 biggest, high-impact story right now)
+const leadStory = trendingPosts[0];
+if (leadStory) renderedSlugs.add(leadStory.slug);
+
+// Fast Real-Time Pulse / Live Wire list (4 unique breaking updates for the hero sidebar)
+const liveWirePosts = trendingPosts.filter(p => !renderedSlugs.has(p.slug)).slice(0, 4);
+liveWirePosts.forEach(p => renderedSlugs.add(p.slug));
+
+// 2. Fetch Category-Specific Post Pavilions (Strictly excluding already rendered slugs)
+const entertainmentPosts = await getPostsByGroup('Entertainment', 4, Array.from(renderedSlugs), runtime?.env);
+entertainmentPosts.forEach(p => renderedSlugs.add(p.slug));
+
+const techPosts = await getPostsByGroup('Tech', 4, Array.from(renderedSlugs), runtime?.env);
+techPosts.forEach(p => renderedSlugs.add(p.slug));
+
+const moneyPosts = await getPostsByGroup('Money', 4, Array.from(renderedSlugs), runtime?.env);
+moneyPosts.forEach(p => renderedSlugs.add(p.slug));
+
+const lifestylePosts = await getPostsByGroup('Lifestyle', 4, Array.from(renderedSlugs), runtime?.env);
+lifestylePosts.forEach(p => renderedSlugs.add(p.slug));
+
+// Breaking ticker posts
+const breakingTickerPosts = trendingPosts.slice(0, 6);
 ---
 
 <Layout
-  title="UniqueDigit — India's Real-Time Trends, Tech & Deal Intelligence Hub"
-  description="Live tracking Google Trends, gold rates, generative AI tools directory, PC build benchmarks, and live loot deals across India."
+  title="UniqueDigit — India's Real-Time News, Tech & Deal Intelligence Portal"
+  description="Curated independent reporting across Indian technology, personal finance, live bullion rates, AI directories, and verified deals."
 >
   <!-- Breaking News Ticker -->
-  <BreakingTicker posts={trendingPosts} />
+  {breakingTickerPosts.length > 0 && (
+    <BreakingTicker posts={breakingTickerPosts} />
+  )}
 
-  <!-- HERO SECTION: Live Google Trends Radar + Multi-Pillar Intel Stack -->
-  <div class="my-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+  <!-- HERO SECTION: Lead Editorial Feature (8 cols) + Live Wire Radar (4 cols) -->
+  <section class="my-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
     
-    <!-- Left Column (8 cols): Real-Time Google Trends Board -->
-    <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/80 shadow-sm p-5 sm:p-7 flex flex-col justify-between">
-      <div>
-        <div class="flex items-center justify-between mb-4 flex-wrap gap-2 pb-4 border-b border-slate-100">
-          <div class="flex items-center gap-2.5">
-            <LiveDot updatedAt={boardUpdate} />
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  Google Trends Telemetry (India)
-                </span>
-                <span class="text-xs text-slate-500 font-mono hidden sm:inline">· 15-min auto-refresh</span>
-              </div>
-              <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
-                Trending Across India Right Now
-              </h1>
-            </div>
-          </div>
+    <!-- Left Column (8 cols): Lead Magazine Cover Story -->
+    <div class="lg:col-span-8 flex flex-col">
+      {leadStory ? (
+        <HeroFeature post={leadStory} class="h-full flex flex-col justify-between" />
+      ) : (
+        <div class="p-8 bg-white rounded-3xl border border-slate-200">
+          <p class="text-slate-500">Loading top lead editorial story...</p>
+        </div>
+      )}
+    </div>
 
-          <div class="flex items-center gap-3">
-            <FreshnessStamp updatedAt={boardUpdate} />
-            <a
-              href="/trending"
-              class="px-3.5 py-1.5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-dark transition flex items-center gap-1 shadow-xs"
-            >
-              <span>View All 30 Trends</span>
-              <Icon name="arrow-right" class="w-3.5 h-3.5" />
-            </a>
+    <!-- Right Column (4 cols): Live Wire (Real-Time Pulse & Fast Utility Links) -->
+    <div class="lg:col-span-4 flex flex-col justify-between bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+      <div>
+        <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <h2 class="font-black text-base sm:text-lg text-slate-900 tracking-tight">
+              Live Indian Wire
+            </h2>
           </div>
+          <span class="text-[11px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+            Real-Time
+          </span>
         </div>
 
         <p class="text-xs text-slate-500 leading-relaxed mb-4">
-          Multi-signal AI radar corroborating Google Trends RSS, Google News, Wikipedia, and YouTube telemetry across India.
+          Fast-breaking updates and developing stories verified across primary national sources.
         </p>
 
-        <!-- Top 6 Trend Rows -->
-        <div class="flex flex-col gap-2.5">
-          {top6Hype.map((item, idx) => (
-            <TrendRow item={item} rank={idx + 1} />
-          ))}
+        <!-- Live Wire Items (01, 02, 03, 04) -->
+        <div class="flex flex-col divide-y divide-slate-100">
+          {liveWirePosts.map((post, idx) => {
+            const rank = String(idx + 1).padStart(2, '0');
+            const slug = post.niches?.slug || 'viral';
+            return (
+              <a
+                href={`/${slug}/${post.slug}`}
+                class="group py-3.5 flex items-start gap-3 hover:bg-slate-50/80 rounded-xl px-2 transition-colors"
+              >
+                <span class="font-mono font-black text-sm text-slate-400 group-hover:text-brand transition shrink-0 mt-0.5">
+                  {rank}
+                </span>
+                <div class="flex-1 min-w-0">
+                  <span class="inline-block px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-100 text-slate-700 font-mono mb-1">
+                    {post.niches?.name || 'Trending'}
+                  </span>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-brand transition leading-snug line-clamp-2">
+                    {post.title}
+                  </h3>
+                </div>
+              </a>
+            );
+          })}
         </div>
       </div>
 
-      <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-        <span class="flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Live search spikes with active deal and reading links</span>
+      <!-- Quick Access Utility Modules -->
+      <div class="pt-4 mt-4 border-t border-slate-100 flex flex-col gap-2">
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
+          Direct Desks & Tools
         </span>
-        <a href="/trending" class="font-bold text-brand hover:underline">
-          Explore Trend Radar &rarr;
-        </a>
+        <div class="grid grid-cols-3 gap-2">
+          <a
+            href="/gold-rate"
+            class="p-2 rounded-xl bg-amber-50/60 hover:bg-amber-100 border border-amber-200/60 text-center transition group"
+          >
+            <span class="text-xs block">🪙</span>
+            <span class="text-[11px] font-bold text-amber-900 block truncate group-hover:underline">Gold Rates</span>
+          </a>
+          <a
+            href="/ai-tools"
+            class="p-2 rounded-xl bg-blue-50/60 hover:bg-blue-100 border border-blue-200/60 text-center transition group"
+          >
+            <span class="text-xs block">🤖</span>
+            <span class="text-[11px] font-bold text-blue-900 block truncate group-hover:underline">AI Directory</span>
+          </a>
+          <a
+            href="/builds"
+            class="p-2 rounded-xl bg-purple-50/60 hover:bg-purple-100 border border-purple-200/60 text-center transition group"
+          >
+            <span class="text-xs block">🖥️</span>
+            <span class="text-[11px] font-bold text-purple-900 block truncate group-hover:underline">PC Builds</span>
+          </a>
+        </div>
       </div>
     </div>
 
-    <!-- Right Column (4 cols): Live 4-Pillar Intelligence Deck (Gold, AI, Builds, Deals) -->
-    <div class="lg:col-span-4 flex flex-col gap-3.5">
-      
-      <!-- 1. Live Gold Rate Module -->
-      <a href="/gold-rate" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-amber-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1.5">
-            <span>🪙</span> Bullion Market
-          </span>
-          <span class="text-xs font-bold text-emerald-600 font-mono">Live Rates</span>
-        </div>
-        <div class="flex items-baseline justify-between">
-          <div>
-            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-amber-600 transition">24K Gold Rate (10g)</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Mumbai, Delhi & 8 City Trends</p>
-          </div>
-          <span class="text-base font-black text-slate-900 font-mono">₹77k+</span>
-        </div>
-      </a>
+  </section>
 
-      <!-- 2. AI Tools Directory Module -->
-      <a href="/ai-tools" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-blue-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1.5">
-            <span>🤖</span> AI Directory
-          </span>
-          <span class="text-xs font-bold text-blue-600 font-mono">50+ Vetted</span>
-        </div>
-        <div class="flex items-baseline justify-between">
-          <div>
-            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-blue-600 transition">Generative AI Tools</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Top LLMs, Coding & Image Gen</p>
+  <!-- PAVILION 1: 🎬 Cinema, Box Office & Pop Culture (Unique Stories) -->
+  {entertainmentPosts.length > 0 && (
+    <section class="my-12">
+      <div class="flex items-center justify-between pb-3 mb-6 border-b border-slate-200/80">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center font-bold text-base">
+            🎬
           </div>
-          <span class="text-xs font-bold text-brand group-hover:underline">Explore &rarr;</span>
-        </div>
-      </a>
-
-      <!-- 3. PC Builds & Hardware Module -->
-      <a href="/builds" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-purple-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
-            <span>🖥️</span> Hardware Hub
-          </span>
-          <span class="text-xs font-bold text-purple-600 font-mono">Tested FPS</span>
-        </div>
-        <div class="flex items-baseline justify-between">
           <div>
-            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-purple-600 transition">5 Tested PC Builds</h3>
-            <p class="text-xs text-slate-500 mt-0.5">₹35k Budget to ₹1.5L 4K Beast</p>
-          </div>
-          <span class="text-xs font-bold text-brand group-hover:underline">Compare &rarr;</span>
-        </div>
-      </a>
-
-      <!-- 4. Live Loot Deals & Cashback -->
-      <a href="/deals" class="group block rounded-2xl bg-white border border-slate-200/90 p-4 sm:p-5 shadow-xs hover:border-emerald-400 hover:shadow-sm transition">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-            <span>🏷️</span> Loot Radar
-          </span>
-          <span class="text-xs font-bold text-emerald-600 font-mono">Live Deals</span>
-        </div>
-        <div class="flex items-baseline justify-between">
-          <div>
-            <h3 class="font-extrabold text-base text-slate-900 group-hover:text-emerald-600 transition">Top Deals & Cashback</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Amazon, Flipkart & Card Offers</p>
-          </div>
-          <span class="text-xs font-bold text-brand group-hover:underline">View Deals &rarr;</span>
-        </div>
-      </a>
-
-      <!-- Quick Category Directory Banner -->
-      <div class="rounded-2xl bg-gradient-to-r from-brand to-brand-dark text-white p-4 shadow-xs flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <span class="text-xl">🌐</span>
-          <div>
-            <div class="text-sm font-black text-white">All 13 Specialized Hubs</div>
-            <div class="text-xs text-purple-200">Tech • Money • Lifestyle • Education</div>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Cinema, Box Office &amp; Pop Culture
+            </h2>
+            <p class="text-xs text-slate-500 hidden sm:block">
+              Daily collections, upcoming OTT releases, and verified entertainment reviews.
+            </p>
           </div>
         </div>
-        <a href="#explore-all" class="px-3 py-1.5 rounded-xl bg-cta text-cta-ink text-xs font-black hover:brightness-105 transition shadow-xs">
-          Browse All &darr;
+        <a href="/movies" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+          <span>View All in Movies</span>
+          <Icon name="arrow-right" class="w-3.5 h-3.5" />
         </a>
       </div>
 
-    </div>
-
-  </div>
-
-  <!-- 12-Hub Category Grid (Reference Mockup Card) -->
-  <CategoryGridCard />
-
-
-
-  <!-- Top 4 Niches Spotlight -->
-  <div class="my-10">
-    <div class="flex items-center justify-between mb-6">
-      <div>
-        <span class="text-xs font-bold uppercase tracking-wider text-brand font-mono">Real-Time Pulse</span>
-        <h2 class="text-2xl sm:text-3xl font-black text-ink tracking-tight">Trending Across Categories</h2>
-      </div>
-      <a href="#explore-all" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
-        All 12 Hubs <Icon name="arrow-right" class="w-3.5 h-3.5" />
-      </a>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {subTrending.slice(0, 4).map(p => (
-        <NicheCard post={p} />
-      ))}
-    </div>
-  </div>
-
-  <AdSlot position="top" />
-
-  <!-- Main 2-Column Section: Latest Feeds vs Numbered Trending List -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-12">
-    
-    <!-- Left Column: Featured Feeds -->
-    <div class="lg:col-span-8">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-black text-ink tracking-tight flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-brand"></span>
-          <span>Latest Live Drops</span>
-        </h3>
-        <span class="text-xs text-muted font-mono">Updated Every 6 Hours</span>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {trendingPosts.slice(0, 6).map(p => (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {entertainmentPosts.map(p => (
           <NicheCard post={p} />
         ))}
       </div>
+    </section>
+  )}
 
-      <AdSlot position="mid" />
-    </div>
+  <!-- Ad Slot: Top Position -->
+  <AdSlot position="top" />
 
-    <!-- Right Column: Numbered Top 05 & Quick Tools -->
-    <div class="lg:col-span-4 flex flex-col gap-6">
-      <TrendingList posts={trendingPosts} title="Trending Today (Top 05)" />
-
-      <!-- Quick Action Card -->
-      <div class="rounded-3xl bg-gradient-to-br from-brand-dark to-brand text-white p-6 shadow-soft">
-        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-cta text-cta-ink inline-block mb-3">
-          Tool Directory
-        </span>
-        <h4 class="font-bold text-base mb-2">Looking for Generative AI or PC Hardware?</h4>
-        <p class="text-xs text-purple-100 leading-relaxed mb-4">
-          Browse curated tools with authentic benchmarks and Indian pricing.
-        </p>
-        <div class="flex flex-col gap-2">
-          <a href="/ai-tools" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-xs font-bold transition flex items-center justify-between">
-            <span>Explore AI Tools</span>
-            <Icon name="arrow-right" class="w-3.5 h-3.5" />
-          </a>
-          <a href="/builds" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-xs font-bold transition flex items-center justify-between">
-            <span>PC Build Estimator</span>
-            <Icon name="arrow-right" class="w-3.5 h-3.5" />
-          </a>
-          <a href="/gold-rate" class="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-xs font-bold transition flex items-center justify-between">
-            <span>Today's Gold Rate</span>
-            <Icon name="arrow-right" class="w-3.5 h-3.5" />
-          </a>
+  <!-- PAVILION 2: 💻 Technology, AI & Hardware Intelligence (Unique Stories) -->
+  {techPosts.length > 0 && (
+    <section class="my-12">
+      <div class="flex items-center justify-between pb-3 mb-6 border-b border-slate-200/80">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-base">
+            ⚡
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Technology, AI &amp; Hardware Radar
+            </h2>
+            <p class="text-xs text-slate-500 hidden sm:block">
+              Tested PC configurations, GPU benchmarks, and generative AI productivity tools.
+            </p>
+          </div>
         </div>
+        <a href="/pc-builds" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+          <span>Explore All Tech</span>
+          <Icon name="arrow-right" class="w-3.5 h-3.5" />
+        </a>
       </div>
 
-      <AdSlot position="sidebar" />
-    </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {techPosts.map(p => (
+          <NicheCard post={p} />
+        ))}
+      </div>
+    </section>
+  )}
 
-  </div>
+  <!-- PAVILION 3: 🏷️ Markets, Loot Deals & Personal Finance (Unique Stories) -->
+  {moneyPosts.length > 0 && (
+    <section class="my-12">
+      <div class="flex items-center justify-between pb-3 mb-6 border-b border-slate-200/80">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-base">
+            🏷️
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Markets, Loot Deals &amp; Personal Finance
+            </h2>
+            <p class="text-xs text-slate-500 hidden sm:block">
+              Verified e-commerce price drops, credit card rewards, and live bullion rate movements.
+            </p>
+          </div>
+        </div>
+        <a href="/deals" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+          <span>Browse All Deals</span>
+          <Icon name="arrow-right" class="w-3.5 h-3.5" />
+        </a>
+      </div>
 
-  <!-- Explore All 12 Hubs Grid -->
-  <div id="explore-all" class="my-16 pt-12 border-t border-line">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {moneyPosts.map(p => (
+          <NicheCard post={p} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Ad Slot: Mid Position -->
+  <AdSlot position="mid" />
+
+  <!-- PAVILION 4: 🏃 Sports, Mobility & Daily Living (Unique Stories) -->
+  {lifestylePosts.length > 0 && (
+    <section class="my-12">
+      <div class="flex items-center justify-between pb-3 mb-6 border-b border-slate-200/80">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-base">
+            🏆
+          </div>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Sports, Mobility &amp; Daily Living
+            </h2>
+            <p class="text-xs text-slate-500 hidden sm:block">
+              Match analyses, squad updates, automotive insights, and health advice.
+            </p>
+          </div>
+        </div>
+        <a href="/cricket-sports" class="text-xs font-bold text-brand hover:underline flex items-center gap-1">
+          <span>View All Sports</span>
+          <Icon name="arrow-right" class="w-3.5 h-3.5" />
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {lifestylePosts.map(p => (
+          <NicheCard post={p} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- Master Editorial Directory: Single, High-Design Category Grid -->
+  <section id="explore-all" class="my-16 pt-12 border-t border-slate-200/80">
     <div class="text-center max-w-2xl mx-auto mb-10">
-      <span class="text-xs font-bold uppercase tracking-wider text-brand font-mono">Dynamic Network</span>
-      <h2 class="text-3xl font-black text-ink tracking-tight mt-1">Explore All 12 Specialized Hubs</h2>
-      <p class="text-xs text-muted mt-2">
-        Every hub runs on live datasets and AI trend clustering, updating automatically with zero stale content.
+      <span class="text-xs font-bold uppercase tracking-wider text-brand font-mono">
+        Editorial Network
+      </span>
+      <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+        Explore All Specialized Desks
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-500 mt-2">
+        Data-grounded reporting, live price tracking, and community discussions across 12 distinct verticals.
       </p>
     </div>
 
@@ -282,27 +292,28 @@ const groupColors: Record<string, { chip: string; bg: string }> = {
       {niches.map(n => (
         <a
           href={`/${n.slug}`}
-          class="group p-5 rounded-2xl bg-white border border-line shadow-card hover:shadow-soft hover:border-brand/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
+          class="group p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs hover:shadow-md hover:border-brand/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between"
         >
           <div>
-            <div class="w-10 h-10 rounded-xl bg-brand/10 text-brand group-hover:bg-brand group-hover:text-white transition flex items-center justify-center mb-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-50 text-brand group-hover:bg-brand group-hover:text-white transition flex items-center justify-center mb-3">
               <Icon name={n.icon} class="w-5 h-5" />
             </div>
             <div class="flex items-center gap-1.5 mb-1">
-              <h3 class="font-bold text-sm text-ink group-hover:text-brand transition">{n.name}</h3>
+              <h3 class="font-bold text-sm text-slate-900 group-hover:text-brand transition">{n.name}</h3>
               {n.is_new && (
-                <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-breaking text-white">NEW</span>
+                <span class="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-red-600 text-white">NEW</span>
               )}
             </div>
-            <p class="text-xs text-muted line-clamp-2 leading-relaxed">{n.tagline}</p>
+            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">{n.tagline}</p>
           </div>
           <span class="text-xs font-bold text-brand mt-4 flex items-center gap-1 group-hover:underline">
-            Open Hub <Icon name="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
+            <span>Explore Desk</span>
+            <Icon name="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition" />
           </span>
         </a>
       ))}
     </div>
-  </div>
+  </section>
 
   <!-- Lead Gen / Newsletter -->
   <NewsletterStrip />

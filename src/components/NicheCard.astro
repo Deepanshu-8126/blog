@@ -80,21 +80,17 @@ const safeImage = post.image_url ? proxyImageUrl(post.image_url) : '/images/plac
       
       <!-- Top Pills -->
       <div class="absolute top-3 left-3 flex items-center gap-1.5 z-20">
-        <span class={`px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider ${theme.chip} shadow-sm`}>
+        <span class={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider ${theme.chip} shadow-sm`}>
           {currentNiche?.name || grp}
         </span>
-        {post.trend_score > 0 && (
-          <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-white/95 backdrop-blur-xs text-slate-900 shadow-xs font-mono">
-            +{post.trend_score}k
-          </span>
-        )}
       </div>
 
-      {post.is_breaking ? (
-        <span class="absolute bottom-3 right-3 px-2 py-0.5 rounded-md text-xs font-black uppercase bg-red-600 text-white shadow-xs z-20">
-          Breaking
+      {post.is_breaking && (
+        <span class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-red-600 text-white shadow-xs z-20 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+          <span>Hot Story</span>
         </span>
-      ) : null}
+      )}
     </a>
 
     <!-- Title & Summary -->

@@ -774,6 +774,47 @@ export async function getAllPublishedPosts(limit = 1000, runtimeEnv?: any): Prom
   return SEED_POSTS.filter(p => p.status === 'published' && p.indexable !== false);
 }
 
+/** 4c. Get published posts by editorial group (e.g. 'Tech', 'Money', 'Entertainment', 'Lifestyle') */
+export async function getPostsByGroup(grp: string, limit = 4, excludeSlugs: string[] = [], runtimeEnv?: any): Promise<Post[]> {
+  const db = getD1(runtimeEnv);
+  if (db && typeof db.prepare === 'function') {
+    try {
+      let query = `
+        SELECT posts.*, niches.slug as niche_slug, niches.name as niche_name, niches.grp as niche_grp 
+        FROM posts 
+        JOIN niches ON posts.niche_id = niches.id 
+        WHERE posts.status = "published" AND LOWER(niches.grp) = LOWER(?)
+      `;
+      const binds: any[] = [grp];
+
+      if (excludeSlugs.length > 0) {
+        const placeholders = excludeSlugs.map(() => '?').join(',');
+        query += ` AND posts.slug NOT IN (${placeholders})`;
+        binds.push(...excludeSlugs);
+      }
+
+      query += ` ORDER BY posts.published_at DESC LIMIT ?`;
+      binds.push(limit);
+
+      const res = await db.prepare(query).bind(...binds).all();
+      if (res.results && res.results.length > 0) {
+        return res.results.map((r: any) => mapPostRow(r));
+      }
+    } catch (err) {
+      console.warn('[D1 getPostsByGroup fallback]:', err);
+    }
+  }
+
+  const normalizedGrp = grp.toLowerCase();
+  return SEED_POSTS
+    .filter(p => {
+      const matchGrp = (p.niches?.grp || '').toLowerCase() === normalizedGrp;
+      const notExcluded = !excludeSlugs.includes(p.slug);
+      return matchGrp && notExcluded;
+    })
+    .slice(0, limit);
+}
+
 /** 5. Get products / tools for a niche (Optimized for Highest Monetization & Conversions) */
 export async function getProductsByNiche(nicheId: string, runtimeEnv?: any): Promise<Product[]> {
   const db = getD1(runtimeEnv);

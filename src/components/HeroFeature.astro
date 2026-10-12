@@ -5,9 +5,10 @@ import { proxyImageUrl } from '../lib/images';
 
 interface Props {
   post: Post;
+  class?: string;
 }
 
-const { post } = Astro.props;
+const { post, class: className = '' } = Astro.props;
 if (!post) return null;
 
 const nicheSlug = post.niches?.slug || 'viral';
@@ -16,7 +17,7 @@ const safeImage = proxyImageUrl(post.image_url, nicheSlug);
 const fallbackImage = proxyImageUrl(null, nicheSlug);
 ---
 
-<div class="relative w-full rounded-3xl bg-white border border-line shadow-card overflow-hidden transition-all duration-300 hover:shadow-soft mb-8">
+<div class:list={["relative w-full rounded-3xl bg-white border border-slate-200/90 shadow-card overflow-hidden transition-all duration-300 hover:shadow-soft", className]}>
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
     
     <!-- Image Box -->
