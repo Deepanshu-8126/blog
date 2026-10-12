@@ -211,12 +211,13 @@ class MasterSentinelAgent:
         else:
             self.log_fail("Sarkari/Exam Destination", f"Mismatched Sarkari Blog ID: {BLOGGER_SARKARI_BLOG}")
 
-        # 3. Tokens file existence
+        # 3. Blogger OAuth Auth Check (tokens.json locally or BLOGGER_REFRESH_TOKEN in Cloud CI)
         tokens_file = ROOT_DIR / "bridges" / "blogger_bridge" / "tokens.json"
-        if tokens_file.exists():
-            self.log_pass("Blogger OAuth Auth", "Tokens valid and authenticated")
+        has_cloud_token = bool(os.getenv("BLOGGER_REFRESH_TOKEN"))
+        if tokens_file.exists() or has_cloud_token:
+            self.log_pass("Blogger OAuth Auth", "Tokens valid and authenticated (Local / Cloud Env)")
         else:
-            self.log_fail("Blogger OAuth Auth", "Missing tokens.json")
+            self.log_fail("Blogger OAuth Auth", "Missing Blogger credentials (tokens.json or BLOGGER_REFRESH_TOKEN)")
 
     # ==================================================================================
     # 🌐 5. CLOUDFLARE D1 MAIN WEBSITE SYNC
