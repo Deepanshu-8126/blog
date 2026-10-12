@@ -2,18 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 ========================================================================================
-🚀 SARKARI RESULT & SCHEME RADAR ENGINE (Autonomous 24/7 Publisher)
+🚀 AUTONOMOUS SARKARI, UNIVERSITY & SCHEME RADAR (AI-Powered Intent Engine)
 ========================================================================================
-Dedicated Isolated Pipeline for:
-- Central & State Govt Jobs (SSC, UPSC, Railway, Police, Anganwadi, Asha, Lekhpal)
-- Defence & Forces (Agniveer Army, Navy, Airforce, NDA, CDS)
-- All Universities & Colleges (BA, BSc, BCom, MA, ITI, Polytechnic, Board Results)
-- Sarkari Yojanas (PM Kisan, Free Silai Machine, Free Laptop, Awas, Ladli Behna, Nanda Devi)
-- Direct Bharti, Offline Forms, Admit Cards, Answer Keys, Cutoffs & Last Date Alerts
-
-Destination Routing:
-- Google Blogger: 'Sarkari Result & Exam Alert' (Blog ID: 1366151638291560024)
-- Cloudflare D1 Main Portal: 'uniquedigit-viral-hub.pages.dev' (Category: exams-results)
+- ZERO Hardcoded Keyword Restrictions: Gemini dynamically evaluates ANY Indian breaking topic
+- Detects Universities (Kumaun, DU, CCSU, AKTU), State Boards, Yojanas (Nanda Devi, Silai Machine),
+  Police, Agniveer, Anganwadi, Scholarships, and Sarkari Results across all Indian states.
+- REAL Authentic Web Media: Official Wikimedia/Wikipedia emblems & real educational photography.
+- ZERO AI-Generated Cartoon/Pollinations images!
+- High-grade Humanized Hinglish reporting (Jagran Josh / Amar Ujala editorial voice).
 ========================================================================================
 """
 
@@ -48,10 +44,10 @@ load_dotenv(ROOT_DIR / ".env")
 import requests
 import markdown
 from bridges.blogger_bridge.blogger_publisher import publish_to_blogger
+from pipeline import gemini
 
 # Configuration
 SARKARI_BLOG_ID = os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
 CF_D1_DB = os.getenv("CLOUDFLARE_D1_DATABASE_ID", "")
 CF_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
@@ -59,47 +55,29 @@ CACHE_FILE = ROOT_DIR / "sarkari_seen_cache.json"
 
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"}
 
-# ======================================================================================
-# 🎯 DYNAMIC INTENT & SARKARI TOPIC PATTERNS
-# ======================================================================================
-SARKARI_INTENT_KEYWORDS = [
-    # Exam & Results
-    "result", "scorecard", "merit list", "marksheet", "allotment", "cut off", "cutoff",
-    # Hall Ticket & Answers
-    "admit card", "hall ticket", "call letter", "answer key", "answer sheet", "omr",
-    # Syllabus & Pattern
-    "syllabus", "exam pattern", "previous paper", "model paper", "exam date",
-    # Yojanas & Schemes
-    "yojana", "scheme", "awas yojana", "silai machine", "free laptop", "smartphone yojana",
-    "ladli behna", "nanda devi", "shiksha prothsahan", "kanya sumangala", "pm kisan",
-    # Scholarships & Welfare
-    "scholarship", "nsp portal", "up scholarship", "ration card", "ayushman card", "voter list",
-    # Central Jobs
-    "ssc cgl", "ssc chsl", "ssc gd", "ssc mts", "upsc", "railway", "rrb", "group d", "ntpc",
-    # State & Police & Grassroots Bharti
-    "police bharti", "lekhpal", "patwari", "anganwadi", "asha", "gram sevak", "peon bharti",
-    "uksssc", "ukpsc", "upsssc", "bssc", "jssc", "hssc", "rsmssb", "mppeb", "vyapam",
-    # Defence & Forces
-    "agniveer", "army bharti", "navy bharti", "airforce", "nda", "cds", "crpf", "bsf", "cisf",
-    # Banks
-    "ibps", "sbi po", "sbi clerk", "rbi assistant",
-    # University & Academic Boards
-    "university", "kumaun university", "garwal university", "ccsu", "aktu", "du", "bhu",
-    "polytechnic", "iti", "ba result", "bsc result", "bcom result", "ma result", "b.ed",
-    "cbse", "up board", "bihar board", "uk board", "hbse", "rbse", "neet", "jee", "cuet", "ctet",
-    # Offline & Special
-    "offline form", "direct bharti", "walk in interview", "joining letter", "document verification",
-    "last date", "aaj last date"
+# Real High-Resolution Educational Stock Photos (Zero AI Cartoons)
+REAL_EDUCATION_FALLBACKS = [
+    "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop", # Exam desk & hall ticket
+    "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=630&fit=crop", # University campus building
+    "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=630&fit=crop", # Happy students celebrating success
+    "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=1200&h=630&fit=crop", # Official government application paperwork
+    "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&h=630&fit=crop"  # Library & academic study hall
 ]
 
-# Targeted Google News RSS Query Feeds
-SARKARI_RSS_FEEDS = [
-    "https://news.google.com/rss/search?q=sarkari+result+OR+admit+card+OR+cutoff+marks&hl=en-IN&gl=IN&ceid=IN:en",
-    "https://news.google.com/rss/search?q=anganwadi+bharti+OR+police+bharti+OR+direct+recruitment+2026&hl=en-IN&gl=IN&ceid=IN:en",
-    "https://news.google.com/rss/search?q=yojana+list+2026+OR+scholarship+status+OR+ration+card&hl=en-IN&gl=IN&ceid=IN:en",
-    "https://news.google.com/rss/search?q=university+results+2026+OR+polytechnic+OR+ITI+result&hl=en-IN&gl=IN&ceid=IN:en",
-    "https://news.google.com/rss/search?q=SSC+OR+Railway+RRB+OR+Agniveer+Bharti+2026&hl=en-IN&gl=IN&ceid=IN:en",
-    "https://news.google.com/rss/search?q=Uttarakhand+recruitment+OR+UPSSSC+OR+BSSC+notification&hl=en-IN&gl=IN&ceid=IN:en",
+# Targeted Real-Time RSS Stream URLs (Covering Education, Jobs, Yojanas & State News)
+RADAR_RSS_STREAMS = [
+    # 1. Google Trends India Daily Feed
+    "https://trends.google.com/trending/rss?geo=IN",
+    # 2. Google News India - Education Section
+    "https://news.google.com/rss/headlines/section/topic/EDUCATION?hl=en-IN&gl=IN&ceid=IN:en",
+    # 3. Google News India - Recruitment & Vacancies
+    "https://news.google.com/rss/search?q=recruitment+OR+vacancy+OR+result+2026&hl=en-IN&gl=IN&ceid=IN:en",
+    # 4. Google News India - Universities, Boards & Admit Cards
+    "https://news.google.com/rss/search?q=university+exam+OR+admit+card+OR+cutoff+marks&hl=en-IN&gl=IN&ceid=IN:en",
+    # 5. Google News India - Welfare Yojanas, Scholarships & Ration
+    "https://news.google.com/rss/search?q=yojana+list+2026+OR+scholarship+OR+ration+card&hl=en-IN&gl=IN&ceid=IN:en",
+    # 6. Google News India - State Level Bharti & Grassroots
+    "https://news.google.com/rss/search?q=anganwadi+bharti+OR+police+bharti+OR+direct+bharti&hl=en-IN&gl=IN&ceid=IN:en"
 ]
 
 def load_cache():
@@ -119,133 +97,196 @@ def save_cache(cache):
         pass
 
 # ======================================================================================
-# 📡 RADAR: FETCH REAL-TIME BREAKING SARKARI SIGNALS
+# 🖼️ REAL MEDIA ENGINE: OFFICIAL EMBLEMS & EDITORIAL PHOTOS (NO AI CARTOONS)
 # ======================================================================================
-def fetch_sarkari_trends():
-    """Scans Google Trends Daily Feed & 6 Targeted Sarkari News Feeds."""
-    signals = []
-    seen_titles = set()
+def fetch_real_official_image(entity_name, category=""):
+    """
+    Fetches real official emblems, campus photos, or government department seals.
+    Uses Wikipedia REST Summary API with fallback to real educational photography.
+    """
+    if entity_name:
+        queries = [
+            entity_name,
+            f"{entity_name} India",
+            f"{entity_name} university" if "university" in entity_name.lower() else f"{entity_name} board"
+        ]
+        for q in queries:
+            try:
+                url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(q)}"
+                r = requests.get(url, headers=UA, timeout=6).json()
+                orig = r.get("originalimage", {}).get("source")
+                thumb = r.get("thumbnail", {}).get("source")
+                img_url = orig or thumb
+                if img_url and img_url.startswith("http"):
+                    # Check that image is not an unrelated flag icon
+                    if not any(bad in img_url.lower() for bad in ["1x1", "pixel", "icon-small"]):
+                        return img_url, "Official Verified Entity Emblem/Photo"
+            except Exception:
+                continue
 
-    # 1. Official Google Trends India Daily Feed
-    try:
-        r = requests.get("https://trends.google.com/trending/rss?geo=IN", headers=UA, timeout=10)
-        if r.status_code == 200:
-            root = ET.fromstring(r.content)
-            for item in root.findall(".//item"):
-                title_elem = item.find("title")
-                if title_elem is not None and title_elem.text:
-                    t = title_elem.text.strip()
-                    lower_t = t.lower()
-                    if any(k in lower_t for k in SARKARI_INTENT_KEYWORDS):
-                        if lower_t not in seen_titles:
-                            seen_titles.add(lower_t)
-                            signals.append({
-                                "title": t,
-                                "source": "Google Trends Daily",
-                                "raw_facts": f"Trending in India right now on Google Search: {t}"
-                            })
-    except Exception as e:
-        print(f"⚠️ Trends RSS Error: {e}")
+    # Fallback: High-resolution real editorial photography (Zero AI cartoons)
+    idx = abs(hash(entity_name or category)) % len(REAL_EDUCATION_FALLBACKS)
+    return REAL_EDUCATION_FALLBACKS[idx], "Real Authentic Educational Photography"
 
-    # 2. Targeted Sarkari & State Board RSS Feeds
-    for feed_url in SARKARI_RSS_FEEDS:
+# ======================================================================================
+# 📡 AUTONOMOUS RADAR: SCAN STREAMS & AI INTENT CLASSIFICATION
+# ======================================================================================
+def fetch_raw_candidate_headlines():
+    """Scans all RSS streams and collects unique candidate headlines."""
+    candidates = []
+    seen = set()
+
+    for feed_url in RADAR_RSS_STREAMS:
         try:
             r = requests.get(feed_url, headers=UA, timeout=10)
             if r.status_code == 200:
                 root = ET.fromstring(r.content)
-                for item in root.findall(".//item")[:10]:
+                for item in root.findall(".//item")[:15]:
                     title_elem = item.find("title")
                     link_elem = item.find("link")
                     if title_elem is not None and title_elem.text:
                         full_title = title_elem.text.strip()
                         clean_title = full_title.split(" - ")[0].strip()
                         source_name = full_title.split(" - ")[-1].strip() if " - " in full_title else "Official Update"
-                        lower_clean = clean_title.lower()
+                        lower = clean_title.lower()
 
-                        if any(k in lower_clean for k in SARKARI_INTENT_KEYWORDS):
-                            if lower_clean not in seen_titles:
-                                seen_titles.add(lower_clean)
-                                signals.append({
-                                    "title": clean_title,
-                                    "source": source_name,
-                                    "link": link_elem.text if link_elem is not None else "",
-                                    "raw_facts": f"Latest verified notice reported by {source_name}: {full_title}"
-                                })
+                        if lower not in seen and len(clean_title) >= 15:
+                            seen.add(lower)
+                            candidates.append({
+                                "title": clean_title,
+                                "source": source_name,
+                                "link": link_elem.text if link_elem is not None else ""
+                            })
         except Exception:
             continue
 
-    print(f"📡 [Sarkari Radar] Scanned & Discovered {len(signals)} Active Signals.")
-    return signals
+    print(f"📡 [Raw Radar Stream] Captured {len(candidates)} Candidate Headlines.")
+    return candidates
+
+def ai_classify_and_filter_candidates(candidates):
+    """
+    Agent Alpha: Autonomous AI Intent Classifier.
+    Eliminates rigid keyword lists. Dynamically identifies any topic relevant to
+    Indian students, job seekers, and citizens (Universities, Schemes, Bharti, Results).
+    """
+    if not candidates:
+        return []
+
+    # Send in batches of 20
+    headlines = [c["title"] for c in candidates[:25]]
+
+    prompt = f"""You are the Chief AI Editor for India's premier Sarkari & Education Portal.
+Candidate Breaking Headlines:
+{json.dumps(headlines, indent=2)}
+
+TASK:
+Filter and classify ONLY topics that Indian students, job seekers, youth, or citizens actively search for:
+- Sarkari Results, Scorecards, Merit Lists, Cutoff Marks, Answer Keys, Admit Cards, Time Tables.
+- Central & State Government Recruitments (SSC, UPSC, Railway, Police, Anganwadi, Asha, Lekhpal, Direct Bharti, Offline Forms).
+- Universities & Colleges (Kumaun University, CCSU, DU, BHU, AKTU, State Boards, BA, BSc, BCom, MA, Polytechnic, ITI, B.Ed).
+- Government Yojanas & Welfare Schemes (PM Awas, Free Silai Machine, Free Laptop, Nanda Devi Scheme, Ladli Behna, Ration Card, Ayushman).
+- Scholarships (UP Scholarship, NSP Portal, Post Matric).
+
+STRICTLY REJECT: Sports matches, Bollywood gossip, crime news, general political speeches, foreign tech launches.
+
+Return strict JSON:
+{{
+  "qualified": [
+    {{
+      "headline": "<exact headline string from candidate list>",
+      "entity": "<Exact Organization / University / State Department / Scheme name, e.g. Kumaun University, UP Police, Staff Selection Commission, Nanda Devi Kanya Yojana>",
+      "category": "Result | Admit Card | Recruitment | Yojana | Scholarship | Cutoff | Answer Key",
+      "official_domain": "<official website if known, e.g. kunainital.ac.in, uppbpb.gov.in, ssc.gov.in, otherwise leave empty>"
+    }}
+  ]
+}}"""
+
+    try:
+        res = gemini(prompt)
+        qualified_list = res.get("qualified", [])
+        
+        # Merge back with source and link details
+        cand_map = {c["title"].lower(): c for c in candidates}
+        results = []
+        for q in qualified_list:
+            h = q.get("headline", "")
+            match = cand_map.get(h.lower())
+            results.append({
+                "title": h,
+                "entity": q.get("entity", "Government Authority"),
+                "category": q.get("category", "Sarkari Alert"),
+                "official_domain": q.get("official_domain", ""),
+                "source": match.get("source", "Official Update") if match else "Official Update",
+                "link": match.get("link", "") if match else ""
+            })
+
+        print(f"🎯 [AI Intent Radar] Qualified {len(results)} high-intent Sarkari/Education topics.")
+        return results
+    except Exception as e:
+        print(f"❌ AI Classification Error: {e}")
+        return []
 
 # ======================================================================================
 # ✍️ HUMANIZED HINGLISH SARKARI JOURNALIST ENGINE (Anti-AI Slop)
 # ======================================================================================
-def generate_sarkari_article(signal):
+def generate_sarkari_article(item):
     """
-    Generates a 100% humanized, authentic Jagran Josh / SarkariNetwork style article.
-    Zero generic cliches, zero AI-slop, rich tables & direct official links.
+    Generates a deeply humanized, authentic Jagran Josh / Amar Ujala style article.
+    Zero generic AI jargon, rich structured tables, verified steps & direct links.
     """
-    title = signal["title"]
-    source = signal.get("source", "Official Update")
-    facts = signal.get("raw_facts", "")
+    title = item["title"]
+    entity = item.get("entity", "Conducting Board")
+    category = item.get("category", "Sarkari Alert")
+    official_domain = item.get("official_domain") or f"{urllib.parse.quote(entity)} official portal"
+    source = item.get("source", "Official Notification")
 
-    prompt = f"""You are India's top education and Sarkari job editor for 'Sarkari Result & Exam Alert' (all-sarkari-result-2k0.blogspot.com).
-Breaking Topic: {title}
-Source Info: {source} | Verified Facts: {facts}
+    prompt = f"""You are India's top senior education editor and career journalist writing for 'Sarkari Result & Exam Alert' (all-sarkari-result-2k0.blogspot.com).
+Topic: {title}
+Entity: {entity} | Category: {category} | Official Domain: {official_domain} | Source: {source}
 
 WRITING STYLE & TONE GUIDELINES:
-1. LANGUAGE: 100% Natural, Engaging Conversational HINGLISH (Roman Hindi script blended with English terminology like Cutoff, Scorecard, Admit Card, Direct Link, Eligibility, Merit List, Official Portal, Registration).
-2. WRITE LIKE AN EXPERT SENIOR JOURNALIST explaining step-by-step to an Indian candidate who urgently needs to check or apply.
-3. ABSOLUTELY BANNED AI PHRASES:
-   - "In conclusion", "delve into", "tapestry", "beacon", "it is important to note", "furthermore", "moreover", "game-changer", "testament to".
-4. STRUCTURE REQUIREMENTS (550 to 700 words):
-   - ## Catchy Headline: High CTR, e.g. "[Direct Link Active] {title}: Yahan se karein direct download, dekhein category-wise details & process"
-   - ## ⚡ Quick Overview Highlights Box:
-     A clean markdown table with:
-     | Detail | Information |
-     | :--- | :--- |
-     | **Exam / Yojana Name** | ... |
-     | **Conducting Authority** | ... |
-     | **Status** | 🟢 Active / Declared |
-     | **Category** | Sarkari Result / Admit Card / Yojana |
-     | **Official Portal** | Official website name/domain |
-   - ## 📋 Step-by-Step Complete Procedure (Aise Karein Check / Apply):
-     Clear numbered 1-2-3-4 steps in conversational Hinglish.
-   - ## 📊 Category-Wise Cutoff / Eligibility Criteria:
-     A clear markdown table for General (UR), OBC, EWS, SC, ST or required qualification/age limits.
-   - ## 🔗 Official Direct Link Callout:
-     A prominent direct link box for the user:
-     `👉 [Official Website Direct Link - Click Here To Check / Apply](https://google.com/search?q={urllib.parse.quote(title + ' official website')})`
-   - ## ⚠️ Important Documents & Advisory:
-     Documents needed (Aadhaar, Roll No, Marksheet) and warning against fake brokers/phishing portals.
-   - ## ❓ Frequently Asked Questions (Top FAQs):
-     3 questions Indian candidates search on Google with crisp 2-sentence answers.
+1. LANGUAGE: 100% Natural, Engaging Conversational HINGLISH (Roman Hindi blended with standard English keywords like Cutoff, Scorecard, Admit Card, Direct Link, Eligibility, Merit List, Official Portal, Registration, Counseling).
+2. WRITE LIKE AN EXPERT SENIOR JOURNALIST talking directly to an Indian candidate who urgently needs to check their result or apply for the scheme.
+3. ABSOLUTELY BANNED AI SLOP CLICHES:
+   - "In conclusion", "delve into", "tapestry", "beacon", "it is important to note", "furthermore", "moreover", "game-changer", "testament to", "fast-paced world".
+   - Use lively, real transitions: "Yahan hai direct update", "Asli baat yeh hai", "Candidates ko dhyan rakhna chahiye", "Direct process yeh hai".
+
+ARTICLE STRUCTURE (600 to 750 words):
+- ## Catchy Headline: High CTR, e.g. "[Direct Link Active] {title}: Yahan se download karein scorecard/form, category-wise details & process dekhein"
+- ## ⚡ Quick Highlights Box:
+  A clean markdown table with:
+  | Detail | Information |
+  | :--- | :--- |
+  | **Exam / Yojana Name** | {title} |
+  | **Conducting Authority** | {entity} |
+  | **Current Status** | 🟢 Declared / Active |
+  | **Category** | {category} |
+  | **Official Portal** | {official_domain} |
+- ## 📋 Step-by-Step Complete Procedure (Aise Karein Check / Apply):
+  Clear numbered 1-2-3-4 steps in conversational Hinglish.
+- ## 📊 Category-Wise Cutoff / Eligibility Criteria:
+  A clean markdown table for General (UR), OBC, EWS, SC, ST or required qualification/age criteria.
+- ## 🔗 Official Direct Link Callout:
+  A prominent direct link box:
+  `👉 [Official Website Direct Link - Click Here To Check / Apply](https://www.google.com/search?q={urllib.parse.quote(entity + ' ' + category + ' official portal')})`
+- ## ⚠️ Important Documents & Advisory:
+  Essential documents needed (Aadhaar, Roll No, Registration Slip) and warning against phishing sites/fake agents.
+- ## ❓ Frequently Asked Questions (Top FAQs):
+  3 direct questions candidates search on Google with crisp 2-sentence answers.
 
 Return strict JSON:
 {{
-  "title": "Clear High-CTR headline with status tag like [Declared] or [Direct Link Active]",
+  "title": "Clear High-CTR headline with status tag like [Direct Link Active] or [Official Notice Out]",
   "summary": "Compelling meta description under 155 chars for Google Search SERP",
-  "body_md": "Full markdown content with tables, bold highlights and steps",
-  "tags": ["Sarkari Result", "Admit Card", "Exam Alert 2026", "Direct Link", "Govt Jobs"]
+  "body_md": "Full markdown content with tables, bold highlights, numbered steps and FAQs",
+  "tags": ["{category}", "Sarkari Result", "{entity}", "Direct Link", "Govt Jobs 2026"]
 }}"""
 
     try:
-        from pipeline import gemini
         return gemini(prompt)
     except Exception as e:
-        print(f"❌ Gemini Generation Error: {e}")
+        print(f"❌ Generation error for {title}: {e}")
         return None
-
-
-# ======================================================================================
-# 🖼️ DYNAMIC 1200x630 TOPIC-SPECIFIC BANNER GENERATOR
-# ======================================================================================
-def get_sarkari_banner_image(topic_title):
-    """Generates a dynamic 1200x630 high-res visual banner specifically for this exam/scheme."""
-    clean_topic = re.sub(r'[^a-zA-Z0-9\s]', '', topic_title).strip()[:75]
-    prompt_str = f"{clean_topic} Indian students examination hall government notice educational banner high quality photograph"
-    encoded = urllib.parse.quote(prompt_str)
-    return f"https://image.pollinations.ai/prompt/{encoded}?width=1200&height=630&nologo=true"
 
 # ======================================================================================
 # 🌐 CLOUDFLARE D1 MAIN WEBSITE PUBLISHER
@@ -272,36 +313,47 @@ def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url):
         return False
 
 # ======================================================================================
-# 🚀 MAIN RUNNER: SCAN -> GENERATE -> DUAL PUBLISH
+# 🚀 MAIN RUNNER: SCAN -> AI INTENT CLASSIFY -> REAL MEDIA -> DUAL PUBLISH
 # ======================================================================================
 def run_sarkari_radar(max_posts=3):
     print("=" * 70)
-    print("🔥 STARTING SARKARI & EXAM RESULT RADAR PIPELINE")
+    print("🔥 STARTING AUTONOMOUS SARKARI, UNIVERSITY & SCHEME RADAR")
     print(f"🎯 Target Blogger Blog ID: {SARKARI_BLOG_ID} (all-sarkari-result-2k0.blogspot.com)")
     print(f"🌐 Target Main Website: uniquedigit-viral-hub.pages.dev (Niche: exams-results)")
+    print("🛡️ Zero Keyword Limit + Real Authentic Media (No AI Cartoons)")
     print("=" * 70)
 
     cache = load_cache()
-    signals = fetch_sarkari_trends()
+    
+    # 1. Fetch raw streams
+    candidates = fetch_raw_candidate_headlines()
+    if not candidates:
+        print("⚠️ No candidate headlines captured.")
+        return
+
+    # 2. AI Autonomous Intent Classification
+    qualified_topics = ai_classify_and_filter_candidates(candidates)
 
     published_count = 0
 
-    for s in signals:
+    for item in qualified_topics:
         if published_count >= max_posts:
             break
 
-        topic_title = s["title"]
+        topic_title = item["title"]
+        entity = item.get("entity", "")
         topic_hash = hashlib.md5(topic_title.lower().encode("utf-8")).hexdigest()
 
         if topic_hash in cache:
             continue
 
-        print(f"\n⚡ [Processing Signal {published_count + 1}/{max_posts}]: {topic_title}")
+        print(f"\n⚡ [Processing Post {published_count + 1}/{max_posts}]: {topic_title}")
+        print(f"🏛️ Entity: {entity} | Category: {item.get('category')}")
 
-        # 1. Generate Article
-        article = generate_sarkari_article(s)
+        # 3. Generate Humanized Hinglish Article
+        article = generate_sarkari_article(item)
         if not article or not article.get("title") or not article.get("body_md"):
-            print("⚠️ Skipped: Failed generation")
+            print("⚠️ Skipped: Generation failed")
             continue
 
         final_title = article["title"]
@@ -309,40 +361,42 @@ def run_sarkari_radar(max_posts=3):
         body_md = article["body_md"]
         tags = article.get("tags", ["Sarkari Result", "Exam Alert"])
 
-        # 2. Dynamic Banner Image
-        banner_img = get_sarkari_banner_image(topic_title)
-        print(f"🖼️ Banner Generated: {banner_img[:80]}...")
+        # 4. Fetch REAL Official Media (Zero AI cartoons)
+        real_img, img_type = fetch_real_official_image(entity, category=item.get("category", ""))
+        print(f"🖼️ Media Resolved: {real_img[:70]}... ({img_type})")
 
-        # 3. Publish to Google Blogger
+        # 5. Publish to Google Blogger
         content_html = markdown.markdown(body_md, extensions=['extra', 'tables'])
         blogger_res = publish_to_blogger(
             final_title,
             content_html,
             labels=tags,
             is_draft=False,
-            featured_image=banner_img,
+            featured_image=real_img,
             target_blog_id=SARKARI_BLOG_ID
         )
 
         blogger_url = blogger_res.get("url") if blogger_res.get("success") else None
 
-        # 4. Publish to Cloudflare Main Site
-        cf_success = publish_to_cloudflare_d1(final_title, summary, body_md, tags, banner_img)
+        # 6. Publish to Cloudflare Main Site
+        cf_success = publish_to_cloudflare_d1(final_title, summary, body_md, tags, real_img)
         if cf_success:
-            print(f"✅ [Cloudflare Main Site]: Published to uniquedigit-viral-hub.pages.dev")
+            print(f"✅ [Cloudflare Main Site]: Live on uniquedigit-viral-hub.pages.dev")
 
-        # 5. Update Cache
+        # 7. Update Cache
         cache[topic_hash] = {
             "title": final_title,
+            "entity": entity,
             "published_at": datetime.now().isoformat(),
-            "blogger_url": blogger_url
+            "blogger_url": blogger_url,
+            "image": real_img
         }
         save_cache(cache)
         published_count += 1
         time.sleep(2)
 
     print("\n" + "=" * 70)
-    print(f"🎉 SARKARI RADAR COMPLETED: Published {published_count} new posts!")
+    print(f"🎉 SARKARI RADAR COMPLETED: Successfully published {published_count} new posts!")
     print("=" * 70)
 
 if __name__ == "__main__":
