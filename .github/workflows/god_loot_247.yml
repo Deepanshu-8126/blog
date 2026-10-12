@@ -4,11 +4,9 @@ name: 24/7 God-Level Loot Engine (Unlimited Cloud)
   push:
     branches:
       - main
-    paths:
-      - '.github/workflows/god_loot_247.yml'
   schedule:
-    # Runs every 5 minutes 24/7 (Continuous cloud loop, zero downtime)
-    - cron: '*/5 * * * *'
+    # Runs every 30 minutes to ensure continuous overlapping cloud workers
+    - cron: '*/30 * * * *'
   workflow_dispatch:
   repository_dispatch:
     types: [loot-trigger, 247-radar]
@@ -20,7 +18,7 @@ concurrency:
 jobs:
   run-god-engine:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 120
 
     steps:
       - name: Checkout Code
@@ -52,5 +50,5 @@ jobs:
           CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID || '61d1d46f-f438-47f5-9128-516d9beb11cb' }}
           DEALS_NICHE_ID: ${{ secrets.DEALS_NICHE_ID || '5cf8114c0bc3eb20c87ce3dcfc1ff185' }}
         run: |
-          # Continuous ultra-fast 5s scanner loop for 330 seconds (5.5 min) to seamlessly overlap with 5-min cron
-          python god_level_loot_engine.py --duration 330 --interval 5
+          # Continuous ultra-fast 5s scanner loop for 1 hour (3600s) of non-stop real-time loot catching
+          python god_level_loot_engine.py --duration 3600 --interval 5
