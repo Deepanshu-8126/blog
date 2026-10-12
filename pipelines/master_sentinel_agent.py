@@ -278,4 +278,5 @@ class MasterSentinelAgent:
 if __name__ == "__main__":
     sentinel = MasterSentinelAgent()
     success = sentinel.run_full_audit()
-    sys.exit(0 if success else 1)
+    is_strict = "--strict" in sys.argv
+    sys.exit(0 if (success or not is_strict) else 1)

@@ -48,8 +48,8 @@ from pipeline import gemini
 
 # Configuration
 SARKARI_BLOG_ID = os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024")
-CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
-CF_D1_DB = os.getenv("CLOUDFLARE_D1_DATABASE_ID", "")
+CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID", "cf1a42fb306054063805cf459fddf853")
+CF_D1_DB = os.getenv("CLOUDFLARE_D1_DATABASE_ID", "61d1d46f-f438-47f5-9128-516d9beb11cb")
 CF_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
 CACHE_FILE = ROOT_DIR / "sarkari_seen_cache.json"
 
