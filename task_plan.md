@@ -13,10 +13,11 @@
 
 ---
 
-## Phase 2: Newsroom UI & Navigation Modernization (Next)
-- [ ] **2.1** Rebuild `Header.astro` into a sleek, floating glass newsroom navbar (Bloomberg/The Verge aesthetic) with active category indicators, live breaking ticker, and search modal trigger.
-- [ ] **2.2** Modernize typography & color tokens in `src/styles/global.css` (Inter/Outfit, strict UI consistency lock).
-- [ ] **2.3** Upgrade `src/pages/index.astro` layout with a high-impact Lead Spotlight hero, 4-column editorial grid, and trending leaderboard.
+## Phase 2: Newsroom UI & Navigation Modernization (Completed ✅)
+- [x] **2.1** Rebuild `Header.astro` into a sleek, floating glass newsroom navbar (Bloomberg/The Verge aesthetic) with live telemetry pulse, active category indicators, search shortcut (Ctrl+K), and horizontal hub rail.
+- [x] **2.2** Modernize typography & color tokens in `src/styles/global.css` (Obsidian slate glassmorphism, zero purple app styling).
+- [x] **2.3** Upgrade `src/pages/index.astro` layout with a high-impact Lead Spotlight hero, 4-column editorial grid, and newsroom standby state.
+- [x] **2.4** Production build verified (0 errors) & deployed to Cloudflare Pages.
 
 ---
 
