@@ -340,7 +340,16 @@ def grok(prompt):
 
 
 # ---------- Sources ----------
-# ---------- Sources ----------
+def is_thumbnail(url: str | None) -> bool:
+    if not url or not isinstance(url, str):
+        return True
+    u_lower = url.lower()
+    return any(p in u_lower for p in [
+        "encrypted-tbn", "gstatic.com/images?q=tbn", "credit_card_chip",
+        "bcci_logo", "flag_of_india", "government_of_india_logo"
+    ])
+
+
 def fetch_google_trends_rss(geo=GEO):
     """
     Fetches real-time trending searches from the official Google Trends RSS feed for India.
@@ -379,7 +388,8 @@ def fetch_google_trends_rss(geo=GEO):
                     except Exception:
                         traffic_num = 100
 
-                pic_url = pic_elem.text if pic_elem is not None and pic_elem.text else None
+                pic_raw = pic_elem.text if pic_elem is not None and pic_elem.text else ""
+                pic_url = pic_raw if (pic_raw and not is_thumbnail(pic_raw)) else None
                 pic_source = pic_source_elem.text if pic_source_elem is not None and pic_source_elem.text else "Google Trends / Verified News"
 
                 news_title = ""
@@ -433,13 +443,18 @@ def get_trends(seeds=None):
     out = {}
     # 1. Fetch live rising trends from official Google Trends RSS
     for t in fetch_google_trends_rss(GEO)[:15]:
-        out[t["title"]] = t["score"]
+        out[t["title"]] = {
+            "score": t["score"],
+            "url": t.get("url"),
+            "facts": t.get("facts", ""),
+            "credit": t.get("credit", "Verified News")
+        }
     
     # 2. If seeds provided, augment with matching keyword variations
     if seeds:
         for s in seeds[:3]:
             if s not in out:
-                out[s] = 75
+                out[s] = {"score": 75, "url": f"https://news.google.com/search?q={urllib.parse.quote(s)}", "facts": "", "credit": "Google News"}
     return out
 
 
@@ -548,7 +563,11 @@ def rank(n, titles):
 def ai_topics(n):
     res = gemini(f"List 8 currently relevant, specific article topics for the niche '{n['name']}' "
                  f"for an Indian audience. JSON: {{\"topics\":[\"...\"]}}")
-    return {t: 50 for t in res.get("topics", [])}
+    if isinstance(res, list):
+        return {t: 50 for t in res if isinstance(t, str)}
+    if isinstance(res, dict):
+        return {t: 50 for t in res.get("topics", []) if isinstance(t, str)}
+    return {}
 
 
 # ---------- Real News Media & Aspect Ratio Extractor (Zero Local Fallbacks) ----------
@@ -721,24 +740,25 @@ def agent_alpha_check(candidate_title: str, candidate_slug: str, existing_titles
 def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", topic_query: str = "", article_url: str = "") -> tuple[str | None, str]:
     """
     Agent Gamma: Media & Real Link Guardian.
-    Validates image URL is a real https:// link. ZERO local JPG fallbacks allowed!
+    Validates image URL is a real https:// link. ZERO low-res scraps or local JPG fallbacks allowed!
     """
-    target = image_url
-    if not target and article_url:
-        target = extract_og_image(article_url)
+    target = None if is_thumbnail(image_url) else image_url
+
+    if not target and article_url and article_url.startswith("http") and "google.com" not in article_url:
+        og = extract_og_image(article_url)
+        if og and not is_thumbnail(og):
+            target = og
 
     if not target and topic_query:
         try:
             w = wiki(topic_query)
-            if w and w.get("image"):
+            if w and w.get("image") and not is_thumbnail(w["image"]):
                 target = w["image"]
         except Exception:
             pass
 
-    if target and isinstance(target, str) and target.startswith("http"):
-        # Disallow SVGs of flags or logos
-        if not any(bad in target.lower() for bad in ["bcci_logo", "flag_of_india", "government_of_india_logo", "credit_card_chip"]):
-            return target, "Verified Real Web Media"
+    if target and isinstance(target, str) and target.startswith("http") and not is_thumbnail(target):
+        return target, "Verified Real Web Media"
 
     return None, "No Real Media (Clean Gradient Card)"
 
@@ -817,8 +837,8 @@ def process_niche(n):
 
     cands = {}
     # 1. Fetch real-time trends & niche seed expansions
-    for q, v in get_trends(seeds).items():
-        cands[q] = {"score": v}
+    for q, data in get_trends(seeds).items():
+        cands[q] = data if isinstance(data, dict) else {"score": data}
 
     # If Movies niche, scan live Indian box office and theatrical releases
     if n.get("slug") == "movies":
@@ -860,21 +880,23 @@ def process_niche(n):
             print(f"[{n['slug']} Agent Alpha Filtered]: {t} -> {alpha_msg}")
             continue
 
-        facts, image, credit, src = c.get("facts", ""), c.get("image"), c.get("credit"), c.get("url")
-        if src and src.startswith("http"):
+        facts, raw_img, credit, src = c.get("facts", ""), c.get("image"), c.get("credit"), c.get("url")
+        image = None if is_thumbnail(raw_img) else raw_img
+
+        if src and src.startswith("http") and "google.com" not in src:
             scraped_niche = scrape_grounded_article(src)
             if scraped_niche.get("text"):
                 facts = scraped_niche["text"]
-            if scraped_niche.get("image"):
+            if scraped_niche.get("image") and not is_thumbnail(scraped_niche["image"]):
                 image = scraped_niche["image"]
                 credit = "Verified News Publisher"
 
         # Enrich facts and images with Wikipedia
-        if "wikipedia" in fetchers or not facts or not image:
+        if "wikipedia" in fetchers or not facts or not image or is_thumbnail(image):
             w = wiki(t)
             if w:
                 facts = (facts + "\n" + w["extract"]).strip()
-                if not image and w["image"]:
+                if (not image or is_thumbnail(image)) and w.get("image") and not is_thumbnail(w["image"]):
                     image, credit, src = w["image"], "Wikipedia / Wikimedia Commons", w["url"]
 
         # Agent Gamma Gate: Media & Aspect Ratio Guardian
@@ -966,7 +988,8 @@ def process_national_breaking_trends():
             continue
 
         facts = cand.get("facts", "")
-        image = cand.get("image")
+        raw_img = cand.get("image")
+        image = None if is_thumbnail(raw_img) else raw_img
         credit = cand.get("credit", "Google Trends / Verified News")
         src = cand.get("url")
 
@@ -974,29 +997,32 @@ def process_national_breaking_trends():
         # PRO ARCHITECTURE: SCRAPE FIRST -> EXTRACT REAL FACTS & IMAGE -> PHIR LLM
         # =========================================================================
         scraped = {"text": "", "image": None, "title": None}
-        if src and src.startswith("http"):
+        if src and src.startswith("http") and "google.com" not in src:
             scraped = scrape_grounded_article(src)
 
         # Merge real journalistic facts
         grounded_facts = scraped.get("text") or facts
         real_headline = scraped.get("title") or query
 
-        # Real news photo priority: Scraped og:image > RSS picture > Wikipedia entity
-        if scraped.get("image"):
+        # Real news photo priority: Scraped og:image > Wikipedia entity
+        if scraped.get("image") and not is_thumbnail(scraped["image"]):
             image = scraped["image"]
             credit = "Verified News Publisher"
-        elif not image and src and src.startswith("http"):
-            image = extract_og_image(src)
-            if image:
+        elif (not image or is_thumbnail(image)) and src and src.startswith("http") and "google.com" not in src:
+            og = extract_og_image(src)
+            if og and not is_thumbnail(og):
+                image = og
                 credit = "Verified News Publisher"
 
-        if not image:
+        if not image or is_thumbnail(image):
             w = wiki(query)
             if w:
                 if not grounded_facts or len(grounded_facts) < 100:
                     grounded_facts = (grounded_facts + "\n" + w.get("extract", "")).strip()
-                if w.get("image"):
+                if w.get("image") and not is_thumbnail(w["image"]):
                     image, credit, src = w["image"], "Wikimedia Commons", w["url"]
+                else:
+                    image = None
 
         # Agent Gamma Media Validator: Zero local JPG fallbacks!
         image, gamma_status = agent_gamma_verify_image(image, "", query, src or "")
@@ -1205,8 +1231,11 @@ def main():
     cleanup_old_data()
 
     # Phase 1: Universal Autonomous National Radar (Discovers any new viral gaming, news, exam, tech trend)
-    national_count = process_national_breaking_trends()
-    print(f"[Radar Complete] Published {national_count} breaking national articles.")
+    if not ONLY:
+        national_count = process_national_breaking_trends()
+        print(f"[Radar Complete] Published {national_count} breaking national articles.")
+    else:
+        national_count = 0
 
     # Phase 2: Seeded Specialized Niches
     niches = d1_query("SELECT * FROM niches WHERE active = 1 ORDER BY sort ASC")

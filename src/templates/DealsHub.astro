@@ -285,12 +285,20 @@ const STORES = [
 
                 <!-- Product Image -->
                 {resolvedImg ? (
-                  <img
-                    src={resolvedImg}
-                    alt={pr.name}
-                    loading="lazy"
-                    class="relative z-0 max-h-36 max-w-[85%] object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-sm"
-                  />
+                  <>
+                    <img
+                      src={resolvedImg}
+                      alt={pr.name}
+                      loading="lazy"
+                      decoding="async"
+                      referrerpolicy="no-referrer"
+                      class="relative z-0 max-h-36 max-w-[85%] object-contain group-hover:scale-105 transition-transform duration-300 drop-shadow-sm"
+                      onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('hidden');"
+                    />
+                    <div class="hidden w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
+                      <Icon name="tag" class="w-8 h-8" />
+                    </div>
+                  </>
                 ) : (
                   <div class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
                     <Icon name="tag" class="w-8 h-8" />

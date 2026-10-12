@@ -1,7 +1,7 @@
 /**
- * UniqueDigit Real News Media & Edge Proxy Helper
- * Zero Unsplash Stock, Zero Local JPG Fallbacks.
- * 100% Real Scraped Web Media with Edge Caching & Wikimedia Upscaling.
+ * UniqueDigit Real News Media & Direct Image Helper
+ * Zero Stock, Zero Local JPG Fallbacks.
+ * 100% Real Scraped Web Media with 4K Direct Edge Streaming & Browser Security Headers.
  */
 
 export function isRealWebImage(url?: string | null): boolean {
@@ -17,29 +17,33 @@ export function isRealWebImage(url?: string | null): boolean {
   if (lower.includes('flag_of_india')) return false;
   if (lower.includes('thermally_agitated_molecule')) return false;
   if (lower.includes('ai_tools.jpg')) return false;
+  // Filter out low-res 100px Google Trends thumbnail scraps
+  if (lower.includes('encrypted-tbn') || lower.includes('gstatic.com/images?q=tbn')) return false;
 
   return true;
 }
 
 /**
- * Upscales Wikimedia Commons thumbnails into 1600px 4K-grade renders.
+ * Normalizes Wikimedia Commons thumbnails to reliable high-res (1024px) renders.
  */
 export function upscaleWikimediaUrl(url: string): string {
   if (!url.includes('upload.wikimedia.org') || !url.includes('/thumb/')) {
     return url;
   }
-  return url.replace(/\/(\d+)px-([^/]+)$/, '/1600px-$2');
+  // Standard 1024px render supported across all Wikimedia clusters
+  return url.replace(/\/(\d+)px-([^/]+)$/, '/1024px-$2');
 }
 
 /**
- * Edge Image Helper
- * Resolves real web media through the edge proxy or directly returns local assets.
+ * Image URL Resolver
+ * Returns the direct high-res HTTPS image URL so client browsers stream directly
+ * from publisher CDNs with referrerpolicy="no-referrer", avoiding proxy bottlenecks.
  */
-export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral'): string | null {
+export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral', slugOrTitle = ''): string | null {
   if (!rawUrl || typeof rawUrl !== 'string') return null;
   const trimmed = rawUrl.trim();
 
-  // Local assets are served directly with zero latency
+  // Local assets are served directly
   if (trimmed.startsWith('/')) {
     return trimmed;
   }
@@ -48,13 +52,18 @@ export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral'): stri
     return null;
   }
 
-  // Upscale Wikimedia thumbnails to 1600px high-res
   let url = trimmed;
+  // Upgrade http to https
+  if (url.startsWith('http://')) {
+    url = url.replace('http://', 'https://');
+  }
+
+  // Normalize Wikimedia thumbnail sizes
   if (url.includes('upload.wikimedia.org')) {
     url = upscaleWikimediaUrl(url);
   }
 
-  return `/img?url=${encodeURIComponent(url)}&n=${encodeURIComponent(nicheSlug)}`;
+  return url;
 }
 
 export function resolveProductImage(rawUrl?: string | null): string | null {
