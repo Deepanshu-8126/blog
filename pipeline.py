@@ -532,15 +532,17 @@ def get_trends(seeds=None, niche_slug=None):
                 "credit": t.get("credit", "Google News")
             }
 
-    # 2. Fetch live rising trends from official Google Trends RSS
-    for t in fetch_google_trends_rss(GEO)[:15]:
-        if t["title"] not in out:
-            out[t["title"]] = {
-                "score": t["score"],
-                "url": t.get("url"),
-                "facts": t.get("facts", ""),
-                "credit": t.get("credit", "Verified News")
-            }
+    # 2. Fetch live rising trends from official Google Trends RSS ONLY for viral/general radar
+    # or if the trend actually relates to the specific niche!
+    if not niche_slug or niche_slug in ["viral", "trending"]:
+        for t in fetch_google_trends_rss(GEO)[:15]:
+            if t["title"] not in out:
+                out[t["title"]] = {
+                    "score": t["score"],
+                    "url": t.get("url"),
+                    "facts": t.get("facts", ""),
+                    "credit": t.get("credit", "Verified News")
+                }
     
     # 3. If seeds provided, augment with matching keyword variations
     if seeds:
