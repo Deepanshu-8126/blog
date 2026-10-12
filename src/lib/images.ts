@@ -33,20 +33,36 @@ export function upscaleWikimediaUrl(url: string): string {
 
 /**
  * Edge Image Helper
- * Resolves real web media through the edge proxy.
- * Returns null if no real web media exists, allowing the UI to render an authentic CSS gradient card.
+ * Resolves real web media through the edge proxy or directly returns local assets.
  */
 export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral'): string | null {
-  if (!isRealWebImage(rawUrl)) {
+  if (!rawUrl || typeof rawUrl !== 'string') return null;
+  const trimmed = rawUrl.trim();
+
+  // Local assets are served directly with zero latency
+  if (trimmed.startsWith('/')) {
+    return trimmed;
+  }
+
+  if (!isRealWebImage(trimmed)) {
     return null;
   }
 
-  let trimmed = rawUrl!.trim();
-
   // Upscale Wikimedia thumbnails to 1600px high-res
-  if (trimmed.includes('upload.wikimedia.org')) {
-    trimmed = upscaleWikimediaUrl(trimmed);
+  let url = trimmed;
+  if (url.includes('upload.wikimedia.org')) {
+    url = upscaleWikimediaUrl(url);
   }
 
-  return `/img?url=${encodeURIComponent(trimmed)}&n=${encodeURIComponent(nicheSlug)}`;
+  return `/img?url=${encodeURIComponent(url)}&n=${encodeURIComponent(nicheSlug)}`;
+}
+
+export function resolveProductImage(rawUrl?: string | null): string | null {
+  if (!rawUrl || typeof rawUrl !== 'string') return null;
+  const trimmed = rawUrl.trim();
+  if (trimmed.startsWith('/')) return trimmed;
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return proxyImageUrl(trimmed, 'deals');
+  }
+  return null;
 }
