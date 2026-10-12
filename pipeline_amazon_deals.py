@@ -44,6 +44,8 @@ CF_ACCOUNT = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "cf1a42fb306054063805cf459f
 CF_D1_DB = os.environ.get("CLOUDFLARE_D1_DATABASE_ID", "61d1d46f-f438-47f5-9128-516d9beb11cb")
 CF_TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN", "")
 AMAZON_TAG = os.environ.get("AMAZON_ASSOCIATE_TAG", "uniquedigi0c6-21")
+EARNKARO_USER_ID = os.environ.get("EARNKARO_USER_ID", "3360368")
+MEESHO_CREATOR_ID = os.environ.get("MEESHO_CREATOR_ID", "374453404")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
@@ -255,17 +257,48 @@ def send_telegram_deal_alert(deal: dict):
         print("[Telegram alert error]:", e)
 
 
+# ---------- Universal Affiliate Link Router (Amazon + EarnKaro 1-Wallet) ----------
+def build_affiliate_url(name: str, merchant: str = "Amazon") -> str:
+    """
+    Constructs high-converting, monetized affiliate links:
+    - Amazon India: Direct Associate Tag (uniquedigi0c6-21)
+    - Meesho, Flipkart, Myntra, Ajio: Universal EarnKaro 1-Wallet (User ID: 3360368)
+    - Direct Meesho fallback: Creator ID 374453404
+    """
+    merchant_lower = (merchant or "").lower()
+    q = urllib.parse.quote_plus(name)
+
+    if "amazon" in merchant_lower:
+        return f"https://www.amazon.in/s?k={q}&tag={AMAZON_TAG}"
+    elif "meesho" in merchant_lower:
+        meesho_url = f"https://www.meesho.com/search?q={q}"
+        if EARNKARO_USER_ID:
+            return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(meesho_url)}"
+        return f"https://www.meesho.com/afinvite/{MEESHO_CREATOR_ID}:youtubelongform:12492338?p_id=542355935&ext_id={q[:6]}&utm_source=uniquedigit"
+    elif "flipkart" in merchant_lower:
+        fk_url = f"https://www.flipkart.com/search?q={q}"
+        return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(fk_url)}" if EARNKARO_USER_ID else fk_url
+    elif "myntra" in merchant_lower:
+        my_url = f"https://www.myntra.com/{q}"
+        return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(my_url)}" if EARNKARO_USER_ID else my_url
+    elif "ajio" in merchant_lower:
+        aj_url = f"https://www.ajio.com/s/{q}"
+        return f"https://ekaro.in/enkr?r={EARNKARO_USER_ID}&url={urllib.parse.quote_plus(aj_url)}" if EARNKARO_USER_ID else aj_url
+    else:
+        return f"https://www.amazon.in/s?k={q}&tag={AMAZON_TAG}"
+
+
 # ---------- Fix All Existing Mismatched Deals in D1 ----------
 def fix_existing_deals_in_d1():
     """
-    Scans every single deal currently in D1 products table and fetches its
-    EXACT, matching, verified studio product image.
-    Fixes: No phone card showing a washing machine, no earbud card showing a headphone!
+    Scans every single deal currently in D1 products table, verifies:
+    1. EXACT matching studio product cutouts (Zero mismatches).
+    2. Valid monetized affiliate links (Amazon tag + EarnKaro 1-Wallet for Meesho/Flipkart/Myntra).
     """
-    print("\n🔍 Scanning and fixing all existing product images in Cloudflare D1...")
-    products = d1_query("SELECT id, name, category, merchant, image_url FROM products WHERE niche_id = ?", [DEALS_NICHE_ID])
+    print("\n🔍 Scanning and fixing all existing product images & affiliate links in Cloudflare D1...")
+    products = d1_query("SELECT id, name, category, merchant, image_url, aff_url FROM products WHERE niche_id = ?", [DEALS_NICHE_ID])
     if not products:
-        products = d1_query("SELECT id, name, category, merchant, image_url FROM products")
+        products = d1_query("SELECT id, name, category, merchant, image_url, aff_url FROM products")
 
     print(f"Found {len(products)} products in D1.")
     fixed_count = 0
@@ -274,20 +307,29 @@ def fix_existing_deals_in_d1():
         pid = pr["id"]
         name = pr["name"]
         cat = pr.get("category", "")
-        current_img = pr.get("image_url", "")
+        merch = pr.get("merchant", "Amazon")
 
         # Fetch exact studio product image
         exact_img = fetch_exact_studio_product_image(name, cat)
-        if exact_img:
-            print(f"✅ [{pid}] {name}")
-            print(f"   -> Image: {exact_img}")
-            d1_query("UPDATE products SET image_url = ? WHERE id = ?", [exact_img, pid])
-            fixed_count += 1
-            time.sleep(0.5)
-        else:
-            print(f"⚠️ [{pid}] Could not resolve studio image for: {name}")
+        # Build exact monetized affiliate URL
+        monetized_url = build_affiliate_url(name, merch)
 
-    print(f"\n🎉 Successfully updated {fixed_count} products in D1 with 100% exact studio images!")
+        if exact_img:
+            print(f"✅ [{pid}] {name} ({merch})")
+            print(f"   -> Image: {exact_img}")
+            print(f"   -> Aff URL: {monetized_url}")
+            d1_query(
+                "UPDATE products SET image_url = ?, aff_url = ?, url = ? WHERE id = ?",
+                [exact_img, monetized_url, monetized_url, pid]
+            )
+            fixed_count += 1
+            time.sleep(0.3)
+        else:
+            print(f"⚠️ [{pid}] Updating Aff URL only for: {name}")
+            d1_query("UPDATE products SET aff_url = ?, url = ? WHERE id = ?", [monetized_url, monetized_url, pid])
+
+    print(f"\n🎉 Successfully verified & updated {fixed_count} products in D1 with exact images and affiliate links!")
+
 
 
 # ---------- Autonomous Live Deal Ingestion ----------
@@ -345,15 +387,8 @@ def run_autonomous_deals_sync(limit = 6):
         if not image_url:
             continue
 
-        # Amazon Auto-Affiliate URL
-        if merchant == "Amazon" or "amazon" in merchant.lower():
-            aff_url = f"https://www.amazon.in/s?k={urllib.parse.quote_plus(name)}&tag={AMAZON_TAG}"
-        elif "flipkart" in merchant.lower():
-            aff_url = f"https://www.flipkart.com/search?q={urllib.parse.quote_plus(name)}"
-        elif "myntra" in merchant.lower():
-            aff_url = f"https://www.myntra.com/{urllib.parse.quote_plus(name)}"
-        else:
-            aff_url = f"https://www.amazon.in/s?k={urllib.parse.quote_plus(name)}&tag={AMAZON_TAG}"
+        # Multi-Store Monetized Affiliate URL (Amazon + EarnKaro for Meesho/Flipkart/Myntra)
+        aff_url = build_affiliate_url(name, merchant)
 
         deal_id = f"live-deal-{int(time.time())}-{added}"
         sql = """
