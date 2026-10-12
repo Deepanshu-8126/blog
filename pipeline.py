@@ -24,6 +24,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import requests
+import trafilatura
 
 DRY = "--dry" in sys.argv
 ONLY = sys.argv[sys.argv.index("--niche") + 1] if "--niche" in sys.argv else None
@@ -637,6 +638,86 @@ def get_real_image(article_url: str = "", rss_xml: str = "", niche_slug: str = "
     return None
 
 
+def scrape_grounded_article(url: str, timeout: int = 10) -> dict:
+    """
+    Advanced Multi-Source Scraper Engine:
+    Pehle source news article se real factual journalistic text aur high-res 1200x630 og:image extract karta hai.
+    Feeds real verified facts into LLM prompt before writing to eliminate hallucinations.
+    """
+    if not url or not url.startswith("http"):
+        return {"text": "", "image": None, "title": None}
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9,hi;q=0.8"
+    }
+    try:
+        resp = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True)
+        if resp.status_code != 200:
+            return {"text": "", "image": None, "title": None}
+
+        # 1. Real og:image extraction
+        img = None
+        m = re.search(r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', resp.text, re.IGNORECASE)
+        if not m:
+            m = re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\']og:image["\']', resp.text, re.IGNORECASE)
+        if m:
+            c_img = m.group(1).strip()
+            if c_img.startswith("https://") and not any(bad in c_img.lower() for bad in ["logo", "favicon", "avatar", "default_share", "app_icon"]):
+                img = c_img
+
+        # Fallback to twitter:image
+        if not img:
+            m_tw = re.search(r'<meta[^>]+(?:property|name)=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']', resp.text, re.IGNORECASE)
+            if m_tw:
+                c_img = m_tw.group(1).strip()
+                if c_img.startswith("https://") and not any(bad in c_img.lower() for bad in ["logo", "favicon", "avatar"]):
+                    img = c_img
+
+        # 2. Extract grounded journalistic article text via trafilatura
+        doc = trafilatura.bare_extraction(resp.text)
+        art_text = doc.text if doc and doc.text else ""
+        art_title = doc.title if doc and doc.title else ""
+        if not img and doc and doc.image and doc.image.startswith("https://"):
+            img = doc.image
+
+        return {
+            "text": art_text,
+            "image": img,
+            "title": art_title
+        }
+    except Exception:
+        return {"text": "", "image": None, "title": None}
+
+
+def agent_alpha_check(candidate_title: str, candidate_slug: str, existing_titles: list) -> tuple[bool, str]:
+    """
+    Agent Alpha: Semantic & Title De-duplication Gate.
+    Ensures no duplicate or near-identical topics are published.
+    """
+    if not candidate_title:
+        return False, "Empty candidate title"
+
+    clean_cand = re.sub(r'[^a-zA-Z0-9\s]', '', candidate_title.lower()).strip()
+    cand_words = set(w for w in clean_cand.split() if len(w) >= 4)
+
+    for ex in existing_titles:
+        if not ex:
+            continue
+        clean_ex = re.sub(r'[^a-zA-Z0-9\s]', '', ex.lower()).strip()
+        if clean_cand == clean_ex:
+            return False, f"Exact match with '{ex}'"
+
+        ex_words = set(w for w in clean_ex.split() if len(w) >= 4)
+        if cand_words and ex_words:
+            overlap = cand_words.intersection(ex_words)
+            if len(overlap) >= 3 and len(overlap) / max(len(cand_words), len(ex_words)) > 0.7:
+                return False, f"High semantic similarity with '{ex}'"
+
+    return True, "Unique topic verified"
+
+
 def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", topic_query: str = "", article_url: str = "") -> tuple[str | None, str]:
     """
     Agent Gamma: Media & Real Link Guardian.
@@ -780,6 +861,14 @@ def process_niche(n):
             continue
 
         facts, image, credit, src = c.get("facts", ""), c.get("image"), c.get("credit"), c.get("url")
+        if src and src.startswith("http"):
+            scraped_niche = scrape_grounded_article(src)
+            if scraped_niche.get("text"):
+                facts = scraped_niche["text"]
+            if scraped_niche.get("image"):
+                image = scraped_niche["image"]
+                credit = "Verified News Publisher"
+
         # Enrich facts and images with Wikipedia
         if "wikipedia" in fetchers or not facts or not image:
             w = wiki(t)
@@ -789,7 +878,7 @@ def process_niche(n):
                     image, credit, src = w["image"], "Wikipedia / Wikimedia Commons", w["url"]
 
         # Agent Gamma Gate: Media & Aspect Ratio Guardian
-        image, gamma_status = agent_gamma_verify_image(image, n["slug"], t)
+        image, gamma_status = agent_gamma_verify_image(image, n["slug"], t, src or "")
 
         try:
             a = write_article(n, t, pick.get("angle", ""), facts, c["score"])
@@ -881,18 +970,55 @@ def process_national_breaking_trends():
         credit = cand.get("credit", "Google Trends / Verified News")
         src = cand.get("url")
 
+        # =========================================================================
+        # PRO ARCHITECTURE: SCRAPE FIRST -> EXTRACT REAL FACTS & IMAGE -> PHIR LLM
+        # =========================================================================
+        scraped = {"text": "", "image": None, "title": None}
+        if src and src.startswith("http"):
+            scraped = scrape_grounded_article(src)
+
+        # Merge real journalistic facts
+        grounded_facts = scraped.get("text") or facts
+        real_headline = scraped.get("title") or query
+
+        # Real news photo priority: Scraped og:image > RSS picture > Wikipedia entity
+        if scraped.get("image"):
+            image = scraped["image"]
+            credit = "Verified News Publisher"
+        elif not image and src and src.startswith("http"):
+            image = extract_og_image(src)
+            if image:
+                credit = "Verified News Publisher"
+
+        if not image:
+            w = wiki(query)
+            if w:
+                if not grounded_facts or len(grounded_facts) < 100:
+                    grounded_facts = (grounded_facts + "\n" + w.get("extract", "")).strip()
+                if w.get("image"):
+                    image, credit, src = w["image"], "Wikimedia Commons", w["url"]
+
+        # Agent Gamma Media Validator: Zero local JPG fallbacks!
+        image, gamma_status = agent_gamma_verify_image(image, "", query, src or "")
+
         prompt = f"""You are the Chief Editorial AI for UniqueDigit India.
 Breaking Search Trend in India: "{query}"
-Verified Context: {facts or 'Current top trending interest in India.'}
+Verified Source Headline: "{real_headline}"
 
-EDITORIAL GUIDELINES:
-1. Categorize this trend into a suitable category: "cricket-sports", "movies", "exams-results", "gaming", "tech-reviews", "deals", "health", "finance", or "viral".
+100% VERIFIED PRIMARY FACTS (Extracted directly from source reporting):
+\"\"\"
+{grounded_facts[:3000] if grounded_facts else 'Topic buzzing across India. Focus on core user intent and verified aspects.'}
+\"\"\"
+
+STRICT EDITORIAL GROUNDING GUIDELINES:
+1. Ground your article 100% in the real facts provided above. NEVER hallucinate fake numbers or unverified claims.
+2. STRICT RULE: DO NOT force unrelated hybrid angles (NEVER convert a cricket match, weather event, gadget, or movie into a student study/exam time management guide!). Stay 100% focused on what the user searched for.
+3. Categorize this trend into a suitable category: "cricket-sports", "movies", "exams-results", "gaming", "tech-reviews", "deals", "health", "finance", or "viral".
    - If topic mentions cricket, sports, teams, scores, or matches -> MUST be "cricket-sports".
    - If topic mentions movies, actors, trailers, box office -> MUST be "movies".
    - If topic mentions official exams, CBSE, UPSC, SSC, NEET, JEE, sarkari result, admit card -> MUST be "exams-results".
-2. STRICT RULE: DO NOT force unrelated hybrid angles (NEVER convert a cricket match or movie into an exam prep or student time management guide). Stay 100% focused on what the user searched for.
-3. Write a highly engaging, humanized, fact-grounded article (450-600 words) tailored to why Indian users are searching for "{query}" right now.
-4. Include FAQ schema and tags.
+4. Write a highly engaging, humanized, fact-grounded article (450-600 words) tailored to why Indian users are searching for "{query}" right now.
+5. Include FAQ schema and tags.
 
 Return strict JSON:
 {{
@@ -954,22 +1080,6 @@ Return strict JSON:
         # Get the actual niche_id in case it existed
         niche_record = d1_query("SELECT id FROM niches WHERE slug = ?", [n_slug])
         actual_niche_id = niche_record[0]["id"] if niche_record else niche_id
-
-        # 2. Real News Image Extraction (RSS -> og:image -> Wikipedia entity)
-        if not image and src and src.startswith("http"):
-            image = extract_og_image(src)
-            if image:
-                credit = "Verified News Publisher"
-
-        if not image:
-            w = wiki(query)
-            if w:
-                facts = (facts + "\n" + w.get("extract", "")).strip()
-                if w.get("image"):
-                    image, credit, src = w["image"], "Wikimedia Commons", w["url"]
-
-        # Agent Gamma Gate: Media Validator (ZERO local JPG fallbacks!)
-        image, gamma_status = agent_gamma_verify_image(image, n_slug, query, src or "")
 
         topic_id = str(uuid.uuid4())
         topic_slug = slugify(query)
