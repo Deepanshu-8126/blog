@@ -28,3 +28,6 @@ scratch/
 *.log
 *.cache.json
 sent_loot_cache.json
+bridges/whatsapp_bridge/auth_info/
+auth_info/
+sent_whatsapp_cache.json
