@@ -30,6 +30,32 @@ const hasAdSense = Boolean(adClient && adSlot);
       (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
   </div>
+) : position === 'sidebar' ? (
+  <div class:list={["w-full my-4 rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 text-white p-5 border border-indigo-700/50 shadow-md relative overflow-hidden", className]} data-ad-position={position}>
+    <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-brand/30 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="relative z-10">
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <span class="text-[10px] font-black uppercase tracking-wider text-amber-300 bg-amber-400/20 px-2.5 py-1 rounded-full font-mono border border-amber-400/30">
+          💎 Zero Annual Fee
+        </span>
+        <span class="text-[10px] text-slate-400 font-mono">RBI Regulated</span>
+      </div>
+      <h4 class="text-sm font-black text-white leading-snug mb-2">
+        Lifetime FREE 5% Cashback Credit Cards
+      </h4>
+      <p class="text-xs text-slate-300 leading-relaxed mb-4">
+        Unlimited 5% cashback on Amazon &amp; online orders with ₹1,500 welcome reward balance.
+      </p>
+      <a
+        href="https://www.amazon.in/s?k=amazon+pay+icici+credit+card&tag=uniquedigi0c6-21"
+        target="_blank"
+        rel="sponsored nofollow noopener"
+        class="block text-center py-2.5 px-4 rounded-xl bg-cta hover:bg-amber-400 text-cta-ink font-black text-xs transition shadow-xs cursor-pointer"
+      >
+        Check Free Eligibility &rarr;
+      </a>
+    </div>
+  </div>
 ) : (
   <div class:list={["w-full my-6 rounded-2xl bg-gradient-to-r from-amber-500/10 via-brand-soft/40 to-amber-500/10 border border-amber-200/60 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs", className]} data-ad-position={position}>
     <div class="flex items-center gap-3">
@@ -39,12 +65,14 @@ const hasAdSense = Boolean(adClient && adSlot);
       <div>
         <div class="flex items-center gap-2 mb-0.5">
           <span class="text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full font-mono">
-            Today&apos;s Top Loot
+            {position === 'top' ? 'Trending Flash Loot' : "Today's Top Loot"}
           </span>
           <span class="text-xs text-muted hidden sm:inline">&bull; Live Discount Radar</span>
         </div>
         <h4 class="text-sm font-extrabold text-ink leading-tight">
-          Up to 60% Off on Top PC Hardware, Laptops &amp; Audio Deals
+          {position === 'top' 
+            ? 'Amazon Lightning Deals: Electronics, Laptops & Smart Gadgets Under ₹9,999'
+            : 'Up to 60% Off on Top PC Hardware, Laptops & Audio Deals'}
         </h4>
       </div>
     </div>

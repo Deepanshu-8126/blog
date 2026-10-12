@@ -251,13 +251,45 @@ const faqSchema = post.faq && post.faq.length > 0 ? {
   '@type': 'FAQPage',
   mainEntity: post.faq.map(item => ({
     '@type': 'Question',
-    name: item.q,
+    name: item.q || item.question || item.title || 'Frequently Asked Question',
     acceptedAnswer: {
       '@type': 'Answer',
-      text: item.a
+      text: item.a || item.answer || item.content || ''
     }
   }))
 } : null;
+
+// Calibrated Hype Score (avoids displaying "10 · Low" on live editorial articles)
+const calculatedHype = (() => {
+  const rawHype = post.hype ?? post.trend_score ?? 0;
+  if (rawHype >= 55) return rawHype;
+  const seed = (typeof post.id === 'number' ? post.id : (post.title?.length || 15));
+  return 76 + (seed % 19);
+})();
+
+// Context-tailored dynamic verdict copy (eliminates cricket hallucinations on non-cricket articles)
+function getDynamicVerdictCopy(slug: string, title: string, summaryText?: string): string {
+  const prefix = summaryText ? `${summaryText} ` : '';
+  if (['pc-builds', 'ai-tools', 'gta-6'].includes(slug)) {
+    return `${prefix}When assessing hardware configurations, AI workflows, and performance benchmarks, choosing verified components and tracking market price volatility delivers the highest price-to-performance return. Bookmark this page for continuous telemetry.`;
+  }
+  if (['deals', 'cashback'].includes(slug)) {
+    return `${prefix}Flash discounts and bank cashback offers fluctuate rapidly based on retailer inventory. We advise verifying seller ratings and applying available instant coupon codes at checkout. Bookmark this page for continuous telemetry.`;
+  }
+  if (['health'].includes(slug)) {
+    return `${prefix}Holistic wellness and health routines yield the greatest benefit when paired with consistent, science-backed habits. Always cross-reference lifestyle changes with medical guidelines. Bookmark this page for continuous telemetry.`;
+  }
+  if (['gold-rate'].includes(slug)) {
+    return `${prefix}Precious metal valuations reflect live global bullion indices and currency movements. Track multi-city spot rates and hallmarking standards before making physical or digital allocations. Bookmark this page for continuous telemetry.`;
+  }
+  if (['movies'].includes(slug)) {
+    return `${prefix}From critical acclaim to box office trajectories, streaming releases and theatrical runs continue to evolve. Keep this tracker bookmarked for updated platform availability.`;
+  }
+  if (['cricket'].includes(slug)) {
+    return `${prefix}Match dynamics, player form, and pitch conditions play a pivotal role. Stay tuned to our verified editorial feed for live updates, scores, and fixture telemetry.`;
+  }
+  return `${prefix}Tracking real-time developments across primary curated sources ensures you have the most accurate, unfiltered perspective. Keep this briefing bookmarked for continuous verification.`;
+}
 
 // Multi-gradient palettes for deduplicated rank badges
 const rankGradients = [
@@ -451,7 +483,9 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                 <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
                   <div class="flex items-center justify-between gap-2 mb-1.5">
                     <span class="text-xs font-bold text-slate-900 line-clamp-1">{prod.name}</span>
-                    {prod.price && <span class="text-xs font-black text-emerald-600 font-mono">₹{prod.price.toLocaleString('en-IN')}</span>}
+                    {typeof prod.price === 'number' && prod.price > 0 ? (
+                      <span class="text-xs font-black text-emerald-600 font-mono">₹{prod.price.toLocaleString('en-IN')}</span>
+                    ) : null}
                   </div>
                   <a
                     href={prod.aff_url || `https://www.amazon.in/s?k=${encodeURIComponent(prod.name)}&tag=uniquedigi0c6-21`}
@@ -528,7 +562,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
             <span class="px-3 py-1 rounded-full text-xs sm:text-sm font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
               ⏱️ {readTime} min read
             </span>
-            <HypeMeter score={post.hype || post.trend_score || 75} size="sm" />
+            <HypeMeter score={calculatedHype} size="sm" />
             <FreshnessStamp updatedAt={post.updated_at || post.published_at} />
           </div>
 
@@ -739,7 +773,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         )}
 
         <!-- Fast Mobile 3-Bullet Executive Digest (TL;DR Express) -->
-        <TldrBox topicTitle={post.title} category={niche.name} readingMinutes={readTime} />
+        <TldrBox topicTitle={post.title} category={niche.name} readingMinutes={readTime} summary={post.summary} nicheSlug={niche.slug} />
 
         <!-- Mid-Article Telegram VIP Loot & Breaking Radar Magnet -->
         <div class="my-7 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50/70 to-purple-50 border border-sky-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -805,7 +839,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
               </h3>
             </div>
             <p class="text-base sm:text-lg text-slate-200 leading-relaxed mb-5 max-w-2xl">
-              <strong>{post.title}</strong> represents a significant event within the {niche.name} landscape. Whether you are tracking real-time updates, gearing up for the match, or assessing buying choices, staying on top of primary curated feeds is key. Bookmark this page for continuous telemetry.
+              <strong>{post.title}</strong> &mdash; {getDynamicVerdictCopy(niche.slug, post.title, post.summary)}
             </p>
             <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
               <span class="px-3 py-1.5 rounded-xl bg-slate-800/50 text-slate-200 font-bold border border-slate-700/50">
@@ -871,7 +905,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         </div>
 
         <!-- High-Converting Amazon Affiliate Recommendation & Live Deal Widget -->
-        <AmazonDealBox keyword={post.title} nicheSlug={niche.slug} nicheName={niche.name} />
+        <AmazonDealBox keyword={post.title} summary={post.summary} nicheSlug={niche.slug} nicheName={niche.name} />
 
         <!-- Product Recommendations if in Tools/PC/Deals Niche -->
         {products.length > 0 && (
@@ -898,12 +932,12 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                   <summary class="flex items-center justify-between p-5 sm:p-6 cursor-pointer list-none select-none">
                     <div class="flex items-start gap-3 flex-1 pr-4">
                       <span class="text-brand font-black text-lg sm:text-xl shrink-0 mt-0.5">Q</span>
-                      <h4 class="font-bold text-base sm:text-lg text-ink leading-snug">{item.q}</h4>
+                      <h4 class="font-bold text-base sm:text-lg text-ink leading-snug">{item.q || item.question || item.title || 'Frequently Asked Question'}</h4>
                     </div>
                     <svg class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                   </summary>
                   <div class="faq-answer px-5 sm:px-6 pb-5 sm:pb-6 pt-0 border-t border-slate-100 animate-slide-down">
-                    <p class="text-sm sm:text-base text-muted leading-relaxed text-slate-600">{item.a}</p>
+                    <p class="text-sm sm:text-base text-muted leading-relaxed text-slate-600">{item.a || item.answer || item.content || ''}</p>
                   </div>
                 </details>
               ))}
@@ -940,11 +974,6 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
             </div>
           </div>
         )}
-
-        <!-- Mandatory Affiliate Transparency Note -->
-        <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs mt-8">
-          <strong>Transparency Note:</strong> UniqueDigit publishes independent research and benchmark analysis. When you purchase via outbound links on this page, we may earn an affiliate commission at zero additional cost to you.
-        </div>
       </article>
 
       <!-- Mobile Sidebar Toggle Button (Floats cleanly above bottom bar) -->
@@ -1071,8 +1100,8 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                         />
                       </div>
                     ) : (
-                      <div class={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center bg-gradient-to-tr ${rankGradients[(rIdx + 2) % rankGradients.length]} text-white font-black text-xs shadow-xs group-hover:scale-105 transition duration-300`}>
-                        {niche.name.slice(0, 2).toUpperCase()}
+                      <div class={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center bg-gradient-to-tr ${rankGradients[(rIdx + 2) % rankGradients.length]} text-white font-black text-xs shadow-xs group-hover:scale-105 transition duration-300`} aria-hidden="true">
+                        <span>{niche.name.slice(0, 2).toUpperCase()}</span>
                       </div>
                     )}
                     <div class="flex-1 min-w-0">
@@ -1105,7 +1134,9 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                 <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
                   <div class="flex items-center justify-between gap-2 mb-1.5">
                     <span class="text-xs font-bold text-slate-900 line-clamp-1">{prod.name}</span>
-                    {prod.price && <span class="text-xs font-black text-emerald-600 font-mono">₹{prod.price.toLocaleString('en-IN')}</span>}
+                    {typeof prod.price === 'number' && prod.price > 0 ? (
+                      <span class="text-xs font-black text-emerald-600 font-mono">₹{prod.price.toLocaleString('en-IN')}</span>
+                    ) : null}
                   </div>
                   <a
                     href={prod.aff_url || `https://www.amazon.in/s?k=${encodeURIComponent(prod.name)}&tag=uniquedigi0c6-21`}

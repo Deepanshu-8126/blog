@@ -23,6 +23,17 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
   // Deals & Quick Commerce (Blinkit / Zepto / Amazon)
   'deals': [
     {
+      title: 'Amazon Lightning Deals: Electronics, Laptops & Smart Gadgets Under ₹9,999',
+      category: 'Electronics Loot',
+      badge: '🔥 60% OFF',
+      discount: 'Additional Bank Discount',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=lightning+deals+electronics&tag=${AMAZON_TAG}`,
+      icon: 'sparkles',
+      priceNote: 'Limited Stock Offers',
+      trustTag: 'Prime Fast Delivery'
+    },
+    {
       title: 'Quick Commerce Flash Deals: Blinkit & Zepto 10-Minute Grocery & Tech Loot',
       category: '10-Min Flash Delivery',
       badge: '⚡ Flat 50% Off Code',
@@ -32,19 +43,35 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       icon: 'tag',
       priceNote: 'Live in Top 20 Indian Cities',
       trustTag: 'Live Today'
-    },
-    {
-      title: 'Amazon Lightning Deals: Electronics, Laptops & Smartphones Under ₹9,999',
-      category: 'Electronics Loot',
-      badge: '🔥 60% OFF',
-      discount: 'Additional Bank Discount',
-      merchant: 'Amazon',
-      affUrl: `https://www.amazon.in/s?k=lightning+deals+electronics&tag=${AMAZON_TAG}`,
-      icon: 'sparkles',
-      priceNote: 'Limited Stock Offers',
-      trustTag: 'Prime Fast Delivery'
     }
   ],
+
+  // Viral & General News
+  'viral': [
+    {
+      title: 'Trending Smart Home Appliances: Inverter ACs, Air Purifiers & Climate Gear',
+      category: 'Home & Climate Gear',
+      badge: '⚡ Up to 50% Off',
+      discount: 'Exchange Bonus + Bank Discount',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=inverter+ac+air+purifier&tag=${AMAZON_TAG}`,
+      icon: 'sparkles',
+      priceNote: 'Top Rated Inverter Models',
+      trustTag: 'Brand Indian Warranty'
+    },
+    {
+      title: 'High-Capacity 20,000mAh Power Banks & 65W GaN Fast Chargers',
+      category: 'Everyday Tech Essentials',
+      badge: '🔥 Under ₹1,499 Loot',
+      discount: 'Flat 55% Off',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=power+bank+20000mah+fast+charging&tag=${AMAZON_TAG}`,
+      icon: 'tag',
+      priceNote: 'Safe Multi-Device Fast Charge',
+      trustTag: 'Amazon Choice'
+    }
+  ],
+
   // 1. Gaming / GTA 6 / PC Builds
   'gta-6': [
     {
@@ -70,6 +97,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       trustTag: '100% Genuine Warranty'
     }
   ],
+
   'pc-builds': [
     {
       title: 'NVIDIA RTX 4060 / 4070 & AMD GPUs Live Price Drops',
@@ -95,7 +123,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
     }
   ],
 
-  // 2. Health & Ayurveda
+  // 2. Health & Wellness
   'health': [
     {
       title: '100% Whey Protein Isolate & Plant Protein Blends',
@@ -109,15 +137,15 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       trustTag: 'Direct Brand Fulfilled'
     },
     {
-      title: 'Breathable Gym Wear, Dry-Fit Tees & Trackpants',
-      category: 'Activewear Loot',
-      badge: '🔥 Under ₹499',
-      discount: 'Buy 2 Get Extra 15%',
-      merchant: 'Myntra / Ajio',
-      affUrl: `https://www.amazon.in/s?k=gym+wear+men+women+dry+fit&tag=${AMAZON_TAG}`,
-      icon: 'shirt',
-      priceNote: 'EarnKaro / Amazon Deal',
-      trustTag: 'Easy 7-Day Return'
+      title: 'Smart Fitness Trackers, Heart Rate & SpO2 Smartwatches',
+      category: 'Health Tech',
+      badge: '⚡ Under ₹1,999',
+      discount: 'Up to 65% Off',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=smartwatch+fitness+tracker+spo2&tag=${AMAZON_TAG}`,
+      icon: 'sparkles',
+      priceNote: 'Precise Sleep & Step Count',
+      trustTag: 'Official Warranty'
     }
   ],
 
@@ -173,7 +201,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
     }
   ],
 
-  // 5. Fashion & Sneakers Loot (Myntra / Ajio / EarnKaro)
+  // 5. Fashion & Sneakers Loot
   'fashion': [
     {
       title: 'Branded Casual Sneakers & Streetwear (Puma, Red Tape, Nike)',
@@ -199,7 +227,7 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
     }
   ],
 
-  // 6. Cashback & Banking / Credit Cards (Highest Payouts)
+  // 6. Cashback & Banking / Credit Cards
   'cashback': [
     {
       title: 'Lifetime FREE Cashback Credit Cards (5% Unlimited Online Cashback)',
@@ -225,33 +253,33 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
     }
   ],
 
-  // 7. AI Tools & Learning (Courses, SaaS)
+  // 7. AI Tools & Learning
   'ai-tools': [
     {
-      title: 'High-Performance Laptops for AI Coding & Prompt Engineering',
+      title: 'High-Performance Laptops for AI Coding & Workstations',
       category: 'Workstation Laptops',
       badge: '⚡ Intel Core i7 / M3 Deals',
       discount: 'Up to ₹25,000 Off on Exchange',
       merchant: 'Amazon',
-      affUrl: `https://www.amazon.in/s?k=laptops+for+programming+ai&tag=${AMAZON_TAG}`,
-      icon: 'cpu',
-      priceNote: '16GB+ RAM & Dedicated GPU',
-      trustTag: 'No-Cost EMI Available'
+      affUrl: `https://www.amazon.in/s?k=laptop+intel+core+i7+16gb+ram&tag=${AMAZON_TAG}`,
+      icon: 'sparkles',
+      priceNote: 'Zero Cost EMI Available',
+      trustTag: 'Authorized Brand Resellers'
     },
     {
-      title: 'Top Rated Python & AI Machine Learning Mastery Programs',
-      category: 'AI & Dev Certifications',
-      badge: '⭐ 4.8 Rating',
-      discount: 'Starting ₹499 (Sale Price)',
-      merchant: 'Udemy',
-      affUrl: `https://www.amazon.in/s?k=python+ai+data+science+books&tag=${AMAZON_TAG}`,
-      icon: 'sparkles',
-      priceNote: 'Certificate Included',
-      trustTag: 'Lifetime Access'
+      title: 'Mechanical Keyboards & Ergonomic Wireless Mice for Devs',
+      category: 'Coding Setup',
+      badge: '🔥 40% OFF',
+      discount: 'Under ₹2,499 Deals',
+      merchant: 'Amazon',
+      affUrl: `https://www.amazon.in/s?k=mechanical+keyboard+wireless+mouse&tag=${AMAZON_TAG}`,
+      icon: 'cpu',
+      priceNote: 'Hot-Swappable Switches',
+      trustTag: '1-Year Warranty'
     }
   ],
 
-  // 8. Food & Daily Loot (Swiggy / Zomato / Grocery)
+  // 8. Food & Grocery Loot
   'food': [
     {
       title: 'Smart Digital Air Fryer & Multi-Cooker Kitchen Gadgets',
@@ -291,17 +319,6 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
       trustTag: '100% Original Publisher'
     },
     {
-      title: 'Affordable Handwritten Study Notes, Formula Sheets & Exam Handbooks',
-      category: 'Budget Study Material',
-      badge: '🔥 Under ₹299 Loot',
-      discount: 'Extra 15% Off on Combos',
-      merchant: 'EarnKaro',
-      affUrl: `https://www.amazon.in/s?k=exam+study+notes+handbook&tag=${AMAZON_TAG}`,
-      icon: 'book-open',
-      priceNote: 'Flipkart & Meesho Trusted Sellers',
-      trustTag: 'Easy 7-Day Return'
-    },
-    {
       title: 'Study Tablets with Stylus & Digital Note-Taking Gadgets (iPad / Galaxy Tab)',
       category: 'Digital Study Tech',
       badge: '⚡ Up to ₹8,000 Off',
@@ -315,6 +332,102 @@ export const NICHE_DEAL_MATRIX: Record<string, ContextualDeal[]> = {
   ]
 };
 
-export function getContextualDeals(nicheSlug: string): ContextualDeal[] {
-  return NICHE_DEAL_MATRIX[nicheSlug] || NICHE_DEAL_MATRIX['fashion'] || [];
+/**
+ * Intelligent context-aware deal matcher.
+ * Matches article title & summary first, then niche category, falling back cleanly to top deals.
+ */
+export function getContextualDeals(nicheSlug: string, postTitle?: string, postSummary?: string): ContextualDeal[] {
+  const combinedText = `${postTitle || ''} ${postSummary || ''}`.toLowerCase();
+
+  // 1. Weather / Climate / Cooling / Air Quality Intent Matcher
+  if (/cooling|air purifier|purifier|hepa|ac\b|conditioner|heatwave|weather|smog|pollution|winter|summer|delhi weather|aqi/i.test(combinedText)) {
+    return [
+      {
+        title: 'Smart Inverter Split ACs (1.5 Ton 5-Star Energy Saver)',
+        category: 'Cooling Appliances',
+        badge: '⚡ Up to 45% Off',
+        discount: 'Free Installation + Instant Bank Off',
+        merchant: 'Amazon',
+        affUrl: `https://www.amazon.in/s?k=1.5+ton+5+star+inverter+split+ac&tag=${AMAZON_TAG}`,
+        icon: 'sparkles',
+        priceNote: 'Copper Condenser • Smart WiFi',
+        trustTag: 'Official Brand Warranty'
+      },
+      {
+        title: 'True HEPA Air Purifiers with Real-Time AQI & PM2.5 Display',
+        category: 'Air Quality & Health',
+        badge: '🔥 Bestseller',
+        discount: 'Flat 40% Off',
+        merchant: 'Amazon',
+        affUrl: `https://www.amazon.in/s?k=true+hepa+air+purifier+pm2.5&tag=${AMAZON_TAG}`,
+        icon: 'sparkles',
+        priceNote: 'Removes 99.97% Smoke & Pollutants',
+        trustTag: 'Doctor Recommended'
+      }
+    ];
+  }
+
+  // 2. Cricket / Live Sports Intent Matcher
+  if (/cricket|ipl|t20|world cup|match|stadium|bcci|scorecard|wicket|batsman/i.test(combinedText)) {
+    return [
+      {
+        title: '4K Ultra HD Smart TV & Stadium Soundbar Bundles',
+        category: 'Live Match Viewing',
+        badge: '🏏 Match Day Loot',
+        discount: 'Up to 55% Off',
+        merchant: 'Amazon',
+        affUrl: `https://www.amazon.in/s?k=55+inch+4k+smart+tv+soundbar&tag=${AMAZON_TAG}`,
+        icon: 'clapperboard',
+        priceNote: 'Dolby Vision • 120Hz Refresh',
+        trustTag: '100% Genuine Warranty'
+      },
+      {
+        title: 'Official Team India Supporter Jersey & Grade English Willow Bat',
+        category: 'Cricket Merchandise',
+        badge: '⚡ Fan Choice',
+        discount: 'Starting ₹499',
+        merchant: 'Amazon',
+        affUrl: `https://www.amazon.in/s?k=cricket+jersey+bat+kit&tag=${AMAZON_TAG}`,
+        icon: 'sparkles',
+        priceNote: 'Breathable Dry-Fit Fabric',
+        trustTag: 'Prime Delivery'
+      }
+    ];
+  }
+
+  // 3. Smartphone / Mobile Intent Matcher
+  if (/phone|smartphone|5g|iphone|oneplus|samsung|pixel|snapdragon|charger/i.test(combinedText)) {
+    return [
+      {
+        title: 'Latest 5G Smartphones & Bank Exchange Bonuses',
+        category: 'Mobile Deals',
+        badge: '🔥 Live Drop',
+        discount: 'Up to ₹10,000 Off on Exchange',
+        merchant: 'Amazon',
+        affUrl: `https://www.amazon.in/s?k=5g+smartphone+deals&tag=${AMAZON_TAG}`,
+        icon: 'sparkles',
+        priceNote: 'No-Cost EMI Available',
+        trustTag: 'Official Brand Warranty'
+      },
+      {
+        title: '65W GaN Multi-Port Fast Charger & Braided Cable Combo',
+        category: 'Charging Gear',
+        badge: '⚡ Under ₹999 Loot',
+        discount: 'Flat 50% Off',
+        merchant: 'Amazon',
+        affUrl: `https://www.amazon.in/s?k=65w+gan+charger+type+c&tag=${AMAZON_TAG}`,
+        icon: 'tag',
+        priceNote: 'Charges Laptop, Phone & Tablet',
+        trustTag: 'Tested & Certified'
+      }
+    ];
+  }
+
+  // 4. Exact Niche slug fallback
+  if (NICHE_DEAL_MATRIX[nicheSlug]) {
+    return NICHE_DEAL_MATRIX[nicheSlug];
+  }
+
+  // 5. Universal high-converting tech/deals fallback (NEVER irrelevant fashion sneakers)
+  return NICHE_DEAL_MATRIX['deals'];
 }

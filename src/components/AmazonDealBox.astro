@@ -4,17 +4,70 @@ import { getContextualDeals } from '../lib/recommendations';
 
 interface Props {
   keyword: string;
+  summary?: string;
   nicheSlug?: string;
   nicheName?: string;
   customTitle?: string;
 }
 
-const { keyword, nicheSlug = 'pc-builds', nicheName = 'Tech & Gaming', customTitle } = Astro.props;
+const { keyword, summary = '', nicheSlug = 'deals', nicheName = 'Curated Finds', customTitle } = Astro.props;
 const amazonTag = 'uniquedigi0c6-21';
-const cleanKeyword = keyword.replace(/[^\w\s-]/gi, '').trim();
-const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(cleanKeyword)}&tag=${amazonTag}`;
 
-const contextualDeals = getContextualDeals(nicheSlug);
+// Function to extract 2-4 clean, high-intent product keywords instead of raw long article titles
+function extractProductQuery(title: string, summaryText: string, slug: string): string {
+  const combined = `${title} ${summaryText}`.toLowerCase();
+
+  if (/cooling|air purifier|purifier|hepa|ac\b|conditioner|heatwave|weather|smog|pollution|aqi/i.test(combined)) {
+    return 'inverter ac air purifier';
+  }
+  if (/cricket|ipl|t20|world cup|match|stadium/i.test(combined)) {
+    return 'cricket kit 4k smart tv';
+  }
+  if (/gta 6|playstation|ps5|xbox|gaming/i.test(combined)) {
+    return 'gaming mouse headphones rgb';
+  }
+  if (/pc build|rtx|gpu|graphic card|nvidia|processor|ssd|ram\b/i.test(combined)) {
+    return 'rtx graphic card ssd gen4';
+  }
+  if (/phone|smartphone|5g|iphone|oneplus|samsung galaxy/i.test(combined)) {
+    return '5g smartphone fast charger';
+  }
+  if (/laptop|macbook|thinkpad|notebook/i.test(combined)) {
+    return 'laptop thin and light';
+  }
+  if (/gold|silver|bullion|coin/i.test(combined)) {
+    return '24k gold coin certified';
+  }
+  if (/exam|results|sarkari|admit card/i.test(combined)) {
+    return 'study tablet exam notes';
+  }
+
+  // Generic fallback: strip noise words and take up to 3 meaningful words
+  const words = title
+    .replace(/[^\w\s]/gi, ' ')
+    .split(/\s+/)
+    .filter(w => {
+      const low = w.toLowerCase();
+      return (
+        w.length > 2 &&
+        !['guide', 'best', 'survival', 'top', 'today', 'live', 'how', 'what', 'why', 'swing', 'latest', 'review', 'update', 'india', '2025', '2026', 'versus', 'with', 'from', 'this', 'that', 'near'].includes(low)
+      );
+    });
+
+  if (words.length > 0) {
+    return words.slice(0, 3).join(' ');
+  }
+
+  return 'trending deals electronics';
+}
+
+const cleanQuery = extractProductQuery(keyword, summary, nicheSlug);
+const searchUrl = `https://www.amazon.in/s?k=${encodeURIComponent(cleanQuery)}&tag=${amazonTag}`;
+const contextualDeals = getContextualDeals(nicheSlug, keyword, summary);
+
+const displayHeading = customTitle || (nicheName && nicheName !== 'Curated Finds'
+  ? `Handpicked Deals & Verified Offers in ${nicheName}`
+  : `Today's Curated Deals & Verified Offers`);
 ---
 
 <div class="my-10 rounded-3xl bg-white p-6 sm:p-8 border border-purple-200/80 shadow-card relative overflow-hidden">
@@ -34,19 +87,17 @@ const contextualDeals = getContextualDeals(nicheSlug);
 
       <div class="flex items-center gap-1.5 text-xs text-slate-700 font-mono font-bold bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        <span>Live Deal</span>
+        <span>Verified Active Offers</span>
       </div>
     </div>
 
     <!-- Title & Value Pitch -->
     <h3 class="text-xl sm:text-2xl font-black text-slate-900 leading-snug mb-2">
-      {customTitle || (['deals', 'cashback', 'pc-builds', 'ai-tools'].includes(nicheSlug)
-        ? `Handpicked Deals & Curated Offers for ${cleanKeyword.slice(0, 45)}`
-        : `Trending Deals & Reader Favorites`)}
+      {displayHeading}
     </h3>
 
     <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
-      Our automated price tracker scanned current offers across Amazon India and official brand stores. Here are today's top curated recommendations:
+      Our automated price telemetry scanned verified retailers and Amazon India for ongoing discounts. Here are top recommended picks matching this story:
     </p>
 
     <!-- Contextual Dynamic Deals List -->
@@ -93,8 +144,8 @@ const contextualDeals = getContextualDeals(nicheSlug);
     <!-- Universal CTA Row -->
     <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-slate-100">
       <div class="text-xs text-slate-500">
-        <span class="text-slate-800 font-semibold block">Amazon India & Trusted Partner Links</span>
-        <span>Prices and coupons fluctuate rapidly during sales.</span>
+        <span class="text-slate-800 font-semibold block">Amazon India & Trusted Merchant Deals</span>
+        <span>Lightning deals and coupon codes refresh continuously throughout the day.</span>
       </div>
 
       <a
@@ -103,7 +154,7 @@ const contextualDeals = getContextualDeals(nicheSlug);
         rel="sponsored nofollow noopener"
         class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-brand hover:bg-brand-dark text-white font-black text-sm transition transform hover:-translate-y-0.5 active:translate-y-0 shadow-md shadow-brand/20 cursor-pointer shrink-0"
       >
-        <span>Search Live Amazon Deals on "{cleanKeyword}"</span>
+        <span>Explore Live Offers on Amazon India</span>
         <Icon name="external-link" class="w-4 h-4" />
       </a>
     </div>

@@ -3,21 +3,76 @@ import Icon from './Icon.astro';
 
 interface Props {
   bullets?: string[];
+  summary?: string;
   topicTitle?: string;
   category?: string;
+  nicheSlug?: string;
   readingMinutes?: number;
 }
 
 const {
-  bullets = [
-    'Immediate national interest surging with confirmed developments across authoritative primary sources.',
-    'Core breakdown highlights pivotal changes, community reactions, and practical implications.',
-    'UniqueDigit editorial team has confirmed technical statistics and factual consistency.'
-  ],
+  bullets,
+  summary = '',
   topicTitle = 'Key Takeaways',
   category = 'Trending',
+  nicheSlug = '',
   readingMinutes = 1
 } = Astro.props;
+
+function generateDynamicBullets(
+  providedBullets?: string[],
+  summaryText?: string,
+  title?: string,
+  catName?: string,
+  nSlug?: string
+): string[] {
+  if (providedBullets && providedBullets.length > 0) {
+    return providedBullets;
+  }
+
+  const result: string[] = [];
+
+  // Parse summary sentences if available
+  if (summaryText && summaryText.trim().length > 15) {
+    const sentences = summaryText
+      .split(/(?<=[.?!])\s+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 15);
+
+    if (sentences.length >= 2) {
+      result.push(sentences[0]);
+      result.push(sentences[1]);
+    } else if (sentences.length === 1) {
+      result.push(sentences[0]);
+    }
+  }
+
+  // If still need bullets, add context-tailored insights:
+  if (result.length === 0) {
+    result.push(`${title || 'This developing story'} is generating significant real-time interest across primary sector monitors.`);
+  }
+
+  if (result.length < 2) {
+    if (['pc-builds', 'ai-tools'].includes(nSlug || '')) {
+      result.push('Hardware benchmarks and price-to-performance metrics should be evaluated before finalizing your setup.');
+    } else if (['deals', 'cashback'].includes(nSlug || '')) {
+      result.push('Stock counts and limited flash coupons fluctuate rapidly; verify retailer validity at checkout.');
+    } else if (['health'].includes(nSlug || '')) {
+      result.push('Clinical and practical recommendations highlight evidence-grounded habits over short-term trends.');
+    } else if (/cooling|purifier|weather/i.test(`${title || ''} ${summaryText || ''}`)) {
+      result.push('High-efficiency Inverter appliances and True HEPA filters deliver measurable comfort and indoor AQI improvements.');
+    } else {
+      result.push(`Key developments, community response, and practical takeaways confirmed for ${catName || 'readers'}.`);
+    }
+  }
+
+  // 3rd bullet: verification & editorial telemetry
+  result.push('UniqueDigit editorial desk continuously tracks live price fluctuations and primary source updates.');
+
+  return result.slice(0, 3);
+}
+
+const activeBullets = generateDynamicBullets(bullets, summary, topicTitle, category, nicheSlug);
 ---
 
 <div class="my-6 p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white shadow-lg border border-slate-700/80 relative overflow-hidden">
@@ -47,7 +102,7 @@ const {
     </h4>
 
     <ul class="space-y-2.5">
-      {bullets.map((bullet, idx) => (
+      {activeBullets.map((bullet, idx) => (
         <li class="flex items-start gap-3 text-xs sm:text-sm text-slate-200 leading-relaxed">
           <span class="w-5 h-5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
             {idx + 1}
