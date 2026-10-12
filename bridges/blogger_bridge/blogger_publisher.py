@@ -113,6 +113,64 @@ def publish_to_blogger(title, content_html, labels=None, is_draft=False, feature
             )
         final_content = img_tag + final_content
 
+    # Append official Telegram & WhatsApp channel community footer if not already present
+    if "whatsapp.com/channel" not in final_content:
+        is_deals_blog = str(blog_id) == "834082955272949961" or any(l in ["Deals", "Loot", "Offers", "Shopping"] for l in (labels or []))
+        is_sarkari_blog = str(blog_id) == "1366151638291560024" or any(l in ["Sarkari Result", "Exams & Results", "Admit Card", "Exam Alert"] for l in (labels or []))
+
+        if is_deals_blog:
+            footer_html = (
+                f'\n\n<div class="uniquedigit-community-box" style="margin: 40px auto 20px auto; padding: 24px 20px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; border: 1px solid #334155; color: #ffffff; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
+                f'<div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 8px;">🔥 Never Miss a 0-Minute Price Glitch!</div>'
+                f'<p style="margin: 0 auto 18px auto; max-width: 580px; color: #cbd5e1; font-size: 14px; line-height: 1.6;">Amazon & Flipkart par lightning deals, price errors aur festive loots kuch hi minutes ke liye aate hain. Instant notifications paane ke liye humare official channels join karein:</p>'
+                f'<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 12px;">'
+                f'<a href="https://t.me/uniquedigit_deals" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #0088cc 0%, #006699 100%); color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 9999px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,136,204,0.4);">'
+                f'✈️ Join Telegram Deals Channel (@uniquedigit_deals)'
+                f'</a>'
+                f'<a href="https://whatsapp.com/channel/0029Vb90gso4dTnKKpcf7M1E" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 9999px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37,211,102,0.4);">'
+                f'🟢 Join WhatsApp Alerts Channel'
+                f'</a>'
+                f'</div>'
+                f'<div style="font-size: 11px; color: #94a3b8; margin-top: 10px;">'
+                f'⚡ 100% Verified Deals • Zero Spam • Direct Store Buying Links'
+                f'</div>'
+                f'</div>\n'
+            )
+        elif is_sarkari_blog:
+            footer_html = (
+                f'\n\n<div class="uniquedigit-community-box" style="margin: 40px auto 20px auto; padding: 24px 20px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; border: 1px solid #334155; color: #ffffff; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
+                f'<div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 8px;">📢 Sarkari Result & Exam Direct Alerts!</div>'
+                f'<p style="margin: 0 auto 18px auto; max-width: 580px; color: #cbd5e1; font-size: 14px; line-height: 1.6;">Admit cards, exam dates, answer keys aur scorecards ki sabse fast updates seedhe apne phone par paayein. Join karein humare official broadcast channels:</p>'
+                f'<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 12px;">'
+                f'<a href="https://t.me/uniquedigit_deals" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #0088cc 0%, #006699 100%); color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 9999px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,136,204,0.4);">'
+                f'✈️ Telegram Exam & Deal Alerts'
+                f'</a>'
+                f'<a href="https://whatsapp.com/channel/0029Vb90gso4dTnKKpcf7M1E" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 9999px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37,211,102,0.4);">'
+                f'🟢 Join WhatsApp Channel Alert'
+                f'</a>'
+                f'</div>'
+                f'<div style="font-size: 11px; color: #94a3b8; margin-top: 10px;">'
+                f'Direct Official Portals • Verified Cutoffs • No Fake News'
+                f'</div>'
+                f'</div>\n'
+            )
+        else:
+            footer_html = (
+                f'\n\n<div class="uniquedigit-community-box" style="margin: 40px auto 20px auto; padding: 24px 20px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; border: 1px solid #334155; color: #ffffff; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
+                f'<div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 8px;">⚡ UniqueDigit Community & Deal Alerts</div>'
+                f'<p style="margin: 0 auto 18px auto; max-width: 580px; color: #cbd5e1; font-size: 14px; line-height: 1.6;">Latest AI tools updates, tech guides aur exclusive shopping loots ki real-time notifications paane ke liye join karein:</p>'
+                f'<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 12px;">'
+                f'<a href="https://t.me/uniquedigit_deals" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #0088cc 0%, #006699 100%); color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 9999px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,136,204,0.4);">'
+                f'✈️ Join Telegram Alerts Channel'
+                f'</a>'
+                f'<a href="https://whatsapp.com/channel/0029Vb90gso4dTnKKpcf7M1E" target="_blank" rel="noopener noreferrer" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); color: #ffffff; text-decoration: none; padding: 12px 26px; border-radius: 9999px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37,211,102,0.4);">'
+                f'🟢 Join WhatsApp Alerts Channel'
+                f'</a>'
+                f'</div>'
+                f'</div>\n'
+            )
+        final_content = final_content + footer_html
+
     # Prepare Blogger API body
     body = {
         "kind": "blogger#post",

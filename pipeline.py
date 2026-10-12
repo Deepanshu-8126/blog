@@ -224,12 +224,15 @@ BLOGGER_ROUTING = {
     # 1. Exams & Sarkari Results -> Dedicated Sarkari Result & Exam Alert Blog
     "exams-results": os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024"),
     
-    # 2. Tech, AI, PC Builds, Deals, Side-Hustles -> Primary AI Tools Hub Blog
+    # 2. Dedicated Loot Deals & Offers Blog
+    "deals": os.getenv("BLOGGER_DEALS_BLOG_ID", "834082955272949961"),
+    "cashback": os.getenv("BLOGGER_DEALS_BLOG_ID", "834082955272949961"),
+
+    # 3. Tech, AI, PC Builds, Side-Hustles -> Primary AI Tools Hub Blog
     "ai-tools": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
     "pc-builds": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
     "side-hustles": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
     "tech": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
-    "deals": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
     "viral": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
 }
 

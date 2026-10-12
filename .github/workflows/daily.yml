@@ -80,6 +80,7 @@ jobs:
           PORTAL_BASE_URL: "https://uniquedigit-viral-hub.pages.dev"
           POSTS_PER_NICHE: "2"
           BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_DEALS_BLOG_ID: ${{ secrets.BLOGGER_DEALS_BLOG_ID || '834082955272949961' }}
           BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID || '1366151638291560024' }}
           BLOGGER_AI_BLOG_ID: ${{ secrets.BLOGGER_AI_BLOG_ID || '2280231208480007821' }}
           BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}

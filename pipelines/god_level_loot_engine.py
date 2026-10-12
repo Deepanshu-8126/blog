@@ -840,6 +840,7 @@ class GodLevelLootEngine:
         # Priority Order: Pillar 1 (Instant Spy) -> Pillar 2 (Personal Watcher) -> Pillar 3 (Festive Radar)
         candidates = spy_deals + watcher_deals + radar_deals
         cycle_sent = 0
+        blogger_published_in_cycle = 0
 
         for deal in candidates:
             if dedup.is_seen(deal):
@@ -852,13 +853,25 @@ class GodLevelLootEngine:
                 cycle_sent += 1
                 self.total_sent += 1
                 print(f"    ✅ SENT TO TELEGRAM ({deal['title'][:35]})")
+
+                # Cross-publish to dedicated Deals & Loot Blogger Blog (834082955272949961)
+                if blogger_published_in_cycle < 1 and deal.get("photo_url"):
+                    try:
+                        from bridges.blogger_bridge.deals_blogger_publisher import publish_deal_to_blogger
+                        b_res = publish_deal_to_blogger(deal)
+                        if b_res.get("success"):
+                            blogger_published_in_cycle += 1
+                            print(f"    🎉 PUBLISHED TO BLOGGER: {b_res.get('url')}")
+                    except Exception as eb:
+                        print(f"    ⚠️ Blogger deals publish error: {eb}")
+
                 time.sleep(0.8) # Ultra-fast sub-second pacing
                 if cycle_sent >= max_deals_per_cycle:
                     break
             else:
                 print(f"    ❌ Failed to send")
 
-        print(f"⏱️ Cycle finished — Sent {cycle_sent} deals this round.")
+        print(f"⏱️ Cycle finished — Sent {cycle_sent} deals this round (Blogger: {blogger_published_in_cycle}).")
         return cycle_sent
 
     def run_loop(self, interval=5, duration=None):
