@@ -94,14 +94,23 @@ def publish_to_blogger(title, content_html, labels=None, is_draft=False, feature
     if featured_image and "pollinations.ai" in featured_image.lower():
         featured_image = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop"
 
-    # Prepend responsive featured image if provided
+    # Prepend responsive featured image / emblem
     final_content = content_html
     if featured_image and featured_image.startswith("http") and featured_image not in content_html:
-        img_tag = (
-            f'<div class="separator" style="clear: both; text-align: center; margin-bottom: 25px;">'
-            f'<img border="0" src="{featured_image}" alt="{title}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);" />'
-            f'</div>\n\n'
-        )
+        is_emblem_or_logo = any(k in featured_image.lower() for k in ["logo", "emblem", "seal", "symbol", "badge", "wikimedia"])
+        if is_emblem_or_logo:
+            img_tag = (
+                f'<div class="separator" style="clear: both; text-align: center; margin: 15px auto 25px auto; max-width: 580px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 25px 20px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">'
+                f'<img border="0" src="{featured_image}" alt="{title}" style="max-height: 180px; max-width: 80%; object-fit: contain; margin: 0 auto; display: block; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.08));" />'
+                f'<div style="font-size: 12px; color: #64748b; font-weight: 600; margin-top: 10px; letter-spacing: 0.5px; text-transform: uppercase;">Official Verified Logo & Notice</div>'
+                f'</div>\n\n'
+            )
+        else:
+            img_tag = (
+                f'<div class="separator" style="clear: both; text-align: center; margin-bottom: 25px;">'
+                f'<img border="0" src="{featured_image}" alt="{title}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);" />'
+                f'</div>\n\n'
+            )
         final_content = img_tag + final_content
 
     # Prepare Blogger API body

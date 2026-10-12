@@ -838,9 +838,41 @@ def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", t
         if og and not is_thumbnail(og):
             target = og
 
+    TECH_BRAND_LOGOS = {
+        "duckduckgo": "https://upload.wikimedia.org/wikipedia/en/thumb/1/15/DuckDuckGo_logo_post-2023.svg/500px-DuckDuckGo_logo_post-2023.svg.png",
+        "chatgpt": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png",
+        "openai": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/500px-OpenAI_Logo.svg.png",
+        "claude": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/500px-Anthropic_logo.svg.png",
+        "gemini": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/500px-Google_Gemini_logo.svg.png",
+        "midjourney": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Midjourney_Emblem.png/500px-Midjourney_Emblem.png",
+        "canva": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/500px-Canva_icon_2021.svg.png",
+        "nvidia": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Nvidia_logo.svg/500px-Nvidia_logo.svg.png",
+        "rtx": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Nvidia_logo.svg/500px-Nvidia_logo.svg.png",
+        "intel": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282020%29.svg/500px-Intel_logo_%282020%29.svg.png",
+        "amd": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/AMD_Logo.svg/500px-AMD_Logo.svg.png",
+        "apple": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/500px-Apple_logo_black.svg.png",
+        "iphone": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/500px-Apple_logo_black.svg.png",
+        "samsung": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/500px-Samsung_Logo.svg.png",
+        "bteup": "https://upload.wikimedia.org/wikipedia/commons/5/56/BTEUP_LOGO.png",
+        "upsc": "https://upload.wikimedia.org/wikipedia/en/b/bf/Union_public_service_commission.jpg",
+        "ssc": "https://upload.wikimedia.org/wikipedia/en/d/d5/Staff_Selection_Commission.webp",
+        "cbse": "https://upload.wikimedia.org/wikipedia/en/thumb/8/82/Central_Board_of_Secondary_Education_logo.png/500px-Central_Board_of_Secondary_Education_logo.png",
+        "gta": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Grand_Theft_Auto_logo.svg/500px-Grand_Theft_Auto_logo.svg.png"
+    }
+
+    if not target and topic_query:
+        q_lower = topic_query.lower()
+        for brand_key, brand_url in TECH_BRAND_LOGOS.items():
+            if brand_key in q_lower:
+                target = brand_url
+                break
+
     if not target and topic_query:
         try:
-            w = wiki(topic_query)
+            # Extract first 2-3 significant core noun words instead of whole sentence
+            words = [w for w in re.sub(r'[^a-zA-Z0-9\s]', '', topic_query).split() if len(w) >= 4 and w.lower() not in ["alternative", "review", "comparison", "guide", "honest", "found", "actually", "good"]]
+            core_kw = " ".join(words[:2]) if words else topic_query
+            w = wiki(core_kw)
             if w and w.get("image") and not is_thumbnail(w["image"]):
                 target = w["image"]
         except Exception:
@@ -855,11 +887,11 @@ def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", t
 
     # Real Authentic Editorial Media Fallback (Zero AI generated cartoons)
     REAL_MEDIA_POOL = [
-        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop",
-        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&h=630&fit=crop",
-        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=630&fit=crop",
-        "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=1200&h=630&fit=crop",
-        "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=1200&h=630&fit=crop"
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=630&fit=crop", # Hardware chip & circuit board
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=630&fit=crop", # AI neural network abstract glow
+        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=630&fit=crop", # Modern retro tech desk
+        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&h=630&fit=crop", # Cyber security code screen
+        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1200&h=630&fit=crop"  # Sleek modern laptop workstation
     ]
     idx = abs(hash(topic_query or niche_slug)) % len(REAL_MEDIA_POOL)
     return REAL_MEDIA_POOL[idx], "Real Authentic Editorial Web Photography"

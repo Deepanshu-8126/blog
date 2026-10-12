@@ -100,32 +100,88 @@ def save_cache(cache):
 # ======================================================================================
 # 🖼️ REAL MEDIA ENGINE: OFFICIAL EMBLEMS & EDITORIAL PHOTOS (NO AI CARTOONS)
 # ======================================================================================
-def fetch_real_official_image(entity_name, category=""):
-    """
-    Fetches real official emblems, campus photos, or government department seals.
-    Uses Wikipedia REST Summary API with fallback to real educational photography.
-    """
-    if entity_name:
-        queries = [
-            entity_name,
-            f"{entity_name} India",
-            f"{entity_name} university" if "university" in entity_name.lower() else f"{entity_name} board"
-        ]
-        for q in queries:
-            try:
-                url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(q)}"
-                r = requests.get(url, headers=UA, timeout=6).json()
-                orig = r.get("originalimage", {}).get("source")
-                thumb = r.get("thumbnail", {}).get("source")
-                img_url = orig or thumb
-                if img_url and img_url.startswith("http"):
-                    # Check that image is not an unrelated flag icon
-                    if not any(bad in img_url.lower() for bad in ["1x1", "pixel", "icon-small"]):
-                        return img_url, "Official Verified Entity Emblem/Photo"
-            except Exception:
-                continue
+OFFICIAL_BOARD_SEALS = {
+    "bteup": "https://upload.wikimedia.org/wikipedia/commons/5/56/BTEUP_LOGO.png",
+    "uttar pradesh": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Seal_of_Uttar_Pradesh.svg/500px-Seal_of_Uttar_Pradesh.svg.png",
+    "up board": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Seal_of_Uttar_Pradesh.svg/500px-Seal_of_Uttar_Pradesh.svg.png",
+    "haryana": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Emblem_of_Haryana.svg/500px-Emblem_of_Haryana.svg.png",
+    "uhsr": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Emblem_of_Haryana.svg/500px-Emblem_of_Haryana.svg.png",
+    "bihar": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Emblem_of_Bihar.svg/500px-Emblem_of_Bihar.svg.png",
+    "rajasthan": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png",
+    "madhya pradesh": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Emblem_of_Madhya_Pradesh.svg/500px-Emblem_of_Madhya_Pradesh.svg.png",
+    "maharashtra": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Emblem_of_Maharashtra.svg/500px-Emblem_of_Maharashtra.svg.png",
+    "upsc": "https://upload.wikimedia.org/wikipedia/en/b/bf/Union_public_service_commission.jpg",
+    "ssc": "https://upload.wikimedia.org/wikipedia/en/d/d5/Staff_Selection_Commission.webp",
+    "nta": "https://upload.wikimedia.org/wikipedia/en/thumb/8/84/National_Testing_Agency_logo.png/500px-National_Testing_Agency_logo.png",
+    "neet": "https://upload.wikimedia.org/wikipedia/en/thumb/8/84/National_Testing_Agency_logo.png/500px-National_Testing_Agency_logo.png",
+    "cbse": "https://upload.wikimedia.org/wikipedia/en/thumb/8/82/Central_Board_of_Secondary_Education_logo.png/500px-Central_Board_of_Secondary_Education_logo.png",
+    "railway": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png",
+    "rrb": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png",
+    "ibps": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2a/IBPS_logo.png/500px-IBPS_logo.png"
+}
 
-    # Fallback: High-resolution real editorial photography (Zero AI cartoons)
+def fetch_real_official_image(entity_name, category="", source_link=""):
+    """
+    Tiered Official Image Resolver:
+    1. Direct Board & Authority Seals Dictionary
+    2. Real Article OG:Image from verified news source
+    3. Wikipedia Search -> Summary image OR Page Images (LOGO / Emblem)
+    4. Clean high-resolution educational editorial fallback
+    """
+    combined_key = f"{entity_name} {category}".lower()
+
+    # 1. Check verified official seal / emblem dictionary
+    for k, url in OFFICIAL_BOARD_SEALS.items():
+        if k in combined_key:
+            return url, f"Official {k.upper()} Authority Emblem"
+
+    # 2. Try scraping source article og:image if news link is available
+    if source_link and source_link.startswith("http") and "google.com" not in source_link:
+        try:
+            r_art = requests.get(source_link, headers=UA, timeout=6)
+            if r_art.status_code == 200:
+                m_og = re.search(r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', r_art.text, re.IGNORECASE)
+                if m_og:
+                    c_img = m_og.group(1).strip()
+                    if c_img.startswith("https://") and not any(b in c_img.lower() for b in ["logo", "favicon", "avatar", "default_share"]):
+                        return c_img, "Verified News Editorial Photography"
+        except Exception:
+            pass
+
+    # 3. Wikipedia Smart Search (handles complex entity names like BTEUP, UHSR, etc.)
+    if entity_name:
+        try:
+            search_url = f"https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch={urllib.parse.quote(entity_name)}&srlimit=1"
+            sr = requests.get(search_url, headers=UA, timeout=5).json()
+            items = sr.get("query", {}).get("search", [])
+            if items:
+                page_title = items[0]["title"]
+                
+                # Check summary image
+                sum_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(page_title)}"
+                r_sum = requests.get(sum_url, headers=UA, timeout=5).json()
+                img = r_sum.get("originalimage", {}).get("source") or r_sum.get("thumbnail", {}).get("source")
+                if img and img.startswith("http") and not any(bad in img.lower() for bad in ["1x1", "pixel", "icon-small"]):
+                    return img, f"Official {page_title} Seal/Emblem"
+
+                # Check page images for official LOGO or Emblem
+                img_list_url = f"https://en.wikipedia.org/w/api.php?action=query&format=json&titles={urllib.parse.quote(page_title)}&prop=images"
+                r_imgs = requests.get(img_list_url, headers=UA, timeout=5).json()
+                pages = r_imgs.get("query", {}).get("pages", {})
+                for p in pages.values():
+                    for im in p.get("images", []):
+                        fn = im.get("title", "")
+                        if any(ext in fn.lower() for ext in [".png", ".jpg", ".jpeg", ".svg"]) and any(k in fn.lower() for k in ["logo", "emblem", "seal"]):
+                            info_url = f"https://en.wikipedia.org/w/api.php?action=query&format=json&titles={urllib.parse.quote(fn)}&prop=imageinfo&iiprop=url"
+                            r_info = requests.get(info_url, headers=UA, timeout=5).json()
+                            for ip in r_info.get("query", {}).get("pages", {}).values():
+                                for ii in ip.get("imageinfo", []):
+                                    if ii.get("url"):
+                                        return ii["url"], f"Official {page_title} Verified Logo"
+        except Exception:
+            pass
+
+    # 4. Fallback: High-resolution real educational photography
     idx = abs(hash(entity_name or category)) % len(REAL_EDUCATION_FALLBACKS)
     return REAL_EDUCATION_FALLBACKS[idx], "Real Authentic Educational Photography"
 
@@ -413,7 +469,7 @@ def run_sarkari_radar(max_posts=3):
         tags = article.get("tags", ["Sarkari Result", "Exam Alert"])
 
         # 4. Fetch REAL Official Media (Zero AI cartoons)
-        real_img, img_type = fetch_real_official_image(entity, category=item.get("category", ""))
+        real_img, img_type = fetch_real_official_image(entity, category=item.get("category", ""), source_link=item.get("link", ""))
         print(f"🖼️ Media Resolved: {real_img[:70]}... ({img_type})")
 
         # 5. Publish to Google Blogger
