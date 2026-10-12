@@ -10,8 +10,8 @@ name: 24/7 Sarkari Result & Scheme Radar
       - '.keep_alive'
       - 'docs/**'
   schedule:
-    # Runs every 45 minutes to catch breaking Sarkari results, admit cards, and schemes
-    - cron: '*/45 * * * *'
+    # Runs twice an hour on offset minutes :07 and :37 to catch breaking Sarkari results
+    - cron: '7,37 * * * *'
   workflow_dispatch:
 
 concurrency:
@@ -20,6 +20,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   run-sarkari-radar:

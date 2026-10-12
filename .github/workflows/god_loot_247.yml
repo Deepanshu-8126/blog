@@ -22,11 +22,12 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   run-god-engine:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout Code
@@ -58,22 +59,19 @@ jobs:
           CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID || '61d1d46f-f438-47f5-9128-516d9beb11cb' }}
           DEALS_NICHE_ID: ${{ secrets.DEALS_NICHE_ID || '5cf8114c0bc3eb20c87ce3dcfc1ff185' }}
         run: |
-          # Fast 5s scanner loop for 10 minutes (600s) to catch fresh loots while leaving runner slots for radar
-          python god_level_loot_engine.py --duration 600 --interval 5
+          # 30-minute (1800s) lightning scanner loop checking every 10 seconds for real-time deals
+          python god_level_loot_engine.py --duration 1800 --interval 10
 
-      - name: Lifetime Anti-Suspension Pulse (Never Sleeps)
+      - name: Sync Cache & Perpetuate 24/7 Loot Chain
         if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Commits a tiny heartbeat once every 7 days so GitHub never suspends scheduled crons for inactivity
-          HEARTBEAT_FILE=".keep_alive"
-          NOW=$(date +%s)
-          LAST_MOD=$(stat -c %Y "$HEARTBEAT_FILE" 2>/dev/null || echo 0)
-          DIFF=$((NOW - LAST_MOD))
-          if [ $DIFF -gt 604800 ]; then
-            git config --global user.name "UniqueDigit-Bot"
-            git config --global user.email "bot@uniquedigit.internal"
-            echo "lifetime_pulse: $(date -u)" > .keep_alive
-            git add .keep_alive
-            git commit -m "chore(heartbeat): maintain 24/7 lifetime autonomous pulse [skip ci]" || true
-            git push origin main || true
-          fi
+          git config --global user.name "UniqueDigit-Bot"
+          git config --global user.email "bot@uniquedigit.internal"
+          git add sent_loot_cache.json 2>/dev/null || true
+          git commit -m "chore(loot): update sent deals cache [skip ci]" || true
+          git push origin main || true
+          # Self-dispatch the next continuous 30-minute cycle without waiting for cron
+          echo "🔄 Chaining next autonomous 24/7 Loot cycle..."
+          gh workflow run god_loot_247.yml || true

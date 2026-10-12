@@ -10,8 +10,8 @@ name: UniqueDigit 24/7 Autonomous Radar & Deals Pipeline
       - '.keep_alive'
       - 'docs/**'
   schedule:
-    # Runs every 30 minutes (24/7 Cloud Autopilot across all 13 niches)
-    - cron: '*/30 * * * *'
+    # Runs twice an hour on uncongested minute marks (24/7 Cloud Autopilot across all 13 niches)
+    - cron: '17,47 * * * *'
   workflow_dispatch:
   repository_dispatch:
     types: [auto-sync, hourly-radar]
@@ -22,6 +22,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   run-radar-pipeline:

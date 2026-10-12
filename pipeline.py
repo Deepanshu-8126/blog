@@ -88,13 +88,9 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
         except Exception as e:
             print("[Admin Telegram alert failed]:", e)
 
-    # 2. Public Loot Deals Channel (ONLY for Deals, Loot, and Discount Drops!)
-    is_loot_deal = (niche_slug in ["deals", "cashback"]) or bool(deal_meta) or any(
-        kw in safe_title.lower() for kw in ["deal", "loot", "discount", "off", "price drop", "glitch", "coupon", "steal", "sale"]
-    )
-
-    if not is_loot_deal:
-        return
+    # 2. Public Deals Channel & Group are EXCLUSIVELY handled by god_level_loot_engine.py!
+    # General blog articles and news must NEVER be posted into the deals channels.
+    return
 
     # Extract dynamic deal intelligence if provided
     dm = deal_meta or {}
@@ -239,9 +235,8 @@ BLOGGER_ROUTING = {
 
 def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
     """Automatically cross-publishes targeted articles to specific Google Blogger blogs."""
-    target_blog_id = BLOGGER_ROUTING.get(niche_slug)
+    target_blog_id = BLOGGER_ROUTING.get(niche_slug) or os.getenv("BLOGGER_BLOG_ID")
     if not target_blog_id:
-        # Keep Blogger topical authority clean
         return None
 
     try:
