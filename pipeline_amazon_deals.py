@@ -464,7 +464,23 @@ def run_autonomous_deals_sync(limit = 6):
 if __name__ == "__main__":
     if FIX_ONLY:
         fix_existing_deals_in_d1()
+    elif "--loop" in sys.argv:
+        print("\n=======================================================================")
+        print("⚡ 24/7 LIVE REAL-TIME TELEGRAM DEAL BLITZ ENGINE ACTIVE")
+        print("   Target Channel: @uniquedigit_deals")
+        print("   Affiliate Tag:  uniquedigi0c6-21")
+        print("   Interval:       Continuous Live Radar (60s cycle)")
+        print("=======================================================================\n")
+        fix_existing_deals_in_d1()
+        while True:
+            try:
+                run_autonomous_deals_sync(limit=2)
+            except Exception as e:
+                print("[Loop Radar Warning]:", e)
+            print("⏳ Waiting 60s for next real-time radar sweep... (Press Ctrl+C to stop)")
+            time.sleep(60)
     else:
-        # First fix existing deals, then sync any fresh ones
+        # Standard one-shot run
         fix_existing_deals_in_d1()
         run_autonomous_deals_sync(limit=3)
+
