@@ -104,16 +104,75 @@ def d1_query(sql, params=None):
     return []
 
 
+# ---------- Verified Exact Product & Direct ASIN Registry ----------
+VERIFIED_ASIN_REGISTRY = {
+    "samsung galaxy m55": {
+        "asin": "B0CYQ3SDSH",
+        "image": "https://m.media-amazon.com/images/I/81nr2rrnbqL._SL1500_.jpg",
+        "name": "Samsung Galaxy M55 5G (8GB/128GB)",
+        "merchant": "Amazon India"
+    },
+    "boat airdopes 141": {
+        "asin": "B09N3ZNHTY",
+        "image": "https://m.media-amazon.com/images/I/71RFdy6y6LL._SL1500_.jpg",
+        "name": "boAt Airdopes 141 ANC TWS",
+        "merchant": "Amazon India"
+    },
+    "oneplus nord ce4": {
+        "asin": "B0CY5JMG98",
+        "image": "https://rukminim2.flixcart.com/image/832/832/xif0q/mobile/y/2/t/nord-ce4-cph2613-oneplus-resized-original-imahjjxfctxbtt2e.jpeg",
+        "name": "OnePlus Nord CE4 5G (8GB/128GB)",
+        "merchant": "Amazon India"
+    },
+    "apple iphone 15": {
+        "asin": "B0CHX1W1XY",
+        "image": "https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg",
+        "name": "Apple iPhone 15 128GB (Black)",
+        "merchant": "Amazon India"
+    },
+    "sony wh-1000xm4": {
+        "asin": "B0863TXGM3",
+        "image": "https://m.media-amazon.com/images/I/71o8Q5XJS5L._SL1500_.jpg",
+        "name": "Sony WH-1000XM4 Noise Cancelling Headphones",
+        "merchant": "Amazon India"
+    },
+    "sony wh-ch520": {
+        "asin": "B0BT5G144M",
+        "image": "https://m.media-amazon.com/images/I/41lArSiD5hL._SL1000_.jpg",
+        "name": "Sony WH-CH520 Wireless Bluetooth Headphones",
+        "merchant": "Amazon India"
+    },
+    "ipad 10th": {
+        "asin": "B0BJLXMS8Y",
+        "image": "https://m.media-amazon.com/images/I/61uA2UVnYWL._SL1500_.jpg",
+        "name": "Apple iPad 10th Gen (64GB Wi-Fi)",
+        "merchant": "Amazon India"
+    },
+    "fire-boltt ninja call pro": {
+        "asin": "B0BF57RN3K",
+        "image": "https://m.media-amazon.com/images/I/61S9aVnRZDL._SL1500_.jpg",
+        "name": "Fire-Boltt Ninja Call Pro Plus Smartwatch",
+        "merchant": "Amazon India"
+    }
+}
+
+
 # ---------- 100% Real Exact Studio Product Image Extractor ----------
 def fetch_exact_studio_product_image(product_name: str, category: str = "") -> str | None:
     """
-    Extracts the official, exact studio cutout (including transparent PNGs)
-    using the ultra-fast Indian e-commerce CDN (rukminim2.flixcart.com).
+    Extracts the official, exact studio cutout (including transparent PNGs).
     Guarantees ZERO bot blocks, ZERO CAPTCHAs, sub-20ms load time.
-    Strictly filters out phone panels, cases, chargers, or wrong accessories.
+    Priority 1: Verified Direct ASIN Registry.
+    Priority 2: Category-filtered Indian e-commerce CDN.
     """
     if not product_name:
         return None
+
+    # Check Verified Direct Registry First
+    lower_p = product_name.lower()
+    for key, val in VERIFIED_ASIN_REGISTRY.items():
+        if key in lower_p:
+            return val["image"]
 
     # Clean the search string for maximum keyword match
     clean_name = re.sub(r'\(.*?\)', '', product_name).strip()
@@ -261,10 +320,15 @@ def send_telegram_deal_alert(deal: dict):
 def build_affiliate_url(name: str, merchant: str = "Amazon") -> str:
     """
     Constructs high-converting, monetized affiliate links:
-    - Amazon India: Direct Associate Tag (uniquedigi0c6-21)
+    - Direct Amazon ASIN Page: https://www.amazon.in/dp/{asin}?tag=uniquedigi0c6-21 (0 Search Pages)
     - Meesho, Flipkart, Myntra, Ajio: Universal EarnKaro 1-Wallet (User ID: 3360368)
     - Direct Meesho fallback: Creator ID 374453404
     """
+    lower_p = (name or "").lower()
+    for key, val in VERIFIED_ASIN_REGISTRY.items():
+        if key in lower_p:
+            return f"https://www.amazon.in/dp/{val['asin']}?tag={AMAZON_TAG}"
+
     merchant_lower = (merchant or "").lower()
     q = urllib.parse.quote_plus(name)
 
