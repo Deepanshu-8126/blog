@@ -25,18 +25,24 @@ if (leadStory) renderedSlugs.add(leadStory.slug);
 const liveWirePosts = trendingPosts.filter(p => !renderedSlugs.has(p.slug)).slice(0, 4);
 liveWirePosts.forEach(p => renderedSlugs.add(p.slug));
 
+// Helper to fetch exactly 4 posts for each pavilion, ensuring balanced 4-card desktop grids
+async function getBalancedPavilion(grp: string, count = 4): Promise<Post[]> {
+  const direct = await getPostsByGroup(grp, count, Array.from(renderedSlugs), runtime?.env);
+  direct.forEach(p => renderedSlugs.add(p.slug));
+
+  if (direct.length < count) {
+    const filler = trendingPosts.filter(p => !renderedSlugs.has(p.slug)).slice(0, count - direct.length);
+    filler.forEach(p => renderedSlugs.add(p.slug));
+    return [...direct, ...filler];
+  }
+  return direct;
+}
+
 // 2. Fetch Category-Specific Post Pavilions (Strictly excluding already rendered slugs)
-const entertainmentPosts = await getPostsByGroup('Entertainment', 4, Array.from(renderedSlugs), runtime?.env);
-entertainmentPosts.forEach(p => renderedSlugs.add(p.slug));
-
-const techPosts = await getPostsByGroup('Tech', 4, Array.from(renderedSlugs), runtime?.env);
-techPosts.forEach(p => renderedSlugs.add(p.slug));
-
-const moneyPosts = await getPostsByGroup('Money', 4, Array.from(renderedSlugs), runtime?.env);
-moneyPosts.forEach(p => renderedSlugs.add(p.slug));
-
-const lifestylePosts = await getPostsByGroup('Lifestyle', 4, Array.from(renderedSlugs), runtime?.env);
-lifestylePosts.forEach(p => renderedSlugs.add(p.slug));
+const entertainmentPosts = await getBalancedPavilion('Entertainment', 4);
+const techPosts = await getBalancedPavilion('Tech', 4);
+const moneyPosts = await getBalancedPavilion('Money', 4);
+const lifestylePosts = await getBalancedPavilion('Lifestyle', 4);
 
 // Breaking ticker posts
 const breakingTickerPosts = trendingPosts.slice(0, 6);
