@@ -1,16 +1,32 @@
 name: UniqueDigit 24/7 Autonomous Radar & Deals Pipeline
 
 'on':
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'sarkari_seen_cache.json'
+      - 'sent_loot_cache.json'
+      - '.keep_alive'
+      - 'docs/**'
   schedule:
-    # Runs every 20 minutes (24/7 Cloud Autopilot, 0 laptop requirement)
-    - cron: '*/20 * * * *'
-  workflow_dispatch: # Allows 1-click manual trigger anytime from GitHub Actions tab
-  repository_dispatch: # Allows external cloud webhook triggers (dual auto-pilot)
+    # Runs every 30 minutes (24/7 Cloud Autopilot across all 13 niches)
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
     types: [auto-sync, hourly-radar]
+
+concurrency:
+  group: daily-radar
+  cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   run-radar-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -63,6 +79,8 @@ jobs:
           PORTAL_BASE_URL: "https://uniquedigit-viral-hub.pages.dev"
           POSTS_PER_NICHE: "2"
           BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID || '1366151638291560024' }}
+          BLOGGER_AI_BLOG_ID: ${{ secrets.BLOGGER_AI_BLOG_ID || '2280231208480007821' }}
           BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
           BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
           BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}

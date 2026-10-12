@@ -4,8 +4,13 @@ name: 24/7 God-Level Loot Engine (Unlimited Cloud)
   push:
     branches:
       - main
+    paths-ignore:
+      - 'sarkari_seen_cache.json'
+      - 'sent_loot_cache.json'
+      - '.keep_alive'
+      - 'docs/**'
   schedule:
-    # Runs every 30 minutes to ensure continuous overlapping cloud workers
+    # Runs every 30 minutes to ensure continuous cloud workers
     - cron: '*/30 * * * *'
   workflow_dispatch:
   repository_dispatch:
@@ -21,7 +26,7 @@ permissions:
 jobs:
   run-god-engine:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 30
 
     steps:
       - name: Checkout Code
@@ -53,8 +58,8 @@ jobs:
           CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID || '61d1d46f-f438-47f5-9128-516d9beb11cb' }}
           DEALS_NICHE_ID: ${{ secrets.DEALS_NICHE_ID || '5cf8114c0bc3eb20c87ce3dcfc1ff185' }}
         run: |
-          # Continuous ultra-fast 5s scanner loop for 1 hour (3600s) of non-stop real-time loot catching
-          python god_level_loot_engine.py --duration 3600 --interval 5
+          # Fast 5s scanner loop for 10 minutes (600s) to catch fresh loots while leaving runner slots for radar
+          python god_level_loot_engine.py --duration 600 --interval 5
 
       - name: Lifetime Anti-Suspension Pulse (Never Sleeps)
         if: always()
