@@ -1,0 +1,57 @@
+name: 24/7 Sarkari Result & Scheme Radar
+
+'on':
+  schedule:
+    # Runs every 45 minutes to catch breaking Sarkari results, admit cards, and schemes
+    - cron: '*/45 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: sarkari-radar
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run-sarkari-radar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests markdown python-dotenv google-api-python-client google-auth-oauthlib google-auth-httplib2
+
+      - name: Run Sarkari Radar Engine
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL || 'gemini-3.5-flash-lite' }}
+          BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID || '1366151638291560024' }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python pipelines/sarkari_radar_engine.py 3
+
+      - name: Persist Cache
+        if: always()
+        run: |
+          git config user.name "Sarkari Radar Bot"
+          git config user.email "bot@uniquedigit.in"
+          git add sarkari_seen_cache.json || true
+          git commit -m "chore(radar): update sarkari seen cache [skip ci]" || true
+          git push origin main || true

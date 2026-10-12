@@ -32,3 +32,4 @@ bridges/whatsapp_bridge/auth_info/
 auth_info/
 sent_whatsapp_cache.json
 bridges/blogger_bridge/tokens.json
+bridges/whatsapp_bridge/Link
