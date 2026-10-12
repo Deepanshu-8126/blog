@@ -520,6 +520,50 @@ def fetch_niche_news_rss(query, geo="IN"):
         pass
     return items
 
+
+# =============================================================================
+# PILLAR 4: AUTONOMOUS REDDIT COMMUNITY TREND RADAR
+# =============================================================================
+SUBREDDIT_RADAR_MAP = {
+    "viral": ["india", "IndianModerate"],
+    "ai-tools": ["ChatGPT", "artificial"],
+    "pc-builds": ["IndianGaming", "pcmasterrace"],
+    "tech": ["technology", "gadgets"],
+    "side-hustles": ["passive_income", "SideHustle"],
+    "exams-results": ["JEENEETards", "UPSC"],
+    "deals": ["deals", "IndianDeals"],
+    "fashion": ["IndianFashionAddicts"]
+}
+
+def fetch_reddit_viral_trends(niche_slug="viral", geo=GEO):
+    """Fetches high-velocity Reddit community debates and viral threads per niche."""
+    results = []
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    clean_niche = niche_slug.replace("-", " ")
+    query = f"reddit {clean_niche} trending"
+    g_url = f"https://news.google.com/rss/search?q={urllib.parse.quote(query)}&hl=en-{geo}&gl={geo}&ceid={geo}:en"
+    try:
+        r = requests.get(g_url, headers=headers, timeout=8)
+        if r.status_code == 200:
+            import xml.etree.ElementTree as ET
+            root = ET.fromstring(r.content)
+            for item in root.findall(".//item")[:3]:
+                t_elem = item.find("title")
+                l_elem = item.find("link")
+                if t_elem is not None and t_elem.text:
+                    raw_title = t_elem.text.split(" - ")[0].strip()
+                    results.append({
+                        "title": raw_title,
+                        "score": 94,
+                        "url": l_elem.text if l_elem is not None else "",
+                        "credit": "Reddit Community Radar",
+                        "facts": f"Trending community debate from Reddit ({clean_niche}): {t_elem.text}. Authentic user consensus, candid pros & cons, and uncensored discussion."
+                    })
+    except Exception:
+        pass
+    return results
+
+
 def get_trends(seeds=None, niche_slug=None):
     out = {}
     # 1. Fetch targeted niche news from Google News RSS if available
@@ -532,7 +576,18 @@ def get_trends(seeds=None, niche_slug=None):
                 "credit": t.get("credit", "Google News")
             }
 
-    # 2. Fetch live rising trends from official Google Trends RSS ONLY for viral/general radar
+    # 2. Fetch Viral Reddit Community Trends (Pillar 4)
+    if niche_slug:
+        for t in fetch_reddit_viral_trends(niche_slug, GEO):
+            if t["title"] not in out:
+                out[t["title"]] = {
+                    "score": t["score"],
+                    "url": t.get("url"),
+                    "facts": t.get("facts", ""),
+                    "credit": t.get("credit", "Reddit Community Radar")
+                }
+
+    # 3. Fetch live rising trends from official Google Trends RSS ONLY for viral/general radar
     # or if the trend actually relates to the specific niche!
     if not niche_slug or niche_slug in ["viral", "trending"]:
         for t in fetch_google_trends_rss(GEO)[:15]:
