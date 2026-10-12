@@ -119,10 +119,15 @@ const niches = await getNiches(runtime?.env);
               `;
             } else {
               if (statusBox) statusBox.textContent = `Found ${data.results.length} articles for "${q}":`;
-              resultsContainer.innerHTML = data.results.map((item: any) => `
+              resultsContainer.innerHTML = data.results.map((item: any) => {
+                const imgBlock = item.image_url && item.image_url.startsWith('http')
+                  ? `<img src="${item.image_url}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />`
+                  : `<div class="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 flex items-center justify-center p-3 text-center"><span class="text-xs font-bold text-slate-300 uppercase tracking-wider">${item.niche_name || 'UniqueDigit'}</span></div>`;
+
+                return `
                 <a href="/${item.niche_slug}/${item.slug}" class="block group p-4 rounded-2xl bg-white border border-line hover:border-brand transition shadow-sm hover:shadow-md">
                   <div class="aspect-video w-full overflow-hidden rounded-xl bg-slate-100 mb-3">
-                    <img src="${item.image_url || '/images/gta6_cover.jpg'}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
+                    ${imgBlock}
                   </div>
                   <div class="flex items-center gap-2 mb-1">
                     <span class="text-xs font-bold text-brand uppercase font-mono">${item.niche_name}</span>
@@ -131,7 +136,7 @@ const niches = await getNiches(runtime?.env);
                   <h3 class="text-base font-bold text-ink group-hover:text-brand transition line-clamp-2">${item.title}</h3>
                   <p class="text-xs text-muted mt-1 line-clamp-2">${item.summary || ''}</p>
                 </a>
-              `).join('');
+              `}).join('');
             }
           }
         } catch {

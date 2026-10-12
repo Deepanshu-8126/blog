@@ -1,7 +1,7 @@
 ---
 import type { Product } from '../lib/db';
 import Icon from './Icon.astro';
-import { proxyImageUrl, CATEGORY_FALLBACK_IMAGES } from '../lib/images';
+import { proxyImageUrl } from '../lib/images';
 
 interface Props {
   product: Product;
@@ -10,7 +10,6 @@ interface Props {
 const { product } = Astro.props;
 const buyUrl = product.aff_url || product.url;
 const safeProductImage = proxyImageUrl(product.image_url, 'deals', product.name);
-const fallbackProductImage = CATEGORY_FALLBACK_IMAGES['deals'] || '/images/products/iphone_16_pro.jpg';
 ---
 
 <div
@@ -22,17 +21,16 @@ const fallbackProductImage = CATEGORY_FALLBACK_IMAGES['deals'] || '/images/produ
   <div>
     <!-- Full-Width Prominent Product Showcase Image Box -->
     <a href={buyUrl} target="_blank" rel="sponsored nofollow noopener" class="block relative aspect-[16/10] sm:aspect-[4/3] w-full rounded-2xl overflow-hidden mb-4 bg-slate-100 border border-slate-200/70">
-      {product.image_url ? (
+      {safeProductImage ? (
         <img
           src={safeProductImage}
           alt={product.name}
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
-          onerror={`this.onerror=null;this.src='${fallbackProductImage}';`}
         />
       ) : (
-        <div class="w-full h-full flex items-center justify-center bg-slate-100">
-          <Icon name="sparkles" class="w-12 h-12 text-brand/40" />
+        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-900 to-indigo-950">
+          <Icon name="sparkles" class="w-12 h-12 text-brand/60" />
         </div>
       )}
 

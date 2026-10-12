@@ -102,286 +102,7 @@ export const SEED_NICHES: Niche[] = [
   { id: '11', slug: 'movies', name: 'Movies', tagline: 'Reviews, OTT & trailers', grp: 'Entertainment', icon: 'clapperboard', page_type: 'movies', pin: false, is_new: false, sort: 11, active: true },
   { id: '12', slug: 'viral', name: 'Viral', tagline: 'Trending internet moments', grp: 'Entertainment', icon: 'rocket', page_type: 'feed', pin: false, is_new: false, sort: 12, active: true }
 ];
-
-export const SEED_POSTS: Post[] = [
-  {
-    id: 'p1',
-    niche_id: '10',
-    slug: 'gta-6-pc-specs-release-date-india-pricing',
-    kind: 'article',
-    title: 'GTA 6 PC Specs & Realistic India Pricing: What System Do You Need?',
-    summary: 'Comprehensive analysis of expected PC requirements for Grand Theft Auto VI, ray tracing hardware demands, and build cost in India.',
-    body_md: `## GTA 6 PC Hardware Demands\nRockstar Games title Grand Theft Auto VI is expected to set a new benchmark in open-world graphics simulation. With advanced ray-traced global illumination and complex crowd AI, hardware selection is paramount.\n\n### Minimum vs Recommended Hardware\n- **Target 1080p 60FPS:** AMD Ryzen 5 7600X or Intel Core i5-13600K paired with NVIDIA RTX 4060 Ti / AMD Radeon RX 7700 XT.\n- **Target 1440p / 4K Ultra:** AMD Ryzen 7 7800X3D and NVIDIA GeForce RTX 4080 Super.\n\n### Storage & Memory\nA minimum of 32GB DDR5 RAM is strongly advised along with high-speed NVMe Gen4 SSD storage to avoid texture streaming bottlenecks.`,
-    faq: [
-      { q: 'Will GTA 6 run on 16GB RAM?', a: 'While 16GB might meet minimum specs, 32GB RAM will prevent stutters in dense city areas.' },
-      { q: 'When is GTA 6 releasing on PC?', a: 'PC release is expected following the initial console launch.' }
-    ],
-    tags: ['GTA 6', 'Gaming PC', 'Rockstar Games'],
-    sources: [
-      { title: 'Rockstar Games Official Wire', url: 'https://rockstargames.com' },
-      { title: 'Digital Foundry Architecture Breakdown', url: 'https://eurogamer.net' }
-    ],
-    image_url: '/images/gta6_cover.jpg',
-    image_credit: 'Rockstar Games / GTA VI Artwork',
-    hype: 96,
-    trend_score: 980,
-    views: 12400,
-    is_breaking: true,
-    indexable: true,
-    status: 'published',
-    published_at: new Date().toISOString()
-  },
-  {
-    id: 'p2',
-    niche_id: '3',
-    slug: 'top-10-free-ai-tools-for-freelancers-2026',
-    kind: 'article',
-    title: '10 Best Free AI Productivity Tools for Indian Freelancers & Creators',
-    summary: 'Boost workflow efficiency with top free and freemium AI tools for coding, writing, video rendering, and voiceovers.',
-    body_md: `## Generative AI for Modern Freelancers\nArtificial intelligence has transitioned from experimental curiosity into essential daily utilities. Here are top-ranked productivity tools:\n\n### 1. Claude 3.7 & GPT-4o\nIdeal for complex logical programming, code debugging, and structuring high-converting proposals.\n\n### 2. ElevenLabs & Suno\nPremier audio synthesis and background audio design for YouTube Shorts and Instagram Reels.\n\n### 3. Perplexity AI\nReplacing standard web search with fast, cited, grounded research summaries.`,
-    faq: [
-      { q: 'Are these tools accessible on mobile?', a: 'Yes, all featured tools support mobile web apps and native Android/iOS applications.' }
-    ],
-    tags: ['AI Tools', 'Freelancing', 'Productivity'],
-    sources: [
-      { title: 'Hacker News AI Top Threads', url: 'https://news.ycombinator.com' }
-    ],
-    image_url: '/images/ai_tools.jpg',
-    image_credit: 'AI Developer Studio Lab',
-    hype: 84,
-    trend_score: 850,
-    views: 8900,
-    is_breaking: false,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 4).toISOString()
-  },
-  {
-    id: 'p3',
-    niche_id: '2',
-    slug: '24k-gold-rate-analysis-festive-season-india',
-    kind: 'article',
-    title: '24K vs 22K Gold Rate Market Trends: What Buyers Must Check in 2026',
-    summary: 'Everything you need to know about BIS 6-digit HUID hallmarking, making charges calculation, and MCX price movements.',
-    body_md: `## Understanding Bullion Purity\nWhen purchasing gold in India, understanding the distinction between investment bullion and wearable ornaments is critical.\n\n### 24K vs 22K Hallmarking\n- **24 Karat (999 Purity):** Pure gold used for minted bars and investment coins.\n- **22 Karat (916 Purity):** Standard alloy with 91.6% purity used for durable jewellery.\n\n### Crucial Buying Checklist\nAlways verify the 6-digit alphanumeric HUID stamped on your jewellery via the official BIS Care app before making payment.`,
-    faq: [
-      { q: 'What is HUID in gold jewellery?', a: 'HUID is a unique 6-digit alphanumeric code laser-engraved on hallmarked gold items.' }
-    ],
-    tags: ['Gold Rate', 'Bullion', 'MCX India'],
-    sources: [
-      { title: 'Bureau of Indian Standards Guidelines', url: 'https://bis.gov.in' }
-    ],
-    image_url: '/images/gold_24k.jpg',
-    image_credit: 'Bullion Market 999.9 Fine Gold',
-    hype: 89,
-    trend_score: 720,
-    views: 6500,
-    is_breaking: false,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 12).toISOString()
-  },
-  {
-    id: 'p4',
-    niche_id: '1',
-    slug: 'rtx-5090-india-benchmarks',
-    kind: 'article',
-    title: 'RTX 5090 India Real-World Benchmarks & Thermals',
-    summary: 'Detailed test of RTX 5090 wattage, ray tracing performance, DLSS 4 frame generation, and India retail pricing expectations.',
-    body_md: `## Next-Gen Blackwell Architecture Breakdown\nThe NVIDIA GeForce RTX 5090 represents an unprecedented generational leap in graphics horsepower.\n\n### Key Benchmark Highlights\n- Cyberpunk 2077 (4K Path Tracing): Exceeds 115 FPS with DLSS 4.\n- Black Myth Wukong (4K Cinematic): 98 FPS average with full ray tracing.\n- Thermals & Power Draw: Peak power consumption hovers around 575W.`,
-    faq: [
-      { q: 'What PSU wattage is needed for RTX 5090?', a: 'A high quality 1000W or 1200W ATX 3.1 certified power supply is strongly recommended.' }
-    ],
-    tags: ['RTX 5090', 'GPU', 'NVIDIA'],
-    sources: [
-      { title: 'NVIDIA Official Architecture Brief', url: 'https://nvidia.com' }
-    ],
-    image_url: '/images/rtx5090.jpg',
-    image_credit: 'Founders Edition Lab Rig',
-    hype: 98,
-    trend_score: 950,
-    views: 15600,
-    is_breaking: true,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 2).toISOString()
-  },
-  {
-    id: 'p5',
-    niche_id: '11',
-    slug: 'drishyam-3-the-conclusion-box-office-collection-nears-400-crore-worldwide',
-    kind: 'article',
-    title: 'Drishyam 3: The Conclusion Box Office Collection Nears ₹400 Crore Worldwide',
-    summary: 'Ajay Devgn and Mohanlal franchise closes the definitive crime suspense saga with historical pan-India theatre occupancy.',
-    body_md: `## Box Office Milestones & Historic Pre-Sales\nThe final chapter in the legendary Vijay Salgaonkar saga has set cash registers ringing across Mumbai, Delhi, Gujarat, and South India circuits.\n\n### The Final Relentless Interrogation\nDirector Abhishek Pathak crafts a relentless game of cat-and-mouse that keeps viewers glued till the final climax twist.`,
-    faq: [
-      { q: 'Is Mohanlal in Drishyam 3 Hindi?', a: 'Mohanlal leads the original Malayalam universe with Ajay Devgn helming the Hindi adaptation.' }
-    ],
-    tags: ['Drishyam 3', 'Ajay Devgn', 'Box Office'],
-    sources: [
-      { title: 'Bollymoviereviewz Box Office Tracker', url: 'https://bollymoviereviewz.com' }
-    ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg',
-    image_credit: 'Panorama Studios / Official Theatrical Poster',
-    hype: 99,
-    trend_score: 990,
-    views: 24500,
-    is_breaking: true,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 1).toISOString()
-  },
-  {
-    id: 'p6',
-    niche_id: '11',
-    slug: 'stree-2-ott-release-date-and-box-office-records',
-    kind: 'article',
-    title: 'Stree 2: Sarkate Ka Aatank — Box Office Records & OTT Release Details',
-    summary: 'Rajkummar Rao and Shraddha Kapoor horror-comedy shatters all-time Hindi cinema box office records.',
-    body_md: `## Chanderi Horror Universe Triumphs\nMaddock Films horror universe delivers its biggest blockbuster yet as Stree 2 crosses ₹600 crore net in domestic collections.\n\n### Where to Stream\nThe film is now available on leading streaming platforms following its historic theatrical run.`,
-    faq: [
-      { q: 'Where can I watch Stree 2 on OTT?', a: 'Stree 2 is streaming exclusively on Prime Video.' }
-    ],
-    tags: ['Stree 2', 'Shraddha Kapoor', 'Horror Comedy'],
-    sources: [
-      { title: 'Box Office India Reports', url: 'https://boxofficeindia.com' }
-    ],
-    image_url: 'https://upload.wikimedia.org/wikipedia/en/a/a1/Stree_2.jpg',
-    image_credit: 'Maddock Films Official Artwork',
-    hype: 95,
-    trend_score: 910,
-    views: 18200,
-    is_breaking: false,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 3).toISOString()
-  },
-  {
-    id: 'p7',
-    niche_id: '4',
-    slug: 'amazon-great-indian-festival-flipkart-bbd-loot-deals',
-    kind: 'article',
-    title: 'Amazon Great Indian Festival vs Flipkart BBD: Live Price Drop & Loot Tracker',
-    summary: 'Live price glitches, SBI & HDFC 10% instant card discount stacking, and top smartphone flash sales.',
-    body_md: `## Festival Sale Radar 2026\nIndia's biggest e-commerce shopping festival brings massive price drops on Apple iPhones, flagship Androids, and gaming laptops.\n\n### How to Stack Bank Discounts\nPair ICICI/HDFC bank credit cards with exchange bonus tokens to maximize your savings.`,
-    faq: [
-      { q: 'Which credit cards give highest discount?', a: 'HDFC, SBI and ICICI offer instant 10% discounts up to ₹4,500.' }
-    ],
-    tags: ['Deals', 'Big Billion Days', 'Amazon GIF'],
-    sources: [
-      { title: 'DesiDime Live Loot Forum', url: 'https://desidime.com' }
-    ],
-    image_url: '/images/products/iphone_16_pro.jpg',
-    image_credit: 'Live E-Commerce Price Drop',
-    hype: 97,
-    trend_score: 960,
-    views: 19800,
-    is_breaking: true,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 5).toISOString()
-  },
-  {
-    id: 'p8',
-    niche_id: '9',
-    slug: 'authentic-indian-thali-traditions-and-health-benefits',
-    kind: 'article',
-    title: 'Traditional Indian Thali: Balanced Nutrition & Regional Flavours Explained',
-    summary: 'Why the ancient Ayurvedic composition of the Indian Thali represents the world’s most balanced culinary design.',
-    body_md: `## The Science of the Indian Thali\nFrom Gujarati to South Indian meals, each component is calibrated for complete digestive balance.\n\n### The 6 Tastes (Shad Rasa)\nSweet, sour, salty, bitter, pungent, and astringent harmoniously packed into one single meal.`,
-    faq: [
-      { q: 'Is Indian Thali nutritionally complete?', a: 'Yes, it provides complex carbohydrates, proteins, fats, and essential minerals.' }
-    ],
-    tags: ['Indian Food', 'Thali', 'Nutrition'],
-    sources: [
-      { title: 'Culinary Research Archives', url: 'https://wikipedia.org' }
-    ],
-    image_url: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=1600&q=85',
-    image_credit: 'Unsplash / Traditional Indian Culinary Spread',
-    hype: 86,
-    trend_score: 780,
-    views: 7400,
-    is_breaking: false,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 8).toISOString()
-  },
-  {
-    id: 'p9',
-    niche_id: '8',
-    slug: 'modern-indian-festive-fashion-and-runway-trends',
-    kind: 'article',
-    title: 'Festive Fashion Trends: Handloom Revival & Contemporary Styling',
-    summary: 'From handwoven Banarasi weaves to modern Indo-Western silhouettes, top festive styles for Indian celebrations.',
-    body_md: `## Indian Runway & Festive Aesthetics\nModern festive fashion blends artisanal heritage with lightweight, breathable fabrics for effortless elegance.`,
-    faq: [
-      { q: 'What fabrics are trending this festive season?', a: 'Chanderi silk, organza, and natural linen blends.' }
-    ],
-    tags: ['Fashion', 'Festive Wear', 'Style Guide'],
-    sources: [
-      { title: 'Fashion Design Council of India', url: 'https://fdci.org' }
-    ],
-    image_url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1600&q=85',
-    image_credit: 'Unsplash / Festive Indian Couture',
-    hype: 82,
-    trend_score: 710,
-    views: 6100,
-    is_breaking: false,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 10).toISOString()
-  },
-  {
-    id: 'p10',
-    niche_id: '7',
-    slug: 'essential-morning-yoga-asanas-for-energy-and-spine-health',
-    kind: 'article',
-    title: 'Essential Morning Yoga Asanas for Daily Energy & Spine Health',
-    summary: 'A 15-minute sequence of Surya Namaskar, Bhujangasana, and Balasana to relieve back pain and boost mental clarity.',
-    body_md: `## Reclaiming Mobility & Mental Wellness\nSedentary screen hours make daily morning stretching vital for joint mobility and postural alignment.`,
-    faq: [
-      { q: 'How long should morning yoga be practiced?', a: 'Just 15-20 minutes of consistent daily practice yields profound wellness benefits.' }
-    ],
-    tags: ['Health', 'Yoga', 'Fitness'],
-    sources: [
-      { title: 'Ministry of Ayush Yoga Protocol', url: 'https://ayush.gov.in' }
-    ],
-    image_url: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1600&q=85',
-    image_credit: 'Unsplash / Morning Asana Wellness Practice',
-    hype: 88,
-    trend_score: 820,
-    views: 8900,
-    is_breaking: false,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 6).toISOString()
-  },
-  {
-    id: 'p11',
-    niche_id: '6',
-    slug: 'best-cashback-credit-cards-for-utilities-and-groceries-india',
-    kind: 'article',
-    title: 'Top Cashback Credit Cards in India: Maximize 5% Flat Savings on Every Spend',
-    summary: 'Compare cashback rates, lounge access, annual fee waivers, and fuel surcharge waivers across top Indian banks.',
-    body_md: `## Credit Card Rewards Strategy\nSmart spenders stack co-branded credit cards for online shopping, dining, and monthly grocery bills.`,
-    faq: [
-      { q: 'Which card gives flat 5% on online shopping?', a: 'Cards like Cashback SBI and Amazon Pay ICICI offer high reward returns.' }
-    ],
-    tags: ['Cashback', 'Credit Cards', 'Personal Finance'],
-    sources: [
-      { title: 'CardInsider Reward Ratings', url: 'https://cardinsider.com' }
-    ],
-    image_url: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1600&q=85',
-    image_credit: 'Unsplash / Smart Contactless Financial Cards',
-    hype: 87,
-    trend_score: 790,
-    views: 7800,
-    is_breaking: false,
-    indexable: true,
-    status: 'published',
-    published_at: new Date(Date.now() - 3600000 * 9).toISOString()
-  }
-];
+export const SEED_POSTS: Post[] = [];
 
 export const SEED_PRODUCTS: Product[] = [
   {
@@ -409,7 +130,7 @@ export const SEED_PRODUCTS: Product[] = [
     category: 'Graphics Cards',
     badge: 'Best Value',
     keywords: 'gpu graphics card rtx 4070 nvidia gigabyte',
-    image_url: '/images/rtx5090.jpg',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/GeForce_RTX_4070_Ti.jpg/800px-GeForce_RTX_4070_Ti.jpg',
     price: 59990,
     rating: 4.8,
     url: 'https://www.amazon.in/s?k=Gigabyte+GeForce+RTX+4070+Super+12GB',
@@ -426,7 +147,7 @@ export const SEED_PRODUCTS: Product[] = [
     category: 'Development',
     badge: 'Editor Choice',
     keywords: 'ai coding editor cursor claude gpt',
-    image_url: '/images/ai_tools.jpg',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/512px-ChatGPT_logo.svg.png',
     price: 1650,
     rating: 4.9,
     url: 'https://cursor.com',
@@ -702,14 +423,14 @@ export async function getPostsByNiche(nicheId: string, limit = 12, runtimeEnv?: 
       const res = await db.prepare(
         'SELECT * FROM posts WHERE niche_id = ? AND status = "published" ORDER BY published_at DESC LIMIT ? OFFSET ?'
       ).bind(nicheId, limit, offset).all();
-      if (res.results && res.results.length > 0) {
+      if (res && Array.isArray(res.results)) {
         return res.results.map((r: any) => mapPostRow(r));
       }
     } catch (err) {
-      console.warn('[D1 getPostsByNiche fallback]:', err);
+      console.warn('[D1 getPostsByNiche error]:', err);
     }
   }
-  return SEED_POSTS.filter(p => p.niche_id === nicheId || p.niches?.id === nicheId).slice(offset, offset + limit);
+  return [];
 }
 
 /** 3b. Get total published post count for a niche */
@@ -722,10 +443,10 @@ export async function getPostsCountByNiche(nicheId: string, runtimeEnv?: any): P
       ).bind(nicheId).first();
       return Number(res?.count || 0);
     } catch (err) {
-      console.warn('[D1 getPostsCountByNiche fallback]:', err);
+      console.warn('[D1 getPostsCountByNiche error]:', err);
     }
   }
-  return SEED_POSTS.filter(p => p.niche_id === nicheId || p.niches?.id === nicheId).length;
+  return 0;
 }
 
 /** 4. Get trending posts across all niches */
@@ -741,14 +462,14 @@ export async function getTrendingPosts(limit = 5, runtimeEnv?: any): Promise<Pos
         ORDER BY posts.hype DESC, posts.published_at DESC 
         LIMIT ?
       `).bind(limit).all();
-      if (res.results && res.results.length > 0) {
+      if (res && Array.isArray(res.results)) {
         return res.results.map((r: any) => mapPostRow(r));
       }
     } catch (err) {
-      console.warn('[D1 getTrendingPosts fallback]:', err);
+      console.warn('[D1 getTrendingPosts error]:', err);
     }
   }
-  return [...SEED_POSTS].sort((a, b) => (b.hype || b.trend_score) - (a.hype || a.trend_score)).slice(0, limit);
+  return [];
 }
 
 /** 4b. Get all published posts for full XML sitemap indexing */
@@ -764,14 +485,14 @@ export async function getAllPublishedPosts(limit = 1000, runtimeEnv?: any): Prom
         ORDER BY posts.published_at DESC 
         LIMIT ?
       `).bind(limit).all();
-      if (res.results && res.results.length > 0) {
+      if (res && Array.isArray(res.results)) {
         return res.results.map((r: any) => mapPostRow(r));
       }
     } catch (err) {
-      console.warn('[D1 getAllPublishedPosts fallback]:', err);
+      console.warn('[D1 getAllPublishedPosts error]:', err);
     }
   }
-  return SEED_POSTS.filter(p => p.status === 'published' && p.indexable !== false);
+  return [];
 }
 
 /** 4c. Get published posts by editorial group (e.g. 'Tech', 'Money', 'Entertainment', 'Lifestyle') */
@@ -797,22 +518,14 @@ export async function getPostsByGroup(grp: string, limit = 4, excludeSlugs: stri
       binds.push(limit);
 
       const res = await db.prepare(query).bind(...binds).all();
-      if (res.results && res.results.length > 0) {
+      if (res && Array.isArray(res.results)) {
         return res.results.map((r: any) => mapPostRow(r));
       }
     } catch (err) {
-      console.warn('[D1 getPostsByGroup fallback]:', err);
+      console.warn('[D1 getPostsByGroup error]:', err);
     }
   }
-
-  const normalizedGrp = grp.toLowerCase();
-  return SEED_POSTS
-    .filter(p => {
-      const matchGrp = (p.niches?.grp || '').toLowerCase() === normalizedGrp;
-      const notExcluded = !excludeSlugs.includes(p.slug);
-      return matchGrp && notExcluded;
-    })
-    .slice(0, limit);
+  return [];
 }
 
 /** 5. Get products / tools for a niche (Optimized for Highest Monetization & Conversions) */
@@ -865,13 +578,12 @@ export async function getPost(nicheSlug: string, postSlug: string, runtimeEnv?: 
       if (row) {
         return mapPostRow(row, niche);
       }
+      return null;
     } catch (err) {
-      console.warn('[D1 getPost fallback]:', err);
+      console.warn('[D1 getPost error]:', err);
     }
   }
 
-  const p = SEED_POSTS.find(post => post.slug === postSlug);
-  if (p) return { ...p, niches: niche };
   return null;
 }
 

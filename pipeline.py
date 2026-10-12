@@ -550,82 +550,116 @@ def ai_topics(n):
     return {t: 50 for t in res.get("topics", [])}
 
 
-# ---------- Trio Multi-Agent Governance Model ----------
-CURATED_NICHE_HERO_FALLBACKS = {
-    "cricket-sports": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg/960px-Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg.png",
-    "pc-builds": "/images/rtx5090.jpg",
-    "gta-6": "/images/gta6_cover.jpg",
-    "ai-tools": "/images/ai_tools.jpg",
-    "gold-rate": "/images/gold_24k.jpg",
-    "deals": "/images/products/iphone_16_pro.jpg",
-    "cashback": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Credit_Card_Chip_%2834684294971%29.jpg",
-    "food": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Tradtional_Thali.jpg",
-    "health": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_asana_class%2C_Plage_Pereire%2C_Arcachon%2C_2015.jpg",
-    "fashion": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Carolina_Herrera_AW14_12.jpg",
-    "movies": "https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg",
-    "automotive-trends": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Tata_Nexon_Blue_Dual_Tone.jpg/960px-Tata_Nexon_Blue_Dual_Tone.jpg",
-    "exams-results": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_of_India_logo.svg/960px-Government_of_India_logo.svg.png",
-    "viral": "/images/ai_tools.jpg"
-}
+# ---------- Real News Media & Aspect Ratio Extractor (Zero Local Fallbacks) ----------
+from urllib.parse import urlparse
 
-def agent_alpha_check(candidate_title, candidate_summary="", existing_titles=None, min_chars=10):
-    """
-    Agent Alpha: Asserts uniqueness against D1 history and validates quality.
-    Rejects semantic duplicates (Jaccard similarity > 0.60 or empty titles).
-    """
-    if not candidate_title or len(candidate_title.strip()) < min_chars:
-        return False, "Title too short or empty"
-    
-    cand_tokens = set(re.findall(r'\b\w{3,}\b', candidate_title.lower()))
-    if not cand_tokens:
-        return False, "No valid semantic tokens"
-
-    if existing_titles:
-        for ext in existing_titles:
-            if not ext:
-                continue
-            ext_tokens = set(re.findall(r'\b\w{3,}\b', ext.lower()))
-            if not ext_tokens:
-                continue
-            intersection = cand_tokens.intersection(ext_tokens)
-            union = cand_tokens.union(ext_tokens)
-            jaccard = len(intersection) / len(union) if union else 0
-            if jaccard > 0.60:
-                return False, f"Duplicate detected (Jaccard {jaccard:.2f} with '{ext}')"
-
-    return True, "Passed Agent Alpha quality & uniqueness gate"
-
-
-def agent_gamma_verify_image(image_url, niche_slug, topic_query):
-    """
-    Agent Gamma: Media & Aspect Ratio Guardian.
-    Validates image URL reachable via HTTP HEAD/GET, fallback to curated high-res local/wiki assets.
-    """
-    fallback = CURATED_NICHE_HERO_FALLBACKS.get(niche_slug, "/images/ai_tools.jpg")
-    if not image_url:
-        return fallback, "Local High-Res Fallback"
-    
-    if image_url.startswith("/"):
-        return image_url, "Local Asset"
-    
+def extract_og_image(url: str, timeout: int = 8) -> str | None:
+    """Real news article se og:image extract karo. 1200x630 editorial photo."""
+    if not url or not url.startswith("http"):
+        return None
     try:
-        r = requests.head(image_url, headers=UA, timeout=4, allow_redirects=True)
-        if r.status_code == 200:
-            c_type = r.headers.get("Content-Type", "")
-            if not c_type or "image" in c_type.lower() or "application/octet-stream" in c_type.lower():
-                return image_url, "HTTP 200 Verified Remote"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        resp = requests.get(url, headers=headers, timeout=timeout)
+        resp.raise_for_status()
+        
+        # og:image extract
+        match = re.search(r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']', resp.text, re.IGNORECASE)
+        if not match:
+            match = re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\']og:image["\']', resp.text, re.IGNORECASE)
+        if match:
+            img_url = match.group(1).strip()
+            if img_url.startswith("https://") and not any(bad in img_url.lower() for bad in ["logo", "icon", "placeholder", "favicon"]):
+                return img_url
+        
+        # Fallback: Twitter card image
+        match = re.search(r'<meta[^>]+(?:property|name)=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']', resp.text, re.IGNORECASE)
+        if match:
+            img_url = match.group(1).strip()
+            if img_url.startswith("https://") and not any(bad in img_url.lower() for bad in ["logo", "icon", "placeholder", "favicon"]):
+                return img_url
+        
+        # Fallback: Pehla <img> tag with src
+        match = re.search(r'<img[^>]+src=["\'](https://[^"\']+\.(?:jpg|jpeg|png|webp))["\']', resp.text, re.IGNORECASE)
+        if match:
+            img_url = match.group(1).strip()
+            if not any(bad in img_url.lower() for bad in ["logo", "icon", "placeholder", "avatar"]):
+                return img_url
+            
     except Exception:
         pass
+    return None
 
-    # If head check failed or redirected poorly, try wiki
+
+def extract_image_from_rss(rss_item_xml: str) -> str | None:
+    """Google Trends / Google News RSS se real image extract karo."""
+    if not rss_item_xml:
+        return None
     try:
-        w = wiki(topic_query)
-        if w and w.get("image"):
-            return w["image"], "Wikimedia Commons Verified"
+        # <ht:picture> tag (Google Trends RSS)
+        match = re.search(r'<ht:picture>(?:<!\[CDATA\[)?(https?://[^\]<>\s"]+)(?:\]\]>)?</ht:picture>', rss_item_xml)
+        if match:
+            return match.group(1).strip()
+        
+        # <media:content> tag
+        match = re.search(r'<media:content[^>]+url=["\'](https://[^"\']+)["\']', rss_item_xml)
+        if match:
+            return match.group(1).strip()
+        
+        # <enclosure> tag
+        match = re.search(r'<enclosure[^>]+url=["\'](https://[^"\']+\.(?:jpg|jpeg|png|webp))["\']', rss_item_xml, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+            
     except Exception:
         pass
+    return None
 
-    return fallback, "Curated Niche Fallback"
+
+def get_real_image(article_url: str = "", rss_xml: str = "", niche_slug: str = "") -> str | None:
+    """
+    Priority:
+    1. RSS se image (real news photo)
+    2. Article page se og:image (editorial photo)
+    3. None (frontend mein clean gradient card dikhega, ZERO local JPGs)
+    """
+    # 1. RSS se try karo
+    if rss_xml:
+        img = extract_image_from_rss(rss_xml)
+        if img:
+            return img
+    
+    # 2. Article page se og:image
+    if article_url and article_url.startswith("http"):
+        img = extract_og_image(article_url)
+        if img:
+            return img
+    
+    return None
+
+
+def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", topic_query: str = "", article_url: str = "") -> tuple[str | None, str]:
+    """
+    Agent Gamma: Media & Real Link Guardian.
+    Validates image URL is a real https:// link. ZERO local JPG fallbacks allowed!
+    """
+    target = image_url
+    if not target and article_url:
+        target = extract_og_image(article_url)
+
+    if not target and topic_query:
+        try:
+            w = wiki(topic_query)
+            if w and w.get("image"):
+                target = w["image"]
+        except Exception:
+            pass
+
+    if target and isinstance(target, str) and target.startswith("http"):
+        # Disallow SVGs of flags or logos
+        if not any(bad in target.lower() for bad in ["bcci_logo", "flag_of_india", "government_of_india_logo", "credit_card_chip"]):
+            return target, "Verified Real Web Media"
+
+    return None, "No Real Media (Clean Gradient Card)"
 
 
 def write_article(n, title, angle, facts, trend):
@@ -921,16 +955,21 @@ Return strict JSON:
         niche_record = d1_query("SELECT id FROM niches WHERE slug = ?", [n_slug])
         actual_niche_id = niche_record[0]["id"] if niche_record else niche_id
 
-        # 2. If no image from RSS, check Wikipedia fallback
+        # 2. Real News Image Extraction (RSS -> og:image -> Wikipedia entity)
+        if not image and src and src.startswith("http"):
+            image = extract_og_image(src)
+            if image:
+                credit = "Verified News Publisher"
+
         if not image:
             w = wiki(query)
             if w:
-                facts = (facts + "\n" + w["extract"]).strip()
+                facts = (facts + "\n" + w.get("extract", "")).strip()
                 if w.get("image"):
                     image, credit, src = w["image"], "Wikimedia Commons", w["url"]
 
-        # Agent Gamma Gate: Media & Aspect Ratio Guardian
-        image, gamma_status = agent_gamma_verify_image(image, n_slug, query)
+        # Agent Gamma Gate: Media Validator (ZERO local JPG fallbacks!)
+        image, gamma_status = agent_gamma_verify_image(image, n_slug, query, src or "")
 
         topic_id = str(uuid.uuid4())
         topic_slug = slugify(query)

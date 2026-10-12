@@ -96,25 +96,6 @@ const readTime = Math.max(2, Math.ceil(wordCount / 180));
 
 Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=10, must-revalidate');
 
-// High-Resolution Curated Assets to Prevent Low-Res Blur (100% Real Wikipedia Commons & Local Assets)
-const CURATED_NICHE_HERO_IMAGES: Record<string, string> = {
-  'cricket-sports': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg/960px-Board_of_Control_for_Cricket_in_India_Logo_%282024%29.svg.png',
-  'pc-builds': '/images/rtx5090.jpg',
-  'gta-6': '/images/gta6_cover.jpg',
-  'ai-tools': '/images/ai_tools.jpg',
-  'gold-rate': '/images/gold_24k.jpg',
-  'deals': '/images/products/iphone_16_pro.jpg',
-  'cashback': 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Credit_Card_Chip_%2834684294971%29.jpg',
-  'food': 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Tradtional_Thali.jpg',
-  'health': 'https://upload.wikimedia.org/wikipedia/commons/b/b0/Beach_asana_class%2C_Plage_Pereire%2C_Arcachon%2C_2015.jpg',
-  'side-hustles': '/images/ai_tools.jpg',
-  'fashion': 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Carolina_Herrera_AW14_12.jpg',
-  'movies': 'https://upload.wikimedia.org/wikipedia/en/d/d9/Drishyam-_The_Conclusion_poster.jpg',
-  'automotive-trends': 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Tata_Nexon_Blue_Dual_Tone.jpg/960px-Tata_Nexon_Blue_Dual_Tone.jpg',
-  'exams-results': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_of_India_logo.svg/960px-Government_of_India_logo.svg.png',
-  'viral': '/images/ai_tools.jpg'
-};
-
 interface GalleryItem {
   url: string;
   label: string;
@@ -141,39 +122,29 @@ const ENTITY_SPECIFIC_GALLERIES: Record<string, GalleryItem[]> = {
       label: '3. Mohanlal (Creator)',
       caption: 'Mohanlal, legendary lead of the original Malayalam cult classic universe.'
     }
-  ],
-  'gta-6-pc-specs-realistic-india-pricing-what-system-do-you-need': [
-    {
-      url: '/images/gta6_cover.jpg',
-      label: '1. Official Key Art',
-      caption: 'Rockstar Games official Grand Theft Auto VI Vice City artwork.'
-    },
-    {
-      url: '/images/rtx5090.jpg',
-      label: '2. RTX 5090 Target',
-      caption: 'Next-gen ray tracing and high-FPS target hardware.'
-    }
   ]
 };
 
 const displayHeroImage = proxyImageUrl(post.image_url, niche.slug, post.slug);
-const absoluteImageUrl = displayHeroImage.startsWith('http') 
-  ? displayHeroImage 
-  : `${Astro.url.origin}${displayHeroImage}`;
+const absoluteImageUrl = displayHeroImage 
+  ? (displayHeroImage.startsWith('http') ? displayHeroImage : `${Astro.url.origin}${displayHeroImage}`)
+  : `${Astro.url.origin}/favicon.svg`;
 
 // Build Authentic Gallery: Only show real entity slides, never inject fake stock photos
-const rawGallerySlides: GalleryItem[] = ENTITY_SPECIFIC_GALLERIES[post.slug] || [
+const rawGallerySlides: GalleryItem[] = ENTITY_SPECIFIC_GALLERIES[post.slug] || (displayHeroImage ? [
   {
     url: displayHeroImage,
     label: '1. Curated Visual',
     caption: post.image_credit ? `Source: ${post.image_credit}` : `${post.title} — Curated editorial coverage.`
   }
-];
+] : []);
 
-const gallerySlides: GalleryItem[] = rawGallerySlides.map(slide => ({
-  ...slide,
-  url: proxyImageUrl(slide.url)
-}));
+const gallerySlides: GalleryItem[] = rawGallerySlides
+  .map(slide => ({
+    ...slide,
+    url: proxyImageUrl(slide.url) || ''
+  }))
+  .filter(slide => Boolean(slide.url));
 
 // 1. Article / NewsArticle Schema (Google Discover & SEO Compliant)
 const articleSchema = {
@@ -599,113 +570,135 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
           </div>
         </header>
 
-        <!-- Interactive 3-Image Carousel / Slider Component -->
-        <div class="mb-8 sm:mb-12">
-          <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-md relative group select-none">
+        <!-- Interactive 3-Image Carousel or Branded Gradient Banner -->
+        {gallerySlides.length > 0 ? (
+          <div class="mb-8 sm:mb-12">
+            <div class="rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200/90 bg-slate-900 shadow-md relative group select-none">
 
-            <!-- Slide Viewport (Adaptive Aspect Ratio & Mobile Optimized) -->
-            <div class="relative aspect-[4/3] sm:aspect-[16/9] w-full max-h-[380px] sm:max-h-[460px] overflow-hidden bg-slate-900">
-              <div id="gallery-track" class="flex w-full h-full transition-transform duration-500 ease-out">
+              <!-- Slide Viewport (Adaptive Aspect Ratio & Mobile Optimized) -->
+              <div class="relative aspect-[4/3] sm:aspect-[16/9] w-full max-h-[380px] sm:max-h-[460px] overflow-hidden bg-slate-900">
+                <div id="gallery-track" class="flex w-full h-full transition-transform duration-500 ease-out">
+                  {gallerySlides.map((slide, idx) => (
+                    <div class="w-full h-full shrink-0 relative bg-slate-900 flex items-center justify-center overflow-hidden">
+                      <!-- Atmospheric Ambient Blurred Glow -->
+                      <img
+                        src={slide.url}
+                        alt=""
+                        aria-hidden="true"
+                        loading="lazy"
+                        decoding="async"
+                        class="absolute inset-0 w-full h-full object-cover filter blur-2xl opacity-40 scale-110 pointer-events-none"
+                      />
+                      <div class="absolute inset-0 bg-slate-950/25"></div>
+
+                      <!-- Foreground Image: Mobile full-bleed cover, desktop contain -->
+                      <img
+                        src={slide.url}
+                        alt={`${post.title} - ${slide.label}`}
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                        class="relative z-10 w-full h-full object-cover sm:object-contain mx-auto"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <!-- Top Floating Badges -->
+                <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+                  <span id="gallery-counter-badge" class="px-3 py-1 rounded-full text-xs sm:text-sm font-mono font-bold bg-slate-900/85 backdrop-blur-md text-amber-300 border border-slate-700/80 shadow-md">
+                    {gallerySlides.length > 1 ? `Photo 1 of ${gallerySlides.length}` : 'Curated Visual'}
+                  </span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
+                    HD 1400w
+                  </span>
+                </div>
+
+                <!-- Navigation Arrows (Shown only if multi-image) -->
+                {gallerySlides.length > 1 && (
+                  <>
+                    <button
+                      id="gallery-prev-btn"
+                      type="button"
+                      aria-label="Previous Image"
+                      class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-0 group-hover:opacity-100 cursor-pointer"
+                    >
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+
+                    <button
+                      id="gallery-next-btn"
+                      type="button"
+                      aria-label="Next Image"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-0 group-hover:opacity-100 cursor-pointer"
+                    >
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <!-- Dynamic Slide Caption & Source Bar -->
+              <div class="px-5 py-4 bg-slate-900/95 text-sm text-slate-300 flex items-center justify-between border-t border-slate-800 gap-3 flex-wrap">
+                <div class="flex items-center gap-3 min-w-0">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                  <p id="gallery-caption-text" class="truncate max-w-sm sm:max-w-xl text-slate-200 font-medium leading-relaxed">
+                    {gallerySlides[0]?.caption || post.title}
+                  </p>
+                </div>
+                {post.source_url && (
+                  <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 text-sm font-bold flex items-center gap-1">
+                    <span>Verify Source</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <!-- Interactive Thumbnail Switcher Bar (Shown only if multiple authentic slides) -->
+            {gallerySlides.length > 1 && (
+              <div class={`grid ${gallerySlides.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-3 mt-4`}>
                 {gallerySlides.map((slide, idx) => (
-                  <div class="w-full h-full shrink-0 relative bg-slate-900 flex items-center justify-center overflow-hidden">
-                    <!-- Atmospheric Ambient Blurred Glow -->
-                    <img
-                      src={slide.url}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      decoding="async"
-                      class="absolute inset-0 w-full h-full object-cover filter blur-2xl opacity-40 scale-110 pointer-events-none"
-                    />
-                    <div class="absolute inset-0 bg-slate-950/25"></div>
-
-                    <!-- Foreground Image: Mobile full-bleed cover, desktop contain -->
-                    <img
-                      src={slide.url}
-                      alt={`${post.title} - ${slide.label}`}
-                      loading={idx === 0 ? "eager" : "lazy"}
-                      decoding="async"
-                      class="relative z-10 w-full h-full object-cover sm:object-contain mx-auto"
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    data-slide-index={idx}
+                    class={`gallery-tab-btn flex items-center gap-3 p-3 rounded-2xl border transition text-left cursor-pointer min-h-[72px] ${
+                      idx === 0
+                        ? 'bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                    }`}
+                  >
+                    <div class="w-14 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
+                      <img src={slide.url} alt="" class="w-full h-full object-cover" />
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <span class="text-sm block truncate font-bold">{slide.label}</span>
+                    </div>
+                  </button>
                 ))}
               </div>
-
-              <!-- Top Floating Badges -->
-              <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
-                <span id="gallery-counter-badge" class="px-3 py-1 rounded-full text-xs sm:text-sm font-mono font-bold bg-slate-900/85 backdrop-blur-md text-amber-300 border border-slate-700/80 shadow-md">
-                  {gallerySlides.length > 1 ? `Photo 1 of ${gallerySlides.length}` : 'Curated Visual'}
-                </span>
-                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
-                  HD 1400w
-                </span>
-              </div>
-
-              <!-- Navigation Arrows (Shown only if multi-image) -->
-              {gallerySlides.length > 1 && (
-                <>
-                  <button
-                    id="gallery-prev-btn"
-                    type="button"
-                    aria-label="Previous Image"
-                    class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-0 group-hover:opacity-100 cursor-pointer"
-                  >
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                  </button>
-
-                  <button
-                    id="gallery-next-btn"
-                    type="button"
-                    aria-label="Next Image"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-slate-900/70 hover:bg-brand text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-lg active:scale-95 transition opacity-0 group-hover:opacity-100 cursor-pointer"
-                  >
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                  </button>
-                </>
-              )}
-            </div>
-
-            <!-- Dynamic Slide Caption & Source Bar -->
-            <div class="px-5 py-4 bg-slate-900/95 text-sm text-slate-300 flex items-center justify-between border-t border-slate-800 gap-3 flex-wrap">
-              <div class="flex items-center gap-3 min-w-0">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-                <p id="gallery-caption-text" class="truncate max-w-sm sm:max-w-xl text-slate-200 font-medium leading-relaxed">
-                  {gallerySlides[0].caption}
+            )}
+          </div>
+        ) : (
+          <div class="mb-8 sm:mb-12">
+            <div class="rounded-2xl sm:rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white relative overflow-hidden border border-slate-700/60 shadow-md">
+              <div class="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-brand/20 blur-3xl pointer-events-none"></div>
+              <div class="relative z-10 max-w-2xl">
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-brand-light backdrop-blur-md border border-white/10">
+                    {niche.name} Editorial
+                  </span>
+                  <span class="text-xs text-slate-300 font-medium">⚡ Real-time Telemetry</span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black text-white leading-tight mb-2">
+                  {post.title}
+                </h2>
+                <p class="text-slate-300 text-xs sm:text-sm line-clamp-2 leading-relaxed">
+                  {post.summary}
                 </p>
               </div>
-              {post.source_url && (
-                <a href={post.source_url} target="_blank" rel="nofollow noopener" class="text-amber-400 hover:underline shrink-0 text-sm font-bold flex items-center gap-1">
-                  <span>Verify Source</span>
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                </a>
-              )}
             </div>
           </div>
-
-          <!-- Interactive Thumbnail Switcher Bar (Shown only if multiple authentic slides) -->
-          {gallerySlides.length > 1 && (
-            <div class={`grid ${gallerySlides.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-3 mt-4`}>
-              {gallerySlides.map((slide, idx) => (
-                <button
-                  type="button"
-                  data-slide-index={idx}
-                  class={`gallery-tab-btn flex items-center gap-3 p-3 rounded-2xl border transition text-left cursor-pointer min-h-[72px] ${
-                    idx === 0
-                      ? 'bg-purple-50/90 border-brand text-brand ring-2 ring-brand/20 font-bold'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
-                  }`}
-                >
-                  <div class="w-14 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-900 border border-slate-200">
-                    <img src={slide.url} alt="" class="w-full h-full object-cover" />
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <span class="text-sm block truncate font-bold">{slide.label}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        )}
 
         <!-- Interactive Table of Contents (TOC) Quick Jump Bar -->
         {tableOfContents.length > 0 && (

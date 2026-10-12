@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro';
-import { CATEGORY_FALLBACK_IMAGES } from '../lib/images';
 
 function isAllowedHost(hostname: string): boolean {
   const h = hostname.toLowerCase();
@@ -55,31 +54,27 @@ function isAllowedHost(hostname: string): boolean {
   );
 }
 
-function getSafeFallbackUrl(nicheSlug?: string | null): string {
-  const slug = (nicheSlug || 'viral').toLowerCase();
-  return CATEGORY_FALLBACK_IMAGES[slug] || CATEGORY_FALLBACK_IMAGES['viral'];
-}
+// 1x1 Transparent SVG placeholder when upstream fails
+const EMPTY_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
   const targetUrlStr = url.searchParams.get('url') || url.searchParams.get('u');
-  const nicheSlug = url.searchParams.get('n') || url.searchParams.get('niche');
-  const fallback = getSafeFallbackUrl(nicheSlug);
 
   if (!targetUrlStr) {
-    return Response.redirect(fallback, 302);
+    return new Response(EMPTY_SVG, { status: 404, headers: { 'Content-Type': 'image/svg+xml' } });
   }
 
   let targetUrl: URL;
   try {
     targetUrl = new URL(targetUrlStr);
   } catch {
-    return Response.redirect(fallback, 302);
+    return new Response(EMPTY_SVG, { status: 400, headers: { 'Content-Type': 'image/svg+xml' } });
   }
 
   // Security: Host allowlist
   if (!isAllowedHost(targetUrl.hostname) || targetUrl.protocol !== 'https:') {
-    return Response.redirect(fallback, 302);
+    return new Response(EMPTY_SVG, { status: 403, headers: { 'Content-Type': 'image/svg+xml' } });
   }
 
   try {
@@ -92,7 +87,7 @@ export const GET: APIRoute = async ({ request }) => {
     });
 
     if (!upstreamRes.ok) {
-      return Response.redirect(fallback, 302);
+      return new Response(EMPTY_SVG, { status: 404, headers: { 'Content-Type': 'image/svg+xml' } });
     }
 
     const contentType = upstreamRes.headers.get('content-type') || 'image/jpeg';
@@ -105,7 +100,7 @@ export const GET: APIRoute = async ({ request }) => {
         'Access-Control-Allow-Origin': '*'
       }
     });
-  } catch (err: any) {
-    return Response.redirect(fallback, 302);
+  } catch {
+    return new Response(EMPTY_SVG, { status: 504, headers: { 'Content-Type': 'image/svg+xml' } });
   }
 };
