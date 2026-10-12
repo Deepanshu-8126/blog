@@ -218,8 +218,14 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
 
 
 # ---------- Google Blogger Multi-Destination Publisher ----------
-def send_blogger(title, body_md, tags=None, image_url=None):
-    """Automatically cross-publishes the humanized article to Google Blogger."""
+BLOGGER_ALLOWED_NICHES = ["ai-tools", "pc-builds", "side-hustles", "tech", "deals", "viral"]
+
+def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
+    """Automatically cross-publishes targeted High-CPC Tech/AI articles to Google Blogger."""
+    if niche_slug and niche_slug not in BLOGGER_ALLOWED_NICHES:
+        # Keep Blogger 100% focused on AI & Tech topical authority
+        return None
+
     try:
         from bridges.blogger_bridge.blogger_publisher import publish_to_blogger
         import markdown
@@ -453,18 +459,67 @@ def fetch_google_trends_rss(geo=GEO):
     return trends
 
 
-def get_trends(seeds=None):
+NICHE_SEARCH_MAP = {
+    "ai-tools": "AI tools OR ChatGPT alternative OR generative AI",
+    "pc-builds": "gaming PC build OR graphics card RTX OR AMD processor",
+    "side-hustles": "side hustle ideas OR make money online OR freelancing India",
+    "exams-results": "sarkari result OR admit card OR exam cutoff OR answer key",
+    "health": "gym workout routine OR muscle building exercises OR fitness diet",
+    "food": "trending recipe OR street food India OR easy cooking hack",
+    "deals": "festive deals discount OR price drop sale Amazon Flipkart",
+    "fashion": "fashion trends 2026 OR sneaker drops OR viral outfit style"
+}
+
+def fetch_niche_news_rss(query, geo="IN"):
+    """Fetches real-time targeted news items from Google News RSS for a specific niche"""
+    url = f"https://news.google.com/rss/search?q={urllib.parse.quote(query)}&hl=en-{geo}&gl={geo}&ceid={geo}:en"
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    items = []
+    try:
+        r = requests.get(url, headers=headers, timeout=12)
+        if r.status_code == 200:
+            import xml.etree.ElementTree as ET
+            root = ET.fromstring(r.content)
+            for item in root.findall(".//item")[:10]:
+                t_elem = item.find("title")
+                link_elem = item.find("link")
+                if t_elem is not None and t_elem.text:
+                    raw_title = t_elem.text.split(" - ")[0].strip()
+                    publisher = t_elem.text.split(" - ")[-1].strip() if " - " in t_elem.text else "Google News"
+                    items.append({
+                        "title": raw_title,
+                        "score": 92,
+                        "url": link_elem.text if link_elem is not None else "",
+                        "credit": publisher,
+                        "facts": f"Recent verified reporting from {publisher}: {t_elem.text}"
+                    })
+    except Exception:
+        pass
+    return items
+
+def get_trends(seeds=None, niche_slug=None):
     out = {}
-    # 1. Fetch live rising trends from official Google Trends RSS
+    # 1. Fetch targeted niche news from Google News RSS if available
+    if niche_slug and niche_slug in NICHE_SEARCH_MAP:
+        for t in fetch_niche_news_rss(NICHE_SEARCH_MAP[niche_slug], GEO):
+            out[t["title"]] = {
+                "score": t["score"],
+                "url": t.get("url"),
+                "facts": t.get("facts", ""),
+                "credit": t.get("credit", "Google News")
+            }
+
+    # 2. Fetch live rising trends from official Google Trends RSS
     for t in fetch_google_trends_rss(GEO)[:15]:
-        out[t["title"]] = {
-            "score": t["score"],
-            "url": t.get("url"),
-            "facts": t.get("facts", ""),
-            "credit": t.get("credit", "Verified News")
-        }
+        if t["title"] not in out:
+            out[t["title"]] = {
+                "score": t["score"],
+                "url": t.get("url"),
+                "facts": t.get("facts", ""),
+                "credit": t.get("credit", "Verified News")
+            }
     
-    # 2. If seeds provided, augment with matching keyword variations
+    # 3. If seeds provided, augment with matching keyword variations
     if seeds:
         for s in seeds[:3]:
             if s not in out:
@@ -787,7 +842,11 @@ GROUNDED FACTS & CONTEXT (Use ONLY verified claims):
 
 AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING (Agent Beta):
 1. Detect why the user is searching for "{title}" RIGHT NOW:
-   - Case A (Exam/Result/Admit Card): Provide a clear timeline, official check steps, cutoff breakdown, and preparation revision tips.
+   - Case A (Exam/Result/Admit Card/Sarkari):
+     * Official website check steps (ssc.gov.in, cbse.nic.in, nta.ac.in).
+     * Clear 4-step procedure to check scorecard / download admit card.
+     * Category-wise Expected Cutoff Table (UR, OBC, SC, ST, EWS).
+     * Next stage timeline (Tier 2, Physical test, Counseling).
    - Case B (Shopping/Deal/Loot): Provide a price-to-value verdict, key specs, warranty note, and why this discount matters.
    - Case C (Tech/Gaming/Hardware): Provide performance benchmarks, compatibility requirements, and pros/cons.
    - Case D (Trending Viral/Event): Explain what happened, why it is buzzing in India, and key verified takeaways.
@@ -803,16 +862,31 @@ AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING (Agent Beta):
      * Dos and Don'ts checklist.
      * Safe usage, precautions, and when to consult a registered medical practitioner.
      * Zero miracle-cure claims or unverified health promises.
-   - Case G (Deals / Cashback / Product Review):
-     Provide clear price intelligence:
-     * Mention MRP, realistic sale price, bank card cashback offers (e.g. HDFC/ICICI).
-     * Value breakdown and whether it's at its 30-day lowest price.
+   - Case G (Gym Exercises, Workout Routine & Fitness):
+     * Target muscle groups and step-by-step correct exercise form.
+     * Exact Sets, Reps, and Rest periods for beginner vs intermediate.
+     * Common gym mistakes and injury prevention tips.
+     * High-protein Indian diet support (Paneer, Soya chunks, Eggs, Whey).
+   - Case H (Food Recipes, Street Food & Cooking):
+     * Prep time, cooking time, and serving portions.
+     * Complete ingredients checklist in standard Indian units.
+     * Step-by-step foolproof cooking method.
+     * Secret chef hacks to get authentic restaurant-style taste at home.
+   - Case I (AI Tools, SaaS & Software Guides):
+     * Practical real-world use case for Indian students, creators, and freelancers.
+     * Detailed Free Tier vs Paid Tier breakdown.
+     * Feature comparison table with alternatives.
+     * Step-by-step getting started guide.
 
-2. Structure the response in clean, engaging Markdown (500-650 words) using:
-   - ## Catchy, clear subheadings
-   - Markdown comparison tables or bulleted checklists where relevant
-   - Simple, humanized English with natural Hinglish warmth for Indian audiences
-   - Zero clickbait, zero hallucinated medical/legal guarantees{', include standard safety note' if cfg.get('disclaimer') else ''}.
+2. HUMANIZATION & STRICT ANTI-AI SLOP RULES:
+   - WRITE LIKE A PASSIONATE, EXPERT INDIAN BLOGGER TALKING TO A SMART FRIEND.
+   - BANNED CLICHES (NEVER USE): "In conclusion", "delve into", "tapestry", "beacon", "testament to", "fast-paced world", "it is important to remember", "furthermore", "moreover", "revolutionize", "game-changer".
+   - Use punchy, engaging human transitions: "Here is the real deal", "The bottom line", "Why everyone is buzzing about this", "What you should actually do".
+   - Structure the response in clean, engaging Markdown (550-700 words) using:
+     * ## Catchy, clear subheadings
+     * Markdown comparison tables or bulleted checklists
+     * Natural conversational flow tailored for Indian readers.
+     * Zero clickbait, zero hallucinated claims{', include standard safety note' if cfg.get('disclaimer') else ''}.
 
 Return strict JSON:
 {{
@@ -851,7 +925,7 @@ def process_niche(n):
 
     cands = {}
     # 1. Fetch real-time trends & niche seed expansions
-    for q, data in get_trends(seeds).items():
+    for q, data in get_trends(seeds, niche_slug=n.get("slug")).items():
         cands[q] = data if isinstance(data, dict) else {"score": data}
 
     # If Movies niche, scan live Indian box office and theatrical releases
@@ -951,7 +1025,7 @@ def process_niche(n):
         # Dispatch instant Telegram alert
         send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image, deal_meta=a.get("deal_intel"))
         # Dispatch instant Google Blogger cross-post
-        send_blogger(a.get("title", t), a.get("body_md", ""), tags=a.get("tags", [n["name"]]), image_url=image)
+        send_blogger(a.get("title", t), a.get("body_md", ""), tags=a.get("tags", [n["name"]]), image_url=image, niche_slug=n.get("slug"))
         made += 1
         time.sleep(1)
     return made
@@ -1148,7 +1222,7 @@ Return strict JSON:
 
         send_telegram(res.get("title", query), n_name, post_slug, niche_slug=n_slug, image_url=image, deal_meta=res.get("deal_intel"))
         # Dispatch instant Google Blogger cross-post
-        send_blogger(res.get("title", query), res.get("body_md", ""), tags=res.get("tags", [n_name]), image_url=image)
+        send_blogger(res.get("title", query), res.get("body_md", ""), tags=res.get("tags", [n_name]), image_url=image, niche_slug=n_slug)
         print(f"[Radar Agent Published]: {res.get('title')} -> /{n_slug}/{post_slug}")
         processed += 1
         time.sleep(1)
