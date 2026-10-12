@@ -832,72 +832,20 @@ def agent_alpha_check(candidate_title: str, candidate_slug: str, existing_titles
 def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", topic_query: str = "", article_url: str = "") -> tuple[str | None, str]:
     """
     Agent Gamma: Media & Real Link Guardian.
-    Validates image URL is a real https:// link. ZERO low-res scraps or local JPG fallbacks allowed!
+    Delegates to the Master Universal Real Image Engine across all niches & destinations.
     """
-    target = None if is_thumbnail(image_url) else image_url
-
-    if not target and article_url and article_url.startswith("http") and "google.com" not in article_url:
-        og = extract_og_image(article_url)
-        if og and not is_thumbnail(og):
-            target = og
-
-    TECH_BRAND_LOGOS = {
-        "duckduckgo": "https://upload.wikimedia.org/wikipedia/en/thumb/1/15/DuckDuckGo_logo_post-2023.svg/500px-DuckDuckGo_logo_post-2023.svg.png",
-        "chatgpt": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png",
-        "openai": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/500px-OpenAI_Logo.svg.png",
-        "claude": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/500px-Anthropic_logo.svg.png",
-        "gemini": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/500px-Google_Gemini_logo.svg.png",
-        "midjourney": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Midjourney_Emblem.png/500px-Midjourney_Emblem.png",
-        "canva": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/500px-Canva_icon_2021.svg.png",
-        "nvidia": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Nvidia_logo.svg/500px-Nvidia_logo.svg.png",
-        "rtx": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Nvidia_logo.svg/500px-Nvidia_logo.svg.png",
-        "intel": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282020%29.svg/500px-Intel_logo_%282020%29.svg.png",
-        "amd": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/AMD_Logo.svg/500px-AMD_Logo.svg.png",
-        "apple": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/500px-Apple_logo_black.svg.png",
-        "iphone": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/500px-Apple_logo_black.svg.png",
-        "samsung": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/500px-Samsung_Logo.svg.png",
-        "bteup": "https://upload.wikimedia.org/wikipedia/commons/5/56/BTEUP_LOGO.png",
-        "upsc": "https://upload.wikimedia.org/wikipedia/en/b/bf/Union_public_service_commission.jpg",
-        "ssc": "https://upload.wikimedia.org/wikipedia/en/d/d5/Staff_Selection_Commission.webp",
-        "cbse": "https://upload.wikimedia.org/wikipedia/en/thumb/8/82/Central_Board_of_Secondary_Education_logo.png/500px-Central_Board_of_Secondary_Education_logo.png",
-        "gta": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Grand_Theft_Auto_logo.svg/500px-Grand_Theft_Auto_logo.svg.png"
-    }
-
-    if not target and topic_query:
-        q_lower = topic_query.lower()
-        for brand_key, brand_url in TECH_BRAND_LOGOS.items():
-            if brand_key in q_lower:
-                target = brand_url
-                break
-
-    if not target and topic_query:
-        try:
-            # Extract first 2-3 significant core noun words instead of whole sentence
-            words = [w for w in re.sub(r'[^a-zA-Z0-9\s]', '', topic_query).split() if len(w) >= 4 and w.lower() not in ["alternative", "review", "comparison", "guide", "honest", "found", "actually", "good"]]
-            core_kw = " ".join(words[:2]) if words else topic_query
-            w = wiki(core_kw)
-            if w and w.get("image") and not is_thumbnail(w["image"]):
-                target = w["image"]
-        except Exception:
-            pass
-
-    # STRICT PERMANENT LOCK: Never use Pollinations.ai or AI-generated cartoon images
-    if target and "pollinations.ai" in target.lower():
-        target = None
-
-    if target and isinstance(target, str) and target.startswith("http") and not is_thumbnail(target):
-        return target, "Verified Real Web Media"
-
-    # Real Authentic Editorial Media Fallback (Zero AI generated cartoons)
-    REAL_MEDIA_POOL = [
-        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=630&fit=crop", # Hardware chip & circuit board
-        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=630&fit=crop", # AI neural network abstract glow
-        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=630&fit=crop", # Modern retro tech desk
-        "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&h=630&fit=crop", # Cyber security code screen
-        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1200&h=630&fit=crop"  # Sleek modern laptop workstation
-    ]
-    idx = abs(hash(topic_query or niche_slug)) % len(REAL_MEDIA_POOL)
-    return REAL_MEDIA_POOL[idx], "Real Authentic Editorial Web Photography"
+    try:
+        from bridges.universal_image_engine import get_universal_real_image
+        return get_universal_real_image(topic_query, niche_slug=niche_slug, target_url=article_url, raw_image=image_url)
+    except Exception as e:
+        print("[Universal Image Engine fallback in Gamma]:", e)
+        REAL_MEDIA_POOL = [
+            "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=630&fit=crop",
+            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=630&fit=crop",
+            "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=630&fit=crop"
+        ]
+        idx = abs(hash(topic_query or niche_slug)) % len(REAL_MEDIA_POOL)
+        return REAL_MEDIA_POOL[idx], "Verified Web Photography"
 
 
 def write_article(n, title, angle, facts, trend):

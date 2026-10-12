@@ -122,18 +122,18 @@ OFFICIAL_BOARD_SEALS = {
 
 def fetch_real_official_image(entity_name, category="", source_link=""):
     """
-    Tiered Official Image Resolver:
-    1. Direct Board & Authority Seals Dictionary
-    2. Real Article OG:Image from verified news source
-    3. Wikipedia Search -> Summary image OR Page Images (LOGO / Emblem)
-    4. Clean high-resolution educational editorial fallback
+    Delegates to the Master Universal Real Image Engine across the entire project.
     """
-    combined_key = f"{entity_name} {category}".lower()
-
-    # 1. Check verified official seal / emblem dictionary
-    for k, url in OFFICIAL_BOARD_SEALS.items():
-        if k in combined_key:
-            return url, f"Official {k.upper()} Authority Emblem"
+    try:
+        from bridges.universal_image_engine import get_universal_real_image
+        return get_universal_real_image(f"{entity_name} {category}".strip(), niche_slug="exams-results", target_url=source_link)
+    except Exception as e:
+        print("[Universal image engine error in Sarkari Radar]:", e)
+        combined_key = f"{entity_name} {category}".lower()
+        for k, url in OFFICIAL_BOARD_SEALS.items():
+            if k in combined_key:
+                return url, f"Official {k.upper()} Authority Emblem"
+        return OFFICIAL_BOARD_SEALS["bteup"], "Official Authority Seal"
 
     # 2. Try scraping source article og:image if news link is available
     if source_link and source_link.startswith("http") and "google.com" not in source_link:

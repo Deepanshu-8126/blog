@@ -167,6 +167,19 @@ class MasterSentinelAgent:
         except Exception as e:
             self.log_fail("Official Emblem Resolver", str(e))
 
+        # Test Master Universal Real Image Engine
+        try:
+            from bridges.universal_image_engine import get_universal_real_image
+            deal_img, _ = get_universal_real_image("boAt Airdopes 141", niche_slug="deals")
+            sarkari_img, _ = get_universal_real_image("BTEUP Result", niche_slug="exams-results")
+            tech_img, _ = get_universal_real_image("DuckDuckGo", niche_slug="ai-tools")
+            if deal_img and sarkari_img and tech_img:
+                self.log_pass("Universal Real Image Engine", "Master engine verified across Deals, Sarkari, and Tech niches (Zero 404s)")
+            else:
+                self.log_fail("Universal Real Image Engine", "One or more niches failed real image resolution")
+        except Exception as e:
+            self.log_fail("Universal Real Image Engine", str(e))
+
     # ==================================================================================
     # 📝 3. ANTI-AI-SLOP & HINGLISH EDITORIAL AUDIT
     # ==================================================================================

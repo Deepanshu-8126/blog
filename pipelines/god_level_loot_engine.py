@@ -790,6 +790,21 @@ class TelegramBroadcaster:
     def send_deal(self, deal):
         affiliate_url = deal["affiliate_url"]
         photo_url = deal.get("photo_url")
+
+        # Resolve 100% verified real HD photo via Master Universal Image Engine
+        try:
+            from bridges.universal_image_engine import get_universal_real_image
+            hd_photo, _ = get_universal_real_image(
+                title=deal["title"],
+                niche_slug="deals",
+                target_url=affiliate_url,
+                raw_image=photo_url
+            )
+            photo_url = hd_photo
+            deal["photo_url"] = hd_photo
+        except Exception:
+            pass
+
         thread_id, cat_name = self.detect_category(deal["title"], deal.get("body", ""))
         caption = self.format_caption(deal, cat_name)
         reply_markup = self.build_markup(affiliate_url)

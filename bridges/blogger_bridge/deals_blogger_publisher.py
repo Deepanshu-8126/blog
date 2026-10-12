@@ -68,58 +68,20 @@ VERIFIED_PRODUCT_ASSETS = {
 def resolve_hd_deal_image(deal: dict) -> str:
     """
     Guarantees a verified, crystal-clear 1500px/HD product photo with HTTP 200.
-    Rejects ephemeral telesco.pe thumbnails and broken 404 links.
+    Delegates to the Master Universal Real Image Engine.
     """
-    import requests
-    title_lower = (deal.get("title", "") + " " + deal.get("body", "")).lower()
-    raw_img = deal.get("photo_url", "")
-    aff_url = deal.get("affiliate_url", "")
-
-    # 1. Match known high-converting verified brand assets
-    for kw, verified_url in VERIFIED_PRODUCT_ASSETS.items():
-        if kw in title_lower:
-            return verified_url
-
-    # 2. Extract hiRes directly from Amazon product page if ASIN present
-    asin_match = re.search(r'/(?:dp|gp/product|d)/([A-Z0-9]{10})', aff_url, re.IGNORECASE)
-    if asin_match:
-        asin = asin_match.group(1).upper()
-        try:
-            dp_url = f"https://www.amazon.in/dp/{asin}"
-            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-            r_dp = requests.get(dp_url, headers=headers, timeout=5)
-            if r_dp.status_code == 200:
-                hires = re.findall(r'"hiRes"\s*:\s*"(https://[^"]+media-amazon\.com/images/I/[^"]+\.jpg)"', r_dp.text)
-                if hires:
-                    return hires[0]
-                large = re.findall(r'"large"\s*:\s*"(https://[^"]+media-amazon\.com/images/I/[^"]+\.jpg)"', r_dp.text)
-                if large:
-                    return large[0]
-        except Exception:
-            pass
-
-    # 3. Test raw_img if not an expiring telesco.pe link
-    if raw_img and raw_img.startswith("http") and "telesco.pe" not in raw_img:
-        try:
-            chk = requests.head(raw_img, timeout=4, allow_redirects=True)
-            if chk.status_code == 200:
-                return raw_img
-        except Exception:
-            pass
-
-    # 4. Fallback based on product category
-    if any(k in title_lower for k in ["earbud", "audio", "earphone", "tws", "headset"]):
+    try:
+        from bridges.universal_image_engine import get_universal_real_image
+        img, _ = get_universal_real_image(
+            title=deal.get("title", ""),
+            niche_slug="deals",
+            target_url=deal.get("affiliate_url", ""),
+            raw_image=deal.get("photo_url")
+        )
+        return img
+    except Exception as e:
+        print("[Universal Image Engine error in Deals Blogger]:", e)
         return "https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg"
-    elif any(k in title_lower for k in ["tv", "television", "display", "monitor"]):
-        return "https://i02.appmifile.com/mi-com-product/fly-birds/xiaomi-smart-4k-tv-f-43-2025/m-in/3728e5c6352918e127883e9b0ab45f90.png"
-    elif any(k in title_lower for k in ["laptop", "macbook", "notebook"]):
-        return "https://m.media-amazon.com/images/I/71jG+e7roXL._SL1500_.jpg"
-    elif any(k in title_lower for k in ["phone", "smartphone", "mobile", "5g"]):
-        return "https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg"
-    elif any(k in title_lower for k in ["face", "skin", "cream", "serum", "cleanser", "lotion"]):
-        return "https://images-static.nykaa.com/media/catalog/product/2/8/288dc768906161980774_1.jpg"
-
-    return "https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg"
 
 
 def generate_deal_html(deal: dict) -> tuple[str, str]:
