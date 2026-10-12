@@ -669,34 +669,61 @@ class TelegramBroadcaster:
         return TOPIC_IDS["loots"], "⚡ 0-Minute Price Glitch"
 
     def format_caption(self, deal, category_name):
+        affiliate_url = deal.get("affiliate_url", "")
         title = deal["title"].strip()
         safe_title = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         price = deal.get("deal_price")
         mrp = deal.get("mrp")
         discount = deal.get("discount")
+        body = deal.get("body", "")
 
-        price_line = ""
+        # 1. Dynamic Headline tailored to deal characteristics
+        if discount and discount >= 70:
+            headline = f"🔥 <b>[FLAT {discount}% OFF MEGA LOOT]</b> 🔥"
+        elif discount and discount >= 45:
+            headline = f"⚡ <b>[{discount}% PRICE DROP ALERT]</b> ⚡"
+        elif price and price < 299:
+            headline = f"💥 <b>[SUPER BUDGET LOOT @ ₹{price}]</b> 💥"
+        elif "tech" in category_name.lower():
+            headline = "📱 <b>[TOP TECH DEAL]</b> 📱"
+        elif "fashion" in category_name.lower():
+            headline = "👔 <b>[FASHION LOOT DROP]</b> 👔"
+        elif "home" in category_name.lower():
+            headline = "🏠 <b>[HOME & APPLIANCE OFFER]</b> 🏠"
+        else:
+            headline = "⚡ <b>[0-MINUTE FLASH DEAL]</b> ⚡"
+
+        # 2. Dynamic Price & Details Line (Authentic, no fake text)
+        details_block = ""
         if price:
-            price_line = f"📉 <b>Deal Price:</b> ₹{price:,}"
+            details_block = f"💰 <b>Deal Price:</b> ₹{price:,}"
             if mrp and mrp > price:
-                price_line += f" <s>₹{mrp:,}</s>"
+                details_block += f" <s>₹{mrp:,}</s>"
             if discount:
-                price_line += f" <b>({discount}% OFF)</b>"
-            price_line += "\n"
-        elif deal.get("body"):
-            clean_b = deal["body"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")[:140]
-            price_line = f"⚡ <b>Details:</b> {clean_b}\n"
+                details_block += f" <b>({discount}% OFF)</b>"
+            details_block += "\n"
+        elif body:
+            clean_b = body.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            body_lines = [l.strip() for l in clean_b.splitlines() if l.strip() and not l.startswith("http")]
+            details_block = "\n".join(body_lines[:2]) + "\n"
+
+        # 3. Dynamic rotating urgency note
+        urgency_notes = [
+            "🚨 <i>Order fast before price increases!</i>",
+            "⚡ <i>Flash deal active right now — grab fast!</i>",
+            "🔥 <i>Limited stock available at this deal price!</i>",
+            "⏰ <i>Price might change anytime, order immediately!</i>"
+        ]
+        urgency = urgency_notes[len(title) % len(urgency_notes)]
 
         caption = (
-            f"⚡ <b>[0-MINUTE PRICE GLITCH ALERT]</b> ⚡\n\n"
+            f"{headline}\n\n"
             f"🛍️ <b>{safe_title}</b>\n\n"
-            f"{price_line}"
-            f"🏷️ <b>Category:</b> {category_name}\n"
-            f"🟢 <b>Loot Score:</b> 9.9/10 🔥\n"
-            f"💳 <b>Trick:</b> Extra Bank / UPI Discount Active\n\n"
-            f"🛒 <b>DIRECT BUY LINK:</b>\n"
+            f"{details_block}"
+            f"🏷️ <b>Category:</b> {category_name}\n\n"
+            f"🛒 <b>ORDER DIRECTLY HERE:</b>\n"
             f"👉 {affiliate_url}\n\n"
-            f"🚨 <i>Limited Stock! Buy before price increases or stock ends.</i>"
+            f"{urgency}"
         )
         return caption
 

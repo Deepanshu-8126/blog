@@ -107,12 +107,17 @@ function formatForWhatsApp(rawHtml, wrapHtml) {
     .replace(/3\.\s*Order fast[^\n]*/gi, '')
     .trim();
 
-  // 3. Inject prominent direct clickable WhatsApp buy link
+  // 3. Inject prominent direct clickable WhatsApp buy link if not already present
   if (storeLink && !waText.includes(storeLink)) {
     waText += `\n\n🛒 *ORDER LOOT DEAL HERE:*\n👉 ${storeLink}`;
   }
 
-  waText += `\n\n🚨 _Fast Loot! Order fast before price changes or stock ends!_`;
+  // 4. Clean consecutive empty newlines
+  waText = waText.replace(/\n{3,}/g, '\n\n');
+
+  if (!waText.includes('🚨') && !waText.includes('⏰') && !waText.includes('🔥') && !waText.includes('⚡')) {
+    waText += `\n\n🚨 _Fast Loot! Order fast before price changes or stock ends!_`;
+  }
   return waText;
 }
 
