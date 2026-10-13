@@ -156,28 +156,8 @@ const niches = await getNiches(runtime?.env);
   let debounceTimeout: any = null;
 
   if (searchInput && resultsContainer) {
-    const hubCards = document.querySelectorAll('.hub-shortcut-card');
-
-    function highlightMatchingHubs(query: string) {
-      const qLower = query.toLowerCase();
-      hubCards.forEach((card: any) => {
-        const kws = (card.getAttribute('data-keywords') || '').toLowerCase();
-        const text = (card.textContent || '').toLowerCase();
-        if (!query) {
-          card.classList.remove('opacity-40', 'ring-2', 'ring-brand', 'shadow-lg');
-        } else if (kws.includes(qLower) || text.includes(qLower)) {
-          card.classList.remove('opacity-40');
-          card.classList.add('ring-2', 'ring-brand', 'shadow-lg');
-        } else {
-          card.classList.add('opacity-40');
-          card.classList.remove('ring-2', 'ring-brand', 'shadow-lg');
-        }
-      });
-    }
-
     searchInput.addEventListener('input', (e) => {
       const q = (e.target as HTMLInputElement).value.trim();
-      highlightMatchingHubs(q);
       clearTimeout(debounceTimeout);
 
       if (!q) {

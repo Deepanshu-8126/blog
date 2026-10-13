@@ -99,28 +99,8 @@ const itemListSchema = {
         </a>
       </div>
 
-      <!-- Direct Intelligence Hubs Strip -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-6 mb-1">
-        <a href="/smartphones" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200/80 hover:border-blue-300 transition text-xs font-bold text-slate-800">
-          <span class="text-base">📱</span>
-          <span class="truncate">Phones Buying Guide</span>
-        </a>
-        <a href="/cricket" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 hover:bg-amber-50 border border-slate-200/80 hover:border-amber-300 transition text-xs font-bold text-slate-800">
-          <span class="text-base">🏏</span>
-          <span class="truncate">IPL & Cricket Radar</span>
-        </a>
-        <a href="/yojanas" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200/80 hover:border-emerald-300 transition text-xs font-bold text-slate-800">
-          <span class="text-base">🇮🇳</span>
-          <span class="truncate">Sarkari Yojana (DBT)</span>
-        </a>
-        <a href="/calculators" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-50 hover:bg-teal-50 border border-slate-200/80 hover:border-teal-300 transition text-xs font-bold text-slate-800">
-          <span class="text-base">📈</span>
-          <span class="truncate">SIP & Tax Calculators</span>
-        </a>
-      </div>
-
       <!-- Category Filter Chips -->
-      <div class="flex items-center gap-2 mt-4 overflow-x-auto no-scrollbar pb-1" id="filter-chips">
+      <div class="flex items-center gap-2 mt-6 overflow-x-auto no-scrollbar pb-1" id="filter-chips">
         {categories.map((cat, idx) => (
           <button
             type="button"
