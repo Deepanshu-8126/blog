@@ -62,14 +62,78 @@ const niches = await getNiches(runtime?.env);
       </div>
     </div>
 
-    <!-- Quick Hub Filters -->
-    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-6 mb-6">
-      <span class="text-xs font-bold text-muted shrink-0">Popular Hubs:</span>
-      {niches.slice(0, 8).map(n => (
-        <a href={`/${n.slug}`} class="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium text-slate-700 shrink-0 transition">
-          {n.name}
+    <!-- Instant Hub Launchpad Grid -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">Instant Desks & Interactive Hubs</span>
+        <span class="text-[11px] text-muted">Direct Launch</span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+        <a href="/smartphones" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-brand hover:shadow-md transition group" data-keywords="phone smartphone mobile oneplus samsung apple redmi">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">📱</span>
+            <span class="text-xs font-bold text-ink group-hover:text-brand truncate">Phones Hub</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">Budget 5G & specs</span>
         </a>
-      ))}
+
+        <a href="/cricket" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-amber-500 hover:shadow-md transition group" data-keywords="cricket ipl match csk mi rcb points dream11">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">🏏</span>
+            <span class="text-xs font-bold text-ink group-hover:text-amber-600 truncate">IPL & Cricket</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">Live points & pitch</span>
+        </a>
+
+        <a href="/yojanas" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-emerald-500 hover:shadow-md transition group" data-keywords="yojana sarkari kisan ayushman ration dbt ladli awas">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">🇮🇳</span>
+            <span class="text-xs font-bold text-ink group-hover:text-emerald-600 truncate">Sarkari Yojana</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">e-KYC & status</span>
+        </a>
+
+        <a href="/calculators" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-teal-500 hover:shadow-md transition group" data-keywords="calc calculator sip tax gold fd compounding returns">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">📈</span>
+            <span class="text-xs font-bold text-ink group-hover:text-teal-600 truncate">Smart Calc</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">SIP & Tax Regime</span>
+        </a>
+
+        <a href="/current-affairs" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-amber-500 hover:shadow-md transition group" data-keywords="current affairs gk exam quiz upsc ssc news news today">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">⚡</span>
+            <span class="text-xs font-bold text-ink group-hover:text-amber-600 truncate">Current Affairs</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">Daily GK & test</span>
+        </a>
+
+        <a href="/gold-rate" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-yellow-500 hover:shadow-md transition group" data-keywords="gold silver rate 22k 24k price bullion">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">🪙</span>
+            <span class="text-xs font-bold text-ink group-hover:text-yellow-600 truncate">Gold Rate</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">22K / 24K live</span>
+        </a>
+
+        <a href="/deals" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-rose-500 hover:shadow-md transition group" data-keywords="deals loot amazon discount coupon sale offer cashback">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">🏷️</span>
+            <span class="text-xs font-bold text-ink group-hover:text-rose-600 truncate">Loot Deals</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">Verified discounts</span>
+        </a>
+
+        <a href="/builds" class="hub-shortcut-card p-3 rounded-2xl bg-white border border-line hover:border-purple-500 hover:shadow-md transition group" data-keywords="pc build gaming rig rtx cpu gpu motherboard cabinet">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-lg">🖥️</span>
+            <span class="text-xs font-bold text-ink group-hover:text-purple-600 truncate">PC Rig Studio</span>
+          </div>
+          <span class="text-[11px] text-muted block truncate">Gaming PC builds</span>
+        </a>
+      </div>
     </div>
 
     <!-- Results Section -->
@@ -92,8 +156,28 @@ const niches = await getNiches(runtime?.env);
   let debounceTimeout: any = null;
 
   if (searchInput && resultsContainer) {
+    const hubCards = document.querySelectorAll('.hub-shortcut-card');
+
+    function highlightMatchingHubs(query: string) {
+      const qLower = query.toLowerCase();
+      hubCards.forEach((card: any) => {
+        const kws = (card.getAttribute('data-keywords') || '').toLowerCase();
+        const text = (card.textContent || '').toLowerCase();
+        if (!query) {
+          card.classList.remove('opacity-40', 'ring-2', 'ring-brand', 'shadow-lg');
+        } else if (kws.includes(qLower) || text.includes(qLower)) {
+          card.classList.remove('opacity-40');
+          card.classList.add('ring-2', 'ring-brand', 'shadow-lg');
+        } else {
+          card.classList.add('opacity-40');
+          card.classList.remove('ring-2', 'ring-brand', 'shadow-lg');
+        }
+      });
+    }
+
     searchInput.addEventListener('input', (e) => {
       const q = (e.target as HTMLInputElement).value.trim();
+      highlightMatchingHubs(q);
       clearTimeout(debounceTimeout);
 
       if (!q) {
