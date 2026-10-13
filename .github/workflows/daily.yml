@@ -90,3 +90,8 @@ jobs:
           echo "🔥 Running Newsroom Trend Ingestion & Editorial Blog Pipeline..."
           python pipeline.py
 
+      - name: Auto-Sync All Pages to Search Engines (IndexNow Mass Submission)
+        run: |
+          echo "⚡ Submitting all new and existing pages to search engines..."
+          python scripts/submit_indexnow.py
+
