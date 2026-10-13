@@ -13,6 +13,8 @@ import HealthDisclaimer from '../../components/HealthDisclaimer.astro';
 import BoxOfficeTable from '../../components/BoxOfficeTable.astro';
 import DealPriceStack from '../../components/DealPriceStack.astro';
 import TldrBox from '../../components/TldrBox.astro';
+import SarkariDirectBox from '../../components/SarkariDirectBox.astro';
+import CurrentAffairsQuizHook from '../../components/CurrentAffairsQuizHook.astro';
 import { getPost, getPostsByNiche, getProductsByNiche, getNicheBySlug, getTrendingPosts, getAllProducts } from '../../lib/db';
 import { marked } from 'marked';
 
@@ -157,6 +159,119 @@ const gallerySlides: GalleryItem[] = rawGallerySlides
   }))
   .filter(slide => Boolean(slide.url));
 
+interface NicheAuthorMeta {
+  deskName: string;
+  authorName: string;
+  authorInitials: string;
+  role: string;
+  bio: string;
+  badge: string;
+  accentGradient: string;
+}
+
+function getNicheAuthorMeta(slug: string): NicheAuthorMeta {
+  switch (slug) {
+    case 'exams-results':
+      return {
+        deskName: 'UniqueDigit Sarkari & Career Desk',
+        authorName: 'Deepanshu & Sarkari Editorial Team',
+        authorInitials: 'SE',
+        role: 'Senior Career & Exam Analyst',
+        bio: 'Tracks official recruitment notifications, answer keys, scorecards, and board advisories across UPSC, SSC, RPSC, NTA, BTEUP, CBSE, and State Commissions.',
+        badge: 'Official Board Verified',
+        accentGradient: 'from-emerald-600 via-teal-600 to-indigo-700'
+      };
+    case 'deals':
+    case 'cashback':
+      return {
+        deskName: 'UniqueDigit Loot & Deals Desk',
+        authorName: 'Deepanshu',
+        authorInitials: 'LD',
+        role: 'Lead Price Telemetry & Loot Hunter',
+        bio: 'Real-time retail price tracking, coupon verification, price glitches, and cashback offers across Amazon India, Flipkart, Myntra, and direct brands.',
+        badge: 'Price-Drop Verified',
+        accentGradient: 'from-amber-500 via-rose-600 to-purple-600'
+      };
+    case 'gold-rate':
+    case 'finance':
+      return {
+        deskName: 'UniqueDigit Commodities & Markets Desk',
+        authorName: 'Deepanshu',
+        authorInitials: 'FM',
+        role: 'Commodities & Financial Analyst',
+        bio: 'Monitors real-time 24K and 22K spot bullion prices, MCX trends, hallmarking updates, and personal finance strategies across top Indian hubs.',
+        badge: 'MCX & Bullion Verified',
+        accentGradient: 'from-amber-600 via-yellow-500 to-amber-700'
+      };
+    case 'movies':
+    case 'entertainment-celebrity':
+      return {
+        deskName: 'UniqueDigit Entertainment Desk',
+        authorName: 'Deepanshu & Cinema Desk',
+        authorInitials: 'ED',
+        role: 'Film & OTT Tracking Specialist',
+        bio: 'Theatrical box office collections, streaming release dates, certifications, and industry intelligence across Bollywood, South Indian cinema, and Hollywood.',
+        badge: 'Box Office Verified',
+        accentGradient: 'from-fuchsia-600 via-purple-600 to-indigo-700'
+      };
+    case 'health':
+      return {
+        deskName: 'UniqueDigit Health & Wellness Desk',
+        authorName: 'UniqueDigit Clinical Editorial Team',
+        authorInitials: 'HW',
+        role: 'Wellness & Nutrition Researcher',
+        bio: 'Evidence-based health insights, nutrition plans, fitness protocols, and scientific studies reviewed against established medical research guidelines.',
+        badge: 'Fact-Checked Evidence',
+        accentGradient: 'from-teal-600 via-emerald-600 to-cyan-700'
+      };
+    case 'automotive-trends':
+      return {
+        deskName: 'UniqueDigit Automotive & Mobility Desk',
+        authorName: 'Deepanshu',
+        authorInitials: 'AM',
+        role: 'Automotive & EV Analyst',
+        bio: 'Electric vehicles, new car launches, real-world battery range tests, highway efficiency, and safety ratings in the Indian automotive ecosystem.',
+        badge: 'Telemetry Verified',
+        accentGradient: 'from-blue-600 via-indigo-600 to-slate-800'
+      };
+    case 'ai-tools':
+      return {
+        deskName: 'UniqueDigit AI Intelligence Labs',
+        authorName: 'Deepanshu',
+        authorInitials: 'AI',
+        role: 'Applied AI & LLM Specialist',
+        bio: 'Evaluates production LLMs, developer APIs, prompt workflows, and generative tooling for engineers, creators, and modern teams.',
+        badge: 'Lab Benchmark Verified',
+        accentGradient: 'from-indigo-600 via-purple-600 to-pink-600'
+      };
+    case 'cricket-sports':
+    case 'football-sports':
+      return {
+        deskName: 'UniqueDigit Sports Telemetry Desk',
+        authorName: 'Sports Editorial Team',
+        authorInitials: 'ST',
+        role: 'Senior Sports Analyst & Statistician',
+        bio: 'Live match statistics, tournament analytics, pitch conditions, squad changes, and player performance metrics across ICC tournaments and leagues.',
+        badge: 'Match Telemetry Verified',
+        accentGradient: 'from-sky-600 via-blue-600 to-indigo-700'
+      };
+    default:
+      return {
+        deskName: 'UniqueDigit Editorial Desk',
+        authorName: 'Deepanshu',
+        authorInitials: 'UD',
+        role: 'Lead Tech & Market Analyst',
+        bio: 'Oversees hardware telemetry, tech developments, consumer market anomalies, and verified editorial coverage across UniqueDigit channels.',
+        badge: 'Curated & Fact-Checked',
+        accentGradient: 'from-brand via-purple-600 to-indigo-600'
+      };
+  }
+}
+
+const authorMeta = getNicheAuthorMeta(niche.slug);
+const isExamRelated = niche.slug === 'exams-results' ||
+  /result|admit card|scorecard|cut off|cutoff|merit list|answer key|counselling|rpsc|upsc|ssc|cbse|bteup|nta|neet|jee/i.test(post.title);
+
 // 1. Article / NewsArticle Schema (Google Discover & SEO Compliant)
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -174,13 +289,13 @@ const articleSchema = {
   author: [
     {
       '@type': 'Person',
-      name: 'Deepanshu',
-      jobTitle: 'Lead Hardware & Intelligence Editor',
+      name: authorMeta.authorName,
+      jobTitle: authorMeta.role,
       url: `${Astro.url.origin}/about`
     },
     {
       '@type': 'Organization',
-      name: 'UniqueDigit Editorial Desk',
+      name: authorMeta.deskName,
       url: Astro.url.origin
     }
   ],
@@ -257,11 +372,20 @@ function getDynamicVerdictCopy(slug: string, title: string, summaryText?: string
   if (['gold-rate'].includes(slug)) {
     return `${prefix}Precious metal valuations reflect live global bullion indices and currency movements. Track multi-city spot rates and hallmarking standards before making physical or digital allocations. Bookmark this page for continuous telemetry.`;
   }
-  if (['movies'].includes(slug)) {
+  if (['movies', 'entertainment-celebrity'].includes(slug)) {
     return `${prefix}From critical acclaim to box office trajectories, streaming releases and theatrical runs continue to evolve. Keep this tracker bookmarked for updated platform availability.`;
   }
-  if (['cricket'].includes(slug)) {
+  if (['cricket', 'cricket-sports', 'football-sports'].includes(slug)) {
     return `${prefix}Match dynamics, player form, and pitch conditions play a pivotal role. Stay tuned to our verified editorial feed for live updates, scores, and fixture telemetry.`;
+  }
+  if (['exams-results'].includes(slug)) {
+    return `${prefix}उम्मीदवारों को सलाह दी जाती है कि वे अपने आधिकारिक रोल नंबर और जन्म तिथि के साथ पोर्टल पर लॉग इन करें। स्कोरकार्ड, कटऑफ और मेरिट लिस्ट पीडीएफ का प्रिंटआउट भविष्य के संदर्भ के लिए सुरक्षित रख लें।`;
+  }
+  if (['finance'].includes(slug)) {
+    return `${prefix}Market movements, RBI interest rates, and SIP compound returns demand disciplined capital management. Verify mutual fund TER and regulatory disclosures before allocating capital.`;
+  }
+  if (['automotive-trends'].includes(slug)) {
+    return `${prefix}Real-world ARAI range metrics, battery safety tests, and highway efficiency figures provide the truest measure of vehicle performance. Check on-road state subsidies before booking.`;
   }
   return `${prefix}Tracking real-time developments across primary curated sources ensures you have the most accurate, unfiltered perspective. Keep this briefing bookmarked for continuous verification.`;
 }
@@ -524,13 +648,13 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
           <!-- Byline & Social Actions -->
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between py-5 border-y border-slate-100 text-sm text-slate-500 flex-wrap gap-4">
             <div class="flex items-center gap-4">
-              <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-brand to-purple-500 text-white font-extrabold flex items-center justify-center text-base shadow-xs shrink-0">
-                UD
+              <div class={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${authorMeta.accentGradient} text-white font-extrabold flex items-center justify-center text-sm shadow-xs shrink-0`}>
+                {authorMeta.authorInitials}
               </div>
               <div>
                 <div class="flex items-center gap-2 mb-1">
-                  <span class="font-bold text-slate-900 text-base">UniqueDigit Editorial Desk</span>
-                  <span class="text-emerald-600 font-bold text-xs sm:text-sm bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">✓ Curated</span>
+                  <span class="font-bold text-slate-900 text-base">{authorMeta.deskName}</span>
+                  <span class="text-emerald-600 font-bold text-xs sm:text-sm bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">✓ {authorMeta.badge}</span>
                 </div>
                 <span class="text-sm text-slate-500">
                   Published {new Date(post.published_at).toLocaleDateString('en-IN', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -745,6 +869,16 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         <!-- Fast Mobile 3-Bullet Executive Digest (TL;DR Express) -->
         <TldrBox topicTitle={post.title} category={niche.name} readingMinutes={readTime} summary={post.summary} nicheSlug={niche.slug} />
 
+        <!-- Jagran Josh Inspired Sarkari Direct Action & PDF Download Box -->
+        {isExamRelated && (
+          <SarkariDirectBox
+            title={post.title}
+            sourceUrl={post.source_url}
+            sources={post.sources}
+            slug={post.slug}
+          />
+        )}
+
         <!-- Mid-Article Telegram VIP Loot & Breaking Radar Magnet -->
         <div class="my-7 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50/70 to-purple-50 border border-sky-200/80 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex items-center gap-3.5">
@@ -785,6 +919,11 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
           <DealPriceStack productTitle={post.title} />
         )}
 
+        <!-- Daily Current Affairs & Mock Test Hook (For Exams, Education & News) -->
+        {(niche.slug === 'exams-results' || isExamRelated) && (
+          <CurrentAffairsQuizHook nicheSlug={niche.slug} />
+        )}
+
         <!-- Health / Sensitive Disclaimer -->
         {niche.config?.disclaimer && (
           <div class="mb-8">
@@ -793,7 +932,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         )}
 
         <!-- Article Markdown Content (.prose styled with tables, quotes, headings) -->
-        <article class="main-content prose text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
+        <div class="main-content prose text-slate-800 leading-relaxed mb-10" set:html={bodyHtml} />
 
         <!-- High-Impact Editor's Verdict / The Bottom Line Card -->
         <div class="my-10 sm:my-14 p-7 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-xl relative overflow-hidden">
@@ -847,21 +986,21 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         <div class="my-10 p-6 sm:p-7 rounded-3xl bg-slate-50 border border-slate-200/90 shadow-2xs">
           <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
             <div class="relative shrink-0">
-              <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand via-purple-600 to-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
-                D
+              <div class={`w-16 h-16 rounded-2xl bg-gradient-to-tr ${authorMeta.accentGradient} text-white font-black text-xl flex items-center justify-center shadow-md`}>
+                {authorMeta.authorInitials}
               </div>
               <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[10px] text-white font-bold" title="Verified Author">✓</span>
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2.5 flex-wrap mb-1.5">
-                <h4 class="text-base sm:text-lg font-black text-slate-900">Deepanshu</h4>
-                <span class="text-xs font-bold text-brand bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">Lead Tech & Market Analyst</span>
+                <h4 class="text-base sm:text-lg font-black text-slate-900">{authorMeta.authorName}</h4>
+                <span class="text-xs font-bold text-brand bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200">{authorMeta.role}</span>
                 <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1">
                   <span>🛡️</span> Fact-Checked
                 </span>
               </div>
               <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
-                Deepanshu oversees hardware telemetry and consumer pricing data at UniqueDigit. Focusing on Indian retail market anomalies, GPU benchmarks, and verified discounts across Amazon, Flipkart, and official brands.
+                {authorMeta.bio}
               </p>
               <div class="flex items-center gap-3 text-xs font-semibold text-slate-500 flex-wrap">
                 <a href="/about" class="hover:text-brand transition underline">Editorial Policy</a>

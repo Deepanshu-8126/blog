@@ -224,9 +224,9 @@ img {
 /* Editorial Article Typography */
 .prose {
   color: #1E293B;
-  font-size: 1.125rem;
-  line-height: 1.9;
-  max-width: 70ch;
+  font-size: 1.0875rem;
+  line-height: 1.85;
+  max-width: 100%;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4 {
@@ -297,22 +297,11 @@ img {
   text-wrap: pretty;
 }
 
-.prose > p:first-of-type::first-letter {
-  float: left;
-  font-size: 4.5em;
-  line-height: 0.85;
-  font-weight: 900;
+.prose > p:first-of-type {
+  font-size: 1.1875rem;
+  line-height: 1.85;
   color: #0F172A;
-  margin-right: 0.15em;
-  margin-top: 0.05em;
-  padding-right: 0.05em;
-}
-
-@media (max-width: 639px) {
-  .prose > p:first-of-type::first-letter {
-    font-size: 3.5em;
-    line-height: 0.9;
-  }
+  font-weight: 500;
 }
 
 .prose ul {
@@ -528,6 +517,15 @@ img {
 .prose tbody tr:hover {
   background-color: #F1F5F9;
   transition: background-color 150ms ease;
+}
+
+@media (max-width: 768px) {
+  .prose table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .prose hr {

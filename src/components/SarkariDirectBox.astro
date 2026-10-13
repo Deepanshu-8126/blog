@@ -1,0 +1,125 @@
+---
+interface Props {
+  title: string;
+  sourceUrl?: string | null;
+  sources?: Array<{ title: string; url: string; publisher?: string }>;
+  slug: string;
+}
+
+const { title, sourceUrl, sources = [], slug } = Astro.props;
+
+// Determine Authority & Links
+const lowerTitle = title.toLowerCase();
+
+// Official Boards Directory
+const AUTHORITIES = [
+  { key: 'bteup', name: 'Board of Technical Education UP', portal: 'https://bteup.ac.in' },
+  { key: 'rpsc', name: 'Rajasthan Public Service Commission', portal: 'https://rpsc.rajasthan.gov.in' },
+  { key: 'upsc', name: 'Union Public Service Commission', portal: 'https://upsc.gov.in' },
+  { key: 'ssc', name: 'Staff Selection Commission', portal: 'https://ssc.gov.in' },
+  { key: 'cbse', name: 'Central Board of Secondary Education', portal: 'https://cbse.gov.in' },
+  { key: 'nta', name: 'National Testing Agency', portal: 'https://nta.ac.in' },
+  { key: 'neet', name: 'NEET UG NTA Examination Portal', portal: 'https://exams.nta.ac.in/NEET' },
+  { key: 'jee', name: 'JEE Main Official Portal', portal: 'https://jeemain.nta.ac.in' },
+  { key: 'police', name: 'State Police Recruitment Board', portal: 'https://uppbpb.gov.in' },
+  { key: 'uhsr', name: 'UHSR Rohtak Counselling Portal', portal: 'https://uhsr.ac.in' },
+  { key: 'bpsc', name: 'Bihar Public Service Commission', portal: 'https://bpsc.bih.nic.in' },
+  { key: 'rrb', name: 'Railway Recruitment Board', portal: 'https://indianrailways.gov.in' },
+  { key: 'ibps', name: 'Institute of Banking Personnel Selection', portal: 'https://ibps.in' }
+];
+
+const matchedAuth = AUTHORITIES.find(a => lowerTitle.includes(a.key)) || {
+  name: 'Official Conducting Board',
+  portal: sourceUrl && !sourceUrl.includes('search') ? sourceUrl : 'https://uniquedigit-viral-hub.pages.dev/exams-results/'
+};
+
+const officialLink = (sourceUrl && !sourceUrl.includes('search') && !sourceUrl.includes('google.com/search'))
+  ? sourceUrl
+  : matchedAuth.portal;
+
+const cleanSources = sources.filter(s => s.url && !s.url.includes('search?q='));
+---
+
+<div class="my-6 sm:my-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-amber-500/10 via-emerald-500/10 to-indigo-500/10 border-2 border-emerald-500/40 p-5 sm:p-7 shadow-md relative overflow-hidden">
+  <!-- Top Ambient Glow -->
+  <div class="absolute -right-8 -top-8 w-36 h-36 bg-emerald-500/15 rounded-full blur-2xl pointer-events-none"></div>
+
+  <!-- Header Bar -->
+  <div class="flex items-center justify-between pb-4 mb-4 border-b border-emerald-500/20 flex-wrap gap-2">
+    <div class="flex items-center gap-2.5">
+      <span class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+      </span>
+      <h3 class="font-black text-sm sm:text-base text-slate-900 tracking-wide uppercase">
+        ⚡ Direct Official Action & PDF Download Portal
+      </h3>
+    </div>
+    <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-600 text-white shadow-xs">
+      🟢 Link Verified Active
+    </span>
+  </div>
+
+  <p class="text-xs sm:text-sm text-slate-700 mb-5 leading-relaxed font-medium">
+    उम्मीदवार नीचे दिए गए डायरेक्ट लिंक्स पर क्लिक करके अपना <strong>Scorecard, Merit List PDF और Official Cutoff</strong> तुरंत चेक कर सकते हैं:
+  </p>
+
+  <!-- Download Links Table / Action Grid (Jagran Josh Architecture) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+    <!-- Link 1: Official Scorecard / PDF Download -->
+    <a
+      href={officialLink}
+      target="_blank"
+      rel="nofollow noopener"
+      class="group flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-white border border-emerald-300/80 hover:border-emerald-500 hover:shadow-md transition duration-200 active:scale-98"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition">
+          📄
+        </div>
+        <div class="min-w-0">
+          <span class="text-xs font-bold text-slate-500 block uppercase">Primary Action</span>
+          <h4 class="text-xs sm:text-sm font-black text-slate-900 truncate group-hover:text-emerald-700 transition">
+            Download Result / Merit List PDF
+          </h4>
+        </div>
+      </div>
+      <span class="text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition shrink-0 ml-2">
+        Click Here ➔
+      </span>
+    </a>
+
+    <!-- Link 2: Official Authority Portal -->
+    <a
+      href={matchedAuth.portal}
+      target="_blank"
+      rel="nofollow noopener"
+      class="group flex items-center justify-between p-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200 hover:border-indigo-400 hover:shadow-md transition duration-200 active:scale-98"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition">
+          🌐
+        </div>
+        <div class="min-w-0">
+          <span class="text-xs font-bold text-slate-500 block uppercase">Conducting Authority</span>
+          <h4 class="text-xs sm:text-sm font-black text-slate-900 truncate group-hover:text-indigo-700 transition">
+            {matchedAuth.name}
+          </h4>
+        </div>
+      </div>
+      <span class="text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition shrink-0 ml-2">
+        Official Site ➔
+      </span>
+    </a>
+  </div>
+
+  <!-- Advisory Footer -->
+  <div class="pt-3 border-t border-emerald-500/15 flex items-center justify-between text-[11px] sm:text-xs text-slate-600 flex-wrap gap-2">
+    <span class="flex items-center gap-1.5 font-medium">
+      <span>🛡️</span> सर्वर पर हैवी ट्रैफिक होने पर पेज को 1-2 बार रिफ्रेश करें।
+    </span>
+    <span class="font-mono text-emerald-700 font-bold">
+      Verified by Sarkari Desk
+    </span>
+  </div>
+</div>
