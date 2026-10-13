@@ -84,11 +84,14 @@ DEALS_NICHE_ID = os.getenv("DEALS_NICHE_ID", "5cf8114c0bc3eb20c87ce3dcfc1ff185")
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 CACHE_FILE = "sent_loot_cache.json"
 
-# Top public Telegram deals channels to spy & switch links
+# Top public Telegram deals channels to spy & switch links (high-velocity stream)
 SPY_CHANNELS = [
     "dealsmagnet",
     "desidime",
     "indiadeal",
+    "dealbee",
+    "freekaamaal",
+    "dealsheaven"
 ]
 
 # Top viral festive products with verified ASINs & Official CDN photos
@@ -369,7 +372,7 @@ class TelegramChannelSpy:
         deals = []
 
         # Process the 5 most recent messages
-        for wrap in wraps[-5:]:
+        for wrap in wraps[-15:]:
             try:
                 msg_div = wrap.find("div", class_="tgme_widget_message")
                 msg_id = msg_div.get("data-post", "") if msg_div else ""
@@ -596,20 +599,22 @@ Return ONLY valid JSON:
 {{"is_deal": true, "product_name": "...", "deal_price": 54999, "mrp": 69900, "discount_percent": 21, "platform": "amazon", "search_keyword": "..."}}
 If completely unrelated to shopping, return {{"is_deal": false}}.
 """
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key={GEMINI_API_KEY}"
-            payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
-            req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                res_data = json.loads(resp.read().decode("utf-8"))
-            text = res_data["candidates"][0]["content"]["parts"][0]["text"]
-            m = re.search(r'\{.*\}', text, re.DOTALL)
-            if m:
-                d = json.loads(m.group(0))
-                if d.get("is_deal") and d.get("product_name"):
-                    return d
-        except Exception:
-            pass
+        models = ["gemini-3.5-flash", "gemini-3-flash-preview"]
+        for m_name in models:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{m_name}:generateContent?key={GEMINI_API_KEY}"
+                payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode("utf-8")
+                req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    res_data = json.loads(resp.read().decode("utf-8"))
+                text = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                m = re.search(r'\{.*\}', text, re.DOTALL)
+                if m:
+                    d = json.loads(m.group(0))
+                    if d.get("is_deal") and d.get("product_name"):
+                        return d
+            except Exception:
+                continue
         return None
 
     def scan_all(self):
