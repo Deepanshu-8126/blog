@@ -2,7 +2,7 @@
 IndexNow Mass Submission Script
 Submits ALL sitemap URLs to Google (via IndexNow) + Bing in one shot.
 """
-import sys, re, json, urllib.request, urllib.error, time
+import sys, re, json, urllib.request, urllib.error, urllib.parse, time
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
