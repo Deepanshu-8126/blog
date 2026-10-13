@@ -30,16 +30,14 @@ export function isRealWebImage(url?: string | null): boolean {
   return true;
 }
 
-// High-Resolution 100% Real Asset Pool (Zero Unsplash Generic Stock Photos)
+// High-Resolution 100% Real Asset Pool (Verified Standard Production URLs)
 export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
   'ai-tools': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Anthropic_logo.svg/500px-Anthropic_logo.svg.png',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/500px-Google_Gemini_logo.svg.png',
-    'https://upload.wikimedia.org/wikipedia/en/thumb/1/15/DuckDuckGo_logo_post-2023.svg/500px-DuckDuckGo_logo_post-2023.svg.png'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/500px-Google_Gemini_logo.svg.png'
   ],
   'pc-builds': [
-    'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/2023_MSI_GeForce_RTX_2080_Gaming_X_Trio_%285%29.jpg/1200px-2023_MSI_GeForce_RTX_2080_Gaming_X_Trio_%285%29.jpg',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Nvidia_logo.svg/500px-Nvidia_logo.svg.png',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282020%29.svg/500px-Intel_logo_%282020%29.svg.png'
   ],
@@ -53,15 +51,13 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
     'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg'
   ],
   'health': [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/800px-Good_Food_Display_-_NCI_Visuals_Online.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Running_on_Treadmill.jpg/800px-Running_on_Treadmill.jpg'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/960px-Good_Food_Display_-_NCI_Visuals_Online.jpg'
   ],
   'food': [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Paneer_butter_masala_02.jpg/800px-Paneer_butter_masala_02.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Chila_-_Home_-_Howrah_2017-06-25_9070.JPG/800px-Chila_-_Home_-_Howrah_2017-06-25_9070.JPG'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/960px-Good_Food_Display_-_NCI_Visuals_Online.jpg'
   ],
   'fashion': [
-    'https://images-static.nykaa.com/media/catalog/product/2/8/288dc768906161980774_1.jpg'
+    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg'
   ],
   'side-hustles': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png',
@@ -73,9 +69,7 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
   ],
   'exams-results': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png',
-    'https://upload.wikimedia.org/wikipedia/commons/5/56/BTEUP_LOGO.png',
-    'https://upload.wikimedia.org/wikipedia/en/d/d5/Staff_Selection_Commission.webp',
-    'https://upload.wikimedia.org/wikipedia/commons/e/e2/Logo_of_Uttar_Pradesh_Police.png'
+    'https://upload.wikimedia.org/wikipedia/commons/5/56/BTEUP_LOGO.png'
   ],
   'gold-rate': [
     'https://upload.wikimedia.org/wikipedia/commons/4/4b/China_-_5732266939_Gold_-_M%C3%BCnzen_-_Barren.jpg'
@@ -103,25 +97,31 @@ function getEditorialFallback(nicheSlug = 'viral', seed = ''): string {
 }
 
 /**
- * Normalizes Wikimedia Commons thumbnails to reliable high-res (1024px) renders.
+ * Normalizes Wikimedia Commons thumbnails to strictly supported standard sizes (500px/960px).
+ * Prevents HTTP 400 Bad Request error from Wikimedia size validation.
  */
 export function upscaleWikimediaUrl(url: string): string {
   if ((!url.includes('upload.wikimedia.org') && !url.includes('thumb.wikimedia.org')) || !url.includes('/thumb/')) {
     return url;
   }
-  // Standard 1024px render supported across all Wikimedia clusters
-  return url.replace(/\/(\d+)px-([^/]+)$/, '/1024px-$2');
+  // SVG-derived PNGs must remain at 500px standard size
+  if (url.includes('.svg/')) {
+    return url.replace(/\/(\d+)px-([^/]+)$/, '/500px-$2');
+  }
+  // Standard raster JPG/PNG upgraded to valid production 960px width
+  return url.replace(/\/(\d+)px-([^/]+)$/, '/960px-$2');
 }
 
 /**
  * Image URL Resolver
- * Returns high-res HTTPS image URL or rich editorial photography fallback for the niche.
+ * Routes images through edge proxy with automatic SVG gradient fallback to guarantee ZERO blank images.
  */
-export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral', slugOrTitle = ''): string | null {
+export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral', slugOrTitle = ''): string {
   const seed = slugOrTitle || nicheSlug;
 
   if (!rawUrl || typeof rawUrl !== 'string') {
-    return getEditorialFallback(nicheSlug, seed);
+    const fallback = getEditorialFallback(nicheSlug, seed);
+    return `/img?url=${encodeURIComponent(fallback)}&title=${encodeURIComponent(slugOrTitle || 'UniqueDigit')}&niche=${encodeURIComponent(nicheSlug)}`;
   }
   const trimmed = rawUrl.trim();
 
@@ -131,7 +131,8 @@ export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral', slugO
   }
 
   if (!isRealWebImage(trimmed)) {
-    return getEditorialFallback(nicheSlug, seed);
+    const fallback = getEditorialFallback(nicheSlug, seed);
+    return `/img?url=${encodeURIComponent(fallback)}&title=${encodeURIComponent(slugOrTitle || 'UniqueDigit')}&niche=${encodeURIComponent(nicheSlug)}`;
   }
 
   let url = trimmed;
@@ -140,20 +141,21 @@ export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral', slugO
     url = url.replace('http://', 'https://');
   }
 
-  // Normalize Wikimedia thumbnail sizes
+  // Normalize Wikimedia thumbnail sizes to valid production standards
   if (url.includes('upload.wikimedia.org') || url.includes('thumb.wikimedia.org')) {
     url = upscaleWikimediaUrl(url);
   }
 
-  return url;
+  // Proxy via /img to bypass hotlinking restrictions, strip referer, cache on Cloudflare edge, and provide SVG fallback
+  return `/img?url=${encodeURIComponent(url)}&title=${encodeURIComponent(slugOrTitle || 'UniqueDigit')}&niche=${encodeURIComponent(nicheSlug)}`;
 }
 
-export function resolveProductImage(rawUrl?: string | null): string | null {
-  if (!rawUrl || typeof rawUrl !== 'string') return getEditorialFallback('deals', 'product');
+export function resolveProductImage(rawUrl?: string | null): string {
+  if (!rawUrl || typeof rawUrl !== 'string') return proxyImageUrl(null, 'deals', 'Product');
   const trimmed = rawUrl.trim();
   if (trimmed.startsWith('/')) return trimmed;
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    return proxyImageUrl(trimmed, 'deals');
+    return proxyImageUrl(trimmed, 'deals', 'Product');
   }
-  return getEditorialFallback('deals', 'product');
+  return proxyImageUrl(null, 'deals', 'Product');
 }
