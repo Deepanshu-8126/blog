@@ -8,7 +8,7 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 SITE = "https://uniquedigit-viral-hub.pages.dev"
-INDEXNOW_KEY = "uniquedigit2026indexnow"  # We'll create this key file on site too
+INDEXNOW_KEY = "e8b912c47a504efea389127d40cb91af"
 SITEMAP_URL = f"{SITE}/sitemap.xml"
 
 # --- Step 1: Fetch sitemap and extract all URLs ---
