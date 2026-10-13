@@ -1,0 +1,601 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "India Financial & Wealth Calculators - SIP, Income Tax & Gold Estimator",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "description": "Free interactive financial calculators for Indian investors: SIP Wealth Compounding, FY 2026-27 Income Tax Old vs New Regime comparison, and 24K Gold Growth Estimator."
+};
+---
+
+<Layout
+  title="Smart Financial Calculators - SIP, Income Tax FY 2026-27 & Gold Estimator"
+  description="Calculate your SIP compounding returns, compare Old vs New Income Tax Regimes for FY 2026-27, and estimate 24K Gold appreciation instantly with zero bias."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <main class="min-h-screen bg-slate-50 text-ink pb-20">
+
+    <!-- Hero Header -->
+    <section class="relative bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.25),transparent_50%)] pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500 text-slate-950 shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            100% FREE & ZERO-LAG
+          </span>
+          <span class="text-xs text-emerald-200 font-medium">Indian Wealth & Tax Intelligence Engine</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white max-w-4xl leading-tight">
+          Smart Financial Calculators: <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">SIP, Tax Regime & Gold Returns</span>
+        </h1>
+
+        <p class="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+          Plan your financial freedom with real mathematical models. Calculate mutual fund compounding, decide between Old vs New Income Tax regime, and project your physical gold bullion growth.
+        </p>
+
+        <!-- Quick Metrics Pill Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 max-w-3xl">
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">SIP Growth Avg</span>
+            <span class="text-lg font-black text-emerald-300">12% - 15% CAGR</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">New Tax Regime</span>
+            <span class="text-lg font-black text-amber-300">₹75k Std Deduction</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">Gold 10-Yr Return</span>
+            <span class="text-lg font-black text-yellow-300">~11.8% CAGR</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">Tax Free Limit</span>
+            <span class="text-lg font-black text-white">Up to ₹7.75 Lakh</span>
+          </div>
+        </div>
+
+        <!-- 1-Tap WhatsApp Share Banner -->
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href="https://api.whatsapp.com/send?text=%F0%9F%92%B0%20Apna%20SIP%20Compounding%20%26%20Tax%20Savings%20calculate%20karo%20free%20me:%20https://uniquedigit-viral-hub.pages.dev/calculators"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-lg transition"
+          >
+            <Icon name="share" class="w-4 h-4" />
+            <span>Share Calculator on WhatsApp</span>
+          </a>
+          <a
+            href="/gold-rate"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-white/15 hover:bg-white/20 text-white border border-white/20 transition"
+          >
+            <Icon name="coins" class="w-4 h-4 text-amber-300" />
+            <span>Check Live Gold Rate Today</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Calculator Switcher Tabs -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <div class="bg-white rounded-2xl p-2 shadow-xl border border-line flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="calc-tab-btn active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-emerald-600 text-white shadow-md"
+          data-tab="sip"
+        >
+          <span>📈 SIP Wealth Compounding</span>
+        </button>
+        <button
+          type="button"
+          class="calc-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-muted hover:text-ink hover:bg-slate-100 transition flex items-center gap-2 cursor-pointer"
+          data-tab="tax"
+        >
+          <span>⚖️ Old vs New Tax Regime</span>
+        </button>
+        <button
+          type="button"
+          class="calc-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-muted hover:text-ink hover:bg-slate-100 transition flex items-center gap-2 cursor-pointer"
+          data-tab="gold"
+        >
+          <span>🪙 Gold Bullion Growth</span>
+        </button>
+        <button
+          type="button"
+          class="calc-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-muted hover:text-ink hover:bg-slate-100 transition flex items-center gap-2 cursor-pointer"
+          data-tab="fd"
+        >
+          <span>🏦 Fixed Deposit (FD)</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+
+      <!-- ==================== CALCULATOR 1: SIP ==================== -->
+      <div id="calc-tab-sip" class="calc-panel block">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Inputs Column (7 cols) -->
+          <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-line shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h2 class="text-xl font-black text-ink">Systematic Investment Plan (SIP)</h2>
+                <p class="text-xs text-muted mt-0.5">Real monthly compounding calculator based on mutual fund CAGR</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800">Compounding</span>
+            </div>
+
+            <!-- Slider 1: Monthly Investment -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label for="sip-amount" class="text-xs font-bold text-slate-700">Monthly Investment Amount</label>
+                <div class="flex items-center gap-1 font-mono font-black text-base text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl">
+                  <span>₹</span>
+                  <input type="number" id="sip-amount-input" value="10000" min="500" max="1000000" step="500" class="w-24 bg-transparent text-right outline-none font-bold text-emerald-700" />
+                </div>
+              </div>
+              <input type="range" id="sip-amount" min="500" max="100000" step="500" value="10000" class="w-full accent-emerald-600 cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-mono">
+                <span>₹500</span>
+                <span>₹50,000</span>
+                <span>₹1,00,000</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: Expected Return Rate -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label for="sip-rate" class="text-xs font-bold text-slate-700">Expected Annual Return Rate (p.a)</label>
+                <div class="flex items-center gap-1 font-mono font-black text-base text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl">
+                  <input type="number" id="sip-rate-input" value="14" min="5" max="30" step="0.5" class="w-12 bg-transparent text-right outline-none font-bold text-emerald-700" />
+                  <span>%</span>
+                </div>
+              </div>
+              <input type="range" id="sip-rate" min="5" max="30" step="0.5" value="14" class="w-full accent-emerald-600 cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-mono">
+                <span>5% (Debt)</span>
+                <span>12% (Nifty 50)</span>
+                <span>16% (Mid/Small Cap)</span>
+              </div>
+            </div>
+
+            <!-- Slider 3: Time Horizon -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label for="sip-years" class="text-xs font-bold text-slate-700">Investment Time Horizon</label>
+                <div class="flex items-center gap-1 font-mono font-black text-base text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl">
+                  <input type="number" id="sip-years-input" value="15" min="1" max="40" step="1" class="w-10 bg-transparent text-right outline-none font-bold text-emerald-700" />
+                  <span>Yr</span>
+                </div>
+              </div>
+              <input type="range" id="sip-years" min="1" max="35" step="1" value="15" class="w-full accent-emerald-600 cursor-pointer" />
+              <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-mono">
+                <span>1 Year</span>
+                <span>15 Years</span>
+                <span>35 Years</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Results Summary Card (5 cols) -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-slate-900 to-emerald-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col justify-between space-y-6">
+            <div>
+              <span class="text-xs text-emerald-300 font-bold uppercase tracking-wider block">Estimated Wealth Created</span>
+              <div class="text-3xl sm:text-4xl font-black text-white mt-1 font-mono" id="sip-total-value">
+                ₹61,28,498
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Total value at maturity</p>
+            </div>
+
+            <div class="space-y-4 pt-4 border-t border-slate-800">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400">Total Invested Principal:</span>
+                <span class="font-mono font-bold text-white text-sm" id="sip-invested">₹18,00,000</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400">Estimated Wealth Gain (Profit):</span>
+                <span class="font-mono font-bold text-emerald-400 text-sm" id="sip-returns">₹43,28,498</span>
+              </div>
+
+              <!-- Visual Proportion Bar -->
+              <div class="mt-4">
+                <div class="flex justify-between text-[11px] text-slate-400 mb-1">
+                  <span>Principal (<span id="sip-invested-pct">29%</span>)</span>
+                  <span class="text-emerald-300 font-bold">Returns (<span id="sip-returns-pct">71%</span>)</span>
+                </div>
+                <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex">
+                  <div id="sip-bar-invested" class="bg-blue-500 h-full transition-all duration-300" style="width: 29.4%;"></div>
+                  <div id="sip-bar-returns" class="bg-emerald-400 h-full transition-all duration-300" style="width: 70.6%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800/80">
+              <a
+                href="https://www.amazon.in/s?k=Personal+Finance+Books+India&tag=uniquedigi0c6-21"
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-950 font-black text-xs text-center shadow-lg hover:brightness-110 transition flex items-center justify-center gap-2"
+              >
+                <span>📚 Best Personal Finance & Wealth Books (Amazon)</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==================== CALCULATOR 2: TAX REGIME ==================== -->
+      <div id="calc-tab-tax" class="calc-panel hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-line shadow-sm space-y-6">
+          <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 class="text-xl font-black text-ink">Income Tax Calculator: Old vs New Regime (FY 2026-27)</h2>
+              <p class="text-xs text-muted mt-1">Instant side-by-side tax liability check with standard deduction of ₹75,000</p>
+            </div>
+            <span class="text-xs font-mono font-bold bg-amber-100 text-amber-900 px-3 py-1 rounded-full">Budget 2025/2026 Ready</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">Annual Gross Salary / CTC (₹)</label>
+              <input type="number" id="tax-salary" value="1200000" step="50000" class="w-full p-3 rounded-xl border border-slate-300 text-base font-bold font-mono focus:border-brand outline-none" />
+              <p class="text-[11px] text-muted mt-1">Enter your full annual earnings before any deductions.</p>
+            </div>
+
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">Total Deductions under Old Regime (80C, 80D, HRA) (₹)</label>
+              <input type="number" id="tax-deductions" value="250000" step="25000" class="w-full p-3 rounded-xl border border-slate-300 text-base font-bold font-mono focus:border-brand outline-none" />
+              <p class="text-[11px] text-muted mt-1">E.g. ₹1.5L (80C) + ₹50k (NPS) + ₹50k (HRA/Medical Insurance).</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+            <!-- New Regime Card -->
+            <div class="bg-slate-50 border-2 border-emerald-500 rounded-2xl p-5 relative">
+              <span class="absolute top-3 right-3 text-[10px] font-black uppercase tracking-wider bg-emerald-600 text-white px-2 py-0.5 rounded">Default Regime</span>
+              <h3 class="text-base font-black text-ink mb-2">New Tax Regime</h3>
+              <p class="text-xs text-muted mb-4">Standard Deduction: <strong>₹75,000</strong> • Zero tax rebate up to ₹7.75 Lakh</p>
+
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between"><span class="text-slate-500">Taxable Income:</span><span class="font-mono font-bold" id="new-taxable">₹11,25,000</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Cess (4%):</span><span class="font-mono font-bold" id="new-cess">₹3,000</span></div>
+                <div class="flex justify-between text-base font-black pt-2 border-t border-slate-200">
+                  <span class="text-emerald-700">Total Tax Payable:</span>
+                  <span class="font-mono text-emerald-700" id="new-tax-total">₹78,000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Old Regime Card -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+              <h3 class="text-base font-black text-ink mb-2">Old Tax Regime</h3>
+              <p class="text-xs text-muted mb-4">Standard Deduction: <strong>₹50,000</strong> + Claim Section 80C/80D/HRA</p>
+
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between"><span class="text-slate-500">Taxable Income:</span><span class="font-mono font-bold" id="old-taxable">₹9,00,000</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Cess (4%):</span><span class="font-mono font-bold" id="old-cess">₹3,700</span></div>
+                <div class="flex justify-between text-base font-black pt-2 border-t border-slate-200">
+                  <span class="text-slate-800">Total Tax Payable:</span>
+                  <span class="font-mono text-slate-900" id="old-tax-total">₹96,200</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="tax-verdict-box" class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 font-bold text-xs flex items-center justify-between">
+            <span>💡 <strong>Recommendation:</strong> <span id="tax-verdict-text">New Tax Regime will save you ₹18,200 this year!</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CALCULATOR 3: GOLD BULLION ==================== -->
+      <div id="calc-tab-gold" class="calc-panel hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-line shadow-sm space-y-6">
+          <div class="border-b border-slate-100 pb-4">
+            <h2 class="text-xl font-black text-ink">24K Physical Gold & Silver Return Estimator</h2>
+            <p class="text-xs text-muted mt-1">Project the future purchasing power of your 24K 999 gold coins and bars</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">Gold Quantity (Grams)</label>
+              <input type="number" id="gold-grams" value="50" min="1" max="1000" class="w-full p-3 rounded-xl border border-slate-300 font-mono font-bold text-base focus:border-brand outline-none" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">Current Gold Price (₹ per 10g)</label>
+              <input type="number" id="gold-rate-input" value="78500" min="50000" max="150000" class="w-full p-3 rounded-xl border border-slate-300 font-mono font-bold text-base focus:border-brand outline-none" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">Holding Period (Years)</label>
+              <input type="number" id="gold-years" value="10" min="1" max="30" class="w-full p-3 rounded-xl border border-slate-300 font-mono font-bold text-base focus:border-brand outline-none" />
+            </div>
+          </div>
+
+          <div class="p-6 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs text-amber-800 font-bold block">Current Holding Value:</span>
+              <span class="text-xl font-black font-mono text-slate-900" id="gold-current-val">₹3,92,500</span>
+            </div>
+            <div>
+              <span class="text-xs text-amber-800 font-bold block">Projected Value (at 11.5% historic CAGR):</span>
+              <span class="text-2xl font-black font-mono text-amber-900" id="gold-future-val">₹11,65,712</span>
+            </div>
+            <a
+              href="https://www.amazon.in/s?k=24k+999+gold+bar+coin&tag=uniquedigi0c6-21"
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow transition shrink-0"
+            >
+              Buy Certified Gold Coins on Amazon
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== CALCULATOR 4: FIXED DEPOSIT (FD) ==================== -->
+      <div id="calc-tab-fd" class="calc-panel hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-line shadow-sm space-y-6">
+          <div class="border-b border-slate-100 pb-4">
+            <h2 class="text-xl font-black text-ink">Bank Fixed Deposit (FD) Maturity Calculator</h2>
+            <p class="text-xs text-muted mt-1">Quarterly compounding interest check for Indian banks & senior citizen deposits</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">FD Principal Amount (₹)</label>
+              <input type="number" id="fd-principal" value="200000" min="5000" step="10000" class="w-full p-3 rounded-xl border border-slate-300 font-mono font-bold text-base focus:border-brand outline-none" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">Interest Rate (% p.a)</label>
+              <input type="number" id="fd-rate" value="7.5" min="3" max="12" step="0.1" class="w-full p-3 rounded-xl border border-slate-300 font-mono font-bold text-base focus:border-brand outline-none" />
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-700 block mb-1">Tenure (Years)</label>
+              <input type="number" id="fd-years" value="5" min="1" max="10" class="w-full p-3 rounded-xl border border-slate-300 font-mono font-bold text-base focus:border-brand outline-none" />
+            </div>
+          </div>
+
+          <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span class="text-xs text-slate-500 font-bold block">Interest Earned:</span>
+              <span class="text-xl font-black font-mono text-emerald-600" id="fd-interest-earned">₹89,990</span>
+            </div>
+            <div>
+              <span class="text-xs text-slate-500 font-bold block">Total Maturity Amount:</span>
+              <span class="text-2xl font-black font-mono text-ink" id="fd-maturity-val">₹2,89,990</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FAQ Section for Featured Snippets -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-10 border-t border-line">
+      <h2 class="text-xl sm:text-2xl font-black text-ink mb-6">Frequently Asked Questions (Wealth & Tax)</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">What is the formula used for SIP compounding?</h3>
+          <p class="text-muted">
+            SIP uses the future value of an annuity formula: <code>M = P × [((1 + i)^n - 1) / i] × (1 + i)</code>, where P is monthly deposit, i is monthly return rate, and n is total months.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">Is the New Tax Regime better for salaries above ₹15 Lakh?</h3>
+          <p class="text-muted">
+            Unless you claim more than ₹3.75 Lakh in combined deductions (80C + 80D + HRA + Home Loan Interest Section 24), the <strong>New Tax Regime</strong> results in significantly lower tax liability due to lower slab rates.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</Layout>
+
+<script>
+  // Tabs switching
+  const tabBtns = document.querySelectorAll('.calc-tab-btn');
+  const panels = document.querySelectorAll('.calc-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab');
+      tabBtns.forEach(b => {
+        b.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
+        b.classList.add('text-muted');
+      });
+      btn.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
+      btn.classList.remove('text-muted');
+
+      panels.forEach(p => {
+        if (p.id === `calc-tab-${target}`) {
+          p.classList.remove('hidden');
+          p.classList.add('block');
+        } else {
+          p.classList.add('hidden');
+          p.classList.remove('block');
+        }
+      });
+    });
+  });
+
+  // 1. SIP Calculator logic
+  const sipAmountRange = document.getElementById('sip-amount') as HTMLInputElement;
+  const sipAmountInput = document.getElementById('sip-amount-input') as HTMLInputElement;
+  const sipRateRange = document.getElementById('sip-rate') as HTMLInputElement;
+  const sipRateInput = document.getElementById('sip-rate-input') as HTMLInputElement;
+  const sipYearsRange = document.getElementById('sip-years') as HTMLInputElement;
+  const sipYearsInput = document.getElementById('sip-years-input') as HTMLInputElement;
+
+  const sipTotalVal = document.getElementById('sip-total-value');
+  const sipInvested = document.getElementById('sip-invested');
+  const sipReturns = document.getElementById('sip-returns');
+  const sipInvestedPct = document.getElementById('sip-invested-pct');
+  const sipReturnsPct = document.getElementById('sip-returns-pct');
+  const sipBarInvested = document.getElementById('sip-bar-invested');
+  const sipBarReturns = document.getElementById('sip-bar-returns');
+
+  function calculateSIP() {
+    const P = parseFloat(sipAmountRange.value) || 10000;
+    const r = (parseFloat(sipRateRange.value) || 14) / 100 / 12;
+    const n = (parseFloat(sipYearsRange.value) || 15) * 12;
+
+    const invested = P * n;
+    const total = P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+    const returns = total - invested;
+
+    const invPct = Math.round((invested / total) * 100);
+    const retPct = 100 - invPct;
+
+    if (sipTotalVal) sipTotalVal.textContent = '₹' + Math.round(total).toLocaleString('en-IN');
+    if (sipInvested) sipInvested.textContent = '₹' + Math.round(invested).toLocaleString('en-IN');
+    if (sipReturns) sipReturns.textContent = '₹' + Math.round(returns).toLocaleString('en-IN');
+    if (sipInvestedPct) sipInvestedPct.textContent = invPct + '%';
+    if (sipReturnsPct) sipReturnsPct.textContent = retPct + '%';
+    if (sipBarInvested) sipBarInvested.style.width = invPct + '%';
+    if (sipBarReturns) sipBarReturns.style.width = retPct + '%';
+  }
+
+  function syncSipInputs(source: HTMLInputElement, target: HTMLInputElement) {
+    target.value = source.value;
+    calculateSIP();
+  }
+
+  if (sipAmountRange && sipAmountInput) {
+    sipAmountRange.addEventListener('input', () => syncSipInputs(sipAmountRange, sipAmountInput));
+    sipAmountInput.addEventListener('input', () => syncSipInputs(sipAmountInput, sipAmountRange));
+  }
+  if (sipRateRange && sipRateInput) {
+    sipRateRange.addEventListener('input', () => syncSipInputs(sipRateRange, sipRateInput));
+    sipRateInput.addEventListener('input', () => syncSipInputs(sipRateInput, sipRateRange));
+  }
+  if (sipYearsRange && sipYearsInput) {
+    sipYearsRange.addEventListener('input', () => syncSipInputs(sipYearsRange, sipYearsInput));
+    sipYearsInput.addEventListener('input', () => syncSipInputs(sipYearsInput, sipYearsRange));
+  }
+  calculateSIP();
+
+  // 2. Tax Calculator logic
+  const taxSalary = document.getElementById('tax-salary') as HTMLInputElement;
+  const taxDeductions = document.getElementById('tax-deductions') as HTMLInputElement;
+  const newTaxable = document.getElementById('new-taxable');
+  const newCess = document.getElementById('new-cess');
+  const newTaxTotal = document.getElementById('new-tax-total');
+  const oldTaxable = document.getElementById('old-taxable');
+  const oldCess = document.getElementById('old-cess');
+  const oldTaxTotal = document.getElementById('old-tax-total');
+  const taxVerdictText = document.getElementById('tax-verdict-text');
+
+  function calculateTax() {
+    const gross = parseFloat(taxSalary?.value || '1200000');
+    const ded = parseFloat(taxDeductions?.value || '250000');
+
+    // New Regime
+    const nTaxable = Math.max(0, gross - 75000);
+    let nTax = 0;
+    if (nTaxable > 1500000) nTax = 150000 + (nTaxable - 1500000) * 0.3;
+    else if (nTaxable > 1200000) nTax = 90000 + (nTaxable - 1200000) * 0.2;
+    else if (nTaxable > 1000000) nTax = 60000 + (nTaxable - 1000000) * 0.15;
+    else if (nTaxable > 700000) nTax = 20000 + (nTaxable - 700000) * 0.1;
+    else if (nTaxable > 300000) nTax = (nTaxable - 300000) * 0.05;
+
+    // Section 87A rebate for new regime under 7L
+    if (nTaxable <= 700000) nTax = 0;
+    const nCessVal = Math.round(nTax * 0.04);
+    const nTotal = Math.round(nTax + nCessVal);
+
+    // Old Regime
+    const oTaxable = Math.max(0, gross - 50000 - ded);
+    let oTax = 0;
+    if (oTaxable > 1000000) oTax = 112500 + (oTaxable - 1000000) * 0.3;
+    else if (oTaxable > 500000) oTax = 12500 + (oTaxable - 500000) * 0.2;
+    else if (oTaxable > 250000) oTax = (oTaxable - 250000) * 0.05;
+
+    if (oTaxable <= 500000) oTax = 0;
+    const oCessVal = Math.round(oTax * 0.04);
+    const oTotal = Math.round(oTax + oCessVal);
+
+    if (newTaxable) newTaxable.textContent = '₹' + nTaxable.toLocaleString('en-IN');
+    if (newCess) newCess.textContent = '₹' + nCessVal.toLocaleString('en-IN');
+    if (newTaxTotal) newTaxTotal.textContent = '₹' + nTotal.toLocaleString('en-IN');
+
+    if (oldTaxable) oldTaxable.textContent = '₹' + oTaxable.toLocaleString('en-IN');
+    if (oldCess) oldCess.textContent = '₹' + oCessVal.toLocaleString('en-IN');
+    if (oldTaxTotal) oldTaxTotal.textContent = '₹' + oTotal.toLocaleString('en-IN');
+
+    if (taxVerdictText) {
+      if (nTotal < oTotal) {
+        taxVerdictText.textContent = `New Tax Regime will save you ₹${(oTotal - nTotal).toLocaleString('en-IN')} this year!`;
+      } else if (oTotal < nTotal) {
+        taxVerdictText.textContent = `Old Tax Regime will save you ₹${(nTotal - oTotal).toLocaleString('en-IN')} with your deductions!`;
+      } else {
+        taxVerdictText.textContent = `Both regimes yield equal tax (₹${nTotal.toLocaleString('en-IN')}). New Regime is simpler to file.`;
+      }
+    }
+  }
+
+  if (taxSalary) taxSalary.addEventListener('input', calculateTax);
+  if (taxDeductions) taxDeductions.addEventListener('input', calculateTax);
+  calculateTax();
+
+  // 3. Gold Calculator
+  const goldGrams = document.getElementById('gold-grams') as HTMLInputElement;
+  const goldRateInput = document.getElementById('gold-rate-input') as HTMLInputElement;
+  const goldYears = document.getElementById('gold-years') as HTMLInputElement;
+  const goldCurrentVal = document.getElementById('gold-current-val');
+  const goldFutureVal = document.getElementById('gold-future-val');
+
+  function calculateGold() {
+    const grams = parseFloat(goldGrams?.value || '50');
+    const ratePer10g = parseFloat(goldRateInput?.value || '78500');
+    const yrs = parseFloat(goldYears?.value || '10');
+
+    const current = (grams / 10) * ratePer10g;
+    const future = current * Math.pow(1 + 0.115, yrs);
+
+    if (goldCurrentVal) goldCurrentVal.textContent = '₹' + Math.round(current).toLocaleString('en-IN');
+    if (goldFutureVal) goldFutureVal.textContent = '₹' + Math.round(future).toLocaleString('en-IN');
+  }
+
+  if (goldGrams) goldGrams.addEventListener('input', calculateGold);
+  if (goldRateInput) goldRateInput.addEventListener('input', calculateGold);
+  if (goldYears) goldYears.addEventListener('input', calculateGold);
+  calculateGold();
+
+  // 4. FD Calculator
+  const fdPrincipal = document.getElementById('fd-principal') as HTMLInputElement;
+  const fdRate = document.getElementById('fd-rate') as HTMLInputElement;
+  const fdYears = document.getElementById('fd-years') as HTMLInputElement;
+  const fdInterestEarned = document.getElementById('fd-interest-earned');
+  const fdMaturityVal = document.getElementById('fd-maturity-val');
+
+  function calculateFD() {
+    const P = parseFloat(fdPrincipal?.value || '200000');
+    const r = (parseFloat(fdRate?.value || '7.5') / 100) / 4;
+    const n = (parseFloat(fdYears?.value || '5')) * 4;
+
+    const total = P * Math.pow(1 + r, n);
+    const interest = total - P;
+
+    if (fdInterestEarned) fdInterestEarned.textContent = '₹' + Math.round(interest).toLocaleString('en-IN');
+    if (fdMaturityVal) fdMaturityVal.textContent = '₹' + Math.round(total).toLocaleString('en-IN');
+  }
+
+  if (fdPrincipal) fdPrincipal.addEventListener('input', calculateFD);
+  if (fdRate) fdRate.addEventListener('input', calculateFD);
+  if (fdYears) fdYears.addEventListener('input', calculateFD);
+  calculateFD();
+</script>

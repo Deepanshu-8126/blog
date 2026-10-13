@@ -36,6 +36,7 @@ const isDeals = pathname.startsWith('/deals');
 const isSearch = pathname.startsWith('/search');
 const isCurrentAffairs = pathname.startsWith('/current-affairs');
 const isSmartphones = pathname.startsWith('/smartphones');
+const isCalculators = pathname.startsWith('/calculators');
 const isYojanas = pathname.startsWith('/yojanas');
 const isCricket = pathname.startsWith('/cricket');
 
@@ -120,6 +121,13 @@ const isNicheActive = (slug: string) => {
             <span class="text-xs">🇮🇳</span>
             <span>Yojana</span>
             <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-400 text-slate-950">DBT</span>
+          </a>
+          <a
+            href="/calculators"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${isCalculators ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+          >
+            <span class="text-xs">📈</span>
+            <span>SIP / Tax Calc</span>
           </a>
           <a
             href="/builds"
@@ -278,6 +286,16 @@ const isNicheActive = (slug: string) => {
             <span>Sarkari Yojana & DBT Portal</span>
           </div>
           <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500 text-white">GOV</span>
+        </a>
+        <a
+          href="/calculators"
+          class={`col-span-2 p-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition ${isCalculators ? 'bg-brand text-white shadow-xs' : 'bg-gradient-to-r from-teal-500/15 to-emerald-500/15 text-slate-900 border border-teal-300 hover:bg-teal-100'}`}
+        >
+          <div class="flex items-center gap-2">
+            <span>📈</span>
+            <span>Smart Calculators (SIP, Income Tax, Gold)</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-teal-600 text-white">FREE</span>
         </a>
         <a
           href="/current-affairs"

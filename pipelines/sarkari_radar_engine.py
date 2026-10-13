@@ -294,6 +294,7 @@ def generate_sarkari_article(item):
     title = item["title"]
     entity = item.get("entity", "Conducting Board")
     category = item.get("category", "Sarkari Alert")
+    official_domain = item.get("official_domain", "")
     OFFICIAL_DOMAINS_MAP = {
         "bteup": "https://bteup.ac.in",
         "up board": "https://upmsp.edu.in",
