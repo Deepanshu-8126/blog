@@ -607,7 +607,7 @@ def get_trends(seeds=None, niche_slug=None):
 
     # 2. Fetch Viral Community Trends (Pillar 4)
     if niche_slug:
-        for t in fetch_reddit_viral_trends(niche_slug, GEO):
+        for t in fetch_community_viral_trends(niche_slug, GEO):
             if t["title"] not in out:
                 out[t["title"]] = {
                     "score": t["score"],
@@ -1064,12 +1064,12 @@ EDITORIAL ARCHETYPE REQUIREMENT:
 
 2. HUMANIZATION & ELITE BLOG ARCHITECTURE (ANTI-AI SLOP):
    - WRITE LIKE A PASSIONATE, EXPERT INDIAN BLOGGER TALKING TO A SMART FRIEND OVER CHAI.
-   - MANDATORY 5-PART BLOG STRUCTURE:
+   - MANDATORY 5-PART BLOG STRUCTURE (GOOGLE RANKING FACTOR & LISTICLE OPTIMIZED):
      1. Relatable Opening Hook: Address the reader directly. Why is this topic trending right now? Why should they care? (No textbook definitions).
      2. ⚡ Quick Highlights Box: A clean 3-bullet callout box right after the intro with the absolute bottom-line facts.
-     3. Honest Deep-Dive: Use conversational subheadings (e.g. "## Ground Reality: Asli Baat Kya Hai?", "## What Works & What Doesn't").
-     4. Data / Specs / Pricing Table: Clean, readable Markdown table with INR prices, comparison metrics, or dates.
-     5. Final Verdict & Clear Action: Direct, opinionated conclusion answering "Is it worth your time/money?".
+     3. Structured Deep-Dive / Listicle Breakdown: When ranking tools, products, methods or tips, use numbered headings (e.g. '## 1. ...', '## 2. ...') with honest Pros (✅) and Cons (❌), or conversational subheadings (e.g. "## Ground Reality: Asli Baat Kya Hai?", "## What Works & What Doesn't").
+     4. High-Ranking Comparison Table: Clean, readable Markdown table with INR prices, specs, comparison metrics, or cutoffs (Google indexes tables directly into Position 0 Featured Snippets!).
+     5. Final Verdict & 'Who Should Choose What': Direct, opinionated conclusion with clear category winners (e.g. 🏆 Best Overall, 💰 Best Value for Money, ⚡ Best for Beginners) answering "Is it worth your time/money?".
    - STRICTLY BANNED CLICHES (INSTANT REJECTION):
      "In conclusion", "delve into", "tapestry", "beacon", "testament to", "fast-paced world", "it is important to remember", "furthermore", "moreover", "in the realm of", "revolutionize", "game-changer", "dive deep", "navigating the landscape".
    - USE NATURAL HUMAN TRANSITIONS:
@@ -1244,10 +1244,10 @@ SEED_NICHES = [
 # ---------- Universal Autonomous Trend Discovery (Auto-Niche Creation) ----------
 def process_national_breaking_trends():
     """Scans all trending searches in India and dynamically creates/assigns niches on the fly"""
-    print("--- [Radar Agent] Scanning National Real-Time Indian Search Trends & Viral Reddit Hubs ---")
-    rss_trends = (fetch_google_trends_rss(GEO) or []) + (fetch_reddit_viral_trends("viral", GEO) or [])
+    print("--- [Radar Agent] Scanning National Real-Time Indian Search Trends & Community Hubs ---")
+    rss_trends = (fetch_google_trends_rss(GEO) or []) + (fetch_community_viral_trends("viral", GEO) or [])
     if not rss_trends:
-        print("[Radar Agent] No trends returned from Google Trends / Reddit RSS.")
+        print("[Radar Agent] No trends returned from Google Trends / Community RSS.")
         return 0
 
     existing_records = d1_query("SELECT canonical, slug FROM topics")
