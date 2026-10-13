@@ -356,7 +356,7 @@ export async function getProductsByNiche(
   if (db && typeof db.prepare === 'function') {
     try {
       const res = await db.prepare(
-        'SELECT * FROM products WHERE niche_id = ? AND active = 1 ORDER BY cpa_payout DESC, clicks DESC, sort ASC LIMIT ? OFFSET ?'
+        'SELECT * FROM products WHERE niche_id = ? AND active = 1 ORDER BY sort ASC, created_at DESC, clicks DESC LIMIT ? OFFSET ?'
       ).bind(nicheId, limit, offset).all();
       if (res.results && res.results.length > 0) {
         return res.results as Product[];
@@ -393,7 +393,7 @@ export async function getAllProducts(runtimeEnv?: any): Promise<Product[]> {
   if (db && typeof db.prepare === 'function') {
     try {
       const res = await db.prepare(
-        'SELECT * FROM products WHERE active = 1 ORDER BY cpa_payout DESC, clicks DESC, sort ASC'
+        'SELECT * FROM products WHERE active = 1 ORDER BY sort ASC, created_at DESC, clicks DESC'
       ).all();
       if (res.results && res.results.length > 0) {
         return res.results as Product[];
