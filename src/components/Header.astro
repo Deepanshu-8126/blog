@@ -34,6 +34,7 @@ const isTrending = pathname.startsWith('/trending');
 const isBuilds = pathname.startsWith('/builds');
 const isDeals = pathname.startsWith('/deals');
 const isSearch = pathname.startsWith('/search');
+const isCurrentAffairs = pathname.startsWith('/current-affairs');
 
 const isNicheActive = (slug: string) => {
   return activeNiche === slug || pathname === `/${slug}` || pathname.startsWith(`/${slug}/`);
@@ -86,6 +87,14 @@ const isNicheActive = (slug: string) => {
           >
             <Icon name="tag" class="w-3.5 h-3.5 text-emerald-300" />
             <span>Deals</span>
+          </a>
+          <a
+            href="/current-affairs"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${isCurrentAffairs ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+          >
+            <span class="text-xs">⚡</span>
+            <span>Current Affairs</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-amber-400 text-slate-950">Daily</span>
           </a>
           <a
             href="/builds"
@@ -220,6 +229,16 @@ const isNicheActive = (slug: string) => {
         >
           <Icon name="tag" class="w-3.5 h-3.5" />
           <span>Loot Deals</span>
+        </a>
+        <a
+          href="/current-affairs"
+          class={`col-span-2 p-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition ${isCurrentAffairs ? 'bg-brand text-white shadow-xs' : 'bg-gradient-to-r from-amber-400/15 via-emerald-400/15 to-indigo-400/15 text-slate-900 border border-amber-300 hover:bg-amber-100'}`}
+        >
+          <div class="flex items-center gap-2">
+            <span>⚡</span>
+            <span>Daily Current Affairs & GK Quiz</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-slate-950">LIVE</span>
         </a>
       </div>
 
