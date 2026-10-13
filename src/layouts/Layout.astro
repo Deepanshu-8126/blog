@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import LiveDealToast from '../components/LiveDealToast.astro';
 import type { Niche } from '../lib/db';
 
 interface Props {
@@ -110,5 +111,6 @@ const siteName = 'UniqueDigit';
       <slot />
     </main>
     <Footer />
+    <LiveDealToast />
   </body>
 </html>

@@ -1,0 +1,642 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+
+interface MatchFixture {
+  id: string;
+  matchNo: number;
+  team1: string;
+  team1Short: string;
+  team1Color: string;
+  team2: string;
+  team2Short: string;
+  team2Color: string;
+  date: string;
+  time: string;
+  venue: string;
+  city: string;
+  status: 'Upcoming' | 'Live' | 'Completed';
+  liveStream: string;
+}
+
+interface TeamStanding {
+  pos: number;
+  team: string;
+  short: string;
+  color: string;
+  played: number;
+  won: number;
+  lost: number;
+  nrr: string;
+  points: number;
+  form: string[];
+}
+
+interface FantasyTip {
+  id: string;
+  match: string;
+  venue: string;
+  pitchType: 'Batting Paradise' | 'Spin Friendly' | 'Pace & Bounce' | 'Balanced';
+  avgScore: number;
+  keyPlayers: string[];
+  captainPicks: string[];
+  differentialPick: string;
+  advice: string;
+}
+
+interface CricketProduct {
+  id: string;
+  title: string;
+  category: string;
+  price: string;
+  mrp: string;
+  discount: string;
+  image: string;
+  rating: string;
+  affiliateUrl: string;
+}
+
+const STANDINGS: TeamStanding[] = [
+  { pos: 1, team: 'Chennai Super Kings', short: 'CSK', color: 'from-amber-500 to-yellow-400', played: 14, won: 10, lost: 4, nrr: '+0.782', points: 20, form: ['W', 'W', 'L', 'W', 'W'] },
+  { pos: 2, team: 'Mumbai Indians', short: 'MI', color: 'from-blue-600 to-blue-400', played: 14, won: 9, lost: 5, nrr: '+0.614', points: 18, form: ['W', 'W', 'W', 'L', 'W'] },
+  { pos: 3, team: 'Kolkata Knight Riders', short: 'KKR', color: 'from-purple-800 to-amber-500', played: 14, won: 9, lost: 5, nrr: '+0.542', points: 18, form: ['L', 'W', 'W', 'W', 'L'] },
+  { pos: 4, team: 'Royal Challengers Bengaluru', short: 'RCB', color: 'from-red-600 to-black', played: 14, won: 8, lost: 6, nrr: '+0.320', points: 16, form: ['W', 'W', 'W', 'W', 'W'] },
+  { pos: 5, team: 'Sunrisers Hyderabad', short: 'SRH', color: 'from-orange-600 to-black', played: 14, won: 8, lost: 6, nrr: '+0.280', points: 16, form: ['L', 'L', 'W', 'W', 'L'] },
+  { pos: 6, team: 'Rajasthan Royals', short: 'RR', color: 'from-pink-600 to-blue-700', played: 14, won: 7, lost: 7, nrr: '+0.110', points: 14, form: ['L', 'L', 'L', 'W', 'L'] },
+  { pos: 7, team: 'Gujarat Titans', short: 'GT', color: 'from-slate-800 to-amber-400', played: 14, won: 6, lost: 8, nrr: '-0.125', points: 12, form: ['W', 'L', 'L', 'L', 'W'] },
+  { pos: 8, team: 'Delhi Capitals', short: 'DC', color: 'from-blue-700 to-red-600', played: 14, won: 5, lost: 9, nrr: '-0.342', points: 10, form: ['L', 'W', 'L', 'L', 'L'] },
+  { pos: 9, team: 'Lucknow Super Giants', short: 'LSG', color: 'from-cyan-600 to-blue-800', played: 14, won: 5, lost: 9, nrr: '-0.450', points: 10, form: ['L', 'L', 'L', 'W', 'L'] },
+  { pos: 10, team: 'Punjab Kings', short: 'PBKS', color: 'from-red-600 to-yellow-500', played: 14, won: 3, lost: 11, nrr: '-0.730', points: 6, form: ['L', 'L', 'L', 'L', 'L'] }
+];
+
+const FIXTURES: MatchFixture[] = [
+  {
+    id: 'm-1',
+    matchNo: 1,
+    team1: 'Chennai Super Kings',
+    team1Short: 'CSK',
+    team1Color: 'bg-amber-500 text-slate-950',
+    team2: 'Royal Challengers Bengaluru',
+    team2Short: 'RCB',
+    team2Color: 'bg-red-600 text-white',
+    date: 'Friday, March 27',
+    time: '7:30 PM IST',
+    venue: 'MA Chidambaram Stadium (Chepauk)',
+    city: 'Chennai',
+    status: 'Upcoming',
+    liveStream: 'JioCinema & Star Sports 1 HD'
+  },
+  {
+    id: 'm-2',
+    matchNo: 2,
+    team1: 'Mumbai Indians',
+    team1Short: 'MI',
+    team1Color: 'bg-blue-600 text-white',
+    team2: 'Kolkata Knight Riders',
+    team2Short: 'KKR',
+    team2Color: 'bg-purple-800 text-white',
+    date: 'Saturday, March 28',
+    time: '7:30 PM IST',
+    venue: 'Wankhede Stadium',
+    city: 'Mumbai',
+    status: 'Upcoming',
+    liveStream: 'JioCinema & Star Sports 1 HD'
+  },
+  {
+    id: 'm-3',
+    matchNo: 3,
+    team1: 'Sunrisers Hyderabad',
+    team1Short: 'SRH',
+    team1Color: 'bg-orange-600 text-white',
+    team2: 'Rajasthan Royals',
+    team2Short: 'RR',
+    team2Color: 'bg-pink-600 text-white',
+    date: 'Sunday, March 29',
+    time: '3:30 PM IST',
+    venue: 'Rajiv Gandhi International Cricket Stadium',
+    city: 'Hyderabad',
+    status: 'Upcoming',
+    liveStream: 'JioCinema & Star Sports 1 HD'
+  },
+  {
+    id: 'm-4',
+    matchNo: 4,
+    team1: 'Gujarat Titans',
+    team1Short: 'GT',
+    team1Color: 'bg-slate-900 text-amber-300',
+    team2: 'Delhi Capitals',
+    team2Short: 'DC',
+    team2Color: 'bg-blue-700 text-white',
+    date: 'Sunday, March 29',
+    time: '7:30 PM IST',
+    venue: 'Narendra Modi Stadium',
+    city: 'Ahmedabad',
+    status: 'Upcoming',
+    liveStream: 'JioCinema & Star Sports 1 HD'
+  }
+];
+
+const FANTASY_TIPS: FantasyTip[] = [
+  {
+    id: 'tip-chepauk',
+    match: 'CSK vs RCB (Chepauk Opener)',
+    venue: 'MA Chidambaram Stadium, Chennai',
+    pitchType: 'Spin Friendly',
+    avgScore: 168,
+    keyPlayers: ['Ravindra Jadeja', 'Virat Kohli', 'Ruturaj Gaikwad', 'Glenn Maxwell'],
+    captainPicks: ['Ravindra Jadeja (All-Rounder)', 'Ruturaj Gaikwad (Anchor)'],
+    differentialPick: 'Maheesh Theekshana (High spin grip at Chepauk)',
+    advice: 'Chepauk pitches slow down drastically in the 2nd innings. Opt for finger spinners and anchors who play spin well.'
+  },
+  {
+    id: 'tip-wankhede',
+    match: 'MI vs KKR (Wankhede Clash)',
+    venue: 'Wankhede Stadium, Mumbai',
+    pitchType: 'Batting Paradise',
+    avgScore: 202,
+    keyPlayers: ['Suryakumar Yadav', 'Andre Russell', 'Jasprit Bumrah', 'Phil Salt'],
+    captainPicks: ['Suryakumar Yadav (360° hitter)', 'Andre Russell (Death overs bat+bowl)'],
+    differentialPick: 'Tilak Varma (Consistent middle-order)',
+    advice: 'True red-soil bounce with short boundaries and evening dew. Stack top-order power hitters and death yorker specialists.'
+  }
+];
+
+const CRICKET_GEAR: CricketProduct[] = [
+  {
+    id: 'sg-cricket-bat',
+    title: 'SG Sierra Kashmir Willow Cricket Bat (Full Size Adult)',
+    category: 'Bats',
+    price: '₹1,499',
+    mrp: '₹2,399',
+    discount: '37% OFF',
+    image: 'https://m.media-amazon.com/images/I/713v9qU6aML._SL1500_.jpg',
+    rating: '4.4 ★ (3,120+ reviews)',
+    affiliateUrl: 'https://www.amazon.in/s?k=SG+Kashmir+Willow+Cricket+Bat&tag=uniquedigi0c6-21'
+  },
+  {
+    id: 'sg-cricket-kit',
+    title: 'SG Economy Full Cricket Kit with Bat, Pads, Gloves & Bag',
+    category: 'Kits',
+    price: '₹4,899',
+    mrp: '₹7,500',
+    discount: '35% OFF',
+    image: 'https://m.media-amazon.com/images/I/81xU-oU6YCL._SL1500_.jpg',
+    rating: '4.3 ★ (1,840+ reviews)',
+    affiliateUrl: 'https://www.amazon.in/s?k=SG+Cricket+Kit+Complete&tag=uniquedigi0c6-21'
+  },
+  {
+    id: 'csk-jersey',
+    title: 'Official CSK Fan Jersey 2026 Edition (Dry-Fit Breathable)',
+    category: 'Merch',
+    price: '₹699',
+    mrp: '₹1,299',
+    discount: '46% OFF',
+    image: 'https://m.media-amazon.com/images/I/61tFpDk+g9L._SL1500_.jpg',
+    rating: '4.6 ★ (4,900+ reviews)',
+    affiliateUrl: 'https://www.amazon.in/s?k=CSK+Yellow+Cricket+Jersey&tag=uniquedigi0c6-21'
+  },
+  {
+    id: 'leather-cricket-balls',
+    title: 'SG Club Leather Cricket Ball (Pack of 2, 4-Piece Alum Tanned)',
+    category: 'Balls',
+    price: '₹749',
+    mrp: '₹1,100',
+    discount: '32% OFF',
+    image: 'https://m.media-amazon.com/images/I/71R2cE8Y09L._SL1500_.jpg',
+    rating: '4.5 ★ (2,450+ reviews)',
+    affiliateUrl: 'https://www.amazon.in/s?k=SG+Leather+Cricket+Ball&tag=uniquedigi0c6-21'
+  }
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  "name": "Indian Premier League (IPL) 2026 Schedule, Points Table & Fantasy Tips",
+  "sport": "Cricket",
+  "organizer": {
+    "@type": "Organization",
+    "name": "BCCI"
+  },
+  "description": "Live IPL 2026 points table, team standings, match schedule, venue pitch reports, Dream11 fantasy advice, and official cricket gear discounts in India."
+};
+---
+
+<Layout
+  title="IPL & Cricket Viral Hub 2026 - Live Points Table, Match Schedule & Fantasy Tips"
+  description="Complete Indian Premier League & Cricket Guide: Live Points Table, upcoming match fixtures, venue pitch reports, Dream11 fantasy captain picks, and cricket merchandise deals."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <main class="min-h-screen bg-slate-50 text-ink pb-20">
+    
+    <!-- Hero Header -->
+    <section class="relative bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.25),transparent_50%)] pointer-events-none"></div>
+      
+      <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-red-600 text-white shadow-lg animate-pulse">
+            <span class="w-2 h-2 rounded-full bg-white"></span>
+            LIVE RADAR
+          </span>
+          <span class="text-xs text-blue-200 font-medium">BCCI / IPL 2026 Complete Intelligence</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white max-w-4xl leading-tight">
+          Cricket & IPL Viral Hub: <span class="bg-gradient-to-r from-amber-300 via-orange-400 to-red-400 bg-clip-text text-transparent">Points Table, Fixtures & Fantasy Tips</span>
+        </h1>
+
+        <p class="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+          Daily updated standings, net run rates (NRR), match schedules with streaming channels, ground pitch analysis for Dream11, and top-rated cricket kits at lowest Amazon prices.
+        </p>
+
+        <!-- Quick Summary Metrics -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 max-w-3xl">
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">Defending Champions</span>
+            <span class="text-lg font-black text-amber-300">KKR / CSK Hype</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">Total Teams</span>
+            <span class="text-lg font-black text-white">10 Franchises</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">Live Streaming</span>
+            <span class="text-lg font-black text-blue-300">JioCinema 4K</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3.5">
+            <span class="text-xs text-slate-400 font-bold block">Next Big Match</span>
+            <span class="text-lg font-black text-emerald-400">CSK vs RCB</span>
+          </div>
+        </div>
+
+        <!-- 1-Tap WhatsApp Share Banner -->
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href="https://api.whatsapp.com/send?text=%F0%9F%8F%8F%20IPL%202026%20Live%20Points%20Table%20%26%20Match%20Schedule%20check%20karo%20yahan:%20https://uniquedigit-viral-hub.pages.dev/cricket"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg transition"
+          >
+            <Icon name="share" class="w-4 h-4" />
+            <span>Share IPL Hub on WhatsApp</span>
+          </a>
+          <a
+            href="https://t.me/uniquedigit_deals"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition"
+          >
+            <span>⚡ Join Telegram for Instant Match Alerts</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Interactive Navigation Tabs -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <div class="bg-white rounded-2xl p-2 shadow-xl border border-line flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="tab-btn active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer bg-brand text-white shadow-md"
+          data-tab="points-table"
+        >
+          <Icon name="trophy" class="w-4 h-4" />
+          <span>Points Table & NRR</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-muted hover:text-ink hover:bg-slate-100 transition flex items-center gap-2 cursor-pointer"
+          data-tab="schedule"
+        >
+          <span>📅 Match Schedule</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-muted hover:text-ink hover:bg-slate-100 transition flex items-center gap-2 cursor-pointer"
+          data-tab="fantasy"
+        >
+          <span>🎯 Dream11 Pitch & Captains</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-muted hover:text-ink hover:bg-slate-100 transition flex items-center gap-2 cursor-pointer"
+          data-tab="gear"
+        >
+          <span>🏏 Official Bats & Kits Deals</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Content Tab Panels -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+
+      <!-- TAB 1: POINTS TABLE -->
+      <div id="tab-points-table" class="tab-panel block">
+        <div class="bg-white rounded-2xl shadow-sm border border-line overflow-hidden">
+          <div class="p-5 sm:p-6 border-b border-line flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 class="text-xl font-black text-ink">IPL 2026 Official Standings & Qualification Race</h2>
+              <p class="text-xs text-muted mt-1">Top 4 teams qualify for Playoffs (Qualifier 1, Eliminator, Qualifier 2, Final)</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="inline-block w-3 h-3 rounded bg-emerald-100 border border-emerald-400"></span>
+              <span class="font-medium text-slate-600">Top 4 Playoffs Zone</span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="bg-slate-50 border-b border-line text-slate-500 uppercase text-[11px] font-black tracking-wider">
+                  <th class="py-3 px-4">Rank</th>
+                  <th class="py-3 px-4">Team</th>
+                  <th class="py-3 px-3 text-center">Played</th>
+                  <th class="py-3 px-3 text-center">Won</th>
+                  <th class="py-3 px-3 text-center">Lost</th>
+                  <th class="py-3 px-3 text-center">NRR</th>
+                  <th class="py-3 px-4 text-center font-black text-ink">Points</th>
+                  <th class="py-3 px-4 text-center hidden md:table-cell">Recent Form</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 font-medium">
+                {STANDINGS.map((team) => (
+                  <tr class={`hover:bg-slate-50/80 transition ${team.pos <= 4 ? 'bg-emerald-50/30' : ''}`}>
+                    <td class="py-3.5 px-4 font-black">
+                      <span class={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs ${team.pos <= 4 ? 'bg-emerald-600 text-white font-bold' : 'text-slate-500 bg-slate-100'}`}>
+                        {team.pos}
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-4 font-bold text-ink">
+                      <div class="flex items-center gap-2.5">
+                        <span class={`w-3 h-3 rounded-full bg-gradient-to-r ${team.color} shrink-0`}></span>
+                        <span>{team.team}</span>
+                        <span class="text-xs font-black text-slate-400">({team.short})</span>
+                      </div>
+                    </td>
+                    <td class="py-3.5 px-3 text-center text-slate-600">{team.played}</td>
+                    <td class="py-3.5 px-3 text-center font-bold text-emerald-600">{team.won}</td>
+                    <td class="py-3.5 px-3 text-center text-rose-600">{team.lost}</td>
+                    <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-700">{team.nrr}</td>
+                    <td class="py-3.5 px-4 text-center">
+                      <span class="inline-block px-3 py-1 rounded-full text-xs font-black bg-brand text-white shadow-xs">
+                        {team.points}
+                      </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-center hidden md:table-cell">
+                      <div class="flex items-center justify-center gap-1">
+                        {team.form.map((res) => (
+                          <span class={`w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center ${res === 'W' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}`}>
+                            {res}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: SCHEDULE -->
+      <div id="tab-schedule" class="tab-panel hidden">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-line">
+            <h2 class="text-xl font-black text-ink">Upcoming IPL 2026 Fixtures & Venues</h2>
+            <span class="text-xs font-bold text-brand">All Times in IST</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {FIXTURES.map((match) => (
+              <div class="bg-white rounded-2xl p-5 border border-line shadow-sm hover:shadow-md transition">
+                <div class="flex items-center justify-between text-xs text-muted pb-3 border-b border-slate-100">
+                  <span class="font-bold text-slate-700">Match #{match.matchNo}</span>
+                  <span class="font-bold text-brand">{match.date} • {match.time}</span>
+                </div>
+
+                <div class="py-4 flex items-center justify-between gap-3">
+                  <div class="flex-1 text-center">
+                    <span class={`inline-block px-3 py-1 rounded-lg text-xs font-black mb-1.5 ${match.team1Color}`}>
+                      {match.team1Short}
+                    </span>
+                    <h3 class="text-sm font-bold text-ink truncate">{match.team1}</h3>
+                  </div>
+
+                  <div class="shrink-0 flex flex-col items-center">
+                    <span class="text-xs font-black uppercase text-slate-400 bg-slate-100 px-2 py-1 rounded-full">VS</span>
+                  </div>
+
+                  <div class="flex-1 text-center">
+                    <span class={`inline-block px-3 py-1 rounded-lg text-xs font-black mb-1.5 ${match.team2Color}`}>
+                      {match.team2Short}
+                    </span>
+                    <h3 class="text-sm font-bold text-ink truncate">{match.team2}</h3>
+                  </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                  <span class="text-muted flex items-center gap-1.5 truncate">
+                    <span>📍</span>
+                    <span>{match.venue}</span>
+                  </span>
+                  <span class="text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg shrink-0">
+                    📺 {match.liveStream}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: FANTASY TIPS -->
+      <div id="tab-fantasy" class="tab-panel hidden">
+        <div class="space-y-6">
+          <div class="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-2xl p-6 text-white shadow-lg">
+            <h2 class="text-2xl font-black mb-2">🎯 Fantasy Pro Guide: Pitch Intelligence & Captain Choices</h2>
+            <p class="text-sm text-purple-200 leading-relaxed max-w-3xl">
+              Don't guess blindly on Dream11 or My11Circle. Ground conditions, dew factor, and pitch grass coverage determine whether pacers or spin-choke wins the game.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {FANTASY_TIPS.map((tip) => (
+              <div class="bg-white rounded-2xl p-6 border border-line shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-brand/10 text-brand">
+                      {tip.match}
+                    </span>
+                    <span class={`px-2.5 py-1 rounded-md text-xs font-black ${tip.pitchType === 'Batting Paradise' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                      {tip.pitchType}
+                    </span>
+                  </div>
+
+                  <h3 class="text-base font-bold text-ink mb-1">{tip.venue}</h3>
+                  <div class="text-xs text-muted mb-4">
+                    Avg 1st Innings Score: <strong class="text-ink text-sm">{tip.avgScore} Runs</strong>
+                  </div>
+
+                  <div class="space-y-3 text-xs">
+                    <div>
+                      <strong class="text-slate-700 block mb-1">👑 Prime Captain Picks:</strong>
+                      <div class="flex flex-wrap gap-1.5">
+                        {tip.captainPicks.map(p => (
+                          <span class="bg-slate-100 text-ink font-semibold px-2.5 py-1 rounded-lg">{p}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <strong class="text-slate-700 block mb-1">⚡ Key Fantasy Players:</strong>
+                      <div class="flex flex-wrap gap-1.5">
+                        {tip.keyPlayers.map(k => (
+                          <span class="bg-blue-50 text-blue-800 font-semibold px-2 py-0.5 rounded-md">{k}</span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900 mt-3">
+                      <strong>Differential Game-Changer:</strong> {tip.differentialPick}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-t border-slate-100 text-xs text-muted italic">
+                  💡 {tip.advice}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: OFFICIAL CRICKET GEAR -->
+      <div id="tab-gear" class="tab-panel hidden">
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-line">
+            <div>
+              <h2 class="text-xl font-black text-ink">Curated Cricket Gear & Official Fan Jerseys</h2>
+              <p class="text-xs text-muted mt-1">Verified genuine Kashmir Willow bats, match balls, and fan merchandise with instant Amazon delivery.</p>
+            </div>
+            <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full">
+              Amazon Verified Affiliate
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {CRICKET_GEAR.map((item) => (
+              <div class="bg-white rounded-2xl border border-line shadow-sm hover:shadow-lg transition p-4 flex flex-col justify-between group">
+                <div>
+                  <div class="aspect-square bg-slate-50 rounded-xl overflow-hidden mb-3 relative flex items-center justify-center p-2">
+                    <img
+                      src={`/img.ts?url=${encodeURIComponent(item.image)}`}
+                      alt={item.title}
+                      class="object-contain max-h-full max-w-full group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                      referrerpolicy="no-referrer"
+                    />
+                    <span class="absolute top-2 left-2 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded shadow">
+                      {item.discount}
+                    </span>
+                  </div>
+
+                  <span class="text-[11px] font-bold uppercase text-brand tracking-wider">{item.category}</span>
+                  <h3 class="text-sm font-bold text-ink line-clamp-2 mt-1 mb-2 group-hover:text-brand transition">
+                    {item.title}
+                  </h3>
+
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="text-base font-black text-ink">{item.price}</span>
+                    <span class="text-xs text-slate-400 line-through">{item.mrp}</span>
+                  </div>
+                  <div class="text-[11px] text-emerald-600 font-bold">{item.rating}</div>
+                </div>
+
+                <a
+                  href={item.affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  class="mt-4 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs text-center shadow-md transition flex items-center justify-center gap-1.5"
+                >
+                  <Icon name="tag" class="w-3.5 h-3.5" />
+                  <span>Check Price on Amazon</span>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SEO FAQ Section for Google Featured Snippets -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-10 border-t border-line">
+      <h2 class="text-xl sm:text-2xl font-black text-ink mb-6">Frequently Asked Questions (Cricket & IPL 2026)</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">Where can I watch IPL 2026 live streaming for free?</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            IPL 2026 matches are streamed live online on the <strong>JioCinema app and website</strong> in 4K resolution with multiple Indian commentary languages. On TV, matches are broadcast live on <strong>Star Sports Network</strong> channels.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">How is Net Run Rate (NRR) calculated in IPL?</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            NRR is calculated by taking the average runs per over scored by a team across all matches, minus the average runs per over conceded against them. If teams are tied on points, NRR decides playoff qualification.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">What is the best Dream11 captain pick strategy?</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            Choose all-rounders who bat in the top 4 and bowl at least 3 overs (e.g., Ravindra Jadeja, Hardik Pandya, Andre Russell) or explosive openers playing at high-scoring venues like Wankhede and Chinnaswamy.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">Which cricket bat is best for leather ball matches under ₹2,000?</h3>
+          <p class="text-xs text-muted leading-relaxed">
+            An <strong>SG Sierra or SS Ton Kashmir Willow</strong> bat offers the best punch, thick edges, and balance in the budget bracket. English Willow is recommended for professional tournament players above ₹5,000.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</Layout>
+
+<script>
+  // Tab switching logic
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.getAttribute('data-tab');
+      
+      tabBtns.forEach(b => {
+        b.classList.remove('bg-brand', 'text-white', 'shadow-md');
+        b.classList.add('text-muted');
+      });
+      
+      btn.classList.add('bg-brand', 'text-white', 'shadow-md');
+      btn.classList.remove('text-muted');
+
+      tabPanels.forEach(panel => {
+        if (panel.id === `tab-${targetTab}`) {
+          panel.classList.remove('hidden');
+          panel.classList.add('block');
+        } else {
+          panel.classList.add('hidden');
+          panel.classList.remove('block');
+        }
+      });
+    });
+  });
+</script>

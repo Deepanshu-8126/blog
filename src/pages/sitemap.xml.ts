@@ -13,6 +13,9 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const staticUrls = [
     { loc: `${baseUrl}/`, priority: '1.0', changefreq: 'daily' },
     { loc: `${baseUrl}/trending`, priority: '0.9', changefreq: 'hourly' },
+    { loc: `${baseUrl}/smartphones`, priority: '0.95', changefreq: 'daily' },
+    { loc: `${baseUrl}/yojanas`, priority: '0.95', changefreq: 'daily' },
+    { loc: `${baseUrl}/cricket`, priority: '0.95', changefreq: 'hourly' },
     { loc: `${baseUrl}/builds`, priority: '0.85', changefreq: 'daily' },
     { loc: `${baseUrl}/about`, priority: '0.6', changefreq: 'monthly' },
     { loc: `${baseUrl}/contact`, priority: '0.6', changefreq: 'monthly' },

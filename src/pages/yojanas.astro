@@ -1,0 +1,376 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+
+interface Yojana {
+  id: string;
+  name: string;
+  nameHindi: string;
+  category: 'kisan' | 'women' | 'health' | 'youth' | 'housing';
+  benefit: string;
+  benefitBadgeColor: string;
+  authority: string;
+  summary: string;
+  eligibility: string[];
+  documents: string[];
+  steps: string[];
+  officialUrl: string;
+  statusBadge: string;
+}
+
+const YOJANAS: Yojana[] = [
+  {
+    id: 'pm-kisan',
+    name: 'PM Kisan Samman Nidhi Yojana',
+    nameHindi: 'पीएम किसान सम्मान निधि (19वीं किस्त स्टेटस)',
+    category: 'kisan',
+    benefit: '₹6,000 प्रति वर्ष (₹2,000 हर 4 महीने में DBT)',
+    benefitBadgeColor: 'bg-emerald-600 text-white',
+    authority: 'Ministry of Agriculture & Farmers Welfare',
+    summary: 'छोटे और सीमांत किसानों को आर्थिक सहायता देने के लिए केंद्र सरकार की सबसे बड़ी डायरेक्ट बैंक ट्रांसफर (DBT) योजना।',
+    eligibility: [
+      'भारत का कोई भी किसान जिसके नाम खेती योग्य जमीन है',
+      'बैंक खाता आधार कार्ड और NPCI से DBT-लिंक्ड होना अनिवार्य है',
+      'ई-केवाईसी (e-KYC) और लैंड सीडिंग (Land Seeding) पूरी होनी चाहिए'
+    ],
+    documents: ['आधार कार्ड', 'खतौनी / जमीन के दस्तावेज (Bhulekh)', 'आधार लिंक्ड बैंक पासबुक', 'मोबाइल नंबर'],
+    steps: [
+      'pmkisan.gov.in पोर्टल पर जाएं और "Know Your Status" पर क्लिक करें',
+      'अपना रजिस्ट्रेशन नंबर या आधार नंबर दर्ज करें',
+      'कैप्चा कोड भरकर "Get OTP" पर क्लिक करें और स्टेटस देखें कि e-KYC और FTO Generated है या नहीं'
+    ],
+    officialUrl: 'https://pmkisan.gov.in',
+    statusBadge: '🟢 19th Installment Active'
+  },
+  {
+    id: 'ayushman-bharat',
+    name: 'Ayushman Bharat PM-JAY (Golden Card)',
+    nameHindi: 'आयुष्मान भारत योजना (₹5 लाख मुफ्त इलाज कार्ड)',
+    category: 'health',
+    benefit: '₹5,00,000 प्रति परिवार प्रति वर्ष मुफ्त कैशलेस इलाज',
+    benefitBadgeColor: 'bg-rose-600 text-white',
+    authority: 'National Health Authority (NHA)',
+    summary: 'सरकारी और प्राइवेट लिस्टेड अस्पतालों में सेकेंडरी और टर्शियरी बीमारियों के लिए देश का सबसे बड़ा फ्री हेल्थ इंश्योरेंस।',
+    eligibility: [
+      'SECC-2011 डेटाबेस में सूचीबद्ध परिवार या अंत्योदय राशन कार्ड धारक',
+      '70 वर्ष या उससे अधिक आयु के सभी वरिष्ठ नागरिक (Senior Citizens)',
+      'राष्ट्रीय खाद्य सुरक्षा (NFSA) के पात्र लाभार्थी'
+    ],
+    documents: ['आधार कार्ड', 'राशन कार्ड (Ration Card)', 'मोबाइल नंबर'],
+    steps: [
+      'beneficiary.nha.gov.in पोर्टल पर लॉग इन करें',
+      'अपना राज्य, राशन कार्ड नंबर या आधार नंबर डालकर पात्रता चेक करें',
+      'Aadhaar OTP से e-KYC करें और 5 मिनट में डिजिटल आयुष्मान कार्ड डाउनलोड करें'
+    ],
+    officialUrl: 'https://beneficiary.nha.gov.in',
+    statusBadge: '🟢 70+ Age Open for All'
+  },
+  {
+    id: 'ladli-behna',
+    name: 'Mukhyamantri Ladli Behna Yojana',
+    nameHindi: 'मुख्यमंत्री लाडली बहना योजना (₹1,250 मासिक सहायता)',
+    category: 'women',
+    benefit: '₹1,250 हर महीने सीधे बैंक खाते में (₹15,000 सालाना)',
+    benefitBadgeColor: 'bg-pink-600 text-white',
+    authority: 'महिला एवं बाल विकास विभाग (WCD)',
+    summary: 'महिलाओं को आर्थिक रूप से आत्मनिर्भर और सशक्त बनाने के लिए राज्य सरकार की डायरेक्ट मंथली ट्रांसफर स्कीम।',
+    eligibility: [
+      'महिला की उम्र 21 से 60 वर्ष के बीच होनी चाहिए',
+      'परिवार की वार्षिक आय ₹2.5 लाख से कम होनी चाहिए',
+      'परिवार में कोई आयकरदाता (Income Tax Payer) या सरकारी कर्मचारी न हो'
+    ],
+    documents: ['समग्र आईडी (Samagra ID)', 'आधार कार्ड', 'बैंक खाता (Aadhaar DBT Enabled)', 'मोबाइल नंबर'],
+    steps: [
+      'cmladlibahna.mp.gov.in पोर्टल पर जाएं',
+      '"आवेदन की स्थिति" (Application Status) पर क्लिक करें',
+      'अपनी समग्र आईडी दर्ज करें और मासिक भुगतान का स्टेटस चेक करें'
+    ],
+    officialUrl: 'https://cmladlibahna.mp.gov.in',
+    statusBadge: '🟢 Monthly DBT Live'
+  },
+  {
+    id: 'pm-mudra-loan',
+    name: 'Pradhan Mantri MUDRA Yojana (PMMY)',
+    nameHindi: 'प्रधानमंत्री मुद्रा लोन योजना (₹20 लाख तक बिना गारंटी लोन)',
+    category: 'youth',
+    benefit: '₹50,000 से ₹20 लाख तक का बिजनेस लोन (बिना किसी गारंटी/कोलेटरल)',
+    benefitBadgeColor: 'bg-blue-600 text-white',
+    authority: 'Ministry of Finance & SIDBI',
+    summary: 'छोटे व्यापारियों, स्टार्टअप्स, दुकानदारों और युवाओं को अपना व्यवसाय शुरू करने या बढ़ाने के लिए सस्ता सरकारी लोन।',
+    eligibility: [
+      '18 वर्ष से अधिक आयु का कोई भी भारतीय नागरिक',
+      'गैर-कॉर्पोरेट, गैर-कृषि लघु/सूक्ष्म व्यवसाय (दुकान, मैन्युफैक्चरिंग, सर्विस)',
+      'पिछला कोई बैंक लोन डिफॉल्ट न हो (Clean CIBIL History)'
+    ],
+    documents: ['आधार कार्ड और पैन कार्ड', 'बिजनेस का पता और कोटेशन/प्रोजेक्ट रिपोर्ट', 'पिछले 6 महीने का बैंक स्टेटमेंट'],
+    steps: [
+      'udyamimitra.in या नजदीकी किसी भी सरकारी बैंक शाखा में संपर्क करें',
+      'शिशु (₹50k तक), किशोर (₹5L तक) या तरुण (₹20L तक) कैटेगरी चुनें',
+      'आवेदन फॉर्म भरकर आवश्यक दस्तावेज संलग्न करें'
+    ],
+    officialUrl: 'https://www.mudra.org.in',
+    statusBadge: '🟢 Limit Raised to ₹20L'
+  },
+  {
+    id: 'pm-awas-yojana',
+    name: 'Pradhan Mantri Awas Yojana (PMAY-G & U)',
+    nameHindi: 'प्रधानमंत्री आवास योजना (पक्का मकान के लिए ₹1.20 लाख से ₹2.5 लाख सब्सिडी)',
+    category: 'housing',
+    benefit: 'ग्रामीण क्षेत्रों में ₹1,20,000 और शहरी क्षेत्रों में ₹2.5 लाख तक की सीधी सरकारी मदद',
+    benefitBadgeColor: 'bg-amber-600 text-white',
+    authority: 'Ministry of Housing & Urban Affairs / Rural Development',
+    summary: 'कच्चे घरों में रहने वाले गरीब और मध्यमवर्गीय परिवारों को पक्का पक्का मकान बनाने के लिए सरकारी आर्थिक सहायता।',
+    eligibility: [
+      'परिवार के पास देश में कहीं भी कोई पक्का मकान नहीं होना चाहिए',
+      'SECC सूची या आवास+ सर्वे में नाम दर्ज होना चाहिए',
+      'BPL / EWS / LIG श्रेणी के अंतर्गत आते हों'
+    ],
+    documents: ['आधार कार्ड', 'जॉब कार्ड (मनरेगा)', 'बैंक पासबुक', 'जमीन का पट्टा / खसरा'],
+    steps: [
+      'pmayg.nic.in पोर्टल पर जाएं और "AwaasSoft" मेन्यू खोलें',
+      '"Beneficiary Details" पर क्लिक करके अपना रजिस्ट्रेशन नंबर या नाम से लिस्ट में नाम चेक करें',
+      'ग्राम पंचायत या नगर निगम कार्यालय से सत्यापन पूरा कराएं'
+    ],
+    officialUrl: 'https://pmayg.nic.in',
+    statusBadge: '🟢 PMAY 2.0 Scheme Active'
+  },
+  {
+    id: 'pm-free-tablet',
+    name: 'Swami Vivekananda Yuva Sashaktikaran (Free Smartphone / Tablet)',
+    nameHindi: 'स्वामी विवेकानंद युवा सशक्तिकरण योजना (मुफ्त टैबलेट व स्मार्टफोन)',
+    category: 'youth',
+    benefit: 'उच्च शिक्षा और तकनीकी कोर्स कर रहे छात्रों को बिल्कुल मुफ्त स्मार्टफोन या टैबलेट',
+    benefitBadgeColor: 'bg-purple-600 text-white',
+    authority: 'Department of IT & Electronics',
+    summary: 'कॉलेज, यूनिवर्सिटी और आईटीआई (ITI) के छात्रों को डिजिटल पढ़ाई और रोजगार की तैयारी के लिए फ्री गैजेट वितरण।',
+    eligibility: [
+      'संबंधित राज्य का मूल निवासी छात्र होना चाहिए',
+      'ग्रेजुएशन, पोस्ट-ग्रेजुएशन, डिप्लोमा, आईटीआई या मेडिकल कोर्स में अध्ययनरत',
+      'कॉलेज द्वारा डिजी शक्ति पोर्टल पर डेटा वेरीफाइड होना चाहिए'
+    ],
+    documents: ['कॉलेज आईडी कार्ड व फीस रसीद', 'आधार कार्ड', 'निवास प्रमाण पत्र', '10वीं व 12वीं की मार्कशीट'],
+    steps: [
+      'digishakti.up.gov.in पोर्टल पर जाएं',
+      '"छात्र कॉर्नर" (Student Corner) में जाकर अपना नामांकन नंबर (Enrollment No) दर्ज करें',
+      'चेक करें कि आपके कॉलेज ने आपका नाम टैबलेट वितरण सूची में फॉरवर्ड किया है या नहीं'
+    ],
+    officialUrl: 'https://digishakti.up.gov.in',
+    statusBadge: '🟢 Distribution Phase Live'
+  }
+];
+
+// Schema for Google Featured Snippets
+const yojanasSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'name': 'Sarkari Yojana Direct Portal 2026 — PM Kisan, Ayushman Card, Ladli Behna & Awas Yojana',
+  'mainEntity': YOJANAS.map(y => ({
+    '@type': 'Question',
+    'name': `${y.name} (${y.nameHindi}) का लाभ कैसे लें और स्टेटस कैसे चेक करें?`,
+    'acceptedAnswer': {
+      '@type': 'Answer',
+      'text': `${y.summary} मुख्य लाभ: ${y.benefit}. आवश्यक दस्तावेज: ${y.documents.join(', ')}. आधिकारिक पोर्टल: ${y.officialUrl}`
+    }
+  }))
+};
+---
+
+<Layout
+  title="Sarkari Yojana 2026 Portal — PM Kisan, Ayushman Bharat, Ladli Behna & Free Tablet List"
+  description="केंद्रीय व राज्य सरकारी योजनाओं की संपूर्ण गाइड। पीएम किसान 19वीं किस्त, आयुष्मान कार्ड ₹5 लाख मुफ्त इलाज, लाडली बहना स्टेटस व पीएम आवास योजना लिस्ट चेक करें।"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(yojanasSchema)} />
+
+  <!-- Hero Header -->
+  <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 border border-slate-800 text-white p-6 sm:p-10 mb-10 shadow-2xl">
+    <div class="absolute -right-20 -top-20 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative z-10 max-w-3xl">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-mono font-bold text-emerald-300 mb-4 backdrop-blur-md">
+        <span>🏛️ DIRECT BENEFIT TRANSFER (DBT) RADAR 2026</span>
+        <span>•</span>
+        <span>100% VERIFIED PORTALS</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
+        सरकारी योजना व डायरेक्ट लाभ पोर्टल <br />
+        <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
+          आधिकारिक लिस्ट, स्टेटस व ऑनलाइन आवेदन
+        </span>
+      </h1>
+
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+        केंद्र व राज्य सरकारों की जनकल्याणकारी योजनाओं का पूरा विवरण। बिना किसी बिचौलिए या फर्जी एजेंट के <strong>सीधे आधिकारिक पोर्टल से अपना नाम, किस्त स्टेटस और पात्रता चेक करें</strong>।
+      </p>
+
+      <!-- Trust Badges -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+        <div class="p-2.5 rounded-xl bg-white/5 border border-white/10">
+          <span class="text-emerald-400 font-bold block">✓ 0% FAKE LINKS</span>
+          <span class="text-slate-400">Direct .gov.in URLs</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-white/5 border border-white/10">
+          <span class="text-amber-400 font-bold block">⚡ LIVE DBT</span>
+          <span class="text-slate-400">Direct Bank Transfer</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-white/5 border border-white/10">
+          <span class="text-cyan-400 font-bold block">📋 STEP-BY-STEP</span>
+          <span class="text-slate-400">Easy Hindi Guide</span>
+        </div>
+        <div class="p-2.5 rounded-xl bg-white/5 border border-white/10">
+          <span class="text-purple-400 font-bold block">🛡️ FREE ADVICE</span>
+          <span class="text-slate-400">Zero Charges Ever</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Filter Bar -->
+  <div class="sticky top-20 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2.5 shadow-sm mb-8">
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
+      <button class="yojana-filter active px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-emerald-700 text-white shadow-xs" data-cat="all">
+        🏛️ All Schemes (6)
+      </button>
+      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="kisan">
+        🌾 किसान योजनाएं (PM Kisan)
+      </button>
+      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="health">
+        🏥 स्वास्थ्य (Ayushman Bharat)
+      </button>
+      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="women">
+        👩 महिला कल्याण (Ladli Behna)
+      </button>
+      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="youth">
+        🎓 युवा व रोजगार (Loans & Tablets)
+      </button>
+      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="housing">
+        🏠 आवास व राशन (PMAY)
+      </button>
+    </div>
+  </div>
+
+  <!-- Yojanas Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16" id="yojanas-container">
+    {YOJANAS.map((yojana, idx) => (
+      <article
+        id={yojana.id}
+        class="yojana-card flex flex-col justify-between rounded-3xl bg-white border border-slate-200/90 shadow-card hover:shadow-soft transition-all duration-300 p-6 sm:p-7 relative overflow-hidden"
+        data-category={yojana.category}
+      >
+        <!-- Top Status Bar -->
+        <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+          <span class={`px-3 py-1 rounded-full text-xs font-black tracking-wide ${yojana.benefitBadgeColor} shadow-xs`}>
+            {yojana.benefit}
+          </span>
+          <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+            {yojana.statusBadge}
+          </span>
+        </div>
+
+        <!-- Title & Authority -->
+        <div class="mb-4 pb-4 border-b border-slate-100">
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 leading-tight mb-1">
+            {yojana.name}
+          </h2>
+          <p class="text-sm font-bold text-brand mb-1">
+            {yojana.nameHindi}
+          </p>
+          <span class="text-xs text-slate-400 block font-mono">
+            नोडल विभाग: {yojana.authority}
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+          {yojana.summary}
+        </p>
+
+        <!-- Eligibility Criteria -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 mb-4 text-xs">
+          <span class="font-bold text-slate-900 block mb-1.5">👥 कौन आवेदन कर सकता है (पात्रता):</span>
+          <ul class="space-y-1 text-slate-600 list-disc list-inside">
+            {yojana.eligibility.map(item => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Required Documents -->
+        <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-200/80 mb-5 text-xs">
+          <span class="font-bold text-amber-900 block mb-1">📄 जरूरी दस्तावेज (Documents Checklist):</span>
+          <p class="text-amber-800 font-medium">
+            {yojana.documents.join(' • ')}
+          </p>
+        </div>
+
+        <!-- Step-by-Step Status Check -->
+        <div class="p-3.5 rounded-2xl bg-indigo-50/60 border border-indigo-100 mb-6 text-xs">
+          <span class="font-bold text-indigo-900 block mb-2">📋 स्टेटस चेक व आवेदन करने का तरीका:</span>
+          <ol class="space-y-1.5 text-indigo-950 list-decimal list-inside">
+            {yojana.steps.map(step => (
+              <li>{step}</li>
+            ))}
+          </ol>
+        </div>
+
+        <!-- Official Link CTA Button -->
+        <div class="mt-auto pt-2">
+          <a
+            href={yojana.officialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:brightness-105 active:scale-98 text-white font-black text-sm transition shadow-md"
+          >
+            <span>🔗 आधिकारिक पोर्टल पर स्टेटस चेक / आवेदन करें</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+          <span class="block text-center text-[10px] text-slate-400 mt-1.5 font-mono">
+            Direct Official Link ({yojana.officialUrl}) • 100% नि:शुल्क सरकारी सेवा
+          </span>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- Safety Advisory Box -->
+  <div class="max-w-4xl mx-auto rounded-3xl bg-rose-50 border border-rose-200 p-6 sm:p-8 text-rose-950 mb-16">
+    <div class="flex items-center gap-2.5 mb-2 font-black text-base sm:text-lg text-rose-900">
+      <span class="text-xl">⚠️</span>
+      <h3>महत्वपूर्ण धोखाधड़ी चेतावनी (Anti-Fraud Advisory)</h3>
+    </div>
+    <p class="text-xs sm:text-sm leading-relaxed text-rose-900/90 mb-3">
+      सरकारी योजनाओं के लिए किसी भी व्यक्ति, व्हाट्सएप ग्रुप या अनधिकृत एजेंट को कभी भी पैसे न दें। सभी सरकारी योजनाओं के फॉर्म केवल <strong>.gov.in</strong> या <strong>.nic.in</strong> से समाप्त होने वाले आधिकारिक डोमेन पर ही मुफ्त में भरे जाते हैं।
+    </p>
+    <div class="text-[11px] font-mono text-rose-800">
+      संदेह होने पर तुरंत नेशनल साइबर क्राइम पोर्टल (cybercrime.gov.in या टोल-फ्री 1930) पर रिपोर्ट करें।
+    </div>
+  </div>
+
+  <!-- Interactive Filter Script -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const buttons = document.querySelectorAll('.yojana-filter');
+      const cards = document.querySelectorAll('.yojana-card');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => {
+            b.classList.remove('bg-emerald-700', 'text-white', 'shadow-xs');
+            b.classList.add('text-slate-700', 'hover:bg-slate-100');
+          });
+          btn.classList.add('bg-emerald-700', 'text-white', 'shadow-xs');
+          btn.classList.remove('text-slate-700', 'hover:bg-slate-100');
+
+          const category = btn.getAttribute('data-cat');
+          cards.forEach(card => {
+            if (category === 'all' || card.getAttribute('data-category') === category) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    });
+  </script>
+</Layout>

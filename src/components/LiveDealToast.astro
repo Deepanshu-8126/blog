@@ -1,0 +1,97 @@
+---
+---
+<div
+  id="live-toast-pill"
+  class="fixed bottom-5 left-5 z-40 hidden sm:flex items-center gap-3 p-3 bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-xl transition-all duration-500 translate-y-10 opacity-0 max-w-sm pointer-events-auto"
+  role="status"
+  aria-live="polite"
+>
+  <div class="relative shrink-0 w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-xl overflow-hidden shadow-xs">
+    <span id="toast-icon">⚡</span>
+    <span class="absolute top-0 right-0 w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+  </div>
+
+  <div class="flex-1 min-w-0 pr-1">
+    <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+      <span id="toast-location" class="truncate">Someone in Delhi</span>
+      <span>•</span>
+      <span id="toast-time" class="text-emerald-600 font-bold shrink-0">Just now</span>
+    </div>
+    <a id="toast-link" href="/smartphones" class="block text-xs font-black text-ink hover:text-brand transition truncate mt-0.5">
+      <span id="toast-message">Claimed CMF Phone 1 (5G) deal</span>
+    </a>
+  </div>
+
+  <button
+    id="toast-close"
+    type="button"
+    class="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition"
+    aria-label="Dismiss notification"
+  >
+    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+</div>
+
+<script is:inline>
+  (function() {
+    const toast = document.getElementById('live-toast-pill');
+    const toastIcon = document.getElementById('toast-icon');
+    const toastLocation = document.getElementById('toast-location');
+    const toastTime = document.getElementById('toast-time');
+    const toastMessage = document.getElementById('toast-message');
+    const toastLink = document.getElementById('toast-link');
+    const toastClose = document.getElementById('toast-close');
+
+    if (!toast) return;
+
+    const ALERTS = [
+      { icon: '📱', loc: 'Someone in Bengaluru', time: '3m ago', msg: 'Bought OnePlus Nord CE4 5G (8% OFF)', url: '/smartphones' },
+      { icon: '🇮🇳', loc: 'Someone in Lucknow', time: 'Just now', msg: 'Checked PM Kisan 19th Kist e-KYC', url: '/yojanas' },
+      { icon: '🏏', loc: 'Someone in Mumbai', time: '1m ago', msg: 'Viewed IPL 2026 CSK vs RCB Pitch Report', url: '/cricket' },
+      { icon: '🎧', loc: 'Someone in Jaipur', time: '5m ago', msg: 'Grabbed boAt Airdopes 141 at ₹899', url: '/deals' },
+      { icon: '🪙', loc: 'Someone in Ahmedabad', time: '7m ago', msg: 'Tracked 24K 999 Gold Rate Live', url: '/gold-rate' },
+      { icon: '🏥', loc: 'Someone in Patna', time: '2m ago', msg: 'Applied for ₹5 Lakh Ayushman Card', url: '/yojanas' }
+    ];
+
+    let currentIndex = 0;
+    let timer = null;
+
+    function showNextToast() {
+      if (sessionStorage.getItem('dismiss_live_toast') === 'true') return;
+
+      const item = ALERTS[currentIndex];
+      currentIndex = (currentIndex + 1) % ALERTS.length;
+
+      toastIcon.textContent = item.icon;
+      toastLocation.textContent = item.loc;
+      toastTime.textContent = item.time;
+      toastMessage.textContent = item.msg;
+      toastLink.href = item.url;
+
+      toast.classList.remove('hidden', 'translate-y-10', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-10', 'opacity-0');
+      }, 5000);
+    }
+
+    // Start after 4 seconds, repeat every 12 seconds
+    setTimeout(() => {
+      showNextToast();
+      timer = setInterval(showNextToast, 12000);
+    }, 4000);
+
+    toastClose.addEventListener('click', () => {
+      sessionStorage.setItem('dismiss_live_toast', 'true');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-10', 'opacity-0');
+      if (timer) clearInterval(timer);
+    });
+  })();
+</script>

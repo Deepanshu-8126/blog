@@ -35,6 +35,9 @@ const isBuilds = pathname.startsWith('/builds');
 const isDeals = pathname.startsWith('/deals');
 const isSearch = pathname.startsWith('/search');
 const isCurrentAffairs = pathname.startsWith('/current-affairs');
+const isSmartphones = pathname.startsWith('/smartphones');
+const isYojanas = pathname.startsWith('/yojanas');
+const isCricket = pathname.startsWith('/cricket');
 
 const isNicheActive = (slug: string) => {
   return activeNiche === slug || pathname === `/${slug}` || pathname.startsWith(`/${slug}/`);
@@ -95,6 +98,28 @@ const isNicheActive = (slug: string) => {
             <span class="text-xs">⚡</span>
             <span>Current Affairs</span>
             <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-amber-400 text-slate-950">Daily</span>
+          </a>
+          <a
+            href="/smartphones"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${isSmartphones ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+          >
+            <Icon name="smartphone" class="w-3.5 h-3.5 text-blue-300" />
+            <span>Phones</span>
+          </a>
+          <a
+            href="/cricket"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${isCricket ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+          >
+            <Icon name="trophy" class="w-3.5 h-3.5 text-amber-300" />
+            <span>IPL Hub</span>
+          </a>
+          <a
+            href="/yojanas"
+            class={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 ${isYojanas ? 'bg-white/20 text-white shadow-xs' : 'text-purple-100 hover:bg-white/10'}`}
+          >
+            <span class="text-xs">🇮🇳</span>
+            <span>Yojana</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black bg-emerald-400 text-slate-950">DBT</span>
           </a>
           <a
             href="/builds"
@@ -229,6 +254,30 @@ const isNicheActive = (slug: string) => {
         >
           <Icon name="tag" class="w-3.5 h-3.5" />
           <span>Loot Deals</span>
+        </a>
+        <a
+          href="/smartphones"
+          class={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition ${isSmartphones ? 'bg-brand text-white shadow-xs' : 'bg-white text-slate-800 border border-slate-200 hover:bg-slate-100'}`}
+        >
+          <Icon name="smartphone" class="w-3.5 h-3.5 text-blue-600" />
+          <span>Phones Hub</span>
+        </a>
+        <a
+          href="/cricket"
+          class={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition ${isCricket ? 'bg-brand text-white shadow-xs' : 'bg-white text-slate-800 border border-slate-200 hover:bg-slate-100'}`}
+        >
+          <Icon name="trophy" class="w-3.5 h-3.5 text-amber-500" />
+          <span>IPL & Cricket</span>
+        </a>
+        <a
+          href="/yojanas"
+          class={`col-span-2 p-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition ${isYojanas ? 'bg-brand text-white shadow-xs' : 'bg-gradient-to-r from-emerald-500/15 to-teal-500/15 text-slate-900 border border-emerald-300 hover:bg-emerald-100'}`}
+        >
+          <div class="flex items-center gap-2">
+            <span>🇮🇳</span>
+            <span>Sarkari Yojana & DBT Portal</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500 text-white">GOV</span>
         </a>
         <a
           href="/current-affairs"
