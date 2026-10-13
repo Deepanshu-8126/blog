@@ -22,7 +22,7 @@ if (breakingPosts.length === 0) return null;
       {breakingPosts.map(p => (
         <a href={`/${p.niches?.slug || 'viral'}/${p.slug}`} class="hover:text-breaking hover:underline transition flex items-center gap-2">
           <span>{p.title}</span>
-          <span class="text-muted font-normal">• {p.trend_score}+ interest</span>
+          <span class="text-muted font-normal opacity-70">• Live Coverage</span>
         </a>
       ))}
     </div>

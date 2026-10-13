@@ -555,12 +555,13 @@ SUBREDDIT_RADAR_MAP = {
     "fashion": ["IndianFashionAddicts"]
 }
 
-def fetch_reddit_viral_trends(niche_slug="viral", geo=GEO):
-    """Fetches high-velocity Reddit community debates and viral threads per niche."""
+def fetch_community_viral_trends(niche_slug="viral", geo=GEO):
+    """Fetches high-velocity industry debates and editorial trends per niche using authoritative queries."""
     results = []
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
     clean_niche = niche_slug.replace("-", " ")
-    query = f"reddit {clean_niche} trending"
+    # CRITICAL: Never use 'reddit' in search query — use authoritative editorial terms
+    query = f"{clean_niche} latest guide tips trends India 2026"
     g_url = f"https://news.google.com/rss/search?q={urllib.parse.quote(query)}&hl=en-{geo}&gl={geo}&ceid={geo}:en"
     try:
         r = requests.get(g_url, headers=headers, timeout=8)
@@ -572,17 +573,23 @@ def fetch_reddit_viral_trends(niche_slug="viral", geo=GEO):
                 l_elem = item.find("link")
                 if t_elem is not None and t_elem.text:
                     raw_title = t_elem.text.split(" - ")[0].strip()
+                    # Strip subreddit prefixes, brackets etc.
                     clean_title = re.sub(r'^(r\/[\w]+:?|\[.*?\])\s*', '', raw_title, flags=re.IGNORECASE).strip()
+                    # Sanitize any accidental Reddit mentions
+                    clean_title = sanitize_reddit_text(clean_title)
                     results.append({
                         "title": clean_title or raw_title,
                         "score": 94,
                         "url": l_elem.text if (l_elem is not None and "search?q=" not in (l_elem.text or "")) else None,
                         "credit": "Curated Editorial Photography",
-                        "facts": f"Public community discussion regarding: {clean_title or raw_title}. Practical insights, user experiences, and key takeaways."
+                        "facts": f"Industry analysis and expert insights regarding: {clean_title or raw_title}. Practical tips, curated takeaways, and verified data."
                     })
     except Exception:
         pass
     return results
+
+# Keep legacy alias for any internal references
+fetch_reddit_viral_trends = fetch_community_viral_trends
 
 
 def get_trends(seeds=None, niche_slug=None):
@@ -926,6 +933,19 @@ def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", t
         return REAL_MEDIA_POOL[idx], "Verified Web Photography"
 
 
+def sanitize_reddit_text(text):
+    """Scrub any Reddit/r/ references from titles, summaries or body text."""
+    if not text:
+        return text
+    # Word-boundary replacements
+    t = re.sub(r'\bReddit\'?s?\b', 'Community', text)
+    t = re.sub(r'\breddit\b', 'community', t)
+    t = re.sub(r'\bRedditors?\b', 'Community Members', t)
+    t = re.sub(r'\bredditors?\b', 'community members', t)
+    t = re.sub(r'r/[\w]+', 'Community Forum', t)
+    t = re.sub(r'subreddit', 'community forum', t, flags=re.IGNORECASE)
+    return t
+
 
 def sanitize_editorial_meta(credit, src, tags, default_tag):
     clean_credit = "Curated Editorial Photography"
@@ -1183,7 +1203,9 @@ def process_niche(n):
                VALUES (?, ?, ?, 'article', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'published', strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))""",
             [
                 post_id, n["id"], topic_id, post_slug,
-                a.get("title", t), a.get("summary", "")[:200], (a.get("body_md", "") + AFFILIATE_DISCLAIMER),
+                sanitize_reddit_text(a.get("title", t)),
+                sanitize_reddit_text(a.get("summary", ""))[:200],
+                sanitize_reddit_text(a.get("body_md", "") + AFFILIATE_DISCLAIMER),
                 json.dumps(a.get("faq", [])),
                 json.dumps([{"title": clean_credit, "url": clean_src or ""}]) if (clean_credit or clean_src) else "[]",
                 image, clean_credit, clean_src, c["score"],

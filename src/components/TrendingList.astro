@@ -23,6 +23,8 @@ const { posts = [], title = "Trending Now (Top 05)" } = Astro.props;
     {posts.slice(0, 5).map((post, idx) => {
       const rank = String(idx + 1).padStart(2, '0');
       const slug = post.niches?.slug || 'viral';
+      const wordCount = (post.body_md || post.summary || '').split(/\s+/).length;
+      const readTimeMin = Math.max(2, Math.ceil(wordCount / 180));
       return (
         <a href={`/${slug}/${post.slug}`} class="group py-3.5 flex items-start gap-4 transition hover:bg-slate-50/70 rounded-xl px-2">
           <span class="font-black text-xl font-mono text-slate-300 group-hover:text-brand transition w-7 shrink-0">
@@ -37,7 +39,7 @@ const { posts = [], title = "Trending Now (Top 05)" } = Astro.props;
                 {post.niches?.name || 'Viral'}
               </span>
               <span>•</span>
-              <span class="font-mono">+{post.trend_score} interest</span>
+              <span class="font-mono">{readTimeMin ?? '3'}m read</span>
             </div>
           </div>
         </a>

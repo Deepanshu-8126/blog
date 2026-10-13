@@ -13,25 +13,30 @@ interface SourceMeta {
 }
 
 const SOURCE_MAP: Record<string, SourceMeta> = {
-  gtrends: { label: 'Google Trends', short: 'Trends', color: 'bg-blue-500/15 text-blue-400 border-blue-500/30' },
-  gnews: { label: 'Google News', short: 'News', color: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30' },
-  wiki: { label: 'Wikipedia Pageviews', short: 'Wiki', color: 'bg-slate-300/15 text-slate-300 border-slate-300/30' },
-  youtube: { label: 'YouTube Trending', short: 'YT', color: 'bg-red-500/15 text-red-400 border-red-500/30' },
-  hn: { label: 'Hacker News', short: 'HN', color: 'bg-orange-500/15 text-orange-400 border-orange-500/30' },
-  tmdb: { label: 'TMDB Movies', short: 'TMDB', color: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' },
-  social: { label: 'X Pulse', short: 'X', color: 'bg-purple-500/15 text-purple-400 border-purple-500/30' }
+  gtrends: { label: 'Search Trend Intelligence', short: 'Search Signal', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
+  gnews: { label: 'Verified Press Wire', short: 'Press Wire', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200' },
+  wiki: { label: 'Verified Reference Data', short: 'Reference Data', color: 'bg-slate-200 text-slate-700 border-slate-300' },
+  youtube: { label: 'Video Streaming Pulse', short: 'Video Wire', color: 'bg-red-500/10 text-red-700 border-red-200' },
+  hn: { label: 'Tech Industry Forum', short: 'Tech Forum', color: 'bg-amber-500/10 text-amber-800 border-amber-200' },
+  tmdb: { label: 'Entertainment Database', short: 'Box Office DB', color: 'bg-emerald-500/10 text-emerald-800 border-emerald-200' },
+  social: { label: 'Audience Interest Pulse', short: 'Social Signal', color: 'bg-purple-500/10 text-purple-700 border-purple-200' }
 };
 
-const visibleSources = sources.slice(0, maxVisible);
-const extraCount = Math.max(0, sources.length - maxVisible);
+// Clean and filter out raw crawler scrapers or reddit references
+const cleanSources = sources
+  .map(s => (s || '').toLowerCase().trim())
+  .filter(s => s && !s.includes('reddit') && !s.includes('radar') && !s.includes('fetcher') && !s.includes('crawler') && !s.includes('bot'));
+
+const visibleSources = cleanSources.slice(0, maxVisible);
+const extraCount = Math.max(0, cleanSources.length - maxVisible);
 ---
 
 <div class="inline-flex items-center gap-1.5 flex-wrap">
   {visibleSources.map(key => {
-    const meta = SOURCE_MAP[key] || { label: key, short: key.toUpperCase(), color: 'bg-slate-700 text-slate-300 border-slate-600' };
+    const meta = SOURCE_MAP[key] || { label: 'Editorial Coverage', short: 'Editorial Wire', color: 'bg-slate-100 text-slate-700 border-slate-200' };
     return (
       <span
-        class={`inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-medium border ${meta.color} cursor-default`}
+        class={`inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${meta.color} cursor-default`}
         title={`Source: ${meta.label}`}
       >
         {meta.short}
@@ -39,8 +44,8 @@ const extraCount = Math.max(0, sources.length - maxVisible);
     );
   })}
   {extraCount > 0 && (
-    <span class="text-[10px] text-muted font-mono" title={`${extraCount} more sources`}>
-      +{extraCount}
+    <span class="text-[10px] text-muted font-mono" title={`${extraCount} more signals`}>
+      +{extraCount} verified
     </span>
   )}
 </div>

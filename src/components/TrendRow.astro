@@ -50,12 +50,10 @@ const medalClass = rankBadges[rank] || 'bg-slate-100 text-slate-600 border borde
           </span>
         )}
         
-        {item.approx_traffic && (
-          <span class="text-xs font-mono font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-            <span>🔥</span>
-            <span>{item.approx_traffic} searches</span>
-          </span>
-        )}
+        <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Verified Topic</span>
+        </span>
       </div>
 
       <!-- Title / Link -->

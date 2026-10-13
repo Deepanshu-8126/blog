@@ -66,9 +66,15 @@ const cardGrad = nicheGradients[grp.toLowerCase()] || 'from-purple-700 via-indig
         <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand text-white shadow-md">
           {nicheName}
         </span>
-        {post.trend_score > 0 && (
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-cta text-cta-ink shadow-md flex items-center gap-1 font-mono">
-            🔥 +{post.trend_score}k Trend
+        {post.is_breaking ? (
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-600 text-white shadow-md flex items-center gap-1 tracking-wide uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            Breaking Wire
+          </span>
+        ) : (
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-900/80 backdrop-blur-sm text-amber-300 shadow-md flex items-center gap-1 tracking-wide border border-white/10 uppercase">
+            <span>⚡</span>
+            <span>Featured Editorial</span>
           </span>
         )}
       </div>
