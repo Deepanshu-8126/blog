@@ -294,15 +294,31 @@ def generate_sarkari_article(item):
     title = item["title"]
     entity = item.get("entity", "Conducting Board")
     category = item.get("category", "Sarkari Alert")
-    # Clean direct official portal URL
+    OFFICIAL_DOMAINS_MAP = {
+        "bteup": "https://bteup.ac.in",
+        "up board": "https://upmsp.edu.in",
+        "cbse": "https://cbse.gov.in",
+        "upsc": "https://upsc.gov.in",
+        "ssc": "https://ssc.gov.in",
+        "nta": "https://nta.ac.in",
+        "neet": "https://exams.nta.ac.in/NEET",
+        "up police": "https://uppbpb.gov.in",
+        "uhsr": "https://uhsr.ac.in",
+        "rrb": "https://indianrailways.gov.in",
+        "ibps": "https://ibps.in",
+        "jee": "https://jeemain.nta.ac.in",
+        "bihar": "https://bpsc.bih.nic.in",
+        "rajasthan": "https://rpsc.rajasthan.gov.in",
+        "kumaun": "https://www.kunainital.ac.in",
+    }
     target_link = item.get("link") or ""
-    if not target_link.startswith("http"):
-        if official_domain and "." in official_domain and not official_domain.startswith("http"):
-            target_link = f"https://{official_domain.strip('/')}"
-        elif official_domain and official_domain.startswith("http"):
-            target_link = official_domain
+    if not target_link.startswith("http") or any(b in target_link.lower() for b in ["search?q=", "google.com", "bing.com"]):
+        if official_domain and "." in official_domain:
+            target_link = f"https://{official_domain.strip('/').replace('http://', '').replace('https://', '')}"
         else:
-            target_link = f"https://www.google.com/search?q={urllib.parse.quote(entity + ' official website portal')}"
+            combined_key = f"{entity} {title}".lower()
+            matched_url = next((url for k, url in OFFICIAL_DOMAINS_MAP.items() if k in combined_key), None)
+            target_link = matched_url or "https://uniquedigit-viral-hub.pages.dev/exams-results/"
 
     prompt = f"""You are India's top senior education editor and investigative career journalist writing for 'Sarkari Result & Exam Alert' (all-sarkari-result-2k0.blogspot.com).
 Topic: {title}
@@ -375,9 +391,10 @@ def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_ur
         print("⚠️ [Cloudflare D1]: Missing CF credentials in environment.")
         return False
 
+    clean_src = source_url if (source_url and not any(b in source_url.lower() for b in ["search?q=", "google.com/search", "news.google.com/search"])) else None
     slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')[:80]
     post_id = uuid.uuid4().hex[:16]
-    sources_json = json.dumps([{"title": official_domain or "Official Authority", "url": source_url or ""}])
+    sources_json = json.dumps([{"title": official_domain or "Official Authority", "url": clean_src or ""}])
     faq_json = json.dumps([])
 
     sql = """

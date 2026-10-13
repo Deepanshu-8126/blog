@@ -572,12 +572,13 @@ def fetch_reddit_viral_trends(niche_slug="viral", geo=GEO):
                 l_elem = item.find("link")
                 if t_elem is not None and t_elem.text:
                     raw_title = t_elem.text.split(" - ")[0].strip()
+                    clean_title = re.sub(r'^(r\/[\w]+:?|\[.*?\])\s*', '', raw_title, flags=re.IGNORECASE).strip()
                     results.append({
-                        "title": raw_title,
+                        "title": clean_title or raw_title,
                         "score": 94,
-                        "url": l_elem.text if l_elem is not None else "",
-                        "credit": "Reddit Community Radar",
-                        "facts": f"Trending community debate from Reddit ({clean_niche}): {t_elem.text}. Authentic user consensus, candid pros & cons, and uncensored discussion."
+                        "url": l_elem.text if (l_elem is not None and "search?q=" not in (l_elem.text or "")) else None,
+                        "credit": "Curated Editorial Photography",
+                        "facts": f"Public community discussion regarding: {clean_title or raw_title}. Practical insights, user experiences, and key takeaways."
                     })
     except Exception:
         pass
@@ -593,10 +594,10 @@ def get_trends(seeds=None, niche_slug=None):
                 "score": t["score"],
                 "url": t.get("url"),
                 "facts": t.get("facts", ""),
-                "credit": t.get("credit", "Google News")
+                "credit": "Curated Editorial Photography"
             }
 
-    # 2. Fetch Viral Reddit Community Trends (Pillar 4)
+    # 2. Fetch Viral Community Trends (Pillar 4)
     if niche_slug:
         for t in fetch_reddit_viral_trends(niche_slug, GEO):
             if t["title"] not in out:
@@ -604,7 +605,7 @@ def get_trends(seeds=None, niche_slug=None):
                     "score": t["score"],
                     "url": t.get("url"),
                     "facts": t.get("facts", ""),
-                    "credit": t.get("credit", "Reddit Community Radar")
+                    "credit": "Curated Editorial Photography"
                 }
 
     # 3. Fetch live rising trends from official Google Trends RSS ONLY for viral/general radar
@@ -616,14 +617,14 @@ def get_trends(seeds=None, niche_slug=None):
                     "score": t["score"],
                     "url": t.get("url"),
                     "facts": t.get("facts", ""),
-                    "credit": t.get("credit", "Verified News")
+                    "credit": "Curated Editorial Photography"
                 }
     
-    # 3. If seeds provided, augment with matching keyword variations
+    # 4. If seeds provided, augment with matching keyword variations (Clean URLs only)
     if seeds:
         for s in seeds[:3]:
             if s not in out:
-                out[s] = {"score": 75, "url": f"https://news.google.com/search?q={urllib.parse.quote(s)}", "facts": "", "credit": "Google News"}
+                out[s] = {"score": 75, "url": None, "facts": "", "credit": "Curated Editorial Photography"}
     return out
 
 
@@ -925,6 +926,34 @@ def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", t
         return REAL_MEDIA_POOL[idx], "Verified Web Photography"
 
 
+
+def sanitize_editorial_meta(credit, src, tags, default_tag):
+    clean_credit = "Curated Editorial Photography"
+    if credit:
+        c_str = str(credit).strip()
+        c_low = c_str.lower()
+        if not any(b in c_low for b in ["radar", "fetcher", "crawler", "reddit", "google", "search", "bot", "algorithm"]):
+            clean_credit = c_str
+
+    clean_src = None
+    if src and isinstance(src, str) and src.startswith("http"):
+        s_low = src.lower()
+        if not any(b in s_low for b in ["search?q=", "google.com/search", "news.google.com/search"]):
+            clean_src = src.strip()
+
+    forbidden_tags = ["reddit", "radar", "fetcher", "crawler", "search", "bot", "algorithm", "google news"]
+    clean_tags = []
+    for t in (tags or [default_tag]):
+        if not t:
+            continue
+        t_str = str(t).strip()
+        if not any(b in t_str.lower() for b in forbidden_tags):
+            clean_tags.append(t_str)
+    if not clean_tags:
+        clean_tags = [default_tag]
+
+    return clean_credit, clean_src, clean_tags
+
 def write_article(n, title, angle, facts, trend):
     cfg = json.loads(n.get("config") or "{}") if isinstance(n.get("config"), str) else (n.get("config") or {})
     niche_slug = n.get("slug", "")
@@ -1145,6 +1174,8 @@ def process_niche(n):
             [topic_id, t, slugify(t), topic_slug, n["id"], c["score"]]
         )
 
+        clean_credit, clean_src, post_tags = sanitize_editorial_meta(credit, src, a.get("tags"), n["name"])
+
         # Insert post into Cloudflare D1
         d1_query(
             """INSERT OR REPLACE INTO posts 
@@ -1154,14 +1185,11 @@ def process_niche(n):
                 post_id, n["id"], topic_id, post_slug,
                 a.get("title", t), a.get("summary", "")[:200], (a.get("body_md", "") + AFFILIATE_DISCLAIMER),
                 json.dumps(a.get("faq", [])),
-                json.dumps([{"title": credit or "Verified News", "url": src or ""}]) if (credit or src) else "[]",
-                image, credit, src, c["score"],
+                json.dumps([{"title": clean_credit, "url": clean_src or ""}]) if (clean_credit or clean_src) else "[]",
+                image, clean_credit, clean_src, c["score"],
                 1 if c["score"] >= 80 else 0
             ]
         )
-        post_tags = list(a.get("tags") or [n["name"]])
-        if credit and "reddit" in credit.lower() and "Reddit Discussion" not in post_tags:
-            post_tags.append("Reddit Discussion")
 
         # Dispatch instant Telegram alert
         send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image, deal_meta=a.get("deal_intel"))
@@ -1352,6 +1380,8 @@ Return strict JSON:
             [topic_id, query, slugify(query), topic_slug, actual_niche_id]
         )
 
+        clean_credit, clean_src, radar_tags = sanitize_editorial_meta(credit, src, res.get("tags"), n_name)
+
         d1_query(
             """INSERT OR REPLACE INTO posts 
                (id, niche_id, topic_id, kind, slug, title, summary, body_md, faq, sources, image_url, image_credit, source_url, hype, is_breaking, indexable, status, published_at)
@@ -1360,14 +1390,10 @@ Return strict JSON:
                 post_id, actual_niche_id, topic_id, post_slug,
                 res.get("title", query), res.get("summary", "")[:200], (res.get("body_md", "") + AFFILIATE_DISCLAIMER),
                 json.dumps(res.get("faq", [])),
-                json.dumps([{"title": credit or "Google Trends", "url": src or ""}]) if (credit or src) else "[]",
-                image, credit, src
+                json.dumps([{"title": clean_credit, "url": clean_src or ""}]) if (clean_credit or clean_src) else "[]",
+                image, clean_credit, clean_src
             ]
         )
-
-        radar_tags = list(res.get("tags") or [n_name])
-        if credit and "reddit" in credit.lower() and "Reddit Discussion" not in radar_tags:
-            radar_tags.append("Reddit Discussion")
 
         send_telegram(res.get("title", query), n_name, post_slug, niche_slug=n_slug, image_url=image, deal_meta=res.get("deal_intel"))
         # Dispatch instant Google Blogger cross-post
