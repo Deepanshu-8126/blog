@@ -53,6 +53,9 @@ if sys.platform == "win32":
             getattr(sys.stdout, "reconfigure")(encoding="utf-8")
         if hasattr(sys.stderr, "reconfigure"):
             getattr(sys.stderr, "reconfigure")(encoding="utf-8")
+    except Exception:
+        pass
+
 # Ensure project root is in sys.path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
