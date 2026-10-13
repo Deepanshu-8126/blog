@@ -370,6 +370,11 @@ def publish_capsule_to_cloudflare_d1(capsule: dict):
         res_json = r.json() if r.status_code == 200 else {}
         if r.status_code == 200 and res_json.get("success"):
             print(f"✅ [Cloudflare D1]: Live Current Affairs Article at /exams-results/{slug}")
+            try:
+                from pipelines.indexnow_helper import submit_url_to_indexnow
+                submit_url_to_indexnow(f"https://uniquedigit-viral-hub.pages.dev/exams-results/{slug}")
+            except Exception:
+                pass
             return True
         else:
             print(f"⚠️ [Cloudflare D1 Error]: {res_json}")

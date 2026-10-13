@@ -427,6 +427,11 @@ def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_ur
         res_json = r.json() if r.status_code == 200 else {}
         if r.status_code == 200 and res_json.get("success"):
             print(f"✅ [Cloudflare Main Site]: Live at https://uniquedigit-viral-hub.pages.dev/exams-results/{slug}")
+            try:
+                from pipelines.indexnow_helper import submit_url_to_indexnow
+                submit_url_to_indexnow(f"https://uniquedigit-viral-hub.pages.dev/exams-results/{slug}")
+            except Exception:
+                pass
             return True
         else:
             print(f"❌ [Cloudflare D1 Error]: HTTP {r.status_code} - {r.text[:200]}")

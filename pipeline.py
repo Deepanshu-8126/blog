@@ -25,6 +25,7 @@ load_dotenv()
 
 import requests
 import trafilatura
+from pipelines.indexnow_helper import submit_url_to_indexnow
 
 # High-Performance HTTP Connection Pooling (2x-3x faster network I/O)
 SESSION = requests.Session()
@@ -1217,6 +1218,8 @@ def process_niche(n):
         send_telegram(a.get("title", t), n["name"], post_slug, niche_slug=n["slug"], image_url=image, deal_meta=a.get("deal_intel"))
         # Dispatch instant Google Blogger cross-post
         send_blogger(a.get("title", t), a.get("body_md", ""), tags=post_tags, image_url=image, niche_slug=n.get("slug"))
+        # Dispatch instant IndexNow ping to Bing/search engines
+        submit_url_to_indexnow(f"{PORTAL_BASE}/{n['slug']}/{post_slug}")
         made += 1
         time.sleep(1)
     return made
