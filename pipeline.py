@@ -221,26 +221,46 @@ def send_telegram(title, niche_name, post_slug, niche_slug="viral", image_url=No
 
 # ---------- Google Blogger Multi-Destination Publisher ----------
 BLOGGER_ROUTING = {
-    # 1. Exams & Sarkari Results -> Dedicated Sarkari Result & Exam Alert Blog
+    # 1. Dedicated Sarkari Result & Exam Alert Blog
     "exams-results": os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024"),
     
     # 2. Dedicated Loot Deals & Offers Blog
     "deals": os.getenv("BLOGGER_DEALS_BLOG_ID", "834082955272949961"),
     "cashback": os.getenv("BLOGGER_DEALS_BLOG_ID", "834082955272949961"),
 
-    # 3. Tech, AI, PC Builds, Side-Hustles -> Primary AI Tools Hub Blog
+    # 3. Dedicated AI Tools Hub Blog (STRICTLY ai-tools ONLY!)
     "ai-tools": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
-    "pc-builds": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
-    "side-hustles": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
-    "tech": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
-    "viral": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
 }
 
 def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
-    """Automatically cross-publishes targeted articles to specific Google Blogger blogs."""
-    target_blog_id = BLOGGER_ROUTING.get(niche_slug) or os.getenv("BLOGGER_BLOG_ID")
+    """
+    Automatically cross-publishes targeted articles to specific Google Blogger blogs.
+    Strict Niche Boundary Gate:
+      - Only 'exams-results' -> Sarkari Blog
+      - Only 'deals' & 'cashback' -> Loot Deals Blog
+      - Only 'ai-tools' -> AI Tools Hub Blog
+      - ALL OTHER NICHES (food, health, movies, pc-builds, side-hustles, fashion, viral, etc.)
+        stay strictly on the main website and are NEVER cross-posted to Blogger!
+    """
+    if not niche_slug or niche_slug not in BLOGGER_ROUTING:
+        # Strict isolation: Do not pollute Blogger with other niches!
+        return None
+
+    target_blog_id = BLOGGER_ROUTING[niche_slug]
     if not target_blog_id:
         return None
+
+    # Strict AI Content Validation Guard for AI Tools Hub
+    if niche_slug == "ai-tools":
+        combined_text = f"{title or ''} {body_md or ''} {' '.join(tags or [])}".lower()
+        ai_signals = [
+            "ai", "gpt", "llm", "claude", "gemini", "prompt", "artificial", "deepseek",
+            "midjourney", "openai", "copilot", "cursor", "software", "tool", "machine learning",
+            "neural", "sora", "generative", "automation", "agent"
+        ]
+        if not any(sig in combined_text for sig in ai_signals):
+            print(f"[Blogger Guard Rejected]: '{title}' does not contain valid AI signals. Blocked from AI Tools Hub.")
+            return None
 
     try:
         from bridges.blogger_bridge.blogger_publisher import publish_to_blogger
@@ -907,55 +927,90 @@ def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", t
 
 def write_article(n, title, angle, facts, trend):
     cfg = json.loads(n.get("config") or "{}") if isinstance(n.get("config"), str) else (n.get("config") or {})
-    is_exam = n.get("slug") == "exams-results" or "result" in title.lower() or "exam" in title.lower() or "admit card" in title.lower()
-    
-    prompt = f"""You are an elite Indian journalist and education editor for UniqueDigit & Sarkari Result Alert.
+    niche_slug = n.get("slug", "")
+
+    # Strict Niche-Specific Editorial Roles & Guidelines (Zero Cross-Niche Pollution)
+    if niche_slug == "exams-results":
+        role_desc = "Senior Government Education & Career Editor for UniqueDigit & Sarkari Result Alert."
+        archetype_rules = """MANDATORY SARKARI RESULT & EXAM ARCHETYPE:
+- TONE & LANGUAGE: Write in 100% natural, authentic Hinglish (Roman Hindi mixed with English keywords, exactly like Jagran Josh and Live Hindustan).
+- HEADLINE: Natural headline matching the specific exam/result event. Avoid repetitive bracket prefixes.
+- SECTION 1 (⚡ Quick Highlights Box): Markdown table with Exam Name, Conducting Authority, Status: 🟢 Declared / Active, Required Login Details, Official Portal Link.
+- SECTION 2 (📋 Step-by-Step Scorecard Check Karne Ka Tarika): Numbered 1-2-3-4 steps in clear Hinglish.
+- SECTION 3 (📊 Expected Category-Wise Cutoff): Markdown table for General (UR), OBC, EWS, SC, ST.
+- SECTION 4 (🔗 Official Direct Link Callout): Prominent action callout box with direct official website URL.
+- SECTION 5 (⚠️ Verification Advisory): Details to verify on the scorecard (Name, QR Code, Marks) and warning against fake links."""
+    elif niche_slug == "ai-tools":
+        role_desc = "Lead Artificial Intelligence & Developer Tools Analyst for UniqueDigit & AI Tools Hub."
+        archetype_rules = """MANDATORY AI TOOLS & SOFTWARE ARCHETYPE:
+- FOCUS: Focus 100% strictly on Artificial Intelligence, developer tools, LLM models, prompt strategies, and workflow automation.
+- AUDIENCE: Practical real-world use case for Indian creators, developers, freelancers, and students.
+- PRICING BREAKDOWN: Detailed Free Tier vs Paid Tier breakdown with INR and USD pricing.
+- COMPARISON TABLE: Clean Markdown table comparing features with leading alternatives (e.g. ChatGPT, Claude, Gemini, DeepSeek).
+- STEP-BY-STEP GUIDE: Clear getting started guide with practical sample prompts or workflows."""
+    elif niche_slug in ["deals", "cashback"]:
+        role_desc = "Chief Shopping & Festive Deals Editor for UniqueDigit Deals & Loot Alerts."
+        archetype_rules = """MANDATORY SHOPPING & LOOT DEALS ARCHETYPE:
+- FOCUS: Genuine price drops, festive discounts, bank card offers, and specs breakdown.
+- PRICE TABLE: Clean Markdown table showing MRP, Current Deal Price, and Discount Percentage.
+- VALUE VERDICT: Honest assessment of whether this deal is a true steal or marketing hype."""
+    elif niche_slug in ["pc-builds", "tech"]:
+        role_desc = "Senior PC Hardware & Gaming Rig Specialist for UniqueDigit."
+        archetype_rules = """MANDATORY PC BUILDS & HARDWARE ARCHETYPE:
+- FOCUS: Performance benchmarks, 1080p/1440p gaming FPS, thermals, and component compatibility.
+- COMPONENT TABLE: Itemized parts table with estimated Indian retail prices (INR) and alternatives.
+- UPGRADE ADVICE: Practical pros, cons, and future-proofing recommendations."""
+    elif niche_slug == "movies":
+        role_desc = "Chief Cinema & Entertainment Editor for UniqueDigit."
+        archetype_rules = """MANDATORY CINEMA & OTT RELEASE ARCHETYPE:
+- FOCUS: Story hook, character stakes, star cast performances, and cinematic strengths (zero spoilers).
+- BOX OFFICE TRACKER: Clean Markdown table showing opening day, weekend, and worldwide collections.
+- OTT INTEL: Streaming rights platform (Netflix/Prime Video/Hotstar) and expected digital premiere date.
+- TICKET VERDICT: Should readers book a theater ticket or wait for OTT streaming?"""
+    elif niche_slug == "health":
+        role_desc = "Evidence-Based Health & Fitness Editor for UniqueDigit."
+        archetype_rules = """MANDATORY HEALTH & FITNESS ARCHETYPE:
+- FOCUS: Scientific workout form, target muscle groups, sets/reps, and practical fitness tips.
+- INDIAN DIET SUPPORT: High-protein Indian nutrition tips (Paneer, Soya, Eggs, Dal, Whey).
+- SAFETY ADVISORY: Dos and don'ts, common form mistakes, and zero unverified miracle-cure claims."""
+    elif niche_slug == "food":
+        role_desc = "Culinary & Street Food Recipe Editor for UniqueDigit."
+        archetype_rules = """MANDATORY RECIPE & COOKING ARCHETYPE:
+- FOCUS: Step-by-step foolproof cooking method for Indian home kitchens.
+- INGREDIENTS TABLE: Complete ingredients checklist with standard Indian measurements.
+- CHEF HACKS: Practical tips to achieve authentic restaurant-quality flavor at home."""
+    elif niche_slug == "fashion":
+        role_desc = "Style & Fashion Editor for UniqueDigit."
+        archetype_rules = """MANDATORY FASHION & STYLE ARCHETYPE:
+- FOCUS: Outfit styling, footwear pairing, capsule wardrobe advice, and seasonal fashion trends.
+- BUDGET PAIRING: Practical, affordable alternatives for everyday Indian wear.
+- DOs & DON'Ts: Styling guidelines for different occasions."""
+    elif niche_slug == "side-hustles":
+        role_desc = "Remote Work & Digital Economy Editor for UniqueDigit."
+        archetype_rules = """MANDATORY SIDE HUSTLES & FREELANCING ARCHETYPE:
+- FOCUS: Legitimate, verified ways to earn freelance income or build online assets in India.
+- REALISTIC EARNINGS: Transparent earning expectations in INR, initial time investment, and skill requirements.
+- STEP-BY-STEP ROADMAP: Actionable roadmap to find first clients and start getting paid."""
+    elif niche_slug == "gta-6":
+        role_desc = "Gaming & Rockstar Games Analyst for UniqueDigit."
+        archetype_rules = """MANDATORY GTA 6 & GAMING INTEL ARCHETYPE:
+- FOCUS: Rockstar Games updates, Vice City map details, gameplay features, and release intel.
+- SYSTEM REQUIREMENTS: Expected PC specs and console performance benchmarks."""
+    else:
+        role_desc = "Chief Editorial Journalist & Viral Explainer Editor for UniqueDigit India."
+        archetype_rules = """MANDATORY VIRAL TREND EXPLAINER ARCHETYPE:
+- FOCUS: Explain exactly what happened, why it is buzzing across India right now, and key verified takeaways.
+- COMMUNITY VERDICT: Real public reactions, social discussions, and balanced perspective.
+- GROUND REALITY: Bottom-line takeaways without sensationalism."""
+
+    prompt = f"""You are the {role_desc}
 Topic: {title} | Niche: {n['name']} | Angle: {angle} | Google Trends Interest: +{trend}k.
 
 GROUNDED FACTS & CONTEXT (Use ONLY verified claims):
 {facts or 'Keep analysis objective, explanatory, and grounded in common industry standards without fabricating numbers.'}
 
-AUTONOMOUS INTENT & MULTI-CASE ARCHETYPE HANDLING (Agent Beta):
-1. Detect why the user is searching for "{title}" RIGHT NOW:
-   - Case A (Exam/Result/Admit Card/Sarkari - TONE: NATURAL CONVERSATIONAL HINGLISH):
-     * TONE & LANGUAGE: Write in 100% natural, authentic Hinglish (Roman Hindi mixed with English keywords, exactly like Jagran Josh, Live Hindustan, and Amar Ujala).
-     * HEADLINE FORMAT: Natural, engaging headline matching the specific event (Results, Admit Card, or Notification). Avoid repetitive bracket prefixes like "[Direct Link Active]" on every post.
-     * SECTION 1 (⚡ Quick Highlights Box): Markdown table with Exam Name, Conducting Authority, Status: 🟢 Declared / Active, Required Login Details, and Official Portal Link.
-     * SECTION 2 (📋 Step-by-Step Scorecard Check Karne Ka Tarika): Numbered 1-2-3-4 steps in clear, friendly Hinglish.
-     * SECTION 3 (📊 Expected Category-Wise Cutoff): Markdown table for General (UR), OBC, EWS, SC, ST.
-     * SECTION 4 (🔗 Official Direct Link Callout): Prominent action callout box with direct official website URL.
-     * SECTION 5 (⚠️ Scorecard Verification & Advisory): What details to check (Name, Marks, QR Code) and warning against fake websites.
-     * SECTION 6 (❓ Important FAQs): 3 direct user questions answered in crisp 2 sentences each.
-   - Case B (Shopping/Deal/Loot): Provide a price-to-value verdict, key specs, warranty note, and why this discount matters.
-   - Case C (Tech/Gaming/Hardware): Provide performance benchmarks, compatibility requirements, and pros/cons.
-   - Case D (Trending Viral/Event): Explain what happened, why it is buzzing in India, and key verified takeaways.
-   - Case E (Movies / Cinema & Box Office):
-     Write a deeply humanized, compelling cinematic story that movie lovers actually search for:
-     * Hook & Plot Setup: The story premise, character stakes, and why the plot is captivating (no spoilers).
-     * Star Cast & Power Performances: Key actors and who stole the show.
-     * Box Office Tracker: A neat markdown table with Day 1, Weekend, and Total Worldwide collections.
-     * OTT Streaming Intel: Streaming rights platform (Netflix/Prime Video/Hotstar) and expected digital premiere.
-     * Audience Consensus & Final Ticket Verdict: Should readers book a ticket or wait for OTT?
-   - Case F (Health / Ayurveda / Wellness):
-     Provide strict evidence-based advice referencing peer-reviewed clinical data or Ministry of AYUSH protocols.
-     * Dos and Don'ts checklist.
-     * Safe usage, precautions, and when to consult a registered medical practitioner.
-     * Zero miracle-cure claims or unverified health promises.
-   - Case G (Gym Exercises, Workout Routine & Fitness):
-     * Target muscle groups and step-by-step correct exercise form.
-     * Exact Sets, Reps, and Rest periods for beginner vs intermediate.
-     * Common gym mistakes and injury prevention tips.
-     * High-protein Indian diet support (Paneer, Soya chunks, Eggs, Whey).
-   - Case H (Food Recipes, Street Food & Cooking):
-     * Prep time, cooking time, and serving portions.
-     * Complete ingredients checklist in standard Indian units.
-     * Step-by-step foolproof cooking method.
-     * Secret chef hacks to get authentic restaurant-style taste at home.
-   - Case I (AI Tools, SaaS & Software Guides):
-     * Practical real-world use case for Indian students, creators, and freelancers.
-     * Detailed Free Tier vs Paid Tier breakdown.
-     * Feature comparison table with alternatives.
-     * Step-by-step getting started guide.
+EDITORIAL ARCHETYPE REQUIREMENT:
+{archetype_rules}
 
 2. HUMANIZATION & ELITE BLOG ARCHITECTURE (ANTI-AI SLOP):
    - WRITE LIKE A PASSIONATE, EXPERT INDIAN BLOGGER TALKING TO A SMART FRIEND OVER CHAI.
@@ -1250,46 +1305,42 @@ Return strict JSON:
             continue
 
         q_lower = query.lower()
-        # Deterministic Guardrails to prevent misclassification
-        if any(w in q_lower for w in ["cricket", "t20", "odi", "ipl", "bcci", "match", "wicket", "ind vs", "test series", "world cup"]):
-            n_slug = "cricket-sports"
-            n_name = "Cricket & Sports"
-            n_grp = "Entertainment"
-            n_icon = "trophy"
+        # Strict mapping to the 13 canonical website niches (Never create fake/junk niches)
+        CANONICAL_NICHES = {
+            "viral", "movies", "exams-results", "pc-builds", "ai-tools",
+            "deals", "cashback", "side-hustles", "health", "fashion", "food", "gta-6", "gold-rate"
+        }
+        if any(w in q_lower for w in ["ssc", "upsc", "neet", "jee", "cbse", "admit card", "sarkari", "cutoff", "answer key", "syllabus", "hall ticket"]):
+            n_slug = "exams-results"
         elif any(w in q_lower for w in ["trailer", "box office", "teaser", "cinema", "movie review"]):
             n_slug = "movies"
-            n_name = "Movies"
-            n_grp = "Entertainment"
-            n_icon = "clapperboard"
-        elif any(w in q_lower for w in ["ssc", "upsc", "neet", "jee", "cbse", "admit card", "sarkari", "cutoff", "answer key", "syllabus", "hall ticket"]):
-            n_slug = "exams-results"
-            n_name = "Exams & Results"
-            n_grp = "Education"
-            n_icon = "book-open"
+        elif any(w in q_lower for w in ["gpu", "rtx", "processor", "ram", "pc build"]):
+            n_slug = "pc-builds"
+        elif any(w in q_lower for w in ["ai tool", "chatgpt", "deepseek", "claude", "gemini", "prompt"]):
+            n_slug = "ai-tools"
+        elif any(w in q_lower for w in ["discount", "loot", "sale", "price drop", "coupon"]):
+            n_slug = "deals"
+        elif any(w in q_lower for w in ["recipe", "food", "dish", "cooking"]):
+            n_slug = "food"
+        elif any(w in q_lower for w in ["workout", "gym", "fitness", "diet", "health"]):
+            n_slug = "health"
+        elif any(w in q_lower for w in ["fashion", "sneaker", "dress", "outfit", "style"]):
+            n_slug = "fashion"
+        elif any(w in q_lower for w in ["side hustle", "freelance", "earn money"]):
+            n_slug = "side-hustles"
+        elif any(w in q_lower for w in ["gta 6", "rockstar"]):
+            n_slug = "gta-6"
         else:
-            n_slug = slugify(res.get("niche_slug") or "viral")
-            if n_slug == "exams-results" and not any(w in q_lower for w in ["exam", "result", "admit", "card", "board", "neet", "jee", "ssc", "upsc", "cbse", "sarkari"]):
-                n_slug = "viral"
-                n_name = "Viral"
-                n_grp = "Entertainment"
-                n_icon = "rocket"
-            else:
-                n_name = res.get("niche_name") or n_slug.title()
-                n_grp = res.get("niche_group") or "Entertainment"
-                n_icon = res.get("niche_icon") or "sparkles"
+            cand_slug = slugify(res.get("niche_slug") or "viral")
+            n_slug = cand_slug if cand_slug in CANONICAL_NICHES else "viral"
 
-        n_tagline = res.get("niche_tagline") or f"Latest updates on {n_name}"
-
-        # 1. Auto-create Niche in D1 if it doesn't already exist
-        niche_id = str(uuid.uuid4())
-        d1_query(
-            "INSERT OR IGNORE INTO niches (id, slug, name, tagline, grp, icon, page_type, active) VALUES (?, ?, ?, ?, ?, ?, 'feed', 1)",
-            [niche_id, n_slug, n_name, n_tagline, n_grp, n_icon]
-        )
-
-        # Get the actual niche_id in case it existed
-        niche_record = d1_query("SELECT id FROM niches WHERE slug = ?", [n_slug])
-        actual_niche_id = niche_record[0]["id"] if niche_record else niche_id
+        # Fetch actual niche_id from D1 (Never create random off-niche entries)
+        niche_record = d1_query("SELECT id, name FROM niches WHERE slug = ?", [n_slug])
+        if not niche_record:
+            n_slug = "viral"
+            niche_record = d1_query("SELECT id, name FROM niches WHERE slug = 'viral'")
+        actual_niche_id = niche_record[0]["id"]
+        n_name = niche_record[0]["name"]
 
         topic_id = str(uuid.uuid4())
         topic_slug = slugify(query)
