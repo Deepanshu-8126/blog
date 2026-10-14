@@ -1,5 +1,4 @@
 import type { APIRoute } from 'astro';
-import productsData from '../../../public/data/products.json';
 
 export const GET: APIRoute = async ({ locals }) => {
   try {
@@ -24,8 +23,8 @@ export const GET: APIRoute = async ({ locals }) => {
       }
     }
 
-    // 2. Local Fallback / Development Server response
-    return new Response(JSON.stringify(productsData), {
+    // 2. Dynamic Fallback: Return empty list or dynamic empty array without local file dependency
+    return new Response(JSON.stringify([]), {
       status: 200,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
@@ -37,7 +36,7 @@ export const GET: APIRoute = async ({ locals }) => {
     });
   } catch (err: any) {
     // Graceful error fallback
-    return new Response(JSON.stringify(productsData), {
+    return new Response(JSON.stringify([]), {
       status: 200,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',

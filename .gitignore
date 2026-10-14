@@ -35,3 +35,9 @@ bridges/blogger_bridge/tokens.json
 bridges/whatsapp_bridge/Link
 bridges/whatsapp_bridge/auth_info/
 auth_info/
+src/data/
+*.data.json
+public/images/
+public/data/
+public/feeds/
+public/builds/

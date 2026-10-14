@@ -42,14 +42,13 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
     'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282020%29.svg/500px-Intel_logo_%282020%29.svg.png'
   ],
   'deals': [
-    '/images/products/oled_tv_screen.jpg',
-    '/images/products/wireless_earbuds.jpg',
-    '/images/products/fashion_apparel.jpg',
-    '/images/products/gaming_laptop.jpg'
+    'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/61S9aVnRZDL._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg'
   ],
   'cashback': [
-    '/images/products/gold_bullion.jpg',
-    '/images/products/wireless_earbuds.jpg'
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Gold_bullion_bars.jpg/800px-Gold_bullion_bars.jpg',
+    'https://m.media-amazon.com/images/I/61S9aVnRZDL._SL1500_.jpg'
   ],
   'health': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/960px-Good_Food_Display_-_NCI_Visuals_Online.jpg'
@@ -58,8 +57,8 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/960px-Good_Food_Display_-_NCI_Visuals_Online.jpg'
   ],
   'fashion': [
-    '/images/products/fashion_apparel.jpg',
-    '/images/products/sneakers.jpg'
+    'https://m.media-amazon.com/images/I/713v9qU6aML._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/81xU-oU6YCL._SL1500_.jpg'
   ],
   'side-hustles': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png',
@@ -72,6 +71,9 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
   'exams-results': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png',
     'https://upload.wikimedia.org/wikipedia/commons/5/56/BTEUP_LOGO.png'
+  ],
+  'yojana': [
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png'
   ],
   'gold-rate': [
     'https://upload.wikimedia.org/wikipedia/commons/4/4b/China_-_5732266939_Gold_-_M%C3%BCnzen_-_Barren.jpg'
@@ -167,35 +169,35 @@ export function getProductCategoryFallback(name = '', category = ''): string {
 
   // TV / Smart TVs / LED / OLED
   if (text.includes('tv') || text.includes('television') || text.includes('led') || text.includes('oled') || text.includes('display')) {
-    return '/images/products/oled_tv_screen.jpg';
+    return 'https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg';
   }
   // Luggage / Suitcases / Trolley / Bags
   if (text.includes('suitcase') || text.includes('luggage') || text.includes('trolley') || text.includes('bag') || text.includes('cabin')) {
-    return '/images/products/cabin_suitcase.jpg';
+    return 'https://m.media-amazon.com/images/I/71R2cE8Y09L._SL1500_.jpg';
   }
   // Fashion / Clothing / Apparel / Kurta / Jeans / T-Shirt / Shirt / Jacket / Dress
   if (text.includes('kurta') || text.includes('jeans') || text.includes('shirt') || text.includes('t-shirt') || text.includes('jacket') || text.includes('pant') || text.includes('denim') || text.includes('apparel') || text.includes('fashion') || text.includes('cotton') || text.includes('set')) {
-    return '/images/products/fashion_apparel.jpg';
+    return 'https://m.media-amazon.com/images/I/713v9qU6aML._SL1500_.jpg';
   }
   // Footwear / Shoes / Sneakers
   if (text.includes('shoe') || text.includes('sneaker') || text.includes('footwear') || text.includes('sandal') || text.includes('puma') || text.includes('nike')) {
-    return '/images/products/sneakers.jpg';
+    return 'https://m.media-amazon.com/images/I/81xU-oU6YCL._SL1500_.jpg';
   }
   // Audio / Earbuds / Headphones / Airdopes / Sound
   if (text.includes('earbud') || text.includes('headphone') || text.includes('airdopes') || text.includes('audio') || text.includes('tws') || text.includes('wireless') || text.includes('sound') || text.includes('neckband') || text.includes('boat')) {
-    return '/images/products/wireless_earbuds.jpg';
+    return 'https://m.media-amazon.com/images/I/61tFpDk+g9L._SL1500_.jpg';
   }
   // Laptops / Computers / PC
   if (text.includes('laptop') || text.includes('macbook') || text.includes('computer') || text.includes('pc') || text.includes('victus') || text.includes('rtx')) {
-    return '/images/products/gaming_laptop.jpg';
+    return 'https://m.media-amazon.com/images/I/71jG+e7roXL._SL1500_.jpg';
   }
   // Gold / Silver / Bullion / Jewellery
   if (text.includes('gold') || text.includes('silver') || text.includes('coin') || text.includes('bullion') || text.includes('jewel')) {
-    return '/images/products/gold_bullion.jpg';
+    return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Gold_bullion_bars.jpg/800px-Gold_bullion_bars.jpg';
   }
   // Washing Machine / Home Appliances
   if (text.includes('washing') || text.includes('fridge') || text.includes('refrigerator') || text.includes('appliance') || text.includes('cleaner')) {
-    return '/images/products/washing_machine.jpg';
+    return 'https://m.media-amazon.com/images/I/61S9aVnRZDL._SL1500_.jpg';
   }
   // Smartwatches / Watch
   if (text.includes('watch') || text.includes('smartwatch') || text.includes('band')) {
@@ -203,10 +205,10 @@ export function getProductCategoryFallback(name = '', category = ''): string {
   }
   // Smartphones
   if (text.includes('phone') || text.includes('mobile') || text.includes('iphone') || text.includes('redmi') || text.includes('oneplus') || text.includes('galaxy') || text.includes('poco') || text.includes('smartphone') || text.includes('5g')) {
-    return '/images/products/iphone_16_pro.jpg';
+    return 'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg';
   }
 
-  return '/images/products/fashion_apparel.jpg';
+  return 'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg';
 }
 
 export function resolveProductImage(rawUrl?: string | null, name = '', category = ''): string {

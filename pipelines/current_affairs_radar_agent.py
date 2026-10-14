@@ -402,10 +402,7 @@ def run_current_affairs_pipeline():
 
     print(f"✨ Successfully synthesized capsule with {len(capsule.get('items', []))} high-yield items and {capsule.get('total_questions', 10)} MCQs!")
 
-    # 3. Save to Local JSON (Instantly consumable by Astro frontend)
-    save_to_local_json(capsule)
-
-    # 4. Sync to Cloudflare D1
+    # 3. Publish directly to Cloudflare D1 (Zero Local Data Storage)
     publish_capsule_to_cloudflare_d1(capsule)
 
     print("=" * 75)
