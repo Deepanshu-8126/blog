@@ -231,17 +231,20 @@ BLOGGER_ROUTING = {
 
     # 3. Dedicated AI Tools Hub Blog (STRICTLY ai-tools ONLY!)
     "ai-tools": os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821"),
+
+    # 4. Dedicated Trending India, Reddit Viral & Internet Culture Blog
+    "viral": os.getenv("BLOGGER_VIRAL_BLOG_ID", "994918898669726760"),
 }
 
 def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
     """
     Automatically cross-publishes targeted articles to specific Google Blogger blogs.
     Strict Niche Boundary Gate:
-      - Only 'exams-results' -> Sarkari Blog
-      - Only 'deals' & 'cashback' -> Loot Deals Blog
-      - Only 'ai-tools' -> AI Tools Hub Blog
-      - ALL OTHER NICHES (food, health, movies, pc-builds, side-hustles, fashion, viral, etc.)
-        stay strictly on the main website and are NEVER cross-posted to Blogger!
+      - Only 'exams-results' -> Sarkari Blog (1366151638291560024)
+      - Only 'deals' & 'cashback' -> Loot Deals Blog (834082955272949961)
+      - Only 'ai-tools' -> AI Tools Hub Blog (2280231208480007821)
+      - Only 'viral' -> India Trend Pulse Blog (994918898669726760)
+      - ALL OTHER NICHES stay strictly on the main website and are NEVER cross-posted!
     """
     if not niche_slug or niche_slug not in BLOGGER_ROUTING:
         # Strict isolation: Do not pollute Blogger with other niches!
@@ -267,6 +270,37 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
         from bridges.blogger_bridge.blogger_publisher import publish_to_blogger
         import markdown
         content_html = markdown.markdown(body_md or "", extensions=['extra', 'tables'])
+
+        # Dedicated High-Converting Backlink & Live Trends Widget for Viral Hub
+        if niche_slug == "viral":
+            tracker_widget = (
+                '<div style="margin: 32px 0 20px 0; padding: 22px; border-radius: 12px; '
+                'background: #0f172a; border: 1px solid #3b82f6; color: #ffffff; '
+                'font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
+                '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">'
+                '<span style="font-size: 22px;">🔥</span>'
+                '<h3 style="margin: 0; color: #60a5fa; font-size: 18px; font-weight: 700;">'
+                'Live Indian Trends Tracker & Community Radar'
+                '</h3></div>'
+                '<p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #cbd5e1;">'
+                'Track real-time search velocity, viral controversies, and hourly social debate scores across India on our official trend monitor:'
+                '</p>'
+                '<div style="display: flex; flex-wrap: wrap; gap: 12px;">'
+                '<a href="https://uniquedigit-viral-hub.pages.dev/trending" style="display: inline-block; padding: 10px 20px; '
+                'background: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;">'
+                'Explore Live Indian Trends Radar →</a>'
+                '<a href="https://uniquedigit-viral-hub.pages.dev/" style="display: inline-block; padding: 10px 18px; '
+                'background: #1e293b; color: #93c5fd; text-decoration: none; font-weight: 500; border: 1px solid #475569; border-radius: 8px; font-size: 14px;">'
+                'UniqueDigit Official Portal 🌐</a>'
+                '</div></div>'
+            )
+            content_html += tracker_widget
+            viral_tags = list(tags or [])
+            for vt in ["Trending India", "Viral News", "Internet Buzz", "Social Media", "Today Updates"]:
+                if vt not in viral_tags:
+                    viral_tags.append(vt)
+            tags = viral_tags
+
         res = publish_to_blogger(
             title, 
             content_html, 
@@ -1237,7 +1271,7 @@ SEED_NICHES = [
     {"id": "9", "slug": "food", "name": "Food", "tagline": "Recipes & cooking guides", "grp": "Lifestyle", "icon": "utensils", "page_type": "feed", "seed_keywords": '["recipe","street food"]', "fetchers": '["trends","wikipedia"]'},
     {"id": "10", "slug": "gta-6", "name": "GTA 6", "tagline": "News, updates & guides", "grp": "Entertainment", "icon": "gamepad", "page_type": "feed", "seed_keywords": '["gta 6","rockstar games"]', "fetchers": '["trends","wikipedia"]'},
     {"id": "11", "slug": "movies", "name": "Movies", "tagline": "Reviews, OTT & trailers", "grp": "Entertainment", "icon": "clapperboard", "page_type": "movies", "seed_keywords": '["new movies","ott release"]', "fetchers": '["trends","tmdb"]'},
-    {"id": "12", "slug": "viral", "name": "Viral", "tagline": "Trending internet moments", "grp": "Entertainment", "icon": "rocket", "page_type": "feed", "seed_keywords": '[]', "fetchers": '["trends"]'},
+    {"id": "12", "slug": "viral", "name": "Viral", "tagline": "Trending internet moments & debates", "grp": "Entertainment", "icon": "rocket", "page_type": "feed", "seed_keywords": '["trending topics India","viral news today","reddit India controversy","twitter trends India","social media buzz"]', "fetchers": '["trends"]'},
     {"id": "13", "slug": "exams-results", "name": "Exams & Results", "tagline": "Sarkari results, admit cards & notes", "grp": "Education", "icon": "book-open", "page_type": "feed", "seed_keywords": '["ssc cgl result","cbse board exam","neet admit card","sarkari result","jee main","ncert solutions"]', "fetchers": '["trends","wikipedia"]'}
 ]
 

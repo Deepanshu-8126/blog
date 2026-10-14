@@ -53,6 +53,7 @@ TELEGRAM_ADMIN_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "6486771356")
 
 BLOGGER_AI_BLOG = os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821")
 BLOGGER_SARKARI_BLOG = os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024")
+BLOGGER_VIRAL_BLOG = os.getenv("BLOGGER_VIRAL_BLOG_ID", "994918898669726760")
 CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
 CF_D1_DB = os.getenv("CLOUDFLARE_D1_DATABASE_ID", "")
 CF_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
@@ -223,6 +224,12 @@ class MasterSentinelAgent:
             self.log_pass("Sarkari/Exam Destination", f"Locked to 'Sarkari Result & Exam Alert' ({BLOGGER_SARKARI_BLOG})")
         else:
             self.log_fail("Sarkari/Exam Destination", f"Mismatched Sarkari Blog ID: {BLOGGER_SARKARI_BLOG}")
+
+        # 3. India Trend Pulse & Viral Debates Blog
+        if BLOGGER_VIRAL_BLOG == "994918898669726760":
+            self.log_pass("Viral/Trends Destination", f"Locked to 'India Trend Pulse' ({BLOGGER_VIRAL_BLOG})")
+        else:
+            self.log_fail("Viral/Trends Destination", f"Mismatched Viral Blog ID: {BLOGGER_VIRAL_BLOG}")
 
         # 3. Blogger OAuth Auth Check (tokens.json locally or BLOGGER_REFRESH_TOKEN in Cloud CI)
         tokens_file = ROOT_DIR / "bridges" / "blogger_bridge" / "tokens.json"
