@@ -25,6 +25,7 @@ const {
 
 const siteName = 'UniqueDigit';
 const gaId = import.meta.env.PUBLIC_GA_ID || 'G-PR5FML8NW5';
+const cuelinksPubId = import.meta.env.PUBLIC_CUELINKS_PUB_ID || '';
 ---
 
 <!doctype html>
@@ -113,5 +114,13 @@ const gaId = import.meta.env.PUBLIC_GA_ID || 'G-PR5FML8NW5';
     </main>
     <Footer />
     <LiveDealToast />
+
+    <!-- Cuelinks Automated In-Text & Affiliate Redirection Engine -->
+    {cuelinksPubId && (
+      <script type="text/javascript">
+        var cL_pub_id = "{cuelinksPubId}";
+      </script>
+      <script async src="https://cdn.cuelinks.com/js/cuelinksv2.js" type="text/javascript"></script>
+    )}
   </body>
 </html>
