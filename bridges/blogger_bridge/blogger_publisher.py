@@ -90,13 +90,13 @@ def publish_to_blogger(title, content_html, labels=None, is_draft=False, feature
     if not service or not blog_id:
         return {"success": False, "error": "Blogger credentials not configured or incomplete"}
 
-    # HARD LOCK: Block pollinations.ai or AI-generated cartoon images
-    if featured_image and "pollinations.ai" in featured_image.lower():
-        featured_image = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=630&fit=crop"
-
-    # HARD LOCK: Block expiring telesco.pe mobile preview thumbnails
-    if featured_image and "telesco.pe" in featured_image.lower():
-        featured_image = None
+    # HARD LOCK: Block pollinations.ai, telesco.pe or broken images
+    if featured_image and any(b in featured_image.lower() for b in ["pollinations.ai", "telesco.pe"]):
+        try:
+            from pipelines.master_image_pipeline import resolve_master_image
+            featured_image, _ = resolve_master_image(title, target_url="")
+        except Exception:
+            featured_image = None
 
     # Prepend responsive featured image / emblem
     final_content = content_html

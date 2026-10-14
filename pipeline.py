@@ -952,20 +952,15 @@ def agent_alpha_check(candidate_title: str, candidate_slug: str, existing_titles
 def agent_gamma_verify_image(image_url: str | None, niche_slug: str = "viral", topic_query: str = "", article_url: str = "") -> tuple[str | None, str]:
     """
     Agent Gamma: Media & Real Link Guardian.
-    Delegates to the Master Universal Real Image Engine across all niches & destinations.
+    Delegates to the dedicated Master Image Pipeline across all niches & destinations.
     """
     try:
+        from pipelines.master_image_pipeline import resolve_master_image
+        return resolve_master_image(topic_query, niche_slug=niche_slug, target_url=article_url, raw_image=image_url)
+    except Exception as e:
+        print("[Master Image Pipeline fallback in Gamma]:", e)
         from bridges.universal_image_engine import get_universal_real_image
         return get_universal_real_image(topic_query, niche_slug=niche_slug, target_url=article_url, raw_image=image_url)
-    except Exception as e:
-        print("[Universal Image Engine fallback in Gamma]:", e)
-        REAL_MEDIA_POOL = [
-            "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=630&fit=crop",
-            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&h=630&fit=crop",
-            "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&h=630&fit=crop"
-        ]
-        idx = abs(hash(topic_query or niche_slug)) % len(REAL_MEDIA_POOL)
-        return REAL_MEDIA_POOL[idx], "Verified Web Photography"
 
 
 def sanitize_reddit_text(text):
