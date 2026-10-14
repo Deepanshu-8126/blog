@@ -2,211 +2,16 @@
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 
-interface MatchFixture {
-  id: string;
-  matchNo: number;
-  team1: string;
-  team1Short: string;
-  team1Color: string;
-  team2: string;
-  team2Short: string;
-  team2Color: string;
-  date: string;
-  time: string;
-  venue: string;
-  city: string;
-  status: 'Upcoming' | 'Live' | 'Completed';
-  liveStream: string;
-}
+import { getCricketData } from '../lib/db';
 
-interface TeamStanding {
-  pos: number;
-  team: string;
-  short: string;
-  color: string;
-  played: number;
-  won: number;
-  lost: number;
-  nrr: string;
-  points: number;
-  form: string[];
-}
-
-interface FantasyTip {
-  id: string;
-  match: string;
-  venue: string;
-  pitchType: 'Batting Paradise' | 'Spin Friendly' | 'Pace & Bounce' | 'Balanced';
-  avgScore: number;
-  keyPlayers: string[];
-  captainPicks: string[];
-  differentialPick: string;
-  advice: string;
-}
-
-interface CricketProduct {
-  id: string;
-  title: string;
-  category: string;
-  price: string;
-  mrp: string;
-  discount: string;
-  image: string;
-  rating: string;
-  affiliateUrl: string;
-}
-
-const STANDINGS: TeamStanding[] = [
-  { pos: 1, team: 'Chennai Super Kings', short: 'CSK', color: 'from-amber-500 to-yellow-400', played: 14, won: 10, lost: 4, nrr: '+0.782', points: 20, form: ['W', 'W', 'L', 'W', 'W'] },
-  { pos: 2, team: 'Mumbai Indians', short: 'MI', color: 'from-blue-600 to-blue-400', played: 14, won: 9, lost: 5, nrr: '+0.614', points: 18, form: ['W', 'W', 'W', 'L', 'W'] },
-  { pos: 3, team: 'Kolkata Knight Riders', short: 'KKR', color: 'from-purple-800 to-amber-500', played: 14, won: 9, lost: 5, nrr: '+0.542', points: 18, form: ['L', 'W', 'W', 'W', 'L'] },
-  { pos: 4, team: 'Royal Challengers Bengaluru', short: 'RCB', color: 'from-red-600 to-black', played: 14, won: 8, lost: 6, nrr: '+0.320', points: 16, form: ['W', 'W', 'W', 'W', 'W'] },
-  { pos: 5, team: 'Sunrisers Hyderabad', short: 'SRH', color: 'from-orange-600 to-black', played: 14, won: 8, lost: 6, nrr: '+0.280', points: 16, form: ['L', 'L', 'W', 'W', 'L'] },
-  { pos: 6, team: 'Rajasthan Royals', short: 'RR', color: 'from-pink-600 to-blue-700', played: 14, won: 7, lost: 7, nrr: '+0.110', points: 14, form: ['L', 'L', 'L', 'W', 'L'] },
-  { pos: 7, team: 'Gujarat Titans', short: 'GT', color: 'from-slate-800 to-amber-400', played: 14, won: 6, lost: 8, nrr: '-0.125', points: 12, form: ['W', 'L', 'L', 'L', 'W'] },
-  { pos: 8, team: 'Delhi Capitals', short: 'DC', color: 'from-blue-700 to-red-600', played: 14, won: 5, lost: 9, nrr: '-0.342', points: 10, form: ['L', 'W', 'L', 'L', 'L'] },
-  { pos: 9, team: 'Lucknow Super Giants', short: 'LSG', color: 'from-cyan-600 to-blue-800', played: 14, won: 5, lost: 9, nrr: '-0.450', points: 10, form: ['L', 'L', 'L', 'W', 'L'] },
-  { pos: 10, team: 'Punjab Kings', short: 'PBKS', color: 'from-red-600 to-yellow-500', played: 14, won: 3, lost: 11, nrr: '-0.730', points: 6, form: ['L', 'L', 'L', 'L', 'L'] }
-];
-
-const FIXTURES: MatchFixture[] = [
-  {
-    id: 'm-1',
-    matchNo: 1,
-    team1: 'Chennai Super Kings',
-    team1Short: 'CSK',
-    team1Color: 'bg-amber-500 text-slate-950',
-    team2: 'Royal Challengers Bengaluru',
-    team2Short: 'RCB',
-    team2Color: 'bg-red-600 text-white',
-    date: 'Friday, March 27',
-    time: '7:30 PM IST',
-    venue: 'MA Chidambaram Stadium (Chepauk)',
-    city: 'Chennai',
-    status: 'Upcoming',
-    liveStream: 'JioCinema & Star Sports 1 HD'
-  },
-  {
-    id: 'm-2',
-    matchNo: 2,
-    team1: 'Mumbai Indians',
-    team1Short: 'MI',
-    team1Color: 'bg-blue-600 text-white',
-    team2: 'Kolkata Knight Riders',
-    team2Short: 'KKR',
-    team2Color: 'bg-purple-800 text-white',
-    date: 'Saturday, March 28',
-    time: '7:30 PM IST',
-    venue: 'Wankhede Stadium',
-    city: 'Mumbai',
-    status: 'Upcoming',
-    liveStream: 'JioCinema & Star Sports 1 HD'
-  },
-  {
-    id: 'm-3',
-    matchNo: 3,
-    team1: 'Sunrisers Hyderabad',
-    team1Short: 'SRH',
-    team1Color: 'bg-orange-600 text-white',
-    team2: 'Rajasthan Royals',
-    team2Short: 'RR',
-    team2Color: 'bg-pink-600 text-white',
-    date: 'Sunday, March 29',
-    time: '3:30 PM IST',
-    venue: 'Rajiv Gandhi International Cricket Stadium',
-    city: 'Hyderabad',
-    status: 'Upcoming',
-    liveStream: 'JioCinema & Star Sports 1 HD'
-  },
-  {
-    id: 'm-4',
-    matchNo: 4,
-    team1: 'Gujarat Titans',
-    team1Short: 'GT',
-    team1Color: 'bg-slate-900 text-amber-300',
-    team2: 'Delhi Capitals',
-    team2Short: 'DC',
-    team2Color: 'bg-blue-700 text-white',
-    date: 'Sunday, March 29',
-    time: '7:30 PM IST',
-    venue: 'Narendra Modi Stadium',
-    city: 'Ahmedabad',
-    status: 'Upcoming',
-    liveStream: 'JioCinema & Star Sports 1 HD'
-  }
-];
-
-const FANTASY_TIPS: FantasyTip[] = [
-  {
-    id: 'tip-chepauk',
-    match: 'CSK vs RCB (Chepauk Opener)',
-    venue: 'MA Chidambaram Stadium, Chennai',
-    pitchType: 'Spin Friendly',
-    avgScore: 168,
-    keyPlayers: ['Ravindra Jadeja', 'Virat Kohli', 'Ruturaj Gaikwad', 'Glenn Maxwell'],
-    captainPicks: ['Ravindra Jadeja (All-Rounder)', 'Ruturaj Gaikwad (Anchor)'],
-    differentialPick: 'Maheesh Theekshana (High spin grip at Chepauk)',
-    advice: 'Chepauk pitches slow down drastically in the 2nd innings. Opt for finger spinners and anchors who play spin well.'
-  },
-  {
-    id: 'tip-wankhede',
-    match: 'MI vs KKR (Wankhede Clash)',
-    venue: 'Wankhede Stadium, Mumbai',
-    pitchType: 'Batting Paradise',
-    avgScore: 202,
-    keyPlayers: ['Suryakumar Yadav', 'Andre Russell', 'Jasprit Bumrah', 'Phil Salt'],
-    captainPicks: ['Suryakumar Yadav (360° hitter)', 'Andre Russell (Death overs bat+bowl)'],
-    differentialPick: 'Tilak Varma (Consistent middle-order)',
-    advice: 'True red-soil bounce with short boundaries and evening dew. Stack top-order power hitters and death yorker specialists.'
-  }
-];
-
-const CRICKET_GEAR: CricketProduct[] = [
-  {
-    id: 'sg-cricket-bat',
-    title: 'SG Sierra Kashmir Willow Cricket Bat (Full Size Adult)',
-    category: 'Bats',
-    price: '₹1,499',
-    mrp: '₹2,399',
-    discount: '37% OFF',
-    image: 'https://m.media-amazon.com/images/I/713v9qU6aML._SL1500_.jpg',
-    rating: '4.4 ★ (3,120+ reviews)',
-    affiliateUrl: 'https://www.amazon.in/s?k=SG+Kashmir+Willow+Cricket+Bat&tag=uniquedigi0c6-21'
-  },
-  {
-    id: 'sg-cricket-kit',
-    title: 'SG Economy Full Cricket Kit with Bat, Pads, Gloves & Bag',
-    category: 'Kits',
-    price: '₹4,899',
-    mrp: '₹7,500',
-    discount: '35% OFF',
-    image: 'https://m.media-amazon.com/images/I/81xU-oU6YCL._SL1500_.jpg',
-    rating: '4.3 ★ (1,840+ reviews)',
-    affiliateUrl: 'https://www.amazon.in/s?k=SG+Cricket+Kit+Complete&tag=uniquedigi0c6-21'
-  },
-  {
-    id: 'csk-jersey',
-    title: 'Official CSK Fan Jersey 2026 Edition (Dry-Fit Breathable)',
-    category: 'Merch',
-    price: '₹699',
-    mrp: '₹1,299',
-    discount: '46% OFF',
-    image: 'https://m.media-amazon.com/images/I/61tFpDk+g9L._SL1500_.jpg',
-    rating: '4.6 ★ (4,900+ reviews)',
-    affiliateUrl: 'https://www.amazon.in/s?k=CSK+Yellow+Cricket+Jersey&tag=uniquedigi0c6-21'
-  },
-  {
-    id: 'leather-cricket-balls',
-    title: 'SG Club Leather Cricket Ball (Pack of 2, 4-Piece Alum Tanned)',
-    category: 'Balls',
-    price: '₹749',
-    mrp: '₹1,100',
-    discount: '32% OFF',
-    image: 'https://m.media-amazon.com/images/I/71R2cE8Y09L._SL1500_.jpg',
-    rating: '4.5 ★ (2,450+ reviews)',
-    affiliateUrl: 'https://www.amazon.in/s?k=SG+Leather+Cricket+Ball&tag=uniquedigi0c6-21'
-  }
-];
+const runtime = (Astro.locals as any)?.runtime;
+const {
+  standings: STANDINGS,
+  fixtures: FIXTURES,
+  fantasyTips: FANTASY_TIPS,
+  gear: CRICKET_GEAR
+} = await getCricketData(runtime?.env);
+const siteOrigin = Astro.url.origin;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -273,7 +78,7 @@ const jsonLd = {
         <!-- 1-Tap WhatsApp Share Banner -->
         <div class="mt-8 flex flex-wrap items-center gap-3">
           <a
-            href="https://api.whatsapp.com/send?text=%F0%9F%8F%8F%20IPL%202026%20Live%20Points%20Table%20%26%20Match%20Schedule%20check%20karo%20yahan:%20https://uniquedigit-viral-hub.pages.dev/cricket"
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🏏 IPL 2026 Live Points Table & Match Schedule check karo yahan: ${siteOrigin}/cricket`)}`}
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg transition"

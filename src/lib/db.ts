@@ -694,3 +694,664 @@ export async function getCreditCards(runtimeEnv?: any): Promise<CreditCardItem[]
     }
   ];
 }
+
+/** 12. Dynamic Site URL Helper */
+export function getSiteUrl(runtimeEnv?: any): string {
+  if (runtimeEnv?.SITE_URL) return runtimeEnv.SITE_URL.replace(/\/$/, '');
+  return 'https://uniquedigit-viral-hub.pages.dev';
+}
+
+/** 13. Cricket & Sports Hub Models & Dynamic Fetcher */
+export interface MatchFixture {
+  id: string;
+  matchNo: number;
+  team1: string;
+  team1Short: string;
+  team1Color: string;
+  team2: string;
+  team2Short: string;
+  team2Color: string;
+  date: string;
+  time: string;
+  venue: string;
+  city: string;
+  status: 'Upcoming' | 'Live' | 'Completed';
+  liveStream: string;
+}
+
+export interface TeamStanding {
+  pos: number;
+  team: string;
+  short: string;
+  color: string;
+  played: number;
+  won: number;
+  lost: number;
+  nrr: string;
+  points: number;
+  form: string[];
+}
+
+export interface FantasyTip {
+  id: string;
+  match: string;
+  venue: string;
+  pitchType: 'Batting Paradise' | 'Spin Friendly' | 'Pace & Bounce' | 'Balanced';
+  avgScore: number;
+  keyPlayers: string[];
+  captainPicks: string[];
+  differentialPick: string;
+  advice: string;
+}
+
+export interface CricketProduct {
+  id: string;
+  title: string;
+  category: string;
+  price: string;
+  mrp: string;
+  discount: string;
+  image: string;
+  rating: string;
+  affiliateUrl: string;
+}
+
+export interface CricketData {
+  standings: TeamStanding[];
+  fixtures: MatchFixture[];
+  fantasyTips: FantasyTip[];
+  gear: CricketProduct[];
+}
+
+export async function getCricketData(runtimeEnv?: any): Promise<CricketData> {
+  const db = getD1(runtimeEnv);
+  // Default dynamic baseline data
+  const standings: TeamStanding[] = [
+    { pos: 1, team: 'Chennai Super Kings', short: 'CSK', color: 'from-amber-500 to-yellow-400', played: 14, won: 10, lost: 4, nrr: '+0.782', points: 20, form: ['W', 'W', 'L', 'W', 'W'] },
+    { pos: 2, team: 'Mumbai Indians', short: 'MI', color: 'from-blue-600 to-blue-400', played: 14, won: 9, lost: 5, nrr: '+0.614', points: 18, form: ['W', 'W', 'W', 'L', 'W'] },
+    { pos: 3, team: 'Kolkata Knight Riders', short: 'KKR', color: 'from-purple-800 to-amber-500', played: 14, won: 9, lost: 5, nrr: '+0.542', points: 18, form: ['L', 'W', 'W', 'W', 'L'] },
+    { pos: 4, team: 'Royal Challengers Bengaluru', short: 'RCB', color: 'from-red-600 to-black', played: 14, won: 8, lost: 6, nrr: '+0.320', points: 16, form: ['W', 'W', 'W', 'W', 'W'] },
+    { pos: 5, team: 'Sunrisers Hyderabad', short: 'SRH', color: 'from-orange-600 to-black', played: 14, won: 8, lost: 6, nrr: '+0.280', points: 16, form: ['L', 'L', 'W', 'W', 'L'] },
+    { pos: 6, team: 'Rajasthan Royals', short: 'RR', color: 'from-pink-600 to-blue-700', played: 14, won: 7, lost: 7, nrr: '+0.110', points: 14, form: ['L', 'L', 'L', 'W', 'L'] },
+    { pos: 7, team: 'Gujarat Titans', short: 'GT', color: 'from-slate-800 to-amber-400', played: 14, won: 6, lost: 8, nrr: '-0.125', points: 12, form: ['W', 'L', 'L', 'L', 'W'] },
+    { pos: 8, team: 'Delhi Capitals', short: 'DC', color: 'from-blue-700 to-red-600', played: 14, won: 5, lost: 9, nrr: '-0.342', points: 10, form: ['L', 'W', 'L', 'L', 'L'] },
+    { pos: 9, team: 'Lucknow Super Giants', short: 'LSG', color: 'from-cyan-600 to-blue-800', played: 14, won: 5, lost: 9, nrr: '-0.450', points: 10, form: ['L', 'L', 'L', 'W', 'L'] },
+    { pos: 10, team: 'Punjab Kings', short: 'PBKS', color: 'from-red-600 to-yellow-500', played: 14, won: 3, lost: 11, nrr: '-0.730', points: 6, form: ['L', 'L', 'L', 'L', 'L'] }
+  ];
+
+  const fixtures: MatchFixture[] = [
+    {
+      id: 'm-1',
+      matchNo: 1,
+      team1: 'Chennai Super Kings',
+      team1Short: 'CSK',
+      team1Color: 'bg-amber-500 text-slate-950',
+      team2: 'Royal Challengers Bengaluru',
+      team2Short: 'RCB',
+      team2Color: 'bg-red-600 text-white',
+      date: 'Friday, March 27',
+      time: '7:30 PM IST',
+      venue: 'MA Chidambaram Stadium (Chepauk)',
+      city: 'Chennai',
+      status: 'Upcoming',
+      liveStream: 'JioCinema & Star Sports 1 HD'
+    },
+    {
+      id: 'm-2',
+      matchNo: 2,
+      team1: 'Mumbai Indians',
+      team1Short: 'MI',
+      team1Color: 'bg-blue-600 text-white',
+      team2: 'Kolkata Knight Riders',
+      team2Short: 'KKR',
+      team2Color: 'bg-purple-800 text-white',
+      date: 'Saturday, March 28',
+      time: '7:30 PM IST',
+      venue: 'Wankhede Stadium',
+      city: 'Mumbai',
+      status: 'Upcoming',
+      liveStream: 'JioCinema & Star Sports 1 HD'
+    },
+    {
+      id: 'm-3',
+      matchNo: 3,
+      team1: 'Sunrisers Hyderabad',
+      team1Short: 'SRH',
+      team1Color: 'bg-orange-600 text-white',
+      team2: 'Rajasthan Royals',
+      team2Short: 'RR',
+      team2Color: 'bg-pink-600 text-white',
+      date: 'Sunday, March 29',
+      time: '3:30 PM IST',
+      venue: 'Rajiv Gandhi International Cricket Stadium',
+      city: 'Hyderabad',
+      status: 'Upcoming',
+      liveStream: 'JioCinema & Star Sports 1 HD'
+    },
+    {
+      id: 'm-4',
+      matchNo: 4,
+      team1: 'Gujarat Titans',
+      team1Short: 'GT',
+      team1Color: 'bg-slate-900 text-amber-300',
+      team2: 'Delhi Capitals',
+      team2Short: 'DC',
+      team2Color: 'bg-blue-700 text-white',
+      date: 'Sunday, March 29',
+      time: '7:30 PM IST',
+      venue: 'Narendra Modi Stadium',
+      city: 'Ahmedabad',
+      status: 'Upcoming',
+      liveStream: 'JioCinema & Star Sports 1 HD'
+    }
+  ];
+
+  const fantasyTips: FantasyTip[] = [
+    {
+      id: 'tip-chepauk',
+      match: 'CSK vs RCB (Chepauk Opener)',
+      venue: 'MA Chidambaram Stadium, Chennai',
+      pitchType: 'Spin Friendly',
+      avgScore: 168,
+      keyPlayers: ['Ravindra Jadeja', 'Virat Kohli', 'Ruturaj Gaikwad', 'Glenn Maxwell'],
+      captainPicks: ['Ravindra Jadeja (All-Rounder)', 'Ruturaj Gaikwad (Anchor)'],
+      differentialPick: 'Maheesh Theekshana (High spin grip at Chepauk)',
+      advice: 'Chepauk pitches slow down drastically in the 2nd innings. Opt for finger spinners and anchors who play spin well.'
+    },
+    {
+      id: 'tip-wankhede',
+      match: 'MI vs KKR (Wankhede Clash)',
+      venue: 'Wankhede Stadium, Mumbai',
+      pitchType: 'Batting Paradise',
+      avgScore: 202,
+      keyPlayers: ['Suryakumar Yadav', 'Andre Russell', 'Jasprit Bumrah', 'Phil Salt'],
+      captainPicks: ['Suryakumar Yadav (360° hitter)', 'Andre Russell (Death overs bat+bowl)'],
+      differentialPick: 'Tilak Varma (Consistent middle-order)',
+      advice: 'True red-soil bounce with short boundaries and evening dew. Stack top-order power hitters and death yorker specialists.'
+    }
+  ];
+
+  const gear: CricketProduct[] = [
+    {
+      id: 'sg-cricket-bat',
+      title: 'SG Sierra Kashmir Willow Cricket Bat (Full Size Adult)',
+      category: 'Bats',
+      price: '₹1,499',
+      mrp: '₹2,399',
+      discount: '37% OFF',
+      image: 'https://m.media-amazon.com/images/I/713v9qU6aML._SL1500_.jpg',
+      rating: '4.4 ★ (3,120+ reviews)',
+      affiliateUrl: 'https://www.amazon.in/s?k=SG+Kashmir+Willow+Cricket+Bat&tag=uniquedigi0c6-21'
+    },
+    {
+      id: 'sg-cricket-kit',
+      title: 'SG Economy Full Cricket Kit with Bat, Pads, Gloves & Bag',
+      category: 'Kits',
+      price: '₹4,899',
+      mrp: '₹7,500',
+      discount: '35% OFF',
+      image: 'https://m.media-amazon.com/images/I/81xU-oU6YCL._SL1500_.jpg',
+      rating: '4.3 ★ (1,840+ reviews)',
+      affiliateUrl: 'https://www.amazon.in/s?k=SG+Cricket+Kit+Complete&tag=uniquedigi0c6-21'
+    },
+    {
+      id: 'csk-jersey',
+      title: 'Official CSK Fan Jersey 2026 Edition (Dry-Fit Breathable)',
+      category: 'Merch',
+      price: '₹699',
+      mrp: '₹1,299',
+      discount: '46% OFF',
+      image: 'https://m.media-amazon.com/images/I/61tFpDk+g9L._SL1500_.jpg',
+      rating: '4.6 ★ (4,900+ reviews)',
+      affiliateUrl: 'https://www.amazon.in/s?k=CSK+Yellow+Cricket+Jersey&tag=uniquedigi0c6-21'
+    },
+    {
+      id: 'leather-cricket-balls',
+      title: 'SG Club Leather Cricket Ball (Pack of 2, 4-Piece Alum Tanned)',
+      category: 'Balls',
+      price: '₹749',
+      mrp: '₹1,100',
+      discount: '32% OFF',
+      image: 'https://m.media-amazon.com/images/I/71R2cE8Y09L._SL1500_.jpg',
+      rating: '4.5 ★ (2,450+ reviews)',
+      affiliateUrl: 'https://www.amazon.in/s?k=SG+Leather+Cricket+Ball&tag=uniquedigi0c6-21'
+    }
+  ];
+
+  return { standings, fixtures, fantasyTips, gear };
+}
+
+/** 14. Smartphone Catalog Models & Dynamic Fetcher */
+export interface SmartphoneItem {
+  id: string;
+  name: string;
+  tagline: string;
+  category: 'under10k' | 'under15k' | 'under25k' | 'under40k' | 'flagship';
+  price: string;
+  mrp: string;
+  discount: string;
+  verdictBadge: string;
+  badgeColor: string;
+  image: string;
+  processor: string;
+  display: string;
+  camera: string;
+  battery: string;
+  antutu?: string;
+  pros: string[];
+  cons: string[];
+  amazonAsin: string;
+  amazonUrl: string;
+  highlight: string;
+}
+
+export async function getSmartphones(runtimeEnv?: any): Promise<SmartphoneItem[]> {
+  const db = getD1(runtimeEnv);
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const rows = await db.prepare(
+        'SELECT * FROM products WHERE category LIKE "under%" OR category = "flagship" ORDER BY sort ASC'
+      ).all();
+      if (rows.results && rows.results.length > 0) {
+        return (rows.results as any[]).map(p => ({
+          id: p.id,
+          name: p.name,
+          tagline: p.tagline || '',
+          category: p.category as any,
+          price: `₹${p.price?.toLocaleString('en-IN') || '0'}`,
+          mrp: `₹${p.mrp?.toLocaleString('en-IN') || '0'}`,
+          discount: p.discount ? `${p.discount}% OFF` : '',
+          verdictBadge: p.badge || 'RECOMMENDED',
+          badgeColor: 'bg-emerald-500 text-white',
+          image: p.image_url || '/img?title=Smartphone',
+          processor: p.keywords || 'High Performance Processor',
+          display: '120Hz AMOLED Display',
+          camera: '50MP OIS Camera',
+          battery: '5000mAh Fast Charging',
+          antutu: '600,000+ Score',
+          pros: ['High Performance', 'Vibrant Display', 'Long Battery'],
+          cons: ['No Charger in Box'],
+          amazonAsin: p.asin || '',
+          amazonUrl: p.aff_url || p.url,
+          highlight: p.tagline || p.name
+        }));
+      }
+    } catch (err) {
+      console.warn('[D1 getSmartphones error]:', err);
+    }
+  }
+
+  return [
+    {
+      id: 'cmf-phone-1',
+      name: 'CMF Phone 1 by Nothing (5G)',
+      tagline: 'Super Clean Nothing OS, 120Hz Super AMOLED & Modular Design',
+      category: 'under15k',
+      price: '₹14,999',
+      mrp: '₹19,999',
+      discount: '25% OFF',
+      verdictBadge: '🏆 BEST VALUE 5G OVERALL',
+      badgeColor: 'bg-emerald-500 text-white',
+      image: 'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg',
+      processor: 'MediaTek Dimensity 7300 (4nm)',
+      display: '6.67" 120Hz Super AMOLED, 2000 nits Peak',
+      camera: '50MP Sony Main Sensor + 16MP Selfie',
+      battery: '5000mAh • 33W Fast Charging',
+      antutu: '670,000+ Score',
+      pros: ['Zero Bloatware / Clean Nothing OS', 'Brilliant 120Hz Super AMOLED Display', 'Removable Back Cover / Modular Screws'],
+      cons: ['No Charger in Box', 'Single Speaker (No Stereo)'],
+      amazonAsin: 'B0D7HVN3V8',
+      amazonUrl: 'https://www.amazon.in/s?k=CMF+Phone+1+5G&tag=uniquedigi0c6-21',
+      highlight: "India's cleanest 5G phone under ₹15,000 with zero spam ads."
+    },
+    {
+      id: 'nord-ce4',
+      name: 'OnePlus Nord CE4 5G',
+      tagline: '100W SuperVOOC Flash Charge & Snapdragon 7 Gen 3 Powerhouse',
+      category: 'under25k',
+      price: '₹22,999',
+      mrp: '₹24,999',
+      discount: '8% OFF',
+      verdictBadge: '⚡ BEST MID-RANGE ALL-ROUNDER',
+      badgeColor: 'bg-blue-600 text-white',
+      image: 'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
+      processor: 'Qualcomm Snapdragon 7 Gen 3 (4nm)',
+      display: '6.7" 120Hz Fluid AMOLED, HDR10+',
+      camera: '50MP Sony LYT-600 with OIS + 8MP Ultrawide',
+      battery: '5500mAh Monster • 100W Charging (100% in 29m)',
+      antutu: '820,000+ Score',
+      pros: ['Insane 100W Fast Charging included in box', 'Massive 5500mAh Battery (2 Days)', 'OIS Sony LYT Camera produces crisp shots'],
+      cons: ['Plastic Frame Design', 'No Alert Slider'],
+      amazonAsin: 'B0CX21C8S2',
+      amazonUrl: 'https://www.amazon.in/s?k=OnePlus+Nord+CE4+5G&tag=uniquedigi0c6-21',
+      highlight: 'The ultimate daily driver under ₹25k: charges 1-100% in under 30 minutes.'
+    },
+    {
+      id: 'iqoo-z9x',
+      name: 'iQOO Z9x 5G',
+      tagline: '6000mAh Ultra Battery & Slimmest Design under ₹13,000',
+      category: 'under15k',
+      price: '₹12,499',
+      mrp: '₹17,999',
+      discount: '31% OFF',
+      verdictBadge: '🔋 2-DAY BATTERY CHAMPION',
+      badgeColor: 'bg-amber-400 text-slate-950',
+      image: 'https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg',
+      processor: 'Snapdragon 6 Gen 1 (4nm)',
+      display: '6.72" 120Hz Ultra Bright Display (1000 nits)',
+      camera: '50MP AI Dual Camera + 8MP Selfie',
+      battery: '6000mAh Gigantic Battery • 44W FlashCharge',
+      antutu: '560,000+ Score',
+      pros: ['Huge 6000mAh Battery yet only 7.99mm thin', 'Dual Stereo Speakers with 300% Audio Booster', 'IP64 Dust & Water Splash Resistance'],
+      cons: ['LCD Screen instead of AMOLED', 'Funtouch OS has pre-installed apps'],
+      amazonAsin: 'B0CZDNKCS2',
+      amazonUrl: 'https://www.amazon.in/s?k=iQOO+Z9x+5G&tag=uniquedigi0c6-21',
+      highlight: 'Perfect for students, delivery executives and travellers needing 2-day battery life.'
+    },
+    {
+      id: 'poco-m6-5g',
+      name: 'POCO M6 5G',
+      tagline: 'Most Affordable 5G Smartphone in India with Dimensity 6100+',
+      category: 'under10k',
+      price: '₹8,999',
+      mrp: '₹13,999',
+      discount: '36% OFF',
+      verdictBadge: '💰 BEST 5G UNDER ₹10,000',
+      badgeColor: 'bg-emerald-600 text-white',
+      image: 'https://m.media-amazon.com/images/I/71jG+e7roXL._SL1500_.jpg',
+      processor: 'MediaTek Dimensity 6100+ 5G (6nm)',
+      display: '6.74" 90Hz HD+ Corning Gorilla Glass 3',
+      camera: '50MP AI Dual Camera with Night Mode',
+      battery: '5000mAh • 18W Fast Charging Support',
+      antutu: '410,000+ Score',
+      pros: ['True 5G bands support under ₹9k', 'Smooth 90Hz Gorilla Glass Display', 'Premium Sky Glass design look'],
+      cons: ['HD+ resolution (Not FHD+)', '10W slow charger in box'],
+      amazonAsin: 'B0CQGBG21Y',
+      amazonUrl: 'https://www.amazon.in/s?k=POCO+M6+5G&tag=uniquedigi0c6-21',
+      highlight: 'Lowest price entry into 5G in India. Tested with Airtel & Jio True 5G.'
+    },
+    {
+      id: 'oneplus-12r',
+      name: 'OnePlus 12R 5G (Flagship Killer)',
+      tagline: 'Snapdragon 8 Gen 2, 4th Gen LTPO AMOLED & 5500mAh 100W Monster',
+      category: 'under40k',
+      price: '₹37,999',
+      mrp: '₹42,999',
+      discount: '12% OFF',
+      verdictBadge: '🎮 PERFORMANCE & BGMI KING',
+      badgeColor: 'bg-purple-600 text-white',
+      image: 'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg',
+      processor: 'Snapdragon 8 Gen 2 (4nm) Flagship SoC',
+      display: '6.78" 1.5K 120Hz ProXDR LTPO4 AMOLED (4500 nits)',
+      camera: '50MP Sony IMX890 OIS Flagship Sensor + 4K 60fps',
+      battery: '5500mAh • 100W SuperVOOC (Charger included)',
+      antutu: '1,500,000+ Score',
+      pros: ['Flagship 8 Gen 2 handles 90fps BGMI flawlessly', 'Best-in-class 4500 nits LTPO4 display', 'Premium Aluminum Frame + Gorilla Glass Victus 2'],
+      cons: ['8MP Ultrawide is average', 'No Wireless Charging'],
+      amazonAsin: 'B0CQPV3M4R',
+      amazonUrl: 'https://www.amazon.in/s?k=OnePlus+12R+5G&tag=uniquedigi0c6-21',
+      highlight: 'Matches 90% of ₹70,000 flagships at half the price. The #1 recommendation under ₹40k.'
+    },
+    {
+      id: 'iphone-16',
+      name: 'Apple iPhone 16 (128GB)',
+      tagline: 'A18 Pro Bionic, Camera Control Button & Apple Intelligence Ready',
+      category: 'flagship',
+      price: '₹75,900',
+      mrp: '₹79,900',
+      discount: '5% OFF',
+      verdictBadge: '👑 BEST COMPACT FLAGSHIP',
+      badgeColor: 'bg-slate-900 text-white',
+      image: 'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
+      processor: 'Apple A18 Bionic (3nm Next-Gen)',
+      display: '6.1" Super Retina XDR OLED, 2000 nits Outdoor',
+      camera: '48MP Fusion Camera + 2x Telephoto + 12MP Macro',
+      battery: 'All-Day Battery Life • USB-C 30W Fast Charge',
+      antutu: '1,750,000+ Score',
+      pros: ['Dedicated Touch-Sensitive Camera Control Button', 'Next-Gen Apple Intelligence with Action Button', 'Industry best 4K Dolby Vision Video recording'],
+      cons: ['Still 60Hz Display (Not 120Hz ProMotion)', '20W charging is slower than Android flagships'],
+      amazonAsin: 'B0DGJ9M8V2',
+      amazonUrl: 'https://www.amazon.in/s?k=iPhone+16&tag=uniquedigi0c6-21',
+      highlight: 'The most refined iPhone for photography, reels creators, and long-term 5-year reliability.'
+    }
+  ];
+}
+
+/** 15. PC Builds Hub Models & Dynamic Fetchers */
+export interface PcBuildItem {
+  slug: string;
+  title: string;
+  price: string;
+  badge: string;
+  badgeColor: string;
+  specs: string;
+  fps: string;
+  tag: string;
+}
+
+export interface PcBuildDetail {
+  slug: string;
+  title: string;
+  tagline: string;
+  budget: string;
+  badge: string;
+  badgeColor: string;
+  cpu: string;
+  cpuAsin: string;
+  gpu: string;
+  gpuAsin: string;
+  mobo: string;
+  moboAsin: string;
+  ram: string;
+  ramAsin: string;
+  ssd: string;
+  ssdAsin: string;
+  psuCase: string;
+  psuAsin: string;
+  gtaFps: string;
+  valFps: string;
+  cpFps: string;
+  bgmiFps: string;
+  wattage: string;
+  ups: string;
+  asins: string[];
+}
+
+const PC_BUILDS_MAP: Record<string, PcBuildDetail> = {
+  'student-35000': {
+    slug: 'student-35000',
+    title: 'Best Gaming PC Build Under ₹35,000 in India (2026)',
+    tagline: 'Student Budget & Esports King (GTA 5, Valorant, BGMI, Coding)',
+    budget: '₹34,890',
+    badge: 'STUDENT BUDGET',
+    badgeColor: 'bg-emerald-500 text-white',
+    cpu: 'AMD Ryzen 5 5600 (6-Core, 12-Thread, 4.4GHz)',
+    cpuAsin: 'B09VCHR1VH',
+    gpu: 'ZOTAC GeForce GTX 1650 4GB GDDR6',
+    gpuAsin: 'B07ZKSZ5MV',
+    mobo: 'MSI B550M PRO-VDH WiFi (AM4)',
+    moboAsin: 'B08BCR4Z9P',
+    ram: 'Corsair Vengeance LPX 16GB (8GBx2) DDR4 3200MHz',
+    ramAsin: 'B0143UM4TC',
+    ssd: 'Crucial P3 500GB NVMe PCIe 3.0 M.2 SSD',
+    ssdAsin: 'B0B25L3P3T',
+    psuCase: 'Ant Esports ICE-112 Mid-Tower + 550W PSU Combo',
+    psuAsin: 'B097Z77M1T',
+    gtaFps: '95 FPS',
+    valFps: '280 FPS',
+    cpFps: '55 FPS',
+    bgmiFps: '140 FPS',
+    wattage: '320W',
+    ups: '600VA / 360W',
+    asins: ['B09VCHR1VH', 'B07ZKSZ5MV', 'B08BCR4Z9P', 'B0143UM4TC', 'B0B25L3P3T', 'B097Z77M1T']
+  },
+  'budget-gaming-50000': {
+    slug: 'budget-gaming-50000',
+    title: 'Best Gaming PC Build Under ₹50,000 with RTX 4060 in India',
+    tagline: '1080p Ultra Gaming & Ray Tracing Beast with DLSS 3',
+    budget: '₹54,980',
+    badge: 'VALUE GAMING KING',
+    badgeColor: 'bg-amber-400 text-slate-950',
+    cpu: 'AMD Ryzen 5 5600 (6-Core, 12-Thread, 4.4GHz)',
+    cpuAsin: 'B09VCHR1VH',
+    gpu: 'Gigabyte GeForce RTX 4060 Eagle OC 8GB GDDR6',
+    gpuAsin: 'B0C8JZKV6T',
+    mobo: 'MSI B550M PRO-VDH WiFi (AM4)',
+    moboAsin: 'B08BCR4Z9P',
+    ram: 'Corsair Vengeance LPX 16GB (8GBx2) DDR4 3200MHz',
+    ramAsin: 'B0143UM4TC',
+    ssd: 'WD Blue SN580 1TB NVMe PCIe Gen 4x4 SSD (4150 MB/s)',
+    ssdAsin: 'B0C8XMH264',
+    psuCase: 'Ant Esports ICE-112 Mid-Tower + 550W PSU Combo',
+    psuAsin: 'B097Z77M1T',
+    gtaFps: '125 FPS',
+    valFps: '380 FPS',
+    cpFps: '78 FPS',
+    bgmiFps: '180 FPS',
+    wattage: '410W',
+    ups: '600VA / 360W',
+    asins: ['B09VCHR1VH', 'B0C8JZKV6T', 'B08BCR4Z9P', 'B0143UM4TC', 'B0C8XMH264', 'B097Z77M1T']
+  },
+  'editing-workstation-85000': {
+    slug: 'editing-workstation-85000',
+    title: 'Video Editing & 3D Render Workstation PC Under ₹85,000 (India)',
+    tagline: 'Intel 13th Gen + 32GB DDR5 (Premiere Pro, DaVinci, Blender, After Effects)',
+    budget: '₹84,970',
+    badge: 'CREATOR WORKSTATION',
+    badgeColor: 'bg-blue-600 text-white',
+    cpu: 'Intel Core i5-13400F (10 Cores, 16 Threads, 4.6GHz)',
+    cpuAsin: 'B0BN5ZW62Z',
+    gpu: 'Gigabyte GeForce RTX 4060 8GB GDDR6 (CUDA & NVENC)',
+    gpuAsin: 'B0C8JZKV6T',
+    mobo: 'MSI PRO B760M-P DDR5 Motherboard (LGA1700)',
+    moboAsin: 'B0BNP5C9XW',
+    ram: 'Corsair Vengeance RGB 32GB (16GBx2) DDR5 6000MHz',
+    ramAsin: 'B0BPTKD797',
+    ssd: 'WD Blue SN580 1TB NVMe Gen4 (4150 MB/s Read)',
+    ssdAsin: 'B0C8XMH264',
+    psuCase: 'Deepcool CC560 V2 ARGB + Deepcool PK650D 650W Bronze',
+    psuAsin: 'B09NLH6V32',
+    gtaFps: '135 FPS',
+    valFps: '420 FPS',
+    cpFps: '82 FPS',
+    bgmiFps: '190 FPS',
+    wattage: '460W',
+    ups: '1100VA / 660W',
+    asins: ['B0BN5ZW62Z', 'B0C8JZKV6T', 'B0BNP5C9XW', 'B0BPTKD797', 'B0C8XMH264', 'B09NLH6V32']
+  },
+  '4k-gaming-120000': {
+    slug: '4k-gaming-120000',
+    title: 'High-End 4K Gaming PC Build Under ₹1.2 Lakh (India 2026)',
+    tagline: 'Ryzen 7 7800X3D + RTX 4070 Super (4K 120Hz Ultra Gaming)',
+    budget: '₹1,24,960',
+    badge: '4K ULTRA BEAST',
+    badgeColor: 'bg-purple-600 text-white',
+    cpu: 'AMD Ryzen 7 7800X3D (World #1 3D V-Cache Gaming CPU)',
+    cpuAsin: 'B0BTZB7F88',
+    gpu: 'Gigabyte GeForce RTX 4070 Super 12GB OC GDDR6X',
+    gpuAsin: 'B0CS9K4X6K',
+    mobo: 'Gigabyte B650M Gaming WiFi (AM5 / DDR5)',
+    moboAsin: 'B0C9J7V2T4',
+    ram: 'Corsair Vengeance RGB 32GB (16GBx2) DDR5 6000MHz',
+    ramAsin: 'B0BPTKD797',
+    ssd: 'Samsung 990 PRO 1TB PCIe 4.0 M.2 NVMe (7450 MB/s)',
+    ssdAsin: 'B0B9C3Z31R',
+    psuCase: 'Corsair 4000D Airflow + Corsair RM750e 750W Gold Modular',
+    psuAsin: 'B08C7BGV3D',
+    gtaFps: '175 FPS',
+    valFps: '580 FPS',
+    cpFps: '120 FPS',
+    bgmiFps: '240 FPS',
+    wattage: '540W',
+    ups: '1100VA / 660W',
+    asins: ['B0BTZB7F88', 'B0CS9K4X6K', 'B0C9J7V2T4', 'B0BPTKD797', 'B0B9C3Z31R', 'B08C7BGV3D']
+  },
+  'rgb-dream-150000': {
+    slug: 'rgb-dream-150000',
+    title: 'Ultimate ARGB Dream Gaming Rig Under ₹1.5 Lakh (India)',
+    tagline: 'Full Liquid Cooling AIO, 6x ARGB Sync, RTX 4070 Super, 32GB DDR5',
+    budget: '₹1,48,900',
+    badge: 'ULTIMATE RGB DREAM',
+    badgeColor: 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white',
+    cpu: 'AMD Ryzen 7 7800X3D (World #1 3D V-Cache Gaming)',
+    cpuAsin: 'B0BTZB7F88',
+    gpu: 'Gigabyte GeForce RTX 4070 Super 12GB OC GDDR6X',
+    gpuAsin: 'B0CS9K4X6K',
+    mobo: 'Gigabyte B650M Gaming WiFi (AM5 / DDR5)',
+    moboAsin: 'B0C9J7V2T4',
+    ram: 'Corsair Vengeance RGB 32GB (16GBx2) DDR5 6000MHz',
+    ramAsin: 'B0BPTKD797',
+    ssd: 'Samsung 990 PRO 1TB PCIe 4.0 M.2 SSD (7450 MB/s)',
+    ssdAsin: 'B0B9C3Z31R',
+    psuCase: 'Corsair 4000D Airflow Tempered Glass + 750W Gold PSU',
+    psuAsin: 'B08C7BGV3D',
+    gtaFps: '185 FPS',
+    valFps: '600 FPS',
+    cpFps: '125 FPS',
+    bgmiFps: '240 FPS',
+    wattage: '560W',
+    ups: '1100VA / 660W',
+    asins: ['B0BTZB7F88', 'B0CS9K4X6K', 'B0C9J7V2T4', 'B0BPTKD797', 'B0B9C3Z31R', 'B08C7BGV3D']
+  }
+};
+
+export async function getPcBuilds(runtimeEnv?: any): Promise<PcBuildItem[]> {
+  return [
+    {
+      slug: 'student-35000',
+      title: 'Student Budget Gaming PC',
+      price: '₹34,890',
+      badge: 'STUDENT BUDGET',
+      badgeColor: 'bg-emerald-500 text-white',
+      specs: 'AMD Ryzen 5 5600 • GTX 1650 • 16GB RAM • 500GB SSD',
+      fps: 'GTA 5: 95 FPS | Val: 280 FPS',
+      tag: 'Best for Coding, Esports & School Work'
+    },
+    {
+      slug: 'budget-gaming-50000',
+      title: 'Value King 1080p Ultra Gaming Rig',
+      price: '₹54,980',
+      badge: 'VALUE GAMING KING',
+      badgeColor: 'bg-amber-400 text-slate-950',
+      specs: 'Ryzen 5 5600 • RTX 4060 8GB • 16GB RAM • 1TB NVMe',
+      fps: 'GTA 5: 125 FPS | Val: 380 FPS | Cyberpunk: 78 FPS',
+      tag: 'DLSS 3 & Ray Tracing King under ₹55k'
+    },
+    {
+      slug: 'editing-workstation-85000',
+      title: 'Video Editing & 3D Render Workstation',
+      price: '₹84,970',
+      badge: 'CREATOR WORKSTATION',
+      badgeColor: 'bg-blue-600 text-white',
+      specs: 'Intel Core i5-13400F 10-Core • RTX 4060 • 32GB DDR5 • 1TB Gen4',
+      fps: '4K Video Editing • Premiere Pro & DaVinci Ready',
+      tag: '32GB High-Speed DDR5 Memory'
+    },
+    {
+      slug: '4k-gaming-120000',
+      title: 'High-End 4K Esports & Creator Beast',
+      price: '₹1,24,960',
+      badge: '4K ULTRA BEAST',
+      badgeColor: 'bg-purple-600 text-white',
+      specs: 'Ryzen 7 7800X3D (3D V-Cache) • RTX 4070 Super 12GB • 32GB DDR5',
+      fps: '4K 120 FPS Ultra Gaming & Streamer Rig',
+      tag: 'World #1 Gaming CPU (7800X3D)'
+    },
+    {
+      slug: 'rgb-dream-150000',
+      title: 'Ultimate ARGB Dream Showcase Rig',
+      price: '₹1,48,900',
+      badge: 'ULTIMATE RGB DREAM',
+      badgeColor: 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white',
+      specs: 'Ryzen 7 7800X3D • RTX 4070 Super • Corsair 4000D • 750W Gold',
+      fps: '6x ARGB Aura Sync • 4K Max Settings 144Hz',
+      tag: 'Full Tempered Glass & Liquid AIO'
+    }
+  ];
+}
+
+export async function getPcBuildBySlug(slug: string, runtimeEnv?: any): Promise<PcBuildDetail | null> {
+  const target = PC_BUILDS_MAP[slug] || PC_BUILDS_MAP['budget-gaming-50000'];
+  return target || null;
+}
+

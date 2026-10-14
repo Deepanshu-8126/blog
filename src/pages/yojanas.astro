@@ -6,6 +6,7 @@ import { getYojanas, type YojanaItem } from '../lib/db';
 
 const runtime = (Astro.locals as any)?.runtime;
 const YOJANAS: YojanaItem[] = await getYojanas(runtime?.env);
+const siteOrigin = Astro.url.origin;
 
 
 // Schema for Google Featured Snippets
@@ -235,7 +236,7 @@ const yojanasSchema = {
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
             <a
-              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🏛️ *${yojana.name} (${yojana.nameHindi})*\n\n💰 *लाभ:* ${yojana.benefit}\n📋 *पात्रता व आवेदन प्रक्रिया:* पूरी जानकारी और डायरेक्ट लिंक यहां देखें:\nhttps://uniquedigit-viral-hub.pages.dev/yojanas#${yojana.id}`)}`}
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🏛️ *${yojana.name} (${yojana.nameHindi})*\n\n💰 *लाभ:* ${yojana.benefit}\n📋 *पात्रता व आवेदन प्रक्रिया:* पूरी जानकारी और डायरेक्ट लिंक यहां देखें:\n${siteOrigin}/yojanas#${yojana.id}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               class="px-4 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 active:scale-98 text-white font-bold text-xs flex items-center gap-1.5 transition shrink-0 shadow-md"

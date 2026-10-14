@@ -10,6 +10,7 @@ const jsonLd = {
   "operatingSystem": "All",
   "description": "Free interactive financial calculators for Indian investors: SIP Wealth Compounding, FY 2026-27 Income Tax Old vs New Regime comparison, and 24K Gold Growth Estimator."
 };
+const siteOrigin = Astro.url.origin;
 ---
 
 <Layout
@@ -64,7 +65,7 @@ const jsonLd = {
         <!-- 1-Tap WhatsApp Share Banner -->
         <div class="mt-8 flex flex-wrap items-center gap-3">
           <a
-            href="https://api.whatsapp.com/send?text=%F0%9F%92%B0%20Apna%20SIP%20Compounding%20%26%20Tax%20Savings%20calculate%20karo%20free%20me:%20https://uniquedigit-viral-hub.pages.dev/calculators"
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`💰 Apna SIP Compounding, Income Tax & Solar Subsidy calculate karo free me: ${siteOrigin}/calculators`)}`}
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-lg transition"

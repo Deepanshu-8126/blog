@@ -48,27 +48,14 @@ if (Astro.request.method === 'POST') {
 const niches = await getNiches(runtime?.env);
 const board = await getBoard(runtime?.env);
 
-// Sample review queue drafts for sensitive niches (Health, Finance)
-const DRAFT_QUEUE = [
-  {
-    id: 'dr1',
-    title: 'Ashwagandha Dosage & Liver Safety Study 2026',
-    niche: 'Health',
-    category: 'Wellness',
-    reason: 'YMYL Sensitive category requires human verification',
-    created_at: '2026-10-09T06:30:00Z',
-    status: 'pending_review'
-  },
-  {
-    id: 'dr2',
-    title: 'SEBI Clarification on Algo Trading Apps for Retail Users',
-    niche: 'Money',
-    category: 'Finance',
-    reason: 'Financial advice regulation check required',
-    created_at: '2026-10-09T07:15:00Z',
-    status: 'pending_review'
-  }
-];
+let DRAFT_QUEUE: any[] = [];
+const dbInstance = runtime?.env?.DB;
+if (dbInstance) {
+  try {
+    const drafts = await dbInstance.prepare('SELECT id, title, niche_id as niche, "Sensitive review checkpoint" as reason, created_at, status FROM posts WHERE status = "draft" LIMIT 10').all();
+    DRAFT_QUEUE = drafts.results || [];
+  } catch {}
+}
 
 const SOURCES = [
   { key: 'gtrends', label: 'Google Trends India RSS', weight: 0.30, interval: '15m', enabled: true },
@@ -135,28 +122,34 @@ const SOURCES = [
           </div>
 
           <div class="flex flex-col gap-3">
-            {DRAFT_QUEUE.map(item => (
-              <div class="p-4 rounded-2xl border border-slate-800 bg-slate-950/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
-                      {item.niche}
-                    </span>
-                    <span class="text-[11px] text-amber-400 font-medium">{item.reason}</span>
-                  </div>
-                  <h4 class="font-bold text-ink text-sm">{item.title}</h4>
-                </div>
-
-                <div class="flex items-center gap-2 flex-shrink-0">
-                  <button class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold transition">
-                    Approve
-                  </button>
-                  <button class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold transition">
-                    Reject
-                  </button>
-                </div>
+            {DRAFT_QUEUE.length === 0 ? (
+              <div class="p-6 rounded-2xl bg-slate-950/40 border border-slate-800 text-center text-xs text-slate-400">
+                ✓ Review queue is completely clear. No sensitive drafts pending manual check.
               </div>
-            ))}
+            ) : (
+              DRAFT_QUEUE.map(item => (
+                <div class="p-4 rounded-2xl border border-slate-800 bg-slate-950/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
+                        {item.niche}
+                      </span>
+                      <span class="text-[11px] text-amber-400 font-medium">{item.reason}</span>
+                    </div>
+                    <h4 class="font-bold text-ink text-sm">{item.title}</h4>
+                  </div>
+
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <button class="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold transition">
+                      Approve
+                    </button>
+                    <button class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-400 text-xs font-bold transition">
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

@@ -2,58 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 import Icon from '../../components/Icon.astro';
 
-const BUILDS = [
-  {
-    slug: 'student-35000',
-    title: 'Student Budget Gaming PC',
-    price: '₹34,890',
-    badge: 'STUDENT BUDGET',
-    badgeColor: 'bg-emerald-500 text-white',
-    specs: 'AMD Ryzen 5 5600 • GTX 1650 • 16GB RAM • 500GB SSD',
-    fps: 'GTA 5: 95 FPS | Val: 280 FPS',
-    tag: 'Best for Coding, Esports & School Work'
-  },
-  {
-    slug: 'budget-gaming-50000',
-    title: 'Value King 1080p Ultra Gaming Rig',
-    price: '₹54,980',
-    badge: 'VALUE GAMING KING',
-    badgeColor: 'bg-amber-400 text-slate-950',
-    specs: 'Ryzen 5 5600 • RTX 4060 8GB • 16GB RAM • 1TB NVMe',
-    fps: 'GTA 5: 125 FPS | Val: 380 FPS | Cyberpunk: 78 FPS',
-    tag: 'DLSS 3 & Ray Tracing King under ₹55k'
-  },
-  {
-    slug: 'editing-workstation-85000',
-    title: 'Video Editing & 3D Render Workstation',
-    price: '₹84,970',
-    badge: 'CREATOR WORKSTATION',
-    badgeColor: 'bg-blue-600 text-white',
-    specs: 'Intel Core i5-13400F 10-Core • RTX 4060 • 32GB DDR5 • 1TB Gen4',
-    fps: '4K Video Editing • Premiere Pro & DaVinci Ready',
-    tag: '32GB High-Speed DDR5 Memory'
-  },
-  {
-    slug: '4k-gaming-120000',
-    title: 'High-End 4K Esports & Creator Beast',
-    price: '₹1,24,960',
-    badge: '4K ULTRA BEAST',
-    badgeColor: 'bg-purple-600 text-white',
-    specs: 'Ryzen 7 7800X3D (3D V-Cache) • RTX 4070 Super 12GB • 32GB DDR5',
-    fps: '4K 120 FPS Ultra Gaming & Streamer Rig',
-    tag: 'World #1 Gaming CPU (7800X3D)'
-  },
-  {
-    slug: 'rgb-dream-150000',
-    title: 'Ultimate ARGB Dream Showcase Rig',
-    price: '₹1,48,900',
-    badge: 'ULTIMATE RGB DREAM',
-    badgeColor: 'bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 text-white',
-    specs: 'Ryzen 7 7800X3D • RTX 4070 Super • Corsair 4000D • 750W Gold',
-    fps: '6x ARGB Aura Sync • 4K Max Settings 144Hz',
-    tag: 'Full Tempered Glass & Liquid AIO'
-  }
-];
+import { getPcBuilds, type PcBuildItem } from '../../lib/db';
+
+const runtime = (Astro.locals as any)?.runtime;
+const BUILDS: PcBuildItem[] = await getPcBuilds(runtime?.env);
 ---
 
 <Layout

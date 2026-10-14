@@ -2,163 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 
-interface Smartphone {
-  id: string;
-  name: string;
-  tagline: string;
-  category: 'under10k' | 'under15k' | 'under25k' | 'under40k' | 'flagship';
-  price: string;
-  mrp: string;
-  discount: string;
-  verdictBadge: string;
-  badgeColor: string;
-  image: string;
-  processor: string;
-  display: string;
-  camera: string;
-  battery: string;
-  antutu?: string;
-  pros: string[];
-  cons: string[];
-  amazonAsin: string;
-  amazonUrl: string;
-  highlight: string;
-}
+import { getSmartphones, type SmartphoneItem } from '../lib/db';
 
-const SMARTPHONES: Smartphone[] = [
-  {
-    id: 'cmf-phone-1',
-    name: 'CMF Phone 1 by Nothing (5G)',
-    tagline: 'Super Clean Nothing OS, 120Hz Super AMOLED & Modular Design',
-    category: 'under15k',
-    price: '₹14,999',
-    mrp: '₹19,999',
-    discount: '25% OFF',
-    verdictBadge: '🏆 BEST VALUE 5G OVERALL',
-    badgeColor: 'bg-emerald-500 text-white',
-    image: 'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg',
-    processor: 'MediaTek Dimensity 7300 (4nm)',
-    display: '6.67" 120Hz Super AMOLED, 2000 nits Peak',
-    camera: '50MP Sony Main Sensor + 16MP Selfie',
-    battery: '5000mAh • 33W Fast Charging',
-    antutu: '670,000+ Score',
-    pros: ['Zero Bloatware / Clean Nothing OS', 'Brilliant 120Hz Super AMOLED Display', 'Removable Back Cover / Modular Screws'],
-    cons: ['No Charger in Box', 'Single Speaker (No Stereo)'],
-    amazonAsin: 'B0D7HVN3V8',
-    amazonUrl: 'https://www.amazon.in/s?k=CMF+Phone+1+5G&tag=uniquedigi0c6-21',
-    highlight: 'India\'s cleanest 5G phone under ₹15,000 with zero spam ads.'
-  },
-  {
-    id: 'nord-ce4',
-    name: 'OnePlus Nord CE4 5G',
-    tagline: '100W SuperVOOC Flash Charge & Snapdragon 7 Gen 3 Powerhouse',
-    category: 'under25k',
-    price: '₹22,999',
-    mrp: '₹24,999',
-    discount: '8% OFF',
-    verdictBadge: '⚡ BEST MID-RANGE ALL-ROUNDER',
-    badgeColor: 'bg-blue-600 text-white',
-    image: 'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
-    processor: 'Qualcomm Snapdragon 7 Gen 3 (4nm)',
-    display: '6.7" 120Hz Fluid AMOLED, HDR10+',
-    camera: '50MP Sony LYT-600 with OIS + 8MP Ultrawide',
-    battery: '5500mAh Monster • 100W Charging (100% in 29m)',
-    antutu: '820,000+ Score',
-    pros: ['Insane 100W Fast Charging included in box', 'Massive 5500mAh Battery (2 Days)', 'OIS Sony LYT Camera produces crisp shots'],
-    cons: ['Plastic Frame Design', 'No Alert Slider'],
-    amazonAsin: 'B0CX21C8S2',
-    amazonUrl: 'https://www.amazon.in/s?k=OnePlus+Nord+CE4+5G&tag=uniquedigi0c6-21',
-    highlight: 'The ultimate daily driver under ₹25k: charges 1-100% in under 30 minutes.'
-  },
-  {
-    id: 'iqoo-z9x',
-    name: 'iQOO Z9x 5G',
-    tagline: '6000mAh Ultra Battery & Slimmest Design under ₹13,000',
-    category: 'under15k',
-    price: '₹12,499',
-    mrp: '₹17,999',
-    discount: '31% OFF',
-    verdictBadge: '🔋 2-DAY BATTERY CHAMPION',
-    badgeColor: 'bg-amber-400 text-slate-950',
-    image: 'https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg',
-    processor: 'Snapdragon 6 Gen 1 (4nm)',
-    display: '6.72" 120Hz Ultra Bright Display (1000 nits)',
-    camera: '50MP AI Dual Camera + 8MP Selfie',
-    battery: '6000mAh Gigantic Battery • 44W FlashCharge',
-    antutu: '560,000+ Score',
-    pros: ['Huge 6000mAh Battery yet only 7.99mm thin', 'Dual Stereo Speakers with 300% Audio Booster', 'IP64 Dust & Water Splash Resistance'],
-    cons: ['LCD Screen instead of AMOLED', 'Funtouch OS has pre-installed apps'],
-    amazonAsin: 'B0CZDNKCS2',
-    amazonUrl: 'https://www.amazon.in/s?k=iQOO+Z9x+5G&tag=uniquedigi0c6-21',
-    highlight: 'Perfect for students, delivery executives and travellers needing 2-day battery life.'
-  },
-  {
-    id: 'poco-m6-5g',
-    name: 'POCO M6 5G',
-    tagline: 'Most Affordable 5G Smartphone in India with Dimensity 6100+',
-    category: 'under10k',
-    price: '₹8,999',
-    mrp: '₹13,999',
-    discount: '36% OFF',
-    verdictBadge: '💰 BEST 5G UNDER ₹10,000',
-    badgeColor: 'bg-emerald-600 text-white',
-    image: 'https://m.media-amazon.com/images/I/71jG+e7roXL._SL1500_.jpg',
-    processor: 'MediaTek Dimensity 6100+ 5G (6nm)',
-    display: '6.74" 90Hz HD+ Corning Gorilla Glass 3',
-    camera: '50MP AI Dual Camera with Night Mode',
-    battery: '5000mAh • 18W Fast Charging Support',
-    antutu: '410,000+ Score',
-    pros: ['True 5G bands support under ₹9k', 'Smooth 90Hz Gorilla Glass Display', 'Premium Sky Glass design look'],
-    cons: ['HD+ resolution (Not FHD+)', '10W slow charger in box'],
-    amazonAsin: 'B0CQGBG21Y',
-    amazonUrl: 'https://www.amazon.in/s?k=POCO+M6+5G&tag=uniquedigi0c6-21',
-    highlight: 'Lowest price entry into 5G in India. Tested with Airtel & Jio True 5G.'
-  },
-  {
-    id: 'oneplus-12r',
-    name: 'OnePlus 12R 5G (Flagship Killer)',
-    tagline: 'Snapdragon 8 Gen 2, 4th Gen LTPO AMOLED & 5500mAh 100W Monster',
-    category: 'under40k',
-    price: '₹37,999',
-    mrp: '₹42,999',
-    discount: '12% OFF',
-    verdictBadge: '🎮 PERFORMANCE & BGMI KING',
-    badgeColor: 'bg-purple-600 text-white',
-    image: 'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg',
-    processor: 'Snapdragon 8 Gen 2 (4nm) Flagship SoC',
-    display: '6.78" 1.5K 120Hz ProXDR LTPO4 AMOLED (4500 nits)',
-    camera: '50MP Sony IMX890 OIS Flagship Sensor + 4K 60fps',
-    battery: '5500mAh • 100W SuperVOOC (Charger included)',
-    antutu: '1,500,000+ Score',
-    pros: ['Flagship 8 Gen 2 handles 90fps BGMI flawlessly', 'Best-in-class 4500 nits LTPO4 display', 'Premium Aluminum Frame + Gorilla Glass Victus 2'],
-    cons: ['8MP Ultrawide is average', 'No Wireless Charging'],
-    amazonAsin: 'B0CQPV3M4R',
-    amazonUrl: 'https://www.amazon.in/s?k=OnePlus+12R+5G&tag=uniquedigi0c6-21',
-    highlight: 'Matches 90% of ₹70,000 flagships at half the price. The #1 recommendation under ₹40k.'
-  },
-  {
-    id: 'iphone-16',
-    name: 'Apple iPhone 16 (128GB)',
-    tagline: 'A18 Pro Bionic, Camera Control Button & Apple Intelligence Ready',
-    category: 'flagship',
-    price: '₹75,900',
-    mrp: '₹79,900',
-    discount: '5% OFF',
-    verdictBadge: '👑 BEST COMPACT FLAGSHIP',
-    badgeColor: 'bg-slate-900 text-white',
-    image: 'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
-    processor: 'Apple A18 Bionic (3nm Next-Gen)',
-    display: '6.1" Super Retina XDR OLED, 2000 nits Outdoor',
-    camera: '48MP Fusion Camera + 2x Telephoto + 12MP Macro',
-    battery: 'All-Day Battery Life • USB-C 30W Fast Charge',
-    antutu: '1,750,000+ Score',
-    pros: ['Dedicated Touch-Sensitive Camera Control Button', 'Next-Gen Apple Intelligence with Action Button', 'Industry best 4K Dolby Vision Video recording'],
-    cons: ['Still 60Hz Display (Not 120Hz ProMotion)', '20W charging is slower than Android flagships'],
-    amazonAsin: 'B0DGJ9M8V2',
-    amazonUrl: 'https://www.amazon.in/s?k=iPhone+16&tag=uniquedigi0c6-21',
-    highlight: 'The most refined iPhone for photography, reels creators, and long-term 5-year reliability.'
-  }
-];
+const runtime = (Astro.locals as any)?.runtime;
+const SMARTPHONES: SmartphoneItem[] = await getSmartphones(runtime?.env);
+const siteOrigin = Astro.url.origin;
 
 // Product Schema for Google SERP Rich Snippets & Stars
 const jsonLdSchema = {
@@ -183,7 +31,7 @@ const jsonLdSchema = {
         'priceCurrency': 'INR',
         'price': p.price.replace(/[^\d]/g, ''),
         'availability': 'https://schema.org/InStock',
-        'url': `https://uniquedigit-viral-hub.pages.dev/smartphones#${p.id}`
+        'url': `${siteOrigin}/smartphones#${p.id}`
       }
     }
   }))

@@ -6,6 +6,7 @@ import { getCreditCards, type CreditCardItem } from '../lib/db';
 
 const runtime = (Astro.locals as any)?.runtime;
 const CARDS: CreditCardItem[] = await getCreditCards(runtime?.env);
+const siteOrigin = Astro.url.origin;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -166,7 +167,7 @@ const jsonLd = {
                   </a>
 
                   <a
-                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`💳 *${card.name}*\n\n💰 *Cashback Rate:* ${card.cashbackRate}\n🎉 *Annual Fee:* ${card.annualFee}\n\n👉 Free Online Apply Link:\nhttps://uniquedigit-viral-hub.pages.dev/credit-cards#${card.id}`)}`}
+                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`💳 *${card.name}*\n\n💰 *Cashback Rate:* ${card.cashbackRate}\n🎉 *Annual Fee:* ${card.annualFee}\n\n👉 Free Online Apply Link:\n${siteOrigin}/credit-cards#${card.id}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] text-center flex items-center justify-center gap-1 transition"

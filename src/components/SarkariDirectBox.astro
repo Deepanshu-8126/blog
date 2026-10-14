@@ -30,7 +30,7 @@ const AUTHORITIES = [
 
 const matchedAuth = AUTHORITIES.find(a => lowerTitle.includes(a.key)) || {
   name: 'Official Conducting Board',
-  portal: sourceUrl && !sourceUrl.includes('search') ? sourceUrl : 'https://uniquedigit-viral-hub.pages.dev/exams-results/'
+  portal: sourceUrl && !sourceUrl.includes('search') ? sourceUrl : '/exams-results'
 };
 
 const officialLink = (sourceUrl && !sourceUrl.includes('search') && !sourceUrl.includes('google.com/search'))
