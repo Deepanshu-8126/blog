@@ -1,0 +1,320 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+
+interface CreditCard {
+  id: string;
+  name: string;
+  bank: string;
+  badge: string;
+  badgeColor: string;
+  annualFee: string;
+  cashbackRate: string;
+  welcomeOffer: string;
+  keyPerks: string[];
+  bestFor: string;
+  applyUrl: string;
+  rating: string;
+}
+
+const CARDS: CreditCard[] = [
+  {
+    id: 'amazon-pay-icici',
+    name: 'Amazon Pay ICICI Bank Credit Card',
+    bank: 'ICICI Bank',
+    badge: '🏆 #1 BEST LIFETIME FREE CARD',
+    badgeColor: 'bg-emerald-500 text-white',
+    annualFee: '₹0 (Lifetime FREE Forever)',
+    cashbackRate: '5% Unlimited Amazon Cashback',
+    welcomeOffer: '₹1,500 Amazon Pay Reward Balance',
+    keyPerks: [
+      '5% Unlimited Cashback on Amazon (Prime Users)',
+      '3% Unlimited Cashback on Amazon (Non-Prime Users)',
+      '2% Cashback on 100+ Amazon Pay Partner Merchants (Flight, Recharges, Swiggy)',
+      '1% Cashback on all other retail & online spends',
+      'No joining fee, no annual renewal charges ever'
+    ],
+    bestFor: 'Daily Amazon shoppers, utility bill payments & zero annual fee seekers',
+    applyUrl: 'https://www.amazon.in/s?k=amazon+pay+icici+credit+card&tag=uniquedigi0c6-21',
+    rating: '4.9 / 5'
+  },
+  {
+    id: 'swiggy-hdfc',
+    name: 'Swiggy HDFC Bank Credit Card',
+    bank: 'HDFC Bank',
+    badge: '🍔 10% FOOD & GROCERY CASHBACK',
+    badgeColor: 'bg-amber-500 text-slate-950 font-black',
+    annualFee: '₹500 (Waived on ₹2 Lakh Spend)',
+    cashbackRate: '10% Flat Cashback on Swiggy',
+    welcomeOffer: '3 Months Free Swiggy One Membership',
+    keyPerks: [
+      '10% Flat Cashback on Food Delivery, Instamart & Dineout',
+      '5% Cashback on Top E-Commerce (Amazon, Flipkart, Myntra, Uber, Nykaa)',
+      '1% Cashback on all other eligible spends',
+      'Direct monthly statement cashback credit (No reward point hassle)'
+    ],
+    bestFor: 'Foodies, daily Instamart grocery buyers & frequent online shoppers',
+    applyUrl: 'https://www.amazon.in/s?k=hdfc+bank+credit+card&tag=uniquedigi0c6-21',
+    rating: '4.8 / 5'
+  },
+  {
+    id: 'sbi-cashback',
+    name: 'SBI Cashback Credit Card',
+    bank: 'State Bank of India',
+    badge: '⚡ 5% FLAT ONLINE SHOPPING',
+    badgeColor: 'bg-indigo-600 text-white',
+    annualFee: '₹999 (Waived on ₹2 Lakh Spend)',
+    cashbackRate: '5% Flat Online Cashback Across All Sites',
+    welcomeOffer: 'Direct Auto-Credit in Monthly Statement',
+    keyPerks: [
+      '5% Cashback on almost all online platforms (No merchant tie-up needed)',
+      '1% Cashback on all offline retail spends',
+      'No complex point conversion — cashback direct bill me minus hota hai',
+      'Maximum cashback cap ₹5,000 per billing cycle'
+    ],
+    bestFor: 'Unfiltered online shopping across multiple websites & travel portals',
+    applyUrl: 'https://www.amazon.in/s?k=sbi+credit+card&tag=uniquedigi0c6-21',
+    rating: '4.9 / 5'
+  },
+  {
+    id: 'airtel-axis',
+    name: 'Airtel Axis Bank Credit Card',
+    bank: 'Axis Bank',
+    badge: '📱 25% BILL PAYMENT CASHBACK',
+    badgeColor: 'bg-rose-600 text-white',
+    annualFee: '₹500 (Waived on ₹2 Lakh Spend)',
+    cashbackRate: '25% on Airtel Recharge & Broadband',
+    welcomeOffer: '₹500 Amazon e-Voucher on 1st Transaction',
+    keyPerks: [
+      '25% Cashback on Airtel Mobile, Wi-Fi & DTH Recharges via Airtel Thanks app',
+      '10% Cashback on Utility Bills (Electricity, Gas, Water)',
+      '10% Cashback on Swiggy, Zomato & BigBasket',
+      '1% Cashback on all other retail transactions'
+    ],
+    bestFor: 'Households with monthly broadband, electricity bills & recharges',
+    applyUrl: 'https://www.amazon.in/s?k=axis+bank+credit+card&tag=uniquedigi0c6-21',
+    rating: '4.8 / 5'
+  },
+  {
+    id: 'kotak-811',
+    name: 'Kotak 811 Zero-Balance Digital Savings Account',
+    bank: 'Kotak Mahindra Bank',
+    badge: '🏦 100% ZERO BALANCE ACCOUNT',
+    badgeColor: 'bg-cyan-600 text-white',
+    annualFee: '₹0 / Lifetime Free',
+    cashbackRate: 'Up to 4% p.a. Savings Interest',
+    welcomeOffer: 'Free Virtual Visa Platinum Debit Card',
+    keyPerks: [
+      'Zero minimum balance maintenance required (Koi penalty nahi)',
+      '5-minute instant account opening via Video KYC from home',
+      'Instant Virtual Debit Card for online shopping & UPI payments',
+      'Free NEFT & IMPS fund transfers via Kotak Mobile Banking app'
+    ],
+    bestFor: 'College students, freelancers & emergency zero-balance bank account',
+    applyUrl: 'https://www.amazon.in/s?k=kotak+811&tag=uniquedigi0c6-21',
+    rating: '4.7 / 5'
+  }
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Best Lifetime Free Cashback Credit Cards in India (2026)",
+  "description": "Unbiased comparison of the top 5 lifetime free and maximum cashback credit cards in India with zero annual fee and highest welcome rewards.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "UniqueDigit"
+  }
+};
+---
+
+<Layout
+  title="Best Lifetime Free Cashback Credit Cards in India 2026 — Zero Fee & Top Rewards"
+  description="Compare India's top 5 lifetime free cashback credit cards with zero annual fees. Save up to 10% on Amazon, Swiggy, recharges, and online shopping."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <main class="min-h-screen bg-slate-50 text-ink pb-20">
+
+    <!-- Header Section -->
+    <section class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.2),transparent_50%)] pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-indigo-500 text-white shadow-lg">
+            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            FINANCE &amp; REWARDS RADAR 2026
+          </span>
+          <span class="text-xs text-indigo-200 font-medium">RBI Regulated Bank Partners</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white max-w-4xl leading-tight">
+          Best Cashback &amp; Lifetime Free <br />
+          <span class="bg-gradient-to-r from-amber-300 via-emerald-300 to-cyan-300 bg-clip-text text-transparent">
+            Credit Cards in India (2026)
+          </span>
+        </h1>
+
+        <p class="mt-4 text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+          Bina kisi chhupe hue charge ke India ke top 5 credit cards ki tulna karein. Har shopping, food order aur utility bill par 5% se 10% direct cashback prapt karein.
+        </p>
+
+        <!-- Trust Badges Strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 max-w-3xl text-xs font-mono">
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3">
+            <span class="text-amber-400 font-bold block">✓ LIFETIME FREE</span>
+            <span class="text-slate-300">₹0 Joining &amp; Renewal</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3">
+            <span class="text-emerald-400 font-bold block">⚡ 10% CASHBACK</span>
+            <span class="text-slate-300">Swiggy, Amazon &amp; Bills</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3">
+            <span class="text-cyan-400 font-bold block">🛡️ DIRECT CREDIT</span>
+            <span class="text-slate-300">Auto Bill Statement Minus</span>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-3">
+            <span class="text-indigo-400 font-bold block">📱 100% ONLINE</span>
+            <span class="text-slate-300">Zero Paperwork Video KYC</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cards List Grid -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+      <div class="flex items-center justify-between mb-8 pb-4 border-b border-line">
+        <div>
+          <h2 class="text-2xl font-black text-ink">Top 5 Verified Credit Cards</h2>
+          <p class="text-xs text-muted mt-0.5">Eligibility, annual fees, and direct online application links</p>
+        </div>
+        <span class="text-xs font-bold font-mono px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+          Updated: October 2026
+        </span>
+      </div>
+
+      <div class="space-y-8">
+        {CARDS.map((card, idx) => (
+          <div 
+            id={card.id}
+            class="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all duration-300 p-6 sm:p-8 relative overflow-hidden"
+          >
+            <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+              
+              <!-- Card Meta & Details -->
+              <div class="flex-1 space-y-4">
+                
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <span class={`px-3 py-1 rounded-full text-xs font-black ${card.badgeColor}`}>
+                    {card.badge}
+                  </span>
+                  <span class="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                    {card.bank}
+                  </span>
+                  <span class="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
+                    ★ {card.rating}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 class="text-xl sm:text-2xl font-black text-ink">{card.name}</h3>
+                  <p class="text-xs text-emerald-700 font-bold mt-1">
+                    🎯 Best For: {card.bestFor}
+                  </p>
+                </div>
+
+                <!-- Snapshot Metric Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs">
+                  <div>
+                    <span class="text-slate-400 font-mono block">Annual Fee:</span>
+                    <strong class="text-ink font-bold">{card.annualFee}</strong>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 font-mono block">Top Cashback Rate:</span>
+                    <strong class="text-emerald-700 font-bold">{card.cashbackRate}</strong>
+                  </div>
+                  <div>
+                    <span class="text-slate-400 font-mono block">Welcome Reward:</span>
+                    <strong class="text-amber-700 font-bold">{card.welcomeOffer}</strong>
+                  </div>
+                </div>
+
+                <!-- Key Perks Checklist -->
+                <div>
+                  <span class="text-xs font-bold text-slate-700 block mb-2">मुख्य फायदे (Key Benefits &amp; Features):</span>
+                  <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
+                    {card.keyPerks.map(perk => (
+                      <li class="flex items-start gap-2">
+                        <span class="text-emerald-600 font-bold shrink-0">✓</span>
+                        <span>{perk}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+              </div>
+
+              <!-- Action Column (Right Side) -->
+              <div class="lg:w-64 shrink-0 flex flex-col justify-between p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-950 text-white border border-indigo-500/20 shadow-md space-y-4">
+                <div>
+                  <span class="text-[10px] font-mono text-indigo-300 uppercase tracking-wider block">Verified Application</span>
+                  <div class="text-lg font-black text-white mt-1">100% Free Online</div>
+                  <p class="text-[11px] text-slate-300 mt-1">Approval in 5 Minutes via Video KYC</p>
+                </div>
+
+                <div class="space-y-2 pt-2">
+                  <a
+                    href={card.applyUrl}
+                    target="_blank"
+                    rel="sponsored nofollow noopener"
+                    class="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-slate-950 font-black text-xs text-center flex items-center justify-center gap-1.5 transition shadow-lg shadow-emerald-500/20 cursor-pointer"
+                  >
+                    <span>Check Free Eligibility</span>
+                    <Icon name="arrow-right" class="w-3.5 h-3.5" />
+                  </a>
+
+                  <a
+                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`💳 *${card.name}*\n\n💰 *Cashback Rate:* ${card.cashbackRate}\n🎉 *Annual Fee:* ${card.annualFee}\n\n👉 Free Online Apply Link:\nhttps://uniquedigit-viral-hub.pages.dev/credit-cards#${card.id}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] text-center flex items-center justify-center gap-1 transition"
+                  >
+                    <span>📲 Share on WhatsApp</span>
+                  </a>
+                </div>
+
+                <span class="text-[9px] text-center text-slate-400 block font-mono">
+                  Official Bank Partner Link
+                </span>
+              </div>
+
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-10 border-t border-line">
+      <h2 class="text-xl sm:text-2xl font-black text-ink mb-6">Frequently Asked Questions (Credit Cards)</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">Can I get a credit card without income proof (salary slip)?</h3>
+          <p class="text-muted">
+            Yes. Cards like <strong>Amazon Pay ICICI</strong> often get pre-approved for regular Amazon shoppers without physical salary slips. Alternatively, you can opt for a secured credit card backed by a Fixed Deposit (FD) to build credit score.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-line">
+          <h3 class="text-sm font-bold text-ink mb-2">What is the minimum CIBIL score required for approval?</h3>
+          <p class="text-muted">
+            A CIBIL credit score of <strong>750 or higher</strong> ensures instant approval with maximum credit limit. Scores between 700 and 750 may require additional manual verification.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</Layout>

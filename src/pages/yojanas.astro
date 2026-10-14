@@ -363,6 +363,27 @@ const yojanasSchema = {
           {yojana.summary}
         </p>
 
+        {yojana.id === 'pm-surya-ghar' && (
+          <div class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-amber-500/15 border border-amber-300/80 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 font-black text-lg flex items-center justify-center shrink-0 shadow-xs">
+                ☀️
+              </div>
+              <div>
+                <span class="text-xs font-black text-slate-900 block">अपना बिजली बिल डालकर सब्सिडी चेक करें</span>
+                <span class="text-[11px] text-slate-600">देखें आपको ₹30,000, ₹60,000 या ₹78,000 में से कितनी सब्सिडी मिलेगी।</span>
+              </div>
+            </div>
+            <a
+              href="/calculators"
+              class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-black text-xs shrink-0 transition flex items-center gap-1.5 shadow-sm"
+            >
+              <span>⚡ सब्सिडी कैलकुलेटर खोलें</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+          </div>
+        )}
+
         <!-- Eligibility Criteria -->
         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 mb-4 text-xs">
           <span class="font-bold text-slate-900 block mb-1.5">👥 कौन आवेदन कर सकता है (पात्रता):</span>

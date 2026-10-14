@@ -115,6 +115,13 @@ const jsonLd = {
         >
           <span>🏦 Fixed Deposit (FD)</span>
         </button>
+        <button
+          type="button"
+          class="calc-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-muted hover:text-ink hover:bg-slate-100 transition flex items-center gap-2 cursor-pointer"
+          data-tab="solar"
+        >
+          <span>☀️ PM Surya Ghar Solar Subsidy</span>
+        </button>
       </div>
     </section>
 
@@ -379,6 +386,123 @@ const jsonLd = {
         </div>
       </div>
 
+      <!-- ==================== CALCULATOR 5: PM SURYA GHAR SOLAR SUBSIDY ==================== -->
+      <div id="calc-tab-solar" class="calc-panel hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Inputs Column (7 cols) -->
+          <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-line shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <h2 class="text-xl font-black text-ink">PM-Surya Ghar: Muft Bijli Yojana</h2>
+                <p class="text-xs text-muted mt-0.5">Direct Government DBT Subsidy &amp; 25-Year Electricity Savings Calculator</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-xs font-black bg-amber-500 text-slate-950">₹78,000 Subsidy</span>
+            </div>
+
+            <!-- Slider: Monthly Electricity Bill -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label for="solar-bill" class="text-xs font-bold text-slate-700">Aapka Monthly Bijli Bill (Electricity Bill)</label>
+                <div class="flex items-center gap-1">
+                  <span class="text-xs font-bold text-slate-400">₹</span>
+                  <input
+                    type="number"
+                    id="solar-bill-input"
+                    value="2500"
+                    min="500"
+                    max="15000"
+                    step="100"
+                    class="w-24 px-2 py-1 text-right text-xs font-mono font-bold border border-line rounded-lg focus:border-amber-500 focus:outline-hidden"
+                  />
+                </div>
+              </div>
+              <input
+                type="range"
+                id="solar-bill"
+                min="500"
+                max="15000"
+                step="100"
+                value="2500"
+                class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
+              />
+              <div class="flex justify-between text-[10px] text-muted font-mono mt-1">
+                <span>₹500 / month</span>
+                <span>₹7,500</span>
+                <span>₹15,000 / month</span>
+              </div>
+            </div>
+
+            <!-- Scheme Benefit Highlights -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-amber-50/60 border border-amber-200/60 text-xs">
+              <div>
+                <span class="text-slate-500 font-bold block">Central Govt Subsidy:</span>
+                <span class="font-black text-amber-700">Up to ₹78,000 Direct DBT</span>
+              </div>
+              <div>
+                <span class="text-slate-500 font-bold block">Free Units Monthly:</span>
+                <span class="font-black text-emerald-700">Up to 300 Units Free</span>
+              </div>
+              <div>
+                <span class="text-slate-500 font-bold block">Bank Loan Interest:</span>
+                <span class="font-black text-slate-800">7% Concessional Rate</span>
+              </div>
+            </div>
+
+            <!-- Direct Official Apply CTA -->
+            <div class="pt-2">
+              <a
+                href="https://pmsuryaghar.gov.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full py-3.5 px-6 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition cursor-pointer"
+              >
+                <span>🚀 Apply Online on National Portal (pmsuryaghar.gov.in)</span>
+                <Icon name="arrow-right" class="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          <!-- Results Column (5 cols) -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white rounded-3xl p-6 sm:p-8 border border-amber-500/30 shadow-xl space-y-6">
+            <div class="border-b border-white/10 pb-4">
+              <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-black block">Recommended System</span>
+              <div class="text-3xl font-black text-white mt-1" id="solar-capacity-val">2 kW System</div>
+              <p class="text-xs text-slate-400 mt-1">Approx. Rooftop Space Needed: <strong class="text-amber-300" id="solar-area-val">200 sq. ft.</strong></p>
+            </div>
+
+            <!-- Metrics Stack -->
+            <div class="space-y-3.5 text-xs">
+              <div class="flex justify-between items-center py-2 border-b border-white/10">
+                <span class="text-slate-300">Total System Cost (Est.):</span>
+                <span class="font-bold font-mono text-slate-200" id="solar-cost-val">₹1,15,000</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-white/10">
+                <span class="text-emerald-400 font-bold">Government Subsidy (DBT):</span>
+                <span class="font-black font-mono text-emerald-400 text-sm" id="solar-subsidy-val">- ₹60,000</span>
+              </div>
+              <div class="flex justify-between items-center py-2.5 bg-white/5 rounded-xl px-3 border border-white/10">
+                <span class="font-bold text-white">Net Investment (Aapka Kharcha):</span>
+                <span class="font-black font-mono text-amber-300 text-base" id="solar-net-val">₹55,000</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-white/10">
+                <span class="text-slate-300">Annual Electricity Savings:</span>
+                <span class="font-bold font-mono text-emerald-300" id="solar-annual-savings">₹28,800 / year</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-slate-300">25-Year Lifetime Savings:</span>
+                <span class="font-black font-mono text-amber-400 text-base" id="solar-lifetime-savings">₹7.2 Lakh</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200 leading-relaxed">
+              💡 <strong>Net Metering Rule:</strong> Agar aapka solar panel monthly consumption se zyada bijli banata hai, toh extra units DISCOM ko credit hoti hain aur agle bill me adjust ho jati hain.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
 
     <!-- FAQ Section for Featured Snippets -->
@@ -598,4 +722,59 @@ const jsonLd = {
   if (fdRate) fdRate.addEventListener('input', calculateFD);
   if (fdYears) fdYears.addEventListener('input', calculateFD);
   calculateFD();
+
+  // 5. Solar Rooftop Calculator
+  const solarBillRange = document.getElementById('solar-bill') as HTMLInputElement;
+  const solarBillInput = document.getElementById('solar-bill-input') as HTMLInputElement;
+
+  const solarCapacityVal = document.getElementById('solar-capacity-val');
+  const solarAreaVal = document.getElementById('solar-area-val');
+  const solarCostVal = document.getElementById('solar-cost-val');
+  const solarSubsidyVal = document.getElementById('solar-subsidy-val');
+  const solarNetVal = document.getElementById('solar-net-val');
+  const solarAnnualSavings = document.getElementById('solar-annual-savings');
+  const solarLifetimeSavings = document.getElementById('solar-lifetime-savings');
+
+  function calculateSolar() {
+    const bill = parseFloat(solarBillRange?.value || '2500');
+    let capacity = 1;
+    let subsidy = 30000;
+    let baseCost = 60000;
+
+    if (bill >= 3500) {
+      capacity = 3;
+      subsidy = 78000;
+      baseCost = 165000;
+    } else if (bill >= 1800) {
+      capacity = 2;
+      subsidy = 60000;
+      baseCost = 115000;
+    }
+
+    const netCost = baseCost - subsidy;
+    const monthlyUnitsGenerated = capacity * 120;
+    const monthlySaved = Math.min(bill, monthlyUnitsGenerated * 7.5);
+    const annualSaved = Math.round(monthlySaved * 12);
+    const lifetimeSaved = Math.round(annualSaved * 25);
+    const areaSqFt = capacity * 100;
+
+    if (solarCapacityVal) solarCapacityVal.textContent = `${capacity} kW System`;
+    if (solarAreaVal) solarAreaVal.textContent = `${areaSqFt} sq. ft.`;
+    if (solarCostVal) solarCostVal.textContent = '₹' + baseCost.toLocaleString('en-IN');
+    if (solarSubsidyVal) solarSubsidyVal.textContent = '- ₹' + subsidy.toLocaleString('en-IN');
+    if (solarNetVal) solarNetVal.textContent = '₹' + netCost.toLocaleString('en-IN');
+    if (solarAnnualSavings) solarAnnualSavings.textContent = '₹' + annualSaved.toLocaleString('en-IN') + ' / year';
+    if (solarLifetimeSavings) solarLifetimeSavings.textContent = '₹' + (lifetimeSaved / 100000).toFixed(1) + ' Lakh';
+  }
+
+  function syncSolarInputs(source: HTMLInputElement, target: HTMLInputElement) {
+    target.value = source.value;
+    calculateSolar();
+  }
+
+  if (solarBillRange && solarBillInput) {
+    solarBillRange.addEventListener('input', () => syncSolarInputs(solarBillRange, solarBillInput));
+    solarBillInput.addEventListener('input', () => syncSolarInputs(solarBillInput, solarBillRange));
+  }
+  calculateSolar();
 </script>
