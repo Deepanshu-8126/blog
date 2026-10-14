@@ -33,12 +33,14 @@ def run_reticle_audit():
     all_passed = True
 
     # 1. BLOGGER API CONNECTION CHECK
-    print("\n[CHECK 1/4] Verifying 4-Blog Google Blogger API Connections...")
+    print("\n[CHECK 1/4] Verifying 6-Blog Google Blogger Fleet Connections...")
     blogs = [
         ("Sarkari Result & Exam Alerts", "1366151638291560024"),
         ("Loot Deals & Discount Offers", "834082955272949961"),
         ("AI Tools & Software Hub", "2280231208480007821"),
-        ("India Trend Pulse (Viral / Reddit)", "994918898669726760")
+        ("India Trend Pulse (Viral / Reddit)", "994918898669726760"),
+        ("CinePulse India (OTT & Reality TV)", "3174478771856373198"),
+        ("Sarkari Yojana & Citizen Welfare", "529528513771224915")
     ]
     try:
         service, _ = get_blogger_service()
@@ -61,11 +63,17 @@ def run_reticle_audit():
     print("\n[CHECK 2/4] Verifying Master Image Pipeline Across All Niches...")
     niche_tests = [
         ("UP Police Exam Date 2026", "exams-results"),
+        ("PM Surya Ghar Rooftop Solar Subsidy", "yojana"),
         ("boAt Airdopes 141 True Wireless Earbuds", "deals"),
         ("ChatGPT 4o vs Claude 3.5 Sonnet Guide", "ai-tools"),
+        ("Bigg Boss 18 Elimination & OTT Premiere Buzz", "movies"),
         ("Pushpa 2 Trailer Box Office Record", "viral"),
         ("NVIDIA RTX 5090 Gaming PC Build", "pc-builds"),
-        ("Gold Rate Today 24K Price in India", "gold-rate")
+        ("Gold Rate Today 24K Price in India", "gold-rate"),
+        ("Daily Nutritious Diet & Wellness Guide", "health"),
+        ("Summer Fashion Kurta & Sneaker Trends", "fashion"),
+        ("CMF Phone 1 5G Nothing OS Review", "smartphones"),
+        ("IPL 2026 Season Schedule & Team Lineups", "cricket-sports")
     ]
     for title, niche in niche_tests:
         t0 = time.time()

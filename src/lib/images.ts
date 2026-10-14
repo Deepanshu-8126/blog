@@ -84,6 +84,17 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
   'cricket-sports': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Cricket_ball.svg/500px-Cricket_ball.svg.png'
   ],
+  'smartphones': [
+    'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
+    'https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg'
+  ],
+  'current-affairs': [
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png'
+  ],
+  'news': [
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png'
+  ],
   'viral': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/500px-Emblem_of_India.svg.png'
   ]
