@@ -107,6 +107,13 @@ VAULT_VIRAL_PRESS = [
 ]
 
 
+TRUSTED_PERMANENT_ASSETS = set(
+    list(VAULT_SARKARI_SEALS.values()) +
+    list(VAULT_DEAL_ASSETS.values()) +
+    list(VAULT_TECH_LOGOS.values()) +
+    VAULT_VIRAL_PRESS
+)
+
 # -----------------------------------------------------------------------------
 # 3. HTTP PRE-FLIGHT VERIFIER
 # -----------------------------------------------------------------------------
@@ -119,18 +126,23 @@ def verify_image_health(url: str, min_bytes: int = 3000) -> bool:
     if any(banned in url_lower for banned in BANNED_IMAGE_PATTERNS):
         return False
 
+    # Instant zero-latency verification for pre-verified permanent assets
+    if url in TRUSTED_PERMANENT_ASSETS:
+        return True
+
     try:
+        headers = {"User-Agent": "UniqueDigitNewsBot/3.0 (editorial@uniquedigit.in)"}
         # Fast HEAD check
-        r = requests.head(url, headers={"User-Agent": DEFAULT_UA}, timeout=3.5, allow_redirects=True)
+        r = requests.head(url, headers=headers, timeout=6.0, allow_redirects=True)
         if r.status_code == 200:
             ctype = r.headers.get("content-type", "").lower()
             if "image" in ctype or ctype == "":
                 clen = int(r.headers.get("content-length", 0))
                 if clen == 0 or clen >= min_bytes:
                     return True
-        # Range GET fallback for servers that block HEAD
-        r2 = requests.get(url, headers={"User-Agent": DEFAULT_UA, "Range": "bytes=0-1024"}, timeout=3.5)
-        return r2.status_code in [200, 206] and len(r2.content) > 500
+        # Stream GET fallback for servers that reject HEAD (like Wikimedia/CDN)
+        r2 = requests.get(url, headers=headers, timeout=6.0, stream=True)
+        return r2.status_code in [200, 206]
     except Exception:
         return False
 

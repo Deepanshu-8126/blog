@@ -158,8 +158,8 @@ class MasterSentinelAgent:
         try:
             r = requests.get(
                 "https://en.wikipedia.org/api/rest_v1/page/summary/Uttar_Pradesh_Police",
-                headers={"User-Agent": "UniqueDigitSentinel/1.0"},
-                timeout=6
+                headers={"User-Agent": "UniqueDigitSentinel/2.0 (editorial@uniquedigit.in)"},
+                timeout=8
             ).json()
             if r.get("originalimage") or r.get("thumbnail"):
                 self.log_pass("Official Emblem Resolver", "Wikimedia Government Emblem API responding 100% healthy")
