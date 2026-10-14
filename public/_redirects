@@ -1,0 +1,3 @@
+# Cloudflare Pages Redirects
+/cricket-sports /cricket 301
+/cricket-sports/* /cricket 301
