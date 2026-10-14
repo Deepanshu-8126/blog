@@ -42,13 +42,14 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
     'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Intel_logo_%282020%29.svg/500px-Intel_logo_%282020%29.svg.png'
   ],
   'deals': [
-    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
-    'https://m.media-amazon.com/images/I/71oXzCK43NL._SL1500_.jpg',
-    'https://m.media-amazon.com/images/I/71jG+e7roXL._SL1500_.jpg'
+    '/images/products/oled_tv_screen.jpg',
+    '/images/products/wireless_earbuds.jpg',
+    '/images/products/fashion_apparel.jpg',
+    '/images/products/gaming_laptop.jpg'
   ],
   'cashback': [
-    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg',
-    'https://m.media-amazon.com/images/I/717Qo4MH97L._SL1500_.jpg'
+    '/images/products/gold_bullion.jpg',
+    '/images/products/wireless_earbuds.jpg'
   ],
   'health': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/960px-Good_Food_Display_-_NCI_Visuals_Online.jpg'
@@ -57,7 +58,8 @@ export const NICHE_EDITORIAL_FALLBACKS: Record<string, string[]> = {
     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/960px-Good_Food_Display_-_NCI_Visuals_Online.jpg'
   ],
   'fashion': [
-    'https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg'
+    '/images/products/fashion_apparel.jpg',
+    '/images/products/sneakers.jpg'
   ],
   'side-hustles': [
     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ChatGPT_logo.svg/500px-ChatGPT_logo.svg.png',
@@ -119,6 +121,16 @@ export function upscaleWikimediaUrl(url: string): string {
 export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral', slugOrTitle = ''): string {
   const seed = slugOrTitle || nicheSlug;
 
+  // Reject wrongly assigned iPhone image when the topic is watches, fashion, cashback, laptops, or deals!
+  const isGenericIphone = typeof rawUrl === 'string' && rawUrl.includes('71657TiFeHL');
+  const isActuallyPhone = (slugOrTitle || '').toLowerCase().includes('iphone') || 
+                          (slugOrTitle || '').toLowerCase().includes('phone') || 
+                          (slugOrTitle || '').toLowerCase().includes('mobile') ||
+                          (slugOrTitle || '').toLowerCase().includes('smartphone');
+  if (isGenericIphone && !isActuallyPhone) {
+    rawUrl = null;
+  }
+
   if (!rawUrl || typeof rawUrl !== 'string') {
     const fallback = getEditorialFallback(nicheSlug, seed);
     return `/img?url=${encodeURIComponent(fallback)}&title=${encodeURIComponent(slugOrTitle || 'UniqueDigit')}&niche=${encodeURIComponent(nicheSlug)}`;
@@ -150,12 +162,77 @@ export function proxyImageUrl(rawUrl?: string | null, nicheSlug = 'viral', slugO
   return `/img?url=${encodeURIComponent(url)}&title=${encodeURIComponent(slugOrTitle || 'UniqueDigit')}&niche=${encodeURIComponent(nicheSlug)}`;
 }
 
-export function resolveProductImage(rawUrl?: string | null): string {
-  if (!rawUrl || typeof rawUrl !== 'string') return proxyImageUrl(null, 'deals', 'Product');
-  const trimmed = rawUrl.trim();
-  if (trimmed.startsWith('/')) return trimmed;
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    return proxyImageUrl(trimmed, 'deals', 'Product');
+export function getProductCategoryFallback(name = '', category = ''): string {
+  const text = `${name} ${category}`.toLowerCase();
+
+  // TV / Smart TVs / LED / OLED
+  if (text.includes('tv') || text.includes('television') || text.includes('led') || text.includes('oled') || text.includes('display')) {
+    return '/images/products/oled_tv_screen.jpg';
   }
-  return proxyImageUrl(null, 'deals', 'Product');
+  // Luggage / Suitcases / Trolley / Bags
+  if (text.includes('suitcase') || text.includes('luggage') || text.includes('trolley') || text.includes('bag') || text.includes('cabin')) {
+    return '/images/products/cabin_suitcase.jpg';
+  }
+  // Fashion / Clothing / Apparel / Kurta / Jeans / T-Shirt / Shirt / Jacket / Dress
+  if (text.includes('kurta') || text.includes('jeans') || text.includes('shirt') || text.includes('t-shirt') || text.includes('jacket') || text.includes('pant') || text.includes('denim') || text.includes('apparel') || text.includes('fashion') || text.includes('cotton') || text.includes('set')) {
+    return '/images/products/fashion_apparel.jpg';
+  }
+  // Footwear / Shoes / Sneakers
+  if (text.includes('shoe') || text.includes('sneaker') || text.includes('footwear') || text.includes('sandal') || text.includes('puma') || text.includes('nike')) {
+    return '/images/products/sneakers.jpg';
+  }
+  // Audio / Earbuds / Headphones / Airdopes / Sound
+  if (text.includes('earbud') || text.includes('headphone') || text.includes('airdopes') || text.includes('audio') || text.includes('tws') || text.includes('wireless') || text.includes('sound') || text.includes('neckband') || text.includes('boat')) {
+    return '/images/products/wireless_earbuds.jpg';
+  }
+  // Laptops / Computers / PC
+  if (text.includes('laptop') || text.includes('macbook') || text.includes('computer') || text.includes('pc') || text.includes('victus') || text.includes('rtx')) {
+    return '/images/products/gaming_laptop.jpg';
+  }
+  // Gold / Silver / Bullion / Jewellery
+  if (text.includes('gold') || text.includes('silver') || text.includes('coin') || text.includes('bullion') || text.includes('jewel')) {
+    return '/images/products/gold_bullion.jpg';
+  }
+  // Washing Machine / Home Appliances
+  if (text.includes('washing') || text.includes('fridge') || text.includes('refrigerator') || text.includes('appliance') || text.includes('cleaner')) {
+    return '/images/products/washing_machine.jpg';
+  }
+  // Smartwatches / Watch
+  if (text.includes('watch') || text.includes('smartwatch') || text.includes('band')) {
+    return 'https://m.media-amazon.com/images/I/61S9aVnRZDL._SL1500_.jpg';
+  }
+  // Smartphones
+  if (text.includes('phone') || text.includes('mobile') || text.includes('iphone') || text.includes('redmi') || text.includes('oneplus') || text.includes('galaxy') || text.includes('poco') || text.includes('smartphone') || text.includes('5g')) {
+    return '/images/products/iphone_16_pro.jpg';
+  }
+
+  return '/images/products/fashion_apparel.jpg';
+}
+
+export function resolveProductImage(rawUrl?: string | null, name = '', category = ''): string {
+  const fallback = getProductCategoryFallback(name, category);
+  if (!rawUrl || typeof rawUrl !== 'string') return fallback;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return fallback;
+
+  // Local assets are served directly
+  if (trimmed.startsWith('/')) return trimmed;
+
+  // If someone wrongly assigned the iPhone image to a non-phone product, override with true category image!
+  const isGenericIphoneImg = trimmed.includes('71657TiFeHL');
+  const isActuallyPhone = `${name} ${category}`.toLowerCase().includes('iphone') || 
+                          `${name} ${category}`.toLowerCase().includes('phone') || 
+                          `${name} ${category}`.toLowerCase().includes('mobile') ||
+                          `${name} ${category}`.toLowerCase().includes('redmi') ||
+                          `${name} ${category}`.toLowerCase().includes('oneplus') ||
+                          `${name} ${category}`.toLowerCase().includes('samsung galaxy');
+  if (isGenericIphoneImg && !isActuallyPhone) {
+    return fallback;
+  }
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return proxyImageUrl(trimmed, 'deals', name || 'Product');
+  }
+
+  return fallback;
 }

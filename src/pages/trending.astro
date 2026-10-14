@@ -73,10 +73,11 @@ const itemListSchema = {
     
     <!-- Header Block -->
     <div class="border-b border-line pb-6 mb-8">
-      <div class="flex items-center gap-3 mb-2 flex-wrap">
-        <LiveDot updatedAt={latestUpdate} />
-        <FreshnessStamp updatedAt={latestUpdate} />
-        <span class="text-xs text-muted font-mono hidden sm:inline">· Recomputes every 15 min</span>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Live National Radar
+        </span>
       </div>
 
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-2">

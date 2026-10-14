@@ -895,6 +895,28 @@ If completely unrelated to shopping, return {{"is_deal": false}}.
                 else:
                     aff_url = convert_to_affiliate(f"https://www.amazon.in/s?k={prod_q}")
 
+                pname = parsed["product_name"].lower()
+                if any(k in pname for k in ["tv", "led", "oled", "screen"]):
+                    pimg = "/images/products/oled_tv_screen.jpg"
+                elif any(k in pname for k in ["suitcase", "luggage", "trolley", "bag", "cabin"]):
+                    pimg = "/images/products/cabin_suitcase.jpg"
+                elif any(k in pname for k in ["kurta", "jeans", "shirt", "t-shirt", "jacket", "apparel", "saree", "denim"]):
+                    pimg = "/images/products/fashion_apparel.jpg"
+                elif any(k in pname for k in ["earbud", "headphone", "audio", "sound", "airdopes", "tws", "neckband"]):
+                    pimg = "/images/products/wireless_earbuds.jpg"
+                elif any(k in pname for k in ["laptop", "pc", "computer", "macbook"]):
+                    pimg = "/images/products/gaming_laptop.jpg"
+                elif any(k in pname for k in ["gold", "silver", "coin", "bullion"]):
+                    pimg = "/images/products/gold_bullion.jpg"
+                elif any(k in pname for k in ["shoe", "sneaker", "footwear"]):
+                    pimg = "/images/products/sneakers.jpg"
+                elif any(k in pname for k in ["watch", "smartwatch"]):
+                    pimg = "https://m.media-amazon.com/images/I/61S9aVnRZDL._SL1500_.jpg"
+                elif any(k in pname for k in ["phone", "iphone", "mobile", "galaxy", "oneplus", "redmi", "poco"]):
+                    pimg = "/images/products/iphone_16_pro.jpg"
+                else:
+                    pimg = "/images/products/fashion_apparel.jpg"
+
                 deals.append({
                     "id": item["title"],
                     "pillar": f"Pillar 3: Festive Radar ({platform.capitalize()})",
@@ -903,7 +925,7 @@ If completely unrelated to shopping, return {{"is_deal": false}}.
                     "mrp": parsed.get("mrp", 0),
                     "discount": parsed.get("discount_percent", 0),
                     "affiliate_url": aff_url,
-                    "photo_url": "https://m.media-amazon.com/images/I/71657TiFeHL._SL1500_.jpg"
+                    "photo_url": pimg
                 })
         return deals
 

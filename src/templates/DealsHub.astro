@@ -109,10 +109,10 @@ const STORES = [
             </span>
           </div>
 
-          <div class="flex items-center gap-3 text-xs text-amber-300 font-mono font-bold">
+          <div class="flex items-center gap-3 text-xs text-amber-300 font-semibold">
             <span class="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full border border-white/10 backdrop-blur-xs">
               <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span>
-              <span>Autonomous Bot Active</span>
+              <span>Verified Price Drops</span>
             </span>
           </div>
         </div>
@@ -254,7 +254,7 @@ const STORES = [
           storeButtonBg = 'bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-700 hover:to-cyan-800 text-white';
         }
 
-        const resolvedImg = resolveProductImage(pr.image_url);
+        const resolvedImg = resolveProductImage(pr.image_url, pr.name, pr.category);
         const hasDiscount = pr.discount_pct && pr.discount_pct > 0;
         const discountText = hasDiscount ? `-${pr.discount_pct}% OFF` : (pr.badge || '🔥 LOOT DEAL');
         const savingsAmount = pr.mrp && pr.price && pr.mrp > pr.price ? pr.mrp - pr.price : 0;
