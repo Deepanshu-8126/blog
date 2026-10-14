@@ -116,12 +116,12 @@ const NEWS_CATEGORIES = [
         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div class="max-w-2xl">
             <div class="flex items-center gap-2 mb-3">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-red-600 text-white shadow-xs">
-                <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-                Live Radar Active
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-600 text-white shadow-xs">
+                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+                Live News Desk
               </span>
-              <span class="text-xs text-red-200 font-mono">
-                Synced from National Telemetry Wire
+              <span class="text-xs text-red-200">
+                Updated Daily
               </span>
             </div>
 
@@ -129,18 +129,18 @@ const NEWS_CATEGORIES = [
               {niche.name} Pulse
             </h2>
             <p class="text-sm sm:text-base text-slate-300 mt-2 leading-relaxed">
-              Real-time dispatches synthesized from primary press briefings, official government bulletins, and viral search telemetry.
+              Real-time reporting from verified press conferences, official bulletins, and top national developments.
             </p>
           </div>
 
           <div class="flex md:flex-col items-center md:items-end gap-2 shrink-0">
             <div class="px-3.5 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs text-right">
-              <span class="text-xs text-slate-400 font-mono block uppercase">Radar Frequency</span>
-              <span class="text-sm font-black text-emerald-400">Hourly Off-Peak Engine</span>
+              <span class="text-xs text-slate-400 font-medium block uppercase">Coverage</span>
+              <span class="text-sm font-bold text-emerald-400">24/7 Live Desk</span>
             </div>
             <div class="px-3.5 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs text-right">
-              <span class="text-xs text-slate-400 font-mono block uppercase">Fact Standard</span>
-              <span class="text-sm font-black text-white">Tri-Source Validated</span>
+              <span class="text-xs text-slate-400 font-medium block uppercase">Verification</span>
+              <span class="text-sm font-bold text-white">Fact-Checked Sources</span>
             </div>
           </div>
         </div>
@@ -282,7 +282,7 @@ const NEWS_CATEGORIES = [
           News Categories
         </h2>
         <p class="mt-3 text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-          Browse dispatches by vertical. Each category runs its own radar engine with dedicated source curation.
+          Browse latest dispatches by category. Curated from verified independent news sources.
         </p>
       </div>
 
@@ -326,8 +326,7 @@ const NEWS_CATEGORIES = [
             <Icon name="zap" class="w-6 h-6 text-white" />
           </div>
           <div>
-            <p class="font-bold text-red-800 dark:text-red-200">Radar Status: <span class="text-emerald-600 dark:text-emerald-400 font-mono">ACTIVE</span></p>
-            <p class="text-xs text-red-700 dark:text-red-400">Next sync in <span id="next-sync" class="font-mono">30s</span></p>
+            <p class="font-bold text-red-800 dark:text-red-200">Status: <span class="text-emerald-600 dark:text-emerald-400 font-medium">LIVE</span></p>
           </div>
         </div>
         <button class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm flex items-center gap-2 transition" onclick="window.location.reload()">

@@ -187,8 +187,8 @@ function getNicheAuthorMeta(slug: string): NicheAuthorMeta {
         deskName: 'UniqueDigit Loot & Deals Desk',
         authorName: 'Deepanshu',
         authorInitials: 'LD',
-        role: 'Lead Price Telemetry & Loot Hunter',
-        bio: 'Real-time retail price tracking, coupon verification, price glitches, and cashback offers across Amazon India, Flipkart, Myntra, and direct brands.',
+        role: 'Senior Deals & Price Analyst',
+        bio: 'Real-time retail price tracking, coupon verification, price drops, and cashback offers across Amazon India, Flipkart, Myntra, and direct brands.',
         badge: 'Price-Drop Verified',
         accentGradient: 'from-amber-500 via-rose-600 to-purple-600'
       };
@@ -231,7 +231,7 @@ function getNicheAuthorMeta(slug: string): NicheAuthorMeta {
         authorInitials: 'AM',
         role: 'Automotive & EV Analyst',
         bio: 'Electric vehicles, new car launches, real-world battery range tests, highway efficiency, and safety ratings in the Indian automotive ecosystem.',
-        badge: 'Telemetry Verified',
+        badge: 'Fact-Checked & Verified',
         accentGradient: 'from-blue-600 via-indigo-600 to-slate-800'
       };
     case 'ai-tools':
@@ -247,12 +247,12 @@ function getNicheAuthorMeta(slug: string): NicheAuthorMeta {
     case 'cricket-sports':
     case 'football-sports':
       return {
-        deskName: 'UniqueDigit Sports Telemetry Desk',
+        deskName: 'UniqueDigit Sports Desk',
         authorName: 'Sports Editorial Team',
         authorInitials: 'ST',
         role: 'Senior Sports Analyst & Statistician',
         bio: 'Live match statistics, tournament analytics, pitch conditions, squad changes, and player performance metrics across ICC tournaments and leagues.',
-        badge: 'Match Telemetry Verified',
+        badge: 'Match Stats Verified',
         accentGradient: 'from-sky-600 via-blue-600 to-indigo-700'
       };
     default:
@@ -261,7 +261,7 @@ function getNicheAuthorMeta(slug: string): NicheAuthorMeta {
         authorName: 'Deepanshu',
         authorInitials: 'UD',
         role: 'Lead Tech & Market Analyst',
-        bio: 'Oversees hardware telemetry, tech developments, consumer market anomalies, and verified editorial coverage across UniqueDigit channels.',
+        bio: 'Covers smartphones, personal technology, and verified consumer buying guides across UniqueDigit.',
         badge: 'Curated & Fact-Checked',
         accentGradient: 'from-brand via-purple-600 to-indigo-600'
       };
@@ -361,22 +361,22 @@ const calculatedHype = (() => {
 function getDynamicVerdictCopy(slug: string, title: string, summaryText?: string): string {
   const prefix = summaryText ? `${summaryText} ` : '';
   if (['pc-builds', 'ai-tools', 'gta-6'].includes(slug)) {
-    return `${prefix}When assessing hardware configurations, AI workflows, and performance benchmarks, choosing verified components and tracking market price volatility delivers the highest price-to-performance return. Bookmark this page for continuous telemetry.`;
+    return `${prefix}When assessing hardware configurations, AI workflows, and performance benchmarks, choosing verified components and tracking market pricing delivers the highest return. Bookmark this guide for the latest updates and alerts.`;
   }
   if (['deals', 'cashback'].includes(slug)) {
-    return `${prefix}Flash discounts and bank cashback offers fluctuate rapidly based on retailer inventory. We advise verifying seller ratings and applying available instant coupon codes at checkout. Bookmark this page for continuous telemetry.`;
+    return `${prefix}Flash discounts and bank cashback offers fluctuate rapidly based on retailer inventory. We advise verifying seller ratings and applying available instant coupon codes at checkout. Bookmark this guide for the latest updates and alerts.`;
   }
   if (['health'].includes(slug)) {
-    return `${prefix}Holistic wellness and health routines yield the greatest benefit when paired with consistent, science-backed habits. Always cross-reference lifestyle changes with medical guidelines. Bookmark this page for continuous telemetry.`;
+    return `${prefix}Holistic wellness and health routines yield the greatest benefit when paired with consistent, science-backed habits. Always cross-reference lifestyle changes with medical guidelines. Bookmark this guide for the latest updates and alerts.`;
   }
   if (['gold-rate'].includes(slug)) {
-    return `${prefix}Precious metal valuations reflect live global bullion indices and currency movements. Track multi-city spot rates and hallmarking standards before making physical or digital allocations. Bookmark this page for continuous telemetry.`;
+    return `${prefix}Precious metal valuations reflect live global bullion indices and currency movements. Track multi-city spot rates and hallmarking standards before making physical or digital allocations. Bookmark this guide for the latest updates and alerts.`;
   }
   if (['movies', 'entertainment-celebrity'].includes(slug)) {
     return `${prefix}From critical acclaim to box office trajectories, streaming releases and theatrical runs continue to evolve. Keep this tracker bookmarked for updated platform availability.`;
   }
   if (['cricket', 'cricket-sports', 'football-sports'].includes(slug)) {
-    return `${prefix}Match dynamics, player form, and pitch conditions play a pivotal role. Stay tuned to our verified editorial feed for live updates, scores, and fixture telemetry.`;
+    return `${prefix}Match dynamics, player form, and pitch conditions play a pivotal role. Stay tuned to our verified editorial feed for live match updates, scores, and coverage.`;
   }
   if (['exams-results'].includes(slug)) {
     return `${prefix}उम्मीदवारों को सलाह दी जाती है कि वे अपने आधिकारिक रोल नंबर और जन्म तिथि के साथ पोर्टल पर लॉग इन करें। स्कोरकार्ड, कटऑफ और मेरिट लिस्ट पीडीएफ का प्रिंटआउट भविष्य के संदर्भ के लिए सुरक्षित रख लें।`;
@@ -825,7 +825,7 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
                   <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-brand-light backdrop-blur-md border border-white/10">
                     {niche.name} Editorial
                   </span>
-                  <span class="text-xs text-slate-300 font-medium">⚡ Real-time Telemetry</span>
+                  <span class="text-xs text-slate-300 font-medium">⚡ Verified Story</span>
                 </div>
                 <h2 class="text-xl sm:text-2xl font-black text-white leading-tight mb-2">
                   {post.title}
