@@ -49,8 +49,8 @@ const counts: Record<string, number> = {
 const itemListSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
-  'name': 'Trending Now in India — Live Multi-Signal Ranking',
-  'description': 'Real-time aggregated trending searches and topics in India computed every 15 minutes.',
+  'name': 'Trending Now in India — Top Stories & Topics',
+  'description': 'Curated trending searches, viral news, tech updates, and popular topics in India.',
   'numberOfItems': Math.min(board.length, 20),
   'itemListElement': board.slice(0, 20).map((item, index) => ({
     '@type': 'ListItem',

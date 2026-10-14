@@ -13,13 +13,13 @@ interface SourceMeta {
 }
 
 const SOURCE_MAP: Record<string, SourceMeta> = {
-  gtrends: { label: 'Search Trend Intelligence', short: 'Search Signal', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
-  gnews: { label: 'Verified Press Wire', short: 'Press Wire', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200' },
-  wiki: { label: 'Verified Reference Data', short: 'Reference Data', color: 'bg-slate-200 text-slate-700 border-slate-300' },
-  youtube: { label: 'Video Streaming Pulse', short: 'Video Wire', color: 'bg-red-500/10 text-red-700 border-red-200' },
-  hn: { label: 'Tech Industry Forum', short: 'Tech Forum', color: 'bg-amber-500/10 text-amber-800 border-amber-200' },
-  tmdb: { label: 'Entertainment Database', short: 'Box Office DB', color: 'bg-emerald-500/10 text-emerald-800 border-emerald-200' },
-  social: { label: 'Audience Interest Pulse', short: 'Social Signal', color: 'bg-purple-500/10 text-purple-700 border-purple-200' }
+  gtrends: { label: 'Google Search Trends', short: 'Search Trends', color: 'bg-blue-500/10 text-blue-700 border-blue-200' },
+  gnews: { label: 'Verified Press Coverage', short: 'Press News', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-200' },
+  wiki: { label: 'Verified Reference', short: 'Wikipedia', color: 'bg-slate-200 text-slate-700 border-slate-300' },
+  youtube: { label: 'Video Analysis', short: 'YouTube', color: 'bg-red-500/10 text-red-700 border-red-200' },
+  hn: { label: 'Tech Discussion', short: 'Tech Forum', color: 'bg-amber-500/10 text-amber-800 border-amber-200' },
+  tmdb: { label: 'Entertainment Database', short: 'Cinema DB', color: 'bg-emerald-500/10 text-emerald-800 border-emerald-200' },
+  social: { label: 'Community Trending', short: 'Social Trends', color: 'bg-purple-500/10 text-purple-700 border-purple-200' }
 };
 
 // Clean and filter out raw crawler scrapers or reddit references
@@ -33,7 +33,7 @@ const extraCount = Math.max(0, cleanSources.length - maxVisible);
 
 <div class="inline-flex items-center gap-1.5 flex-wrap">
   {visibleSources.map(key => {
-    const meta = SOURCE_MAP[key] || { label: 'Editorial Coverage', short: 'Editorial Wire', color: 'bg-slate-100 text-slate-700 border-slate-200' };
+    const meta = SOURCE_MAP[key] || { label: 'Editorial Coverage', short: 'Verified News', color: 'bg-slate-100 text-slate-700 border-slate-200' };
     return (
       <span
         class={`inline-block px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${meta.color} cursor-default`}

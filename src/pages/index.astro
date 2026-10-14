@@ -49,7 +49,7 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
 ---
 
 <Layout
-  title="UniqueDigit — India's Real-Time News, Tech & Deal Intelligence Portal"
+  title="UniqueDigit — India's Tech News, Trends & Verified Deals"
   description="Curated independent reporting across Indian technology, personal finance, live bullion rates, AI directories, and verified deals."
 >
   <!-- Breaking News Ticker -->
@@ -57,7 +57,7 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
     <BreakingTicker posts={breakingTickerPosts} />
   )}
 
-  <!-- HERO SECTION: Lead Editorial Feature (8 cols) + Live Wire Radar (4 cols) -->
+  <!-- HERO SECTION: Lead Editorial Feature (8 cols) + Top Stories (4 cols) -->
   <section class="my-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
     
     <!-- Left Column (8 cols): Lead Magazine Cover Story -->
@@ -75,7 +75,7 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
               </span>
             </div>
             <h1 class="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight max-w-xl">
-              India's Real-Time News, Tech &amp; Deal Intelligence Portal
+              India's Hub for Tech News, Trends &amp; Verified Deals
             </h1>
             <p class="text-sm text-slate-400 mt-3 max-w-lg leading-relaxed">
               Curated independent reporting across Indian cricket, artificial intelligence tools, PC builds, live bullion rates, and verified loot deals.
@@ -94,7 +94,7 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
       )}
     </div>
 
-    <!-- Right Column (4 cols): Live Wire (Real-Time Pulse & Fast Utility Links) -->
+    <!-- Right Column (4 cols): Trending List (Real-Time Pulse & Fast Utility Links) -->
     <div class="lg:col-span-4 flex flex-col justify-between bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
       <div>
         <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
@@ -113,7 +113,7 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
           Latest breaking updates and top stories making waves across India today.
         </p>
 
-        <!-- Live Wire Items (01, 02, 03, 04) -->
+        <!-- Top Trending Items (01, 02, 03, 04) -->
         <div class="flex flex-col divide-y divide-slate-100">
           {liveWirePosts.length > 0 ? (
             liveWirePosts.map((post, idx) => {
@@ -140,9 +140,9 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
             })
           ) : (
             <div class="py-8 px-4 text-center">
-              <span class="text-3xl block mb-2">📡</span>
-              <p class="text-xs font-bold text-slate-700">Autonomous Wire Standby</p>
-              <p class="text-[11px] text-slate-400 mt-1">Ready to receive first broadcast wire from grounded publishers.</p>
+              <span class="text-3xl block mb-2">📰</span>
+              <p class="text-xs font-bold text-slate-700">Latest Stories Loading</p>
+              <p class="text-[11px] text-slate-400 mt-1">Check back shortly for fresh news and updates.</p>
             </div>
           )}
         </div>
@@ -246,7 +246,7 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
           </div>
           <div>
             <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Technology, AI &amp; Hardware Radar
+              Technology, AI &amp; Gadgets
             </h2>
             <p class="text-xs text-slate-500 hidden sm:block">
               Tested PC configurations, GPU benchmarks, and generative AI productivity tools.
@@ -342,7 +342,7 @@ const breakingTickerPosts = trendingPosts.slice(0, 6);
         Explore All Specialized Desks
       </h2>
       <p class="text-xs sm:text-sm text-slate-500 mt-2">
-        Data-grounded reporting, live price tracking, and community discussions across 12 distinct verticals.
+        In-depth reporting, genuine product guides, and verified deals across 12 distinct verticals.
       </p>
     </div>
 

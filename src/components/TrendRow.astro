@@ -49,11 +49,6 @@ const medalClass = rankBadges[rank] || 'bg-slate-100 text-slate-600 border borde
             {item.niche}
           </span>
         )}
-        
-        <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Verified Topic</span>
-        </span>
       </div>
 
       <!-- Title / Link -->
@@ -76,10 +71,10 @@ const medalClass = rankBadges[rank] || 'bg-slate-100 text-slate-600 border borde
 
   <!-- Right Side: Metrics, Sparkline, CTAs -->
   <div class="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-    <!-- Hype Score -->
+    <!-- Trend Score -->
     <div class="flex flex-col items-end">
       <HypeMeter score={item.hype} size="sm" showLabel={false} />
-      <span class="text-[9px] font-mono text-slate-500 mt-0.5">velocity</span>
+      <span class="text-[9px] font-mono text-slate-500 mt-0.5">trend score</span>
     </div>
 
     <!-- 24h Trend Sparkline (Hidden on small screens) -->

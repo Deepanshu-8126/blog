@@ -64,7 +64,7 @@ const cardGrad = nicheGradients[grp.toLowerCase()] || 'from-purple-700 via-indig
         <div class={`w-full h-full bg-gradient-to-br ${cardGrad} p-8 flex flex-col justify-between relative overflow-hidden`}>
           <div class="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
           <div class="flex items-center justify-between z-10">
-            <span class="text-xs font-mono font-bold text-white/70 tracking-wider uppercase">Lead Editorial Wire</span>
+            <span class="text-xs font-mono font-bold text-white/70 tracking-wider uppercase">Top Story</span>
             <span class="text-2xl opacity-80">⚡</span>
           </div>
           <div class="z-10">
@@ -81,12 +81,12 @@ const cardGrad = nicheGradients[grp.toLowerCase()] || 'from-purple-700 via-indig
         {post.is_breaking ? (
           <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-600 text-white shadow-md flex items-center gap-1 tracking-wide uppercase">
             <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-            Breaking Wire
+            Breaking News
           </span>
         ) : (
           <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-900/80 backdrop-blur-sm text-amber-300 shadow-md flex items-center gap-1 tracking-wide border border-white/10 uppercase">
             <span>⚡</span>
-            <span>Featured Editorial</span>
+            <span>Featured Story</span>
           </span>
         )}
       </div>

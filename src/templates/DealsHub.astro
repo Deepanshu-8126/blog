@@ -32,7 +32,7 @@ const STORES = [
   { name: 'Amazon', icon: 'shopping-bag', desc: 'Lightning deals, Prime member exclusives & festival drops', color: 'bg-amber-50 text-amber-900 border-amber-200', tag: 'Amazon India' },
   { name: 'Flipkart', icon: 'shopping-cart', desc: 'Big Billion Days, SuperCoin cashback & electronics drops', color: 'bg-blue-50 text-blue-900 border-blue-200', tag: 'Flipkart' },
   { name: 'Myntra', icon: 'shirt', desc: 'End of Reason Sale, top apparel brands & fashion loot', color: 'bg-rose-50 text-rose-900 border-rose-200', tag: 'Myntra' },
-  { name: 'Ajio', icon: 'tag', desc: 'All Stars Sale, sneaker glitches & Reliance trends offers', color: 'bg-cyan-50 text-cyan-900 border-cyan-200', tag: 'Ajio' },
+  { name: 'Ajio', icon: 'tag', desc: 'All Stars Sale, brand discounts & Reliance trends offers', color: 'bg-cyan-50 text-cyan-900 border-cyan-200', tag: 'Ajio' },
   { name: 'Meesho', icon: 'package', desc: 'Budget loots under ₹499, direct manufacturer prices', color: 'bg-fuchsia-50 text-fuchsia-900 border-fuchsia-200', tag: 'Meesho' },
 ];
 ---
@@ -102,10 +102,10 @@ const STORES = [
           <div class="flex items-center gap-2">
             <span class="px-2.5 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-rose-600 text-white flex items-center gap-1.5 shadow-sm">
               <span class="w-1.5 h-1.5 rounded-full bg-white live-dot"></span>
-              Live Price Radar
+              Live Price Alerts
             </span>
             <span class="text-xs text-purple-200/90 font-medium hidden sm:inline">
-              Instant alerts on verified drops across India
+              Instant alerts on verified discounts across India
             </span>
           </div>
 
@@ -119,10 +119,10 @@ const STORES = [
 
         <div class="max-w-3xl">
           <h1 class="text-2xl sm:text-4xl font-black tracking-tight leading-tight mb-3">
-            Verified Loot Deals & <span class="bg-gradient-to-r from-amber-300 via-rose-300 to-purple-200 bg-clip-text text-transparent">Price Drop Glitches</span>
+            Verified Loot Deals & <span class="bg-gradient-to-r from-amber-300 via-rose-300 to-purple-200 bg-clip-text text-transparent">Top Price Drops</span>
           </h1>
           <p class="text-sm sm:text-base text-purple-100/90 leading-relaxed font-normal mb-6">
-            Handpicked loots, price-error glitches, and bank discount stacking across <strong>Amazon India, Flipkart, Myntra, Ajio, and Meesho</strong>. All offers link directly to official verified checkout pages.
+            Handpicked loots, instant discounts, and bank offer stacking across <strong>Amazon India, Flipkart, Myntra, Ajio, and Meesho</strong>. All offers link directly to official verified checkout pages.
           </p>
         </div>
 
@@ -537,7 +537,7 @@ const STORES = [
           </div>
           <h3 class="font-bold text-slate-900 text-base mb-1.5 group-hover:text-brand transition">{cat}</h3>
           <p class="text-xs text-slate-500 leading-relaxed mb-4">
-            {cat === 'Under ₹499' ? 'Fast-moving budget loots from Meesho & Amazon daily drops' : 'Curated drops and verified price glitches across Indian stores'}
+            {cat === 'Under ₹499' ? 'Fast-moving budget loots from Meesho & Amazon daily drops' : 'Curated drops and verified discount offers across Indian stores'}
           </p>
           <div class="flex items-center gap-1.5 text-xs font-bold text-brand group-hover:gap-2 transition">
             <span>Explore Deals</span>
@@ -557,7 +557,7 @@ const STORES = [
         Covered Marketplaces & Stores
       </h2>
       <p class="mt-2 text-sm text-slate-600">
-        Our autonomous bot tracks real-time inventory and deals across India's largest e-commerce destinations.
+        We track real-time inventory and top discounts across India's largest e-commerce destinations.
       </p>
     </div>
 
@@ -589,13 +589,13 @@ const STORES = [
     <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200">
       <h3 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
         <Icon name="calendar" class="w-4 h-4 text-brand" />
-        Upcoming Indian Sale Radar
+        Upcoming Indian Sale Calendar
       </h3>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
         <div class="p-3 rounded-xl bg-white border border-slate-200"><strong class="text-amber-800">Amazon GIF:</strong><br />Great Indian Festival</div>
         <div class="p-3 rounded-xl bg-white border border-slate-200"><strong class="text-blue-800">Flipkart BBD:</strong><br />Big Billion Days</div>
         <div class="p-3 rounded-xl bg-white border border-slate-200"><strong class="text-rose-800">Myntra EORS:</strong><br />End of Reason Sale</div>
-        <div class="p-3 rounded-xl bg-white border border-slate-200"><strong class="text-cyan-800">Ajio All Stars:</strong><br />Quarterly Glitch Sale</div>
+        <div class="p-3 rounded-xl bg-white border border-slate-200"><strong class="text-cyan-800">Ajio All Stars:</strong><br />Quarterly Mega Sale</div>
       </div>
     </div>
   </div>
@@ -609,20 +609,20 @@ const STORES = [
         Instant Price Drop Alerts
       </h2>
       <p class="mt-2 text-sm text-slate-600">
-        Never miss an all-time low price or glitch drop. Receive notifications straight to Telegram.
+        Never miss an all-time low price. Receive notifications straight to Telegram.
       </p>
     </div>
 
     <div class="p-8 rounded-3xl bg-gradient-to-r from-brand via-purple-700 to-indigo-800 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="max-w-xl">
         <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase bg-amber-400 text-slate-950 inline-block mb-2">
-          ⚡ Automated Alert Bot
+          ⚡ Instant Deal Alerts
         </span>
         <h3 class="text-xl sm:text-2xl font-black mb-2">
-          Real-Time Indian Price Glitch Broadcast
+          Real-Time Indian Deals & Loot Broadcast
         </h3>
         <p class="text-xs sm:text-sm text-purple-100 leading-relaxed font-normal">
-          Join 50,000+ smart Indian deal hunters. Our bot crawls 5 marketplaces every 60 seconds and notifies Telegram subscribers within 30 seconds of a glitch.
+          Join 50,000+ smart Indian shoppers. Get instant notifications whenever top discounts and flash sales go live.
         </p>
       </div>
 
