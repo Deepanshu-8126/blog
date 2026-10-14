@@ -49,6 +49,7 @@ from pipeline import gemini
 
 # Configuration
 SARKARI_BLOG_ID = os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024")
+YOJANA_BLOG_ID = os.getenv("BLOGGER_YOJANA_BLOG_ID", "529528513771224915")
 CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID", "cf1a42fb306054063805cf459fddf853")
 CF_D1_DB = os.getenv("CLOUDFLARE_D1_DATABASE_ID", "61d1d46f-f438-47f5-9128-516d9beb11cb")
 CF_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
@@ -495,17 +496,21 @@ def run_sarkari_radar(max_posts=3):
         real_img, img_type = fetch_real_official_image(entity, category=item.get("category", ""), source_link=item.get("link", ""))
         print(f"🖼️ Media Resolved: {real_img[:70]}... ({img_type})")
 
-        # 5. Publish to Google Blogger
+        # 5. Publish to Google Blogger (Strict Routing: Yojana Blog vs Sarkari Exam Blog)
         blogger_url = None
         try:
             content_html = markdown.markdown(body_md, extensions=['extra', 'tables'])
+            check_str = f"{final_title} {' '.join(tags)}".lower()
+            is_yojana = any(k in check_str for k in ["yojana", "subsidy", "dbt", "kisan", "awas", "ration", "pension", "scholarship", "surya ghar", "ladli behna"])
+            target_id = YOJANA_BLOG_ID if is_yojana else SARKARI_BLOG_ID
+            
             blogger_res = publish_to_blogger(
                 final_title,
                 content_html,
                 labels=tags,
                 is_draft=False,
                 featured_image=real_img,
-                target_blog_id=SARKARI_BLOG_ID
+                target_blog_id=target_id
             )
             blogger_url = blogger_res.get("url") if blogger_res.get("success") else None
         except Exception as e:

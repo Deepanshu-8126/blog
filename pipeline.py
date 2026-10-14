@@ -237,17 +237,22 @@ BLOGGER_ROUTING = {
 
     # 5. Dedicated OTT Releases, Bigg Boss, Reality TV & Pop Culture Blog
     "movies": os.getenv("BLOGGER_MOVIES_BLOG_ID", "3174478771856373198"),
+
+    # 6. Dedicated Sarkari Yojana, Citizen Subsidies & DBT Welfare Blog
+    "yojana": os.getenv("BLOGGER_YOJANA_BLOG_ID", "529528513771224915"),
+    "yojanas": os.getenv("BLOGGER_YOJANA_BLOG_ID", "529528513771224915"),
 }
 
 def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
     """
     Automatically cross-publishes targeted articles to specific Google Blogger blogs.
     Strict Niche Boundary Gate:
-      - Only 'exams-results' -> Sarkari Blog (1366151638291560024)
+      - Only 'exams-results' -> Sarkari Exam Blog (1366151638291560024)
       - Only 'deals' & 'cashback' -> Loot Deals Blog (834082955272949961)
       - Only 'ai-tools' -> AI Tools Hub Blog (2280231208480007821)
       - Only 'viral' -> India Trend Pulse Blog (994918898669726760)
       - Only 'movies' -> CinePulse India Blog (3174478771856373198)
+      - Only 'yojana' & 'yojanas' -> Sarkari Yojana & Subsidy Portal (529528513771224915)
       - ALL OTHER NICHES stay strictly on the main website and are NEVER cross-posted!
     """
     if not niche_slug or niche_slug not in BLOGGER_ROUTING:
@@ -334,6 +339,36 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
                 if mt not in movie_tags:
                     movie_tags.append(mt)
             tags = movie_tags
+
+        # Dedicated High-Converting Backlink & Directory Widget for Sarkari Yojana & Subsidies
+        elif niche_slug in ["yojana", "yojanas"]:
+            yojana_widget = (
+                '<div style="margin: 32px 0 20px 0; padding: 22px; border-radius: 12px; '
+                'background: #064e3b; border: 1px solid #10b981; color: #ffffff; '
+                'font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
+                '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">'
+                '<span style="font-size: 22px;">🏛️</span>'
+                '<h3 style="margin: 0; color: #6ee7b7; font-size: 18px; font-weight: 700;">'
+                'Sarkari Yojana & Citizen Subsidy Direct Directory'
+                '</h3></div>'
+                '<p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #d1fae5;">'
+                'Check state-wise eligibility criteria, documents checklist, DBT installment dates, and direct official application forms:'
+                '</p>'
+                '<div style="display: flex; flex-wrap: wrap; gap: 12px;">'
+                '<a href="https://uniquedigit-viral-hub.pages.dev/yojanas" style="display: inline-block; padding: 10px 20px; '
+                'background: #059669; color: #ffffff; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;">'
+                'Open All-India Sarkari Yojana Directory →</a>'
+                '<a href="https://uniquedigit-viral-hub.pages.dev/" style="display: inline-block; padding: 10px 18px; '
+                'background: #022c22; color: #a7f3d0; text-decoration: none; font-weight: 500; border: 1px solid #047857; border-radius: 8px; font-size: 14px;">'
+                'UniqueDigit Official Portal 🌐</a>'
+                '</div></div>'
+            )
+            content_html += yojana_widget
+            y_tags = list(tags or [])
+            for yt in ["Sarkari Yojana", "Govt Schemes", "Subsidy Alert", "PM Schemes", "State DBT"]:
+                if yt not in y_tags:
+                    y_tags.append(yt)
+            tags = y_tags
 
         res = publish_to_blogger(
             title, 

@@ -55,6 +55,7 @@ BLOGGER_AI_BLOG = os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821")
 BLOGGER_SARKARI_BLOG = os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024")
 BLOGGER_VIRAL_BLOG = os.getenv("BLOGGER_VIRAL_BLOG_ID", "994918898669726760")
 BLOGGER_MOVIES_BLOG = os.getenv("BLOGGER_MOVIES_BLOG_ID", "3174478771856373198")
+BLOGGER_YOJANA_BLOG = os.getenv("BLOGGER_YOJANA_BLOG_ID", "529528513771224915")
 CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
 CF_D1_DB = os.getenv("CLOUDFLARE_D1_DATABASE_ID", "")
 CF_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
@@ -238,7 +239,13 @@ class MasterSentinelAgent:
         else:
             self.log_fail("Movies/OTT Destination", f"Mismatched Movies Blog ID: {BLOGGER_MOVIES_BLOG}")
 
-        # 5. Blogger OAuth Auth Check (tokens.json locally or BLOGGER_REFRESH_TOKEN in Cloud CI)
+        # 5. Sarkari Yojana & Citizen Subsidy Blog
+        if BLOGGER_YOJANA_BLOG == "529528513771224915":
+            self.log_pass("Yojana/Subsidy Destination", f"Locked to 'Sarkari Yojana Portal' ({BLOGGER_YOJANA_BLOG})")
+        else:
+            self.log_fail("Yojana/Subsidy Destination", f"Mismatched Yojana Blog ID: {BLOGGER_YOJANA_BLOG}")
+
+        # 6. Blogger OAuth Auth Check (tokens.json locally or BLOGGER_REFRESH_TOKEN in Cloud CI)
         tokens_file = ROOT_DIR / "bridges" / "blogger_bridge" / "tokens.json"
         has_cloud_token = bool(os.getenv("BLOGGER_REFRESH_TOKEN"))
         if tokens_file.exists() or has_cloud_token:
