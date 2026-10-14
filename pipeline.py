@@ -235,8 +235,8 @@ BLOGGER_ROUTING = {
     # 4. Dedicated Trending India, Reddit Viral & Internet Culture Blog
     "viral": os.getenv("BLOGGER_VIRAL_BLOG_ID", "994918898669726760"),
 
-    # 5. Dedicated OTT Releases, Movies & Box Office Tracker Blog
-    "movies": os.getenv("BLOGGER_MOVIES_BLOG_ID", ""),
+    # 5. Dedicated OTT Releases, Bigg Boss, Reality TV & Pop Culture Blog
+    "movies": os.getenv("BLOGGER_MOVIES_BLOG_ID", "3174478771856373198"),
 }
 
 def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
@@ -247,7 +247,7 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
       - Only 'deals' & 'cashback' -> Loot Deals Blog (834082955272949961)
       - Only 'ai-tools' -> AI Tools Hub Blog (2280231208480007821)
       - Only 'viral' -> India Trend Pulse Blog (994918898669726760)
-      - Only 'movies' -> Dedicated OTT & Movies Blog
+      - Only 'movies' -> CinePulse India Blog (3174478771856373198)
       - ALL OTHER NICHES stay strictly on the main website and are NEVER cross-posted!
     """
     if not niche_slug or niche_slug not in BLOGGER_ROUTING:
@@ -305,7 +305,7 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
                     viral_tags.append(vt)
             tags = viral_tags
 
-        # Dedicated High-Converting Backlink & Entertainment Hub Widget for Movies
+        # Dedicated High-Converting Backlink & Entertainment Hub Widget for CinePulse (Bigg Boss, OTT & Reality TV)
         elif niche_slug == "movies":
             movie_widget = (
                 '<div style="margin: 32px 0 20px 0; padding: 22px; border-radius: 12px; '
@@ -314,15 +314,15 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
                 '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">'
                 '<span style="font-size: 22px;">🎬</span>'
                 '<h3 style="margin: 0; color: #fb7185; font-size: 18px; font-weight: 700;">'
-                'OTT Releases, Movie Radar & Weekend Box Office Tracker'
+                'Live Indian Entertainment Radar & Social Buzz Tracker'
                 '</h3></div>'
                 '<p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #cbd5e1;">'
-                'Never miss upcoming streaming dates, theatrical collections, and honest film verdicts. Track live cinema updates on our hub:'
+                'Track trending Bigg Boss drama, upcoming OTT releases, viral Reddit discussions, and unfiltered audience verdicts in real time:'
                 '</p>'
                 '<div style="display: flex; flex-wrap: wrap; gap: 12px;">'
                 '<a href="https://uniquedigit-viral-hub.pages.dev/movies" style="display: inline-block; padding: 10px 20px; '
                 'background: #e11d48; color: #ffffff; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;">'
-                'Explore Live Movies & OTT Hub →</a>'
+                'Explore Live Entertainment Hub →</a>'
                 '<a href="https://uniquedigit-viral-hub.pages.dev/" style="display: inline-block; padding: 10px 18px; '
                 'background: #27272a; color: #fda4af; text-decoration: none; font-weight: 500; border: 1px solid #52525b; border-radius: 8px; font-size: 14px;">'
                 'UniqueDigit Official Portal 🌐</a>'
@@ -330,7 +330,7 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
             )
             content_html += movie_widget
             movie_tags = list(tags or [])
-            for mt in ["OTT Releases", "Movie News", "Box Office", "Bollywood", "Cinema Updates"]:
+            for mt in ["Bigg Boss", "OTT Releases", "Entertainment Buzz", "Viral Cinema", "Celeb Trends"]:
                 if mt not in movie_tags:
                     movie_tags.append(mt)
             tags = movie_tags
@@ -719,29 +719,44 @@ def tmdb_trending():
         return []
 
 
+def fetch_entertainment_buzz_trends():
+    """Fetches real-time Indian entertainment, Bigg Boss, OTT releases & viral social buzz from Google News RSS"""
+    search_queries = [
+        "Bigg+Boss+OR+reality+show+OR+eviction+leak+India+when:2d",
+        "OTT+release+date+Netflix+Prime+Hotstar+JioCinema+India+when:2d",
+        "viral+movie+trailer+reaction+OR+BollyBlindsNGossip+India+when:2d"
+    ]
+    buzz_items = []
+    seen_titles = set()
+    import xml.etree.ElementTree as ET
+
+    for sq in search_queries:
+        url = f"https://news.google.com/rss/search?q={sq}&hl=en-IN&gl=IN&ceid=IN:en"
+        try:
+            r = requests.get(url, headers=UA, timeout=12)
+            if r.status_code == 200:
+                root = ET.fromstring(r.content)
+                for item in root.findall(".//item")[:8]:
+                    t = item.find("title")
+                    desc = item.find("description")
+                    link = item.find("link")
+                    if t is not None and t.text:
+                        title_text = t.text.split(" - ")[0].strip()
+                        if title_text.lower() not in seen_titles:
+                            seen_titles.add(title_text.lower())
+                            buzz_items.append({
+                                "title": title_text,
+                                "facts": desc.text if desc is not None and desc.text else "Live Indian entertainment & social buzz tracking.",
+                                "url": link.text if link is not None and link.text else "https://news.google.com/"
+                            })
+        except Exception as e:
+            print("[Entertainment Buzz RSS warning]:", e)
+    return buzz_items
+
+
 def fetch_indian_box_office_trends():
-    """Fetches real-time Indian theatrical and OTT movie releases from Google News RSS"""
-    url = "https://news.google.com/rss/search?q=box+office+movie+India+when:5d&hl=en-IN&gl=IN&ceid=IN:en"
-    movies = []
-    try:
-        r = requests.get(url, headers=UA, timeout=20)
-        if r.status_code == 200:
-            import xml.etree.ElementTree as ET
-            root = ET.fromstring(r.content)
-            for item in root.findall(".//item")[:15]:
-                t = item.find("title")
-                desc = item.find("description")
-                link = item.find("link")
-                if t is not None and t.text:
-                    title_text = t.text.split(" - ")[0].strip()
-                    movies.append({
-                        "title": title_text,
-                        "facts": desc.text if desc is not None and desc.text else "Live theatrical box office tracking.",
-                        "url": link.text if link is not None and link.text else "https://news.google.com/"
-                    })
-    except Exception as e:
-        print("[Indian Box Office RSS warning]:", e)
-    return movies
+    """Backward compatibility alias for fetch_entertainment_buzz_trends"""
+    return fetch_entertainment_buzz_trends()
 
 
 def wiki(query):
@@ -1074,12 +1089,12 @@ def write_article(n, title, angle, facts, trend):
 - COMPONENT TABLE: Itemized parts table with estimated Indian retail prices (INR) and alternatives.
 - UPGRADE ADVICE: Practical pros, cons, and future-proofing recommendations."""
     elif niche_slug == "movies":
-        role_desc = "Chief Cinema & Entertainment Editor for UniqueDigit."
-        archetype_rules = """MANDATORY CINEMA & OTT RELEASE ARCHETYPE:
-- FOCUS: Story hook, character stakes, star cast performances, and cinematic strengths (zero spoilers).
-- BOX OFFICE TRACKER: Clean Markdown table showing opening day, weekend, and worldwide collections.
-- OTT INTEL: Streaming rights platform (Netflix/Prime Video/Hotstar) and expected digital premiere date.
-- TICKET VERDICT: Should readers book a theater ticket or wait for OTT streaming?"""
+        role_desc = "Chief Entertainment, Reality TV & Pop-Culture Analyst for CinePulse India & UniqueDigit."
+        archetype_rules = """MANDATORY ENTERTAINMENT, REALITY TV & POP-CULTURE ARCHETYPE:
+- FOCUS: Reality TV drama (Bigg Boss eviction leaks, task controversies, captaincy fights), OTT release countdowns (Netflix, Prime Video, JioCinema, Hotstar), viral celebrity news, and audience debates buzzing on Reddit (r/BollyBlindsNGossip, r/biggboss) and Instagram.
+- SOCIAL SENTIMENT & BUZZ METER: Clean Markdown table showing Public Sentiment (Positive/Mixed/Controversial), Top Debate Topic, Most Searched Query, and Social Hype Score.
+- OTT & STREAMING RADAR: Confirmed streaming platform, release date/time, and episode schedule.
+- REAL AUDIENCE VERDICT: Honest take on whether the show/episode/movie is worth watching or overhyped PR."""
     elif niche_slug == "health":
         role_desc = "Evidence-Based Health & Fitness Editor for UniqueDigit."
         archetype_rules = """MANDATORY HEALTH & FITNESS ARCHETYPE:
