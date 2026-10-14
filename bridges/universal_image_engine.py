@@ -303,7 +303,28 @@ def get_universal_real_image(title: str, niche_slug: str = "viral", target_url: 
             return wiki_sport, "Official Sports Entity Photo"
         return VERIFIED_NICHE_ASSETS["cricket-sports"], "Official Sports Media"
 
-    # Case E: General Entity Resolution via Wikimedia
+    # Case E: Dedicated Viral Trends & Breaking News Entity Resolution
+    if any(k in niche_lower for k in ["viral", "trending", "news"]):
+        # 1. First priority: Target URL's real editorial OG image (from Times of India, NDTV, Indian Express)
+        gen_og = extract_og_image_from_page(target_url)
+        if gen_og and not any(bad in gen_og.lower() for bad in ["logo", "favicon", "avatar"]):
+            return gen_og, "Verified Press Photo / News Desk"
+
+        # 2. Second priority: Wikipedia entity image (real person, politician, event, institution)
+        gen_wiki = fetch_wikipedia_entity_image(title_clean)
+        if gen_wiki:
+            return gen_wiki, "Wikimedia Commons Verified Press Asset"
+
+        # 3. Third priority: Real realistic journalism photography (ZERO abstract art or 3D wallpapers)
+        VIRAL_PRESS_MEDIA = [
+            "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200&h=630&fit=crop", # Real newspaper & press desk
+            "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=630&fit=crop", # Media journalists & microphones
+            "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1200&h=630&fit=crop", # Breaking news headlines
+        ]
+        idx = abs(hash(title_clean)) % len(VIRAL_PRESS_MEDIA)
+        return VIRAL_PRESS_MEDIA[idx], "Curated Press Journalism Photography"
+
+    # Case F: General Entity Resolution via Wikimedia
     gen_wiki = fetch_wikipedia_entity_image(title_clean)
     if gen_wiki:
         return gen_wiki, "Wikimedia Commons Verified Media"
