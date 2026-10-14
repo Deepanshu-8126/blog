@@ -234,6 +234,9 @@ BLOGGER_ROUTING = {
 
     # 4. Dedicated Trending India, Reddit Viral & Internet Culture Blog
     "viral": os.getenv("BLOGGER_VIRAL_BLOG_ID", "994918898669726760"),
+
+    # 5. Dedicated OTT Releases, Movies & Box Office Tracker Blog
+    "movies": os.getenv("BLOGGER_MOVIES_BLOG_ID", ""),
 }
 
 def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
@@ -244,6 +247,7 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
       - Only 'deals' & 'cashback' -> Loot Deals Blog (834082955272949961)
       - Only 'ai-tools' -> AI Tools Hub Blog (2280231208480007821)
       - Only 'viral' -> India Trend Pulse Blog (994918898669726760)
+      - Only 'movies' -> Dedicated OTT & Movies Blog
       - ALL OTHER NICHES stay strictly on the main website and are NEVER cross-posted!
     """
     if not niche_slug or niche_slug not in BLOGGER_ROUTING:
@@ -300,6 +304,36 @@ def send_blogger(title, body_md, tags=None, image_url=None, niche_slug=""):
                 if vt not in viral_tags:
                     viral_tags.append(vt)
             tags = viral_tags
+
+        # Dedicated High-Converting Backlink & Entertainment Hub Widget for Movies
+        elif niche_slug == "movies":
+            movie_widget = (
+                '<div style="margin: 32px 0 20px 0; padding: 22px; border-radius: 12px; '
+                'background: #18181b; border: 1px solid #e11d48; color: #ffffff; '
+                'font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
+                '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">'
+                '<span style="font-size: 22px;">🎬</span>'
+                '<h3 style="margin: 0; color: #fb7185; font-size: 18px; font-weight: 700;">'
+                'OTT Releases, Movie Radar & Weekend Box Office Tracker'
+                '</h3></div>'
+                '<p style="margin: 0 0 16px 0; font-size: 14px; line-height: 1.6; color: #cbd5e1;">'
+                'Never miss upcoming streaming dates, theatrical collections, and honest film verdicts. Track live cinema updates on our hub:'
+                '</p>'
+                '<div style="display: flex; flex-wrap: wrap; gap: 12px;">'
+                '<a href="https://uniquedigit-viral-hub.pages.dev/movies" style="display: inline-block; padding: 10px 20px; '
+                'background: #e11d48; color: #ffffff; text-decoration: none; font-weight: 600; border-radius: 8px; font-size: 14px;">'
+                'Explore Live Movies & OTT Hub →</a>'
+                '<a href="https://uniquedigit-viral-hub.pages.dev/" style="display: inline-block; padding: 10px 18px; '
+                'background: #27272a; color: #fda4af; text-decoration: none; font-weight: 500; border: 1px solid #52525b; border-radius: 8px; font-size: 14px;">'
+                'UniqueDigit Official Portal 🌐</a>'
+                '</div></div>'
+            )
+            content_html += movie_widget
+            movie_tags = list(tags or [])
+            for mt in ["OTT Releases", "Movie News", "Box Office", "Bollywood", "Cinema Updates"]:
+                if mt not in movie_tags:
+                    movie_tags.append(mt)
+            tags = movie_tags
 
         res = publish_to_blogger(
             title, 

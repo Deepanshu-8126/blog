@@ -106,12 +106,20 @@ VAULT_VIRAL_PRESS = [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Press_Club_of_India.jpg/1200px-Press_Club_of_India.jpg"
 ]
 
+VAULT_MOVIE_ASSETS = [
+    # Authentic Indian Film Industry, Cinema & Streaming Platforms (Wikimedia Commons)
+    "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/India_film_clapperboard_%28variant%29.svg/1280px-India_film_clapperboard_%28variant%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/500px-Netflix_2015_logo.svg.png",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/500px-Amazon_Prime_Video_logo.svg.png"
+]
+
 
 TRUSTED_PERMANENT_ASSETS = set(
     list(VAULT_SARKARI_SEALS.values()) +
     list(VAULT_DEAL_ASSETS.values()) +
     list(VAULT_TECH_LOGOS.values()) +
-    VAULT_VIRAL_PRESS
+    VAULT_VIRAL_PRESS +
+    VAULT_MOVIE_ASSETS
 )
 
 # -----------------------------------------------------------------------------
@@ -268,6 +276,10 @@ def resolve_master_image(
         return wiki_img, "Wikimedia Commons Verified Media"
 
     # Step 5: Guaranteed Authentic Niche Fallback (Zero Abstract Slop)
+    if any(k in niche_lower for k in ["movie", "cinema", "ott", "bollywood", "box-office"]):
+        idx = abs(hash(title_clean)) % len(VAULT_MOVIE_ASSETS)
+        return VAULT_MOVIE_ASSETS[idx], "Official Cinema & Streaming Platform Media"
+
     if any(k in niche_lower for k in ["viral", "trending", "news"]):
         idx = abs(hash(title_clean)) % len(VAULT_VIRAL_PRESS)
         return VAULT_VIRAL_PRESS[idx], "Official Press & Media Photography"

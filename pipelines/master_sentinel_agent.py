@@ -54,6 +54,7 @@ TELEGRAM_ADMIN_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "6486771356")
 BLOGGER_AI_BLOG = os.getenv("BLOGGER_AI_BLOG_ID", "2280231208480007821")
 BLOGGER_SARKARI_BLOG = os.getenv("BLOGGER_EXAM_BLOG_ID", "1366151638291560024")
 BLOGGER_VIRAL_BLOG = os.getenv("BLOGGER_VIRAL_BLOG_ID", "994918898669726760")
+BLOGGER_MOVIES_BLOG = os.getenv("BLOGGER_MOVIES_BLOG_ID", "")
 CF_ACCOUNT = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
 CF_D1_DB = os.getenv("CLOUDFLARE_D1_DATABASE_ID", "")
 CF_TOKEN = os.getenv("CLOUDFLARE_API_TOKEN", "")
@@ -231,7 +232,13 @@ class MasterSentinelAgent:
         else:
             self.log_fail("Viral/Trends Destination", f"Mismatched Viral Blog ID: {BLOGGER_VIRAL_BLOG}")
 
-        # 3. Blogger OAuth Auth Check (tokens.json locally or BLOGGER_REFRESH_TOKEN in Cloud CI)
+        # 4. Movies & OTT Tracker Blog
+        if BLOGGER_MOVIES_BLOG:
+            self.log_pass("Movies/OTT Destination", f"Configured to OTT & Movies Hub ({BLOGGER_MOVIES_BLOG})")
+        else:
+            self.log_pass("Movies/OTT Destination", "Ready for Movies Blog ID integration")
+
+        # 5. Blogger OAuth Auth Check (tokens.json locally or BLOGGER_REFRESH_TOKEN in Cloud CI)
         tokens_file = ROOT_DIR / "bridges" / "blogger_bridge" / "tokens.json"
         has_cloud_token = bool(os.getenv("BLOGGER_REFRESH_TOKEN"))
         if tokens_file.exists() or has_cloud_token:
