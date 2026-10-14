@@ -467,3 +467,230 @@ export async function subscribeNewsletter(email: string, runtimeEnv?: any): Prom
   }
   return { success: true };
 }
+
+export interface YojanaItem {
+  id: string;
+  name: string;
+  nameHindi: string;
+  category: 'kisan' | 'women' | 'health' | 'youth' | 'housing';
+  benefit: string;
+  benefitBadgeColor: string;
+  authority: string;
+  stateBadge: string;
+  stateTag: string;
+  summary: string;
+  eligibility: string[];
+  documents: string[];
+  steps: string[];
+  officialUrl: string;
+  statusBadge: string;
+}
+
+export interface CreditCardItem {
+  id: string;
+  name: string;
+  bank: string;
+  badge: string;
+  badgeColor: string;
+  annualFee: string;
+  cashbackRate: string;
+  welcomeOffer: string;
+  keyPerks: string[];
+  bestFor: string;
+  applyUrl: string;
+  rating: string;
+}
+
+/** 10. Dynamic Yojana Fetcher */
+export async function getYojanas(runtimeEnv?: any): Promise<YojanaItem[]> {
+  const db = getD1(runtimeEnv);
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const rows = await db.prepare(
+        'SELECT * FROM posts WHERE category = "yojana" OR niche_id = (SELECT id FROM niches WHERE slug = "yojana" OR slug = "exams-results" LIMIT 1) ORDER BY published_at DESC LIMIT 20'
+      ).all();
+      if (rows.results && rows.results.length > 0) {
+        return (rows.results as any[]).map((r, idx) => ({
+          id: r.slug || `yojana-${idx}`,
+          name: r.title,
+          nameHindi: r.summary || r.title,
+          category: (r.category as any) || 'kisan',
+          benefit: 'Direct Government Subsidy / DBT Transfer',
+          benefitBadgeColor: 'bg-emerald-600 text-white',
+          authority: 'Ministry / Nodal Department of India',
+          stateBadge: '🇮🇳 All-India / केंद्र व राज्य सरकार',
+          stateTag: 'all',
+          summary: r.summary || '',
+          eligibility: ['भारतीय नागरिक होना अनिवार्य है', 'आधार कार्ड व DBT बैंक खाता लिंक होना चाहिए'],
+          documents: ['आधार कार्ड', 'बैंक पासबुक', 'निवास प्रमाण पत्र', 'आय प्रमाण पत्र'],
+          steps: ['आधिकारिक सरकारी पोर्टल पर जाएं', 'Apply Online पर क्लिक कर फॉर्म भरें', 'आवेदन स्टेटस चेक करें'],
+          officialUrl: r.source_url || 'https://www.india.gov.in',
+          statusBadge: '🟢 Scheme Active'
+        }));
+      }
+    } catch (err) {
+      console.warn('[D1 getYojanas error]:', err);
+    }
+  }
+
+  // Baseline standard schemes
+  return [
+    {
+      id: 'pm-surya-ghar',
+      name: 'PM-Surya Ghar: Muft Bijli Yojana',
+      nameHindi: 'पीएम सूर्य घर मुफ्त बिजली योजना (₹78,000 सोलर सब्सिडी)',
+      category: 'housing',
+      benefit: '₹78,000 तक सीधी बैंक सब्सिडी + 300 यूनिट मुफ्त बिजली',
+      benefitBadgeColor: 'bg-amber-500 text-slate-950 font-black',
+      authority: 'Ministry of New & Renewable Energy (MNRE)',
+      stateBadge: '🇮🇳 All-India / केंद्र सरकार',
+      stateTag: 'all',
+      summary: 'घर की छत पर सोलर पैनल लगाने के लिए केंद्र सरकार की ऐतिहासिक योजना, जिससे घरेलू बिजली बिल शून्य (Zero) हो जाता है।',
+      eligibility: ['आवेदक भारतीय नागरिक होना चाहिए', 'वैध घरेलू बिजली कनेक्शन होना आवश्यक है', 'छत पर पर्याप्त छाया-मुक्त जगह होनी चाहिए'],
+      documents: ['बिजली बिल', 'आधार कार्ड', 'बैंक पासबुक (DBT Active)', 'छत के स्वामित्व का प्रमाण'],
+      steps: ['pmsuryaghar.gov.in पोर्टल पर जाएं', 'अपना राज्य व उपभोक्ता संख्या दर्ज करें', 'पैनल लगवाएं और खाते में सब्सिडी पाएं'],
+      officialUrl: 'https://pmsuryaghar.gov.in',
+      statusBadge: '🟢 ₹78,000 Direct Subsidy Live'
+    },
+    {
+      id: 'pm-kisan',
+      name: 'PM Kisan Samman Nidhi Yojana',
+      nameHindi: 'पीएम किसान सम्मान निधि (19वीं किस्त स्टेटस)',
+      category: 'kisan',
+      benefit: '₹6,000 प्रति वर्ष (₹2,000 हर 4 महीने में DBT)',
+      benefitBadgeColor: 'bg-emerald-600 text-white',
+      authority: 'Ministry of Agriculture & Farmers Welfare',
+      stateBadge: '🇮🇳 All-India / केंद्र सरकार',
+      stateTag: 'all',
+      summary: 'छोटे और सीमांत किसानों को आर्थिक सहायता देने के लिए केंद्र सरकार की सबसे बड़ी डायरेक्ट बैंक ट्रांसफर (DBT) योजना।',
+      eligibility: ['खेती योग्य जमीन का मालिक किसान', 'बैंक खाता आधार व NPCI से DBT-लिंक्ड होना चाहिए', 'e-KYC पूरी होनी चाहिए'],
+      documents: ['आधार कार्ड', 'खतौनी / जमीन के दस्तावेज', 'बैंक पासबुक', 'मोबाइल नंबर'],
+      steps: ['pmkisan.gov.in पोर्टल पर जाएं', '"Know Your Status" पर क्लिक करें', 'रजिस्ट्रेशन नंबर डालकर स्थिति देखें'],
+      officialUrl: 'https://pmkisan.gov.in',
+      statusBadge: '🟢 19th Installment Active'
+    },
+    {
+      id: 'ayushman-bharat',
+      name: 'Ayushman Bharat PM-JAY (Golden Card)',
+      nameHindi: 'आयुष्मान भारत योजना (₹5 लाख मुफ्त इलाज कार्ड)',
+      category: 'health',
+      benefit: '₹5,00,000 प्रति परिवार प्रति वर्ष मुफ्त कैशलेस इलाज',
+      benefitBadgeColor: 'bg-rose-600 text-white',
+      authority: 'National Health Authority (NHA)',
+      stateBadge: '🇮🇳 All-India / 70+ Senior Citizens',
+      stateTag: 'all',
+      summary: 'सरकारी और प्राइवेट लिस्टेड अस्पतालों में सेकेंडरी और टर्शियरी बीमारियों के लिए देश का सबसे बड़ा फ्री हेल्थ इंश्योरेंस।',
+      eligibility: ['SECC सूची या अंत्योदय राशन कार्ड धारक', '70 वर्ष या उससे अधिक आयु के सभी वरिष्ठ नागरिक', 'NFSA के पात्र लाभार्थी'],
+      documents: ['आधार कार्ड', 'राशन कार्ड', 'मोबाइल नंबर'],
+      steps: ['beneficiary.nha.gov.in पर लॉग इन करें', 'राशन कार्ड या आधार से पात्रता चेक करें', '5 मिनट में आयुष्मान कार्ड डाउनलोड करें'],
+      officialUrl: 'https://beneficiary.nha.gov.in',
+      statusBadge: '🟢 70+ Age Open for All'
+    },
+    {
+      id: 'pm-mudra-loan',
+      name: 'Pradhan Mantri MUDRA Yojana (PMMY)',
+      nameHindi: 'प्रधानमंत्री मुद्रा लोन योजना (₹20 लाख तक बिना गारंटी लोन)',
+      category: 'youth',
+      benefit: '₹50,000 से ₹20 लाख तक का बिजनेस लोन (बिना किसी गारंटी/कोलेटरल)',
+      benefitBadgeColor: 'bg-blue-600 text-white',
+      authority: 'Ministry of Finance & SIDBI',
+      stateBadge: '🇮🇳 All-India / युवा व व्यापारी',
+      stateTag: 'all',
+      summary: 'छोटे व्यापारियों, स्टार्टअप्स, दुकानदारों और युवाओं को व्यवसाय शुरू करने के लिए सस्ता सरकारी लोन।',
+      eligibility: ['18 वर्ष से अधिक आयु का भारतीय नागरिक', 'गैर-कॉर्पोरेट लघु/सूक्ष्म व्यवसाय', 'क्लीन सिबिल हिस्ट्री'],
+      documents: ['आधार कार्ड व पैन कार्ड', 'बिजनेस पता व प्रोजेक्ट रिपोर्ट', '6 महीने का बैंक स्टेटमेंट'],
+      steps: ['udyamimitra.in या बैंक शाखा जाएं', 'शिशु, किशोर या तरुण लोन चुनें', 'फॉर्म भरकर लोन प्राप्त करें'],
+      officialUrl: 'https://www.mudra.org.in',
+      statusBadge: '🟢 Limit Raised to ₹20L'
+    }
+  ];
+}
+
+/** 11. Dynamic Credit Cards Fetcher */
+export async function getCreditCards(runtimeEnv?: any): Promise<CreditCardItem[]> {
+  const db = getD1(runtimeEnv);
+  if (db && typeof db.prepare === 'function') {
+    try {
+      const rows = await db.prepare(
+        'SELECT * FROM products WHERE category = "credit-card" AND active = 1 ORDER BY sort ASC, created_at DESC'
+      ).all();
+      if (rows.results && rows.results.length > 0) {
+        return (rows.results as any[]).map(p => ({
+          id: p.id,
+          name: p.name,
+          bank: p.tagline || 'Bank Partner',
+          badge: p.badge || 'RECOMMENDED',
+          badgeColor: 'bg-emerald-500 text-white',
+          annualFee: '₹0 (Lifetime Free)',
+          cashbackRate: '5% - 10% Cashback',
+          welcomeOffer: 'Exclusive Welcome Benefits',
+          keyPerks: ['5% - 10% Cashback on online orders', 'Zero joining fee', 'Instant paperless KYC'],
+          bestFor: p.keywords || 'Daily online shopping & rewards',
+          applyUrl: p.aff_url || p.url,
+          rating: '4.9 / 5'
+        }));
+      }
+    } catch (err) {
+      console.warn('[D1 getCreditCards error]:', err);
+    }
+  }
+
+  // Baseline standard cards
+  return [
+    {
+      id: 'amazon-pay-icici',
+      name: 'Amazon Pay ICICI Bank Credit Card',
+      bank: 'ICICI Bank',
+      badge: '🏆 #1 BEST LIFETIME FREE CARD',
+      badgeColor: 'bg-emerald-500 text-white',
+      annualFee: '₹0 (Lifetime FREE Forever)',
+      cashbackRate: '5% Unlimited Amazon Cashback',
+      welcomeOffer: '₹1,500 Amazon Pay Reward Balance',
+      keyPerks: [
+        '5% Unlimited Cashback on Amazon (Prime Users)',
+        '3% Unlimited Cashback on Amazon (Non-Prime Users)',
+        '2% Cashback on 100+ Partner Merchants',
+        '1% Cashback on all other retail & online spends'
+      ],
+      bestFor: 'Daily Amazon shoppers & zero annual fee seekers',
+      applyUrl: 'https://www.amazon.in/s?k=amazon+pay+icici+credit+card&tag=uniquedigi0c6-21',
+      rating: '4.9 / 5'
+    },
+    {
+      id: 'swiggy-hdfc',
+      name: 'Swiggy HDFC Bank Credit Card',
+      bank: 'HDFC Bank',
+      badge: '🍔 10% FOOD & GROCERY CASHBACK',
+      badgeColor: 'bg-amber-500 text-slate-950 font-black',
+      annualFee: '₹500 (Waived on ₹2 Lakh Spend)',
+      cashbackRate: '10% Flat Cashback on Swiggy',
+      welcomeOffer: '3 Months Free Swiggy One Membership',
+      keyPerks: [
+        '10% Flat Cashback on Food Delivery, Instamart & Dineout',
+        '5% Cashback on Top E-Commerce (Amazon, Flipkart, Myntra, Uber)',
+        'Direct monthly statement cashback credit'
+      ],
+      bestFor: 'Foodies, daily Instamart grocery buyers & online shoppers',
+      applyUrl: 'https://www.amazon.in/s?k=hdfc+bank+credit+card&tag=uniquedigi0c6-21',
+      rating: '4.8 / 5'
+    },
+    {
+      id: 'sbi-cashback',
+      name: 'SBI Cashback Credit Card',
+      bank: 'State Bank of India',
+      badge: '⚡ 5% FLAT ONLINE SHOPPING',
+      badgeColor: 'bg-indigo-600 text-white',
+      annualFee: '₹999 (Waived on ₹2 Lakh Spend)',
+      cashbackRate: '5% Flat Online Cashback Across All Sites',
+      welcomeOffer: 'Direct Auto-Credit in Monthly Statement',
+      keyPerks: [
+        '5% Cashback on almost all online platforms',
+        '1% Cashback on all offline retail spends',
+        'Cashback direct statement bill me minus hota hai'
+      ],
+      bestFor: 'Unfiltered online shopping across multiple websites',
+      applyUrl: 'https://www.amazon.in/s?k=sbi+credit+card&tag=uniquedigi0c6-21',
+      rating: '4.9 / 5'
+    }
+  ];
+}
