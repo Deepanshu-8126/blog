@@ -11,6 +11,7 @@ Disallow: /go/
 Disallow: /admin/
 
 Sitemap: ${baseUrl}/sitemap.xml
+Sitemap: ${baseUrl}/sitemap.txt
 `;
 
   return new Response(robots, {
