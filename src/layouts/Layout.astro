@@ -24,6 +24,7 @@ const {
 } = Astro.props;
 
 const siteName = 'UniqueDigit';
+const gaId = import.meta.env.PUBLIC_GA_ID || 'G-PR5FML8NW5';
 ---
 
 <!doctype html>
@@ -42,10 +43,10 @@ const siteName = 'UniqueDigit';
     <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="google-site-verification" content="O2MfmO-mrSKHoa3coBUKxUx-MfJpBt90-KgbrgYhD0Q" />
 
-    <!-- Google Analytics (GA4) if configured -->
-    {import.meta.env.PUBLIC_GA_ID && (
-      <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.PUBLIC_GA_ID}`}></script>
-      <script is:inline define:vars={{ gaId: import.meta.env.PUBLIC_GA_ID }}>
+    <!-- Google Analytics (GA4) -->
+    {gaId && (
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+      <script is:inline define:vars={{ gaId }}>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
