@@ -1,6 +1,7 @@
 import os, sys, glob, re
 
-sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stdout, 'reconfigure'):
+    getattr(sys.stdout, 'reconfigure')(encoding='utf-8')
 
 workflow_files = glob.glob('.github/workflows/*.yml')
 print(f"Found {len(workflow_files)} workflow files in .github/workflows:")

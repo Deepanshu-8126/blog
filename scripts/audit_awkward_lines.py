@@ -1,6 +1,7 @@
 import os, re, sys
 
-sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stdout, 'reconfigure'):
+    getattr(sys.stdout, 'reconfigure')(encoding='utf-8')
 
 PHRASES = [
     'radar', 'telemetry', 'recomput', 'autonomous', 'verified buyer',
