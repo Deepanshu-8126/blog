@@ -29,3 +29,10 @@
 - **Admin Private Bot Stream**: The private admin bot chat (`TG_CHAT_ID`) receives real-time pings for ALL articles across all niches so admin has continuous radar visibility.
 - **Future Roadmap (Saved in Memory)**: Expansion into a dedicated daily news/editorial WhatsApp channel once traffic scales.
 - **Active Operational Focus**: Amazon/Flipkart loot deals monetization & price drop conversions.
+
+## 6. Strict Code/Data Separation Protocol (Zero Data & Assets in Code)
+- **Pure Code & Structure Only**: Astro and TypeScript source files (`src/`) must strictly contain components, layouts, typography, CSS, and business logic.
+- **Zero Hardcoded Data In Code**: Never hardcode arrays of articles, schemes, products, or large dictionaries of static URLs inside `.astro` or `.ts` files.
+- **Zero Local Image/Data Assets**: Never save or commit `.jpg`, `.png`, `.webp`, or `.json` data files into the repository (`public/images/`, `public/data/`, `src/data/`, etc.). All local data folders are permanently `.gitignore`d.
+- **Dynamic Cloud Storage**: All dynamic content (articles, schemes, current affairs, products, deals) must reside strictly in Cloudflare D1 / KV / R2 and be queried dynamically at runtime.
+- **Dynamic Vector Fallbacks**: If an asset is missing, use dynamic edge-rendered SVG cards via `/img?title=...&niche=...` with zero external URL dependencies and zero storage bloat.
