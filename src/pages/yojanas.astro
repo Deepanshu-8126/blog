@@ -10,6 +10,8 @@ interface Yojana {
   benefit: string;
   benefitBadgeColor: string;
   authority: string;
+  stateBadge: string;
+  stateTag: string;
   summary: string;
   eligibility: string[];
   documents: string[];
@@ -20,6 +22,31 @@ interface Yojana {
 
 const YOJANAS: Yojana[] = [
   {
+    id: 'pm-surya-ghar',
+    name: 'PM-Surya Ghar: Muft Bijli Yojana',
+    nameHindi: 'पीएम सूर्य घर मुफ्त बिजली योजना (₹78,000 सोलर सब्सिडी)',
+    category: 'housing',
+    benefit: '₹78,000 तक सीधी बैंक सब्सिडी + 300 यूनिट मुफ्त बिजली',
+    benefitBadgeColor: 'bg-amber-500 text-slate-950 font-black',
+    authority: 'Ministry of New & Renewable Energy (MNRE)',
+    stateBadge: '🇮🇳 All-India / केंद्र सरकार',
+    stateTag: 'all',
+    summary: 'घर की छत पर सोलर पैनल लगाने के लिए केंद्र सरकार की ऐतिहासिक योजना, जिससे घरेलू बिजली बिल शून्य (Zero) हो जाता है।',
+    eligibility: [
+      'आवेदक भारतीय नागरिक होना चाहिए और खुद के नाम पक्की छत होनी चाहिए',
+      'वैध घरेलू बिजली कनेक्शन (Domestic Consumer ID) होना आवश्यक है',
+      'सोलर पैनल लगाने के लिए छत पर छाया-मुक्त पर्याप्त जगह होनी चाहिए'
+    ],
+    documents: ['बिजली बिल (Latest Electricity Bill)', 'आधार कार्ड', 'बैंक पासबुक (DBT Active)', 'छत के स्वामित्व का प्रमाण'],
+    steps: [
+      'pmsuryaghar.gov.in पोर्टल पर जाएं और "Apply for Rooftop Solar" पर क्लिक करें',
+      'अपना राज्य, डिस्कॉम (DISCOM) कंपनी व उपभोक्ता संख्या दर्ज करें',
+      'पोर्टल से अधिकृत वेंडर चुनकर सोलर पैनल लगवाएं और बैंक खाते में डायरेक्ट DBT सब्सिडी प्राप्त करें'
+    ],
+    officialUrl: 'https://pmsuryaghar.gov.in',
+    statusBadge: '🟢 ₹78,000 Direct Subsidy Live'
+  },
+  {
     id: 'pm-kisan',
     name: 'PM Kisan Samman Nidhi Yojana',
     nameHindi: 'पीएम किसान सम्मान निधि (19वीं किस्त स्टेटस)',
@@ -27,6 +54,8 @@ const YOJANAS: Yojana[] = [
     benefit: '₹6,000 प्रति वर्ष (₹2,000 हर 4 महीने में DBT)',
     benefitBadgeColor: 'bg-emerald-600 text-white',
     authority: 'Ministry of Agriculture & Farmers Welfare',
+    stateBadge: '🇮🇳 All-India / केंद्र सरकार',
+    stateTag: 'all',
     summary: 'छोटे और सीमांत किसानों को आर्थिक सहायता देने के लिए केंद्र सरकार की सबसे बड़ी डायरेक्ट बैंक ट्रांसफर (DBT) योजना।',
     eligibility: [
       'भारत का कोई भी किसान जिसके नाम खेती योग्य जमीन है',
@@ -50,6 +79,8 @@ const YOJANAS: Yojana[] = [
     benefit: '₹5,00,000 प्रति परिवार प्रति वर्ष मुफ्त कैशलेस इलाज',
     benefitBadgeColor: 'bg-rose-600 text-white',
     authority: 'National Health Authority (NHA)',
+    stateBadge: '🇮🇳 All-India / 70+ Senior Citizens',
+    stateTag: 'all',
     summary: 'सरकारी और प्राइवेट लिस्टेड अस्पतालों में सेकेंडरी और टर्शियरी बीमारियों के लिए देश का सबसे बड़ा फ्री हेल्थ इंश्योरेंस।',
     eligibility: [
       'SECC-2011 डेटाबेस में सूचीबद्ध परिवार या अंत्योदय राशन कार्ड धारक',
@@ -73,6 +104,8 @@ const YOJANAS: Yojana[] = [
     benefit: '₹1,250 हर महीने सीधे बैंक खाते में (₹15,000 सालाना)',
     benefitBadgeColor: 'bg-pink-600 text-white',
     authority: 'महिला एवं बाल विकास विभाग (WCD)',
+    stateBadge: '🌟 मध्य प्रदेश विशेष (MP State)',
+    stateTag: 'mp',
     summary: 'महिलाओं को आर्थिक रूप से आत्मनिर्भर और सशक्त बनाने के लिए राज्य सरकार की डायरेक्ट मंथली ट्रांसफर स्कीम।',
     eligibility: [
       'महिला की उम्र 21 से 60 वर्ष के बीच होनी चाहिए',
@@ -96,6 +129,8 @@ const YOJANAS: Yojana[] = [
     benefit: '₹50,000 से ₹20 लाख तक का बिजनेस लोन (बिना किसी गारंटी/कोलेटरल)',
     benefitBadgeColor: 'bg-blue-600 text-white',
     authority: 'Ministry of Finance & SIDBI',
+    stateBadge: '🇮🇳 All-India / युवा व व्यापारी',
+    stateTag: 'all',
     summary: 'छोटे व्यापारियों, स्टार्टअप्स, दुकानदारों और युवाओं को अपना व्यवसाय शुरू करने या बढ़ाने के लिए सस्ता सरकारी लोन।',
     eligibility: [
       '18 वर्ष से अधिक आयु का कोई भी भारतीय नागरिक',
@@ -119,6 +154,8 @@ const YOJANAS: Yojana[] = [
     benefit: 'ग्रामीण क्षेत्रों में ₹1,20,000 और शहरी क्षेत्रों में ₹2.5 लाख तक की सीधी सरकारी मदद',
     benefitBadgeColor: 'bg-amber-600 text-white',
     authority: 'Ministry of Housing & Urban Affairs / Rural Development',
+    stateBadge: '🇮🇳 All-India / ग्रामीण व शहरी',
+    stateTag: 'all',
     summary: 'कच्चे घरों में रहने वाले गरीब और मध्यमवर्गीय परिवारों को पक्का पक्का मकान बनाने के लिए सरकारी आर्थिक सहायता।',
     eligibility: [
       'परिवार के पास देश में कहीं भी कोई पक्का मकान नहीं होना चाहिए',
@@ -142,6 +179,8 @@ const YOJANAS: Yojana[] = [
     benefit: 'उच्च शिक्षा और तकनीकी कोर्स कर रहे छात्रों को बिल्कुल मुफ्त स्मार्टफोन या टैबलेट',
     benefitBadgeColor: 'bg-purple-600 text-white',
     authority: 'Department of IT & Electronics',
+    stateBadge: '🌟 उत्तर प्रदेश विशेष (UP State)',
+    stateTag: 'up',
     summary: 'कॉलेज, यूनिवर्सिटी और आईटीआई (ITI) के छात्रों को डिजिटल पढ़ाई और रोजगार की तैयारी के लिए फ्री गैजेट वितरण।',
     eligibility: [
       'संबंधित राज्य का मूल निवासी छात्र होना चाहिए',
@@ -241,26 +280,44 @@ const yojanasSchema = {
     </a>
   </div>
 
-  <!-- Category Filter Bar -->
-  <div class="sticky top-20 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2.5 shadow-sm mb-8">
+  <!-- Category Filter & Live Search Bar -->
+  <div class="sticky top-20 z-40 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl p-3 sm:p-4 shadow-sm mb-8">
+    <!-- Live Keystroke Search Box -->
+    <div class="mb-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div class="relative w-full md:max-w-md">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+        <input 
+          type="text" 
+          id="yojana-search-input" 
+          placeholder="योजना, सब्सिडी या राज्य खोजें (e.g. Solar, Kisan, Ladli, Awas, UP)..."
+          class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50/70 focus:bg-white focus:border-emerald-600 focus:outline-none text-xs sm:text-sm text-slate-900 transition font-medium"
+        />
+      </div>
+      <div class="flex items-center gap-1.5 text-xs text-slate-500 font-mono w-full md:w-auto justify-between md:justify-end">
+        <span>योजनाएं प्रदर्शित:</span>
+        <span id="active-count" class="font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-lg">7 Schemes Active</span>
+      </div>
+    </div>
+
+    <!-- Category Pills -->
     <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth">
-      <button class="yojana-filter active px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-emerald-700 text-white shadow-xs" data-cat="all">
-        🏛️ All Schemes (6)
+      <button class="yojana-filter active px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap bg-emerald-700 text-white shadow-xs" data-cat="all">
+        🏛️ All Schemes (7)
       </button>
-      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="kisan">
+      <button class="yojana-filter px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="housing">
+        ⚡ सोलर व आवास (Solar & PMAY)
+      </button>
+      <button class="yojana-filter px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="kisan">
         🌾 किसान योजनाएं (PM Kisan)
       </button>
-      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="health">
+      <button class="yojana-filter px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="health">
         🏥 स्वास्थ्य (Ayushman Bharat)
       </button>
-      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="women">
+      <button class="yojana-filter px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="women">
         👩 महिला कल्याण (Ladli Behna)
       </button>
-      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="youth">
+      <button class="yojana-filter px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="youth">
         🎓 युवा व रोजगार (Loans & Tablets)
-      </button>
-      <button class="yojana-filter px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-100 transition whitespace-nowrap" data-cat="housing">
-        🏠 आवास व राशन (PMAY)
       </button>
     </div>
   </div>
@@ -272,15 +329,21 @@ const yojanasSchema = {
         id={yojana.id}
         class="yojana-card flex flex-col justify-between rounded-3xl bg-white border border-slate-200/90 shadow-card hover:shadow-soft transition-all duration-300 p-6 sm:p-7 relative overflow-hidden"
         data-category={yojana.category}
+        data-search={`${yojana.name} ${yojana.nameHindi} ${yojana.authority} ${yojana.stateBadge} ${yojana.summary} ${yojana.benefit}`.toLowerCase()}
       >
         <!-- Top Status Bar -->
-        <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <div class="flex items-center justify-between gap-2 mb-4 flex-wrap">
           <span class={`px-3 py-1 rounded-full text-xs font-black tracking-wide ${yojana.benefitBadgeColor} shadow-xs`}>
             {yojana.benefit}
           </span>
-          <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-            {yojana.statusBadge}
-          </span>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-[11px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full">
+              {yojana.stateBadge}
+            </span>
+            <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+              {yojana.statusBadge}
+            </span>
+          </div>
         </div>
 
         <!-- Title & Authority -->
@@ -288,7 +351,7 @@ const yojanasSchema = {
           <h2 class="text-xl sm:text-2xl font-black text-slate-900 leading-tight mb-1">
             {yojana.name}
           </h2>
-          <p class="text-sm font-bold text-brand mb-1">
+          <p class="text-sm font-bold text-emerald-700 mb-1">
             {yojana.nameHindi}
           </p>
           <span class="text-xs text-slate-400 block font-mono">
@@ -328,18 +391,30 @@ const yojanasSchema = {
           </ol>
         </div>
 
-        <!-- Official Link CTA Button -->
+        <!-- Actions: Official Link CTA & WhatsApp Share Button -->
         <div class="mt-auto pt-2">
-          <a
-            href={yojana.officialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:brightness-105 active:scale-98 text-white font-black text-sm transition shadow-md"
-          >
-            <span>🔗 आधिकारिक पोर्टल पर स्टेटस चेक / आवेदन करें</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-          </a>
-          <span class="block text-center text-[10px] text-slate-400 mt-1.5 font-mono">
+          <div class="flex items-center gap-2">
+            <a
+              href={yojana.officialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:brightness-105 active:scale-98 text-white font-black text-xs sm:text-sm transition shadow-md"
+            >
+              <span>🔗 आधिकारिक पोर्टल पर आवेदन / स्टेटस देखें</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            <a
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`🏛️ *${yojana.name} (${yojana.nameHindi})*\n\n💰 *लाभ:* ${yojana.benefit}\n📋 *पात्रता व आवेदन प्रक्रिया:* पूरी जानकारी और डायरेक्ट लिंक यहां देखें:\nhttps://uniquedigit-viral-hub.pages.dev/yojanas#${yojana.id}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-4 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 active:scale-98 text-white font-bold text-xs flex items-center gap-1.5 transition shrink-0 shadow-md"
+              title="व्हाट्सएप पर शेयर करें"
+            >
+              <span class="text-base">📲</span>
+              <span class="hidden sm:inline">शेयर करें</span>
+            </a>
+          </div>
+          <span class="block text-center text-[10px] text-slate-400 mt-2 font-mono">
             Direct Official Link ({yojana.officialUrl}) • 100% नि:शुल्क सरकारी सेवा
           </span>
         </div>
@@ -361,11 +436,38 @@ const yojanasSchema = {
     </div>
   </div>
 
-  <!-- Interactive Filter Script -->
+  <!-- Interactive Search & Filter Script -->
   <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
       const buttons = document.querySelectorAll('.yojana-filter');
       const cards = document.querySelectorAll('.yojana-card');
+      const searchInput = document.getElementById('yojana-search-input');
+      const counter = document.getElementById('active-count');
+
+      let currentCategory = 'all';
+      let currentQuery = '';
+
+      function filterCards() {
+        let visibleCount = 0;
+        cards.forEach(card => {
+          const category = card.getAttribute('data-category');
+          const searchData = card.getAttribute('data-search') || '';
+
+          const matchCat = currentCategory === 'all' || category === currentCategory;
+          const matchQuery = !currentQuery || searchData.includes(currentQuery);
+
+          if (matchCat && matchQuery) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (counter) {
+          counter.textContent = `${visibleCount} Schemes Active`;
+        }
+      }
 
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -376,16 +478,17 @@ const yojanasSchema = {
           btn.classList.add('bg-emerald-700', 'text-white', 'shadow-xs');
           btn.classList.remove('text-slate-700', 'hover:bg-slate-100');
 
-          const category = btn.getAttribute('data-cat');
-          cards.forEach(card => {
-            if (category === 'all' || card.getAttribute('data-category') === category) {
-              card.style.display = 'flex';
-            } else {
-              card.style.display = 'none';
-            }
-          });
+          currentCategory = btn.getAttribute('data-cat') || 'all';
+          filterCards();
         });
       });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = (e.target.value || '').trim().toLowerCase();
+          filterCards();
+        });
+      }
     });
   </script>
 </Layout>
