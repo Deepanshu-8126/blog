@@ -73,11 +73,11 @@ jobs:
         run: |
           python pipelines/sarkari_radar_engine.py 3
 
-      - name: Persist Cache
+      - name: Cache Sarkari Seen Radar Data
         if: always()
-        run: |
-          git config user.name "Sarkari Radar Bot"
-          git config user.email "bot@uniquedigit.in"
-          git add sarkari_seen_cache.json || true
-          git commit -m "chore(radar): update sarkari seen cache [skip ci]" || true
-          git push origin main || true
+        uses: actions/cache@v4
+        with:
+          path: sarkari_seen_cache.json
+          key: sarkari-radar-cache-${{ github.run_id }}
+          restore-keys: |
+            sarkari-radar-cache-

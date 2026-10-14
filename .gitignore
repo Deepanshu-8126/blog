@@ -27,9 +27,11 @@ Thumbs.db
 scratch/
 *.log
 *.cache.json
+*_cache.json
+sarkari_seen_cache.json
 sent_loot_cache.json
-bridges/whatsapp_bridge/auth_info/
-auth_info/
 sent_whatsapp_cache.json
 bridges/blogger_bridge/tokens.json
 bridges/whatsapp_bridge/Link
+bridges/whatsapp_bridge/auth_info/
+auth_info/

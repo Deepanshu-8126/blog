@@ -66,16 +66,20 @@ jobs:
           # 30-minute (1800s) lightning scanner loop checking every 10 seconds for real-time deals
           python god_level_loot_engine.py --duration 1800 --interval 10
 
-      - name: Sync Cache & Perpetuate 24/7 Loot Chain
+      - name: Cache Sent Loot Data
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: sent_loot_cache.json
+          key: loot-deals-cache-${{ github.run_id }}
+          restore-keys: |
+            loot-deals-cache-
+
+      - name: Perpetuate 24/7 Loot Chain
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --global user.name "UniqueDigit-Bot"
-          git config --global user.email "bot@uniquedigit.internal"
-          git add sent_loot_cache.json 2>/dev/null || true
-          git commit -m "chore(loot): update sent deals cache [skip ci]" || true
-          git push origin main || true
           # Self-dispatch the next continuous 30-minute cycle without waiting for cron
           echo "🔄 Chaining next autonomous 24/7 Loot cycle..."
           gh workflow run god_loot_247.yml || true
