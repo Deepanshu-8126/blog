@@ -698,15 +698,42 @@ fetch_reddit_viral_trends = fetch_community_viral_trends
 
 def get_trends(seeds=None, niche_slug=None):
     out = {}
+    # 0. PRIORITY 1: High-Volume Real Google Search Autocomplete Intent
+    cat_map = {
+        "exams-results": "sarkari",
+        "yojanas": "yojanas",
+        "deals": "tech",
+        "tech": "tech",
+        "credit-cards": "finance",
+        "side-hustles": "finance"
+    }
+    if niche_slug in cat_map:
+        try:
+            from bridges.search_intent_engine import get_high_intent_search_topics
+            for item in get_high_intent_search_topics(cat_map[niche_slug], max_topics=6):
+                out[item["search_keyword"]] = {
+                    "score": 99,
+                    "url": item.get("portal"),
+                    "facts": f"High search volume Indian user query for {item['entity']}. Direct Official Portal: {item['portal']}",
+                    "credit": "Curated Editorial Photography"
+                }
+        except Exception as e:
+            pass
+
     # 1. Fetch targeted niche news from Google News RSS if available
     if niche_slug and niche_slug in NICHE_SEARCH_MAP:
         for t in fetch_niche_news_rss(NICHE_SEARCH_MAP[niche_slug], GEO):
-            out[t["title"]] = {
-                "score": t["score"],
-                "url": t.get("url"),
-                "facts": t.get("facts", ""),
-                "credit": "Curated Editorial Photography"
-            }
+            # Strict filter: Discard foreign news and crime/gossip
+            t_low = t["title"].lower()
+            if any(b in t_low for b in ["west asian", "pakistan", "israel", "gaza", "murder", "crime", "football", "cincinnati", "monterrey"]):
+                continue
+            if t["title"] not in out:
+                out[t["title"]] = {
+                    "score": t["score"],
+                    "url": t.get("url"),
+                    "facts": t.get("facts", ""),
+                    "credit": "Curated Editorial Photography"
+                }
 
     # 2. Fetch Viral Community Trends (Pillar 4)
     if niche_slug:
@@ -720,9 +747,11 @@ def get_trends(seeds=None, niche_slug=None):
                 }
 
     # 3. Fetch live rising trends from official Google Trends RSS ONLY for viral/general radar
-    # or if the trend actually relates to the specific niche!
     if not niche_slug or niche_slug in ["viral", "trending"]:
         for t in fetch_google_trends_rss(GEO)[:15]:
+            t_low = t["title"].lower()
+            if any(b in t_low for b in ["west asian", "pakistan", "israel", "gaza", "murder", "crime", "football", "cincinnati", "monterrey", "dj song"]):
+                continue
             if t["title"] not in out:
                 out[t["title"]] = {
                     "score": t["score"],

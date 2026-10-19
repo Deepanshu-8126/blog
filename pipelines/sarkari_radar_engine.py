@@ -45,6 +45,7 @@ load_dotenv(ROOT_DIR / ".env")
 import requests
 import markdown
 from bridges.blogger_bridge.blogger_publisher import publish_to_blogger
+from bridges.search_intent_engine import get_high_intent_search_topics
 from pipeline import gemini
 
 # Configuration
@@ -190,9 +191,41 @@ def fetch_real_official_image(entity_name, category="", source_link=""):
 # 📡 AUTONOMOUS RADAR: SCAN STREAMS & AI INTENT CLASSIFICATION
 # ======================================================================================
 def fetch_raw_candidate_headlines():
-    """Scans all RSS streams and collects unique candidate headlines."""
+    """
+    Scans real Google Search Autocomplete intent queries and filtered RSS streams.
+    Rejects foreign news, sports, and wire articles with zero search volume.
+    """
     candidates = []
     seen = set()
+
+    # 1. PRIORITY 1: Real-time Google Search Autocomplete (What 50 Crore Indians actually type into Google)
+    try:
+        sarkari_queries = get_high_intent_search_topics("sarkari", max_topics=10)
+        yojana_queries = get_high_intent_search_topics("yojanas", max_topics=10)
+        for q in sarkari_queries + yojana_queries:
+            kw = q["search_keyword"]
+            if kw.lower() not in seen:
+                seen.add(kw.lower())
+                domain = q["portal"].replace("https://", "").replace("http://", "").split("/")[0]
+                candidates.append({
+                    "title": kw,
+                    "entity": q["entity"],
+                    "category": q["intent"],
+                    "official_domain": domain,
+                    "source": "Google Autocomplete (High Volume Search Intent)",
+                    "link": q["portal"],
+                    "is_prequalified": True
+                })
+        print(f"🎯 [Google Search Intent Engine] Injected {len(candidates)} real Indian user search queries.")
+    except Exception as e:
+        print("[Search intent engine warning]:", e)
+
+    # 2. PRIORITY 2: Filtered RSS streams (Strictly discard foreign news & zero-search wire reports)
+    BANNED_FOREIGN_OR_IRRELEVANT = [
+        "west asian", "pakistan", "bangladesh", "israel", "gaza", "lebanon", "iran",
+        "uk", "us", "canada", "murder", "crime", "rape", "arrested", "gossip",
+        "football", "monterrey", "pachuca", "cincinnati", "columbus", "dj song"
+    ]
 
     for feed_url in RADAR_RSS_STREAMS:
         try:
@@ -208,6 +241,10 @@ def fetch_raw_candidate_headlines():
                         source_name = full_title.split(" - ")[-1].strip() if " - " in full_title else "Official Update"
                         lower = clean_title.lower()
 
+                        # STRICT FILTER: Discard foreign news and crime/gossip
+                        if any(b in lower for b in BANNED_FOREIGN_OR_IRRELEVANT):
+                            continue
+
                         if lower not in seen and len(clean_title) >= 15:
                             seen.add(lower)
                             candidates.append({
@@ -218,161 +255,157 @@ def fetch_raw_candidate_headlines():
         except Exception:
             continue
 
-    print(f"📡 [Raw Radar Stream] Captured {len(candidates)} Candidate Headlines.")
+    print(f"📡 [Raw Radar Stream] Total Candidate Topics: {len(candidates)}")
     return candidates
 
 def ai_classify_and_filter_candidates(candidates):
     """
     Agent Alpha: Autonomous AI Intent Classifier.
-    Eliminates rigid keyword lists. Dynamically identifies any topic relevant to
-    Indian students, job seekers, and citizens (Universities, Schemes, Bharti, Results).
+    Passes prequalified real Google search queries directly, and filters raw candidates.
     """
     if not candidates:
         return []
 
-    # Send in batches of 20
-    headlines = [c["title"] for c in candidates[:25]]
+    results = []
+    unqualified = []
 
-    prompt = f"""You are the Chief AI Editor for India's premier Sarkari & Education Portal.
+    for c in candidates:
+        if c.get("is_prequalified"):
+            results.append({
+                "title": c["title"],
+                "entity": c.get("entity", "Government Authority"),
+                "category": c.get("category", "Sarkari Alert"),
+                "official_domain": c.get("official_domain", ""),
+                "source": c.get("source", "Google Search Intent"),
+                "link": c.get("link", "")
+            })
+        else:
+            unqualified.append(c)
+
+    if unqualified:
+        headlines = [c["title"] for c in unqualified[:20]]
+        prompt = f"""You are the Chief AI Editor for India's premier Sarkari & Education Portal.
 Candidate Breaking Headlines:
 {json.dumps(headlines, indent=2)}
 
 TASK:
 Filter and classify ONLY topics that Indian students, job seekers, youth, or citizens actively search for:
 - Sarkari Results, Scorecards, Merit Lists, Cutoff Marks, Answer Keys, Admit Cards, Time Tables.
-- Central & State Government Recruitments (SSC, UPSC, Railway, Police, Anganwadi, Asha, Lekhpal, Direct Bharti, Offline Forms).
-- Universities & Colleges (Kumaun University, CCSU, DU, BHU, AKTU, State Boards, BA, BSc, BCom, MA, Polytechnic, ITI, B.Ed).
-- Government Yojanas & Welfare Schemes (PM Awas, Free Silai Machine, Free Laptop, Nanda Devi Scheme, Ladli Behna, Ration Card, Ayushman).
+- Central & State Government Recruitments (SSC, UPSC, Railway, Police, Anganwadi, Asha, Lekhpal, Direct Bharti).
+- Universities & Colleges (Kumaun University, CCSU, DU, BHU, AKTU, State Boards, Polytechnic, ITI).
+- Government Yojanas & Welfare Schemes (PM Awas, Free Silai Machine, Free Laptop, Ladli Behna, Ration Card, Ayushman).
 - Scholarships (UP Scholarship, NSP Portal, Post Matric).
 
-STRICTLY REJECT: Sports matches, Bollywood gossip, crime news, general political speeches, foreign tech launches.
+STRICTLY REJECT: Sports matches, Bollywood gossip, crime news, general political speeches, foreign news.
 
 Return strict JSON:
 {{
   "qualified": [
     {{
       "headline": "<exact headline string from candidate list>",
-      "entity": "<Exact Organization / University / State Department / Scheme name, e.g. Kumaun University, UP Police, Staff Selection Commission, Nanda Devi Kanya Yojana>",
+      "entity": "<Exact Organization / University / State Department / Scheme name>",
       "category": "Result | Admit Card | Recruitment | Yojana | Scholarship | Cutoff | Answer Key",
       "official_domain": "<official website if known, e.g. kunainital.ac.in, uppbpb.gov.in, ssc.gov.in, otherwise leave empty>"
     }}
   ]
 }}"""
+        try:
+            res = gemini(prompt)
+            qualified_list = res.get("qualified", [])
+            cand_map = {c["title"].lower(): c for c in unqualified}
+            for q in qualified_list:
+                h = q.get("headline", "")
+                match = cand_map.get(h.lower())
+                results.append({
+                    "title": h,
+                    "entity": q.get("entity", "Government Authority"),
+                    "category": q.get("category", "Sarkari Alert"),
+                    "official_domain": q.get("official_domain", ""),
+                    "source": match.get("source", "Official Update") if match else "Official Update",
+                    "link": match.get("link", "") if match else ""
+                })
+        except Exception as e:
+            print(f"❌ AI Classification Error: {e}")
 
-    try:
-        res = gemini(prompt)
-        qualified_list = res.get("qualified", [])
-        
-        # Merge back with source and link details
-        cand_map = {c["title"].lower(): c for c in candidates}
-        results = []
-        for q in qualified_list:
-            h = q.get("headline", "")
-            match = cand_map.get(h.lower())
-            results.append({
-                "title": h,
-                "entity": q.get("entity", "Government Authority"),
-                "category": q.get("category", "Sarkari Alert"),
-                "official_domain": q.get("official_domain", ""),
-                "source": match.get("source", "Official Update") if match else "Official Update",
-                "link": match.get("link", "") if match else ""
-            })
-
-        print(f"🎯 [AI Intent Radar] Qualified {len(results)} high-intent Sarkari/Education topics.")
-        return results
-    except Exception as e:
-        print(f"❌ AI Classification Error: {e}")
-        return []
+    print(f"🎯 [AI Intent Radar] Qualified {len(results)} high-intent Sarkari/Education topics.")
+    return results
 
 # ======================================================================================
 # ✍️ HUMANIZED HINGLISH SARKARI JOURNALIST ENGINE (Anti-AI Slop)
 # ======================================================================================
 def generate_sarkari_article(item):
     """
-    Generates a deeply humanized, authentic Jagran Josh / Amar Ujala style article.
-    Zero generic AI jargon, rich structured tables, verified steps & direct links.
+    Generates a deeply humanized, authentic, search-intent optimized article.
+    Zero generic AI jargon, strict punchy headline, direct 2-line answer first,
+    high-visibility official action button, factual data table, and real Google search FAQs.
     """
     title = item["title"]
     entity = item.get("entity", "Conducting Board")
     category = item.get("category", "Sarkari Alert")
     official_domain = item.get("official_domain", "")
-    OFFICIAL_DOMAINS_MAP = {
-        "bteup": "https://bteup.ac.in",
-        "up board": "https://upmsp.edu.in",
-        "cbse": "https://cbse.gov.in",
-        "upsc": "https://upsc.gov.in",
-        "ssc": "https://ssc.gov.in",
-        "nta": "https://nta.ac.in",
-        "neet": "https://exams.nta.ac.in/NEET",
-        "up police": "https://uppbpb.gov.in",
-        "uhsr": "https://uhsr.ac.in",
-        "rrb": "https://indianrailways.gov.in",
-        "ibps": "https://ibps.in",
-        "jee": "https://jeemain.nta.ac.in",
-        "bihar": "https://bpsc.bih.nic.in",
-        "rajasthan": "https://rpsc.rajasthan.gov.in",
-        "kumaun": "https://www.kunainital.ac.in",
-    }
-    target_link = item.get("link") or ""
+    target_link = item.get("link") or "https://uniquedigit-viral-hub.pages.dev"
     if not target_link.startswith("http") or any(b in target_link.lower() for b in ["search?q=", "google.com", "bing.com"]):
-        if official_domain and "." in official_domain:
-            target_link = f"https://{official_domain.strip('/').replace('http://', '').replace('https://', '')}"
-        else:
-            combined_key = f"{entity} {title}".lower()
-            matched_url = next((url for k, url in OFFICIAL_DOMAINS_MAP.items() if k in combined_key), None)
-            target_link = matched_url or "https://uniquedigit-viral-hub.pages.dev/exams-results/"
+        target_link = f"https://{official_domain}" if official_domain else "https://uniquedigit-viral-hub.pages.dev"
 
-    prompt = f"""You are India's top senior education editor and investigative career journalist writing for 'Sarkari Result & Exam Alert' (all-sarkari-result-2k0.blogspot.com).
-Topic: {title}
-Entity: {entity} | Category: {category} | Official Domain: {official_domain} | Direct Link: {target_link}
+    prompt = f"""You are India's #1 senior educational journalist and career editor writing for 'Sarkari Result & Scheme Portal'.
+Target Search Intent Query: {title}
+Entity / Organization: {entity}
+Category: {category}
+Official Portal: {official_domain or 'Official Government Website'}
+Official Direct Link: {target_link}
 
-CORE JOURNALISTIC & HUMANIZATION PRINCIPLES (Anti-AI Bot Craft):
-1. LANGUAGE: 100% Natural, Engaging Conversational HINGLISH (Fluent blend of Roman Hindi with standard English education keywords like Scorecard, Cutoff, Merit List, Admit Card, Direct Link, Counseling, Eligibility).
-2. DIVERSE, AUTHENTIC INTROS (BANNED REPETITION):
-   - STRICT BAN: DO NOT start every article with "Are yaar! Agar aapne bhi...". Vary your opening hook every single time!
-   - Examples of natural openers:
-     * "Candidates who appeared for {title} can finally breathe a sigh of relief as the official announcement is here."
-     * "Agar aap bhi {entity} ke is update ka intezaar kar rahe the, toh board ne official portal par fresh notification release kar diya hai."
-     * "The wait is officially over for thousands of students across the state."
-3. HEADLINE DIVERSITY (DO NOT USE RIGID REPETITIVE PREFIXES):
-   - NEVER put "[Direct Link Active]" on every single post! Especially NOT on quizzes, current affairs, syllabus, or general notices!
-   - Craft a compelling, journalistic headline tailored to what this actually is:
-     * If Result: "{entity} {title}: Marks Declared, How to Check Scorecard & Cutoff Details"
-     * If Admit Card: "{entity} Admit Card 2026: Hall Ticket Download Link & Exam Shift Guidelines"
-     * If Job/Bharti: "{entity} Recruitment 2026: {title} - Eligibility Criteria, Vacancies & Application Steps"
-     * If Quiz/Notes: "Daily Preparation Capsule: {title} - Key Questions with Detailed Solutions"
-     * If Cutoff: "{entity} Expected & Final Cutoff 2026: Category-Wise Breakdown"
-4. STRICT CLICHE BAN:
-   - "In conclusion", "delve into", "tapestry", "beacon", "it is important to remember", "furthermore", "moreover", "game-changer", "testament to", "fast-paced world".
+CORE OBJECTIVE:
+Write an ultra-high-ranking, 100% human-written style guide (600-750 words) in natural, engaging Hinglish (fluent blend of Roman Hindi with standard English education terms like Scorecard, Cutoff, Merit List, Admit Card, Direct Link).
 
-ARTICLE STRUCTURE (600 to 750 words):
-- ## Natural, Catchy Journalistic Headline (No robotic brackets)
-- ## ⚡ Quick Highlights Box:
-  A clean markdown table with:
-  | Detail | Information |
-  | :--- | :--- |
-  | **Exam / Yojana Name** | {title} |
-  | **Conducting Authority** | {entity} |
-  | **Current Status** | 🟢 Declared / Active |
-  | **Category** | {category} |
-  | **Official Portal** | {official_domain or 'Official Website'} |
-- ## 📋 Step-by-Step Procedure (How to Check / Apply):
-  Practical, clear steps candidates need to take on the official website.
-- ## 📊 Category-Wise Cutoff / Eligibility Criteria:
-  Markdown table with realistic figures for General, OBC, SC, ST, EWS.
-- ## 🔗 Official Direct Link Callout:
-  `👉 [Official Website Direct Link - Click Here To Access Official Portal]({target_link})`
-- ## ⚠️ Important Documents & Advisory:
-  What to verify on the scorecard / application (QR code, Name spelling, Marks) and warning against fake fraud sites.
-- ## ❓ Frequently Asked Questions (Top FAQs):
-  3 direct questions users search with crisp 2-sentence answers.
+MANDATORY EDITORIAL RULES (Anti-AI Bot Craft):
+1. HEADLINE RULES (VERY STRICT):
+   - Length: EXACTLY 50 to 65 characters.
+   - PUNCHY, CLEAR, FOCUSED ON A SINGLE EVENT (Zero clutter, zero multi-category mixing).
+   - If Admit Card: "[Entity] [Exam] Admit Card 2026: Direct Download Link & Shift Time"
+   - If Result: "[Entity] [Exam] Result 2026: Scorecard & Cutoff Marks Direct Link"
+   - If Yojana: "[Scheme Name] 2026: Beneficiary Status Check & Direct Portal Link"
+   - If Time Table: "[Entity] [Class/Exam] Time Table 2026: Datesheet PDF Download"
+   - NEVER combine "Time Table" with "Marks Declared" or "Cutoff"!
+
+2. FIRST 2 LINES (DIRECT ANSWER RULE):
+   - Do NOT start with textbook intros, "Are yaar", or "In today's fast paced world".
+   - Line 1: Clear announcement of what is released, the official date, and status.
+   - Line 2: Exactly where candidates can access it ({target_link}).
+
+3. SECTION BREAKDOWN (IN ORDER):
+   - ## ⚡ Quick Highlights Box:
+     | Detail | Official Status |
+     | :--- | :--- |
+     | **Exam / Yojana Name** | Clean official name (e.g. UP Police Constable Exam 2026) |
+     | **Authority / Board** | {entity} |
+     | **Current Status** | 🟢 Active / Declared |
+     | **Required Login** | Registration No / Roll No / DOB |
+     | **Official Portal** | [{official_domain or 'Click to Visit'}]({target_link}) |
+   
+   - ## 📋 Step-by-Step Procedure (Kaise Check / Apply Karein):
+     4-5 crisp, numbered steps mentioning actual website buttons (e.g. 'Admit Card 2026' link par click karein, Roll Number darj karein, Submit dabayein).
+
+   - ## 📊 Factual Eligibility / Cutoff / Benefit Slabs:
+     Clean markdown table with realistic category-wise data (General, OBC, EWS, SC, ST) or scheme amounts.
+
+   - ## 🔗 Official Direct Link Callout:
+     `👉 [Official Website Direct Link - Click Here To Access Official Portal]({target_link})`
+
+   - ## ⚠️ Important Advisory & Verification:
+     Verification checklist (Photo, Signature, Exam Center, Shift Time) and a warning against unauthorized phishing sites.
+
+   - ## ❓ Frequently Asked Questions (Top 3 FAQs):
+     3 exact questions that Indian users search on Google with direct, 2-sentence answers.
+
+4. BANNED AI JARGON:
+   "In conclusion", "delve into", "tapestry", "beacon", "it is important to remember", "furthermore", "moreover", "game-changer", "fast-paced world", "testament to", "realm".
 
 Return strict JSON:
 {{
-  "title": "Natural, professional headline matching topic intent (zero repetitive boilerplate)",
-  "summary": "Compelling meta description under 155 chars for Google Search SERP",
-  "body_md": "Full markdown content with tables, bold highlights, numbered steps, official link, and FAQs",
-  "tags": ["{category}", "Sarkari Result", "{entity}", "Govt Jobs 2026"]
+  "title": "Clean, focused, 50-65 char headline matching exact search intent",
+  "summary": "Compelling SERP meta description under 155 characters",
+  "body_md": "Full markdown article following the exact structure above",
+  "tags": ["{category}", "Sarkari Result", "{entity}", "2026"]
 }}"""
 
     try:
