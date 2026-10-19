@@ -83,8 +83,8 @@ def execute_full_cycle():
     # Step 1: Master Sentinel Health & Integrity Audit
     sentinel_ok = run_step("Sentinel Quality Audit", "pipelines/master_sentinel_agent.py")
 
-    # Step 2: Sarkari & Yojana Fresh News Ingestion
-    run_step("Sarkari & Yojana Radar", "pipelines/sarkari_radar_engine.py")
+    # Step 2: Master Autonomous Radar Suite (4-Agent High Intent Engine)
+    run_step("Master Autonomous Radar Suite", "pipelines/master_autonomous_radar_suite.py", ["2"])
 
     # Step 3: Current Affairs & National Intelligence
     if (ROOT_DIR / "pipelines" / "current_affairs_radar_agent.py").exists():
