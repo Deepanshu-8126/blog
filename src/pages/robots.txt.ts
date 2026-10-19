@@ -2,7 +2,8 @@ import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async ({ request }) => {
   const url = new URL(request.url);
-  const baseUrl = `${url.protocol}//${url.host}`;
+  const host = request.headers.get('x-forwarded-host') || url.host;
+  const baseUrl = `https://${host}`;
 
   const robots = `User-agent: *
 Allow: /
@@ -12,6 +13,7 @@ Disallow: /admin/
 
 Sitemap: ${baseUrl}/sitemap.xml
 Sitemap: ${baseUrl}/sitemap.txt
+Sitemap: ${baseUrl}/rss.xml
 `;
 
   return new Response(robots, {

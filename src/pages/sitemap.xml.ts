@@ -1,9 +1,20 @@
 import type { APIRoute } from 'astro';
 import { getNiches, getAllPublishedPosts } from '../lib/db';
 
+function xmlEscape(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 export const GET: APIRoute = async ({ request, locals }) => {
   const url = new URL(request.url);
-  const baseUrl = `${url.protocol}//${url.host}`;
+  const host = request.headers.get('x-forwarded-host') || url.host;
+  const baseUrl = `https://${host}`;
   const currentDate = new Date().toISOString().split('T')[0];
 
   const runtime = (locals as any)?.runtime;
@@ -34,7 +45,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     changefreq: 'daily'
   }));
 
-  // File 6/8 Spec: Only indexable articles in sitemap (not raw trend cards)
+  // Only indexable articles in sitemap (not raw trend cards)
   const indexablePosts = posts.filter(p => p.indexable !== false && p.kind !== 'card');
 
   const postUrls = indexablePosts.map(p => ({
@@ -56,10 +67,10 @@ export const GET: APIRoute = async ({ request, locals }) => {
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${allEntries.map(e => `  <url>
-    <loc>${e.loc}</loc>
-    <lastmod>${e.lastmod || currentDate}</lastmod>
-    <changefreq>${e.changefreq}</changefreq>
-    <priority>${e.priority}</priority>
+    <loc>${xmlEscape(e.loc)}</loc>
+    <lastmod>${xmlEscape(e.lastmod || currentDate)}</lastmod>
+    <changefreq>${xmlEscape(e.changefreq)}</changefreq>
+    <priority>${xmlEscape(e.priority)}</priority>
   </url>`).join('\n')}
 </urlset>`;
 
