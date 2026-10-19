@@ -378,7 +378,7 @@ class EvergreenSyndicationAgent:
 
         return None
 
-    def publish_to_blogger_cross(self, article: dict, topic: dict, img_url: str, video_html: str | None) -> str | None:
+    def publish_to_blogger_cross(self, article: dict, topic: dict, img_url: str, video_html: str | None, live_url: str | None = None) -> str | None:
         if not BLOGGER_AVAILABLE:
             return None
 
@@ -386,19 +386,113 @@ class EvergreenSyndicationAgent:
         if not blog_id:
             return None
 
-        # Format markdown body to rich HTML with styling
-        body_html = f'<div class="evergreen-article-container" style="font-family: system-ui, sans-serif; line-height: 1.8; color: #1e293b;">'
+        import markdown
+
+        # 1. Build Pillar-Specific E-E-A-T Advisory Text
+        pillar = topic.get("pillar_key", "health")
+        if pillar == "health":
+            advisory_title = "🛡️ Medical & Health Review (UniqueDigit Clinical & Wellness Desk)"
+            advisory_text = "This guide is synthesized for informational and educational purposes based on verified nutritional science. Individual dietary requirements and fitness tolerance vary. Always consult a certified physician, registered dietitian, or medical expert before initiating significant nutritional or supplement regimens."
+            border_color = "#10b981"
+            bg_color = "#f0fdf4"
+            title_color = "#065f46"
+        elif pillar == "finance":
+            advisory_title = "⚖️ SEBI & Market Risk Disclosure (UniqueDigit Financial Desk)"
+            advisory_text = "Financial instruments, mutual funds, SIPs, and fixed deposits are subject to market conditions and regulatory tax laws. Past performance metrics do not guarantee future yields. Consult a qualified SEBI-registered financial planner before executing capital allocations."
+            border_color = "#f59e0b"
+            bg_color = "#fffbeb"
+            title_color = "#92400e"
+        elif pillar == "career":
+            advisory_title = "🎓 Career & Syllabus Advisory (UniqueDigit Education Desk)"
+            advisory_text = "Recruitment schedules, cutoff percentiles, and exam eligibility criteria reflect the latest published gazette notices. Candidates must cross-check roll numbers and notification dates on the respective official commission portals."
+            border_color = "#6366f1"
+            bg_color = "#eef2ff"
+            title_color = "#3730a3"
+        else:
+            advisory_title = "⚡ Practical Verification Notice (UniqueDigit Lifehacks Desk)"
+            advisory_text = "Portal workflows, UIDAI updates, and ticket confirmation probabilities reflect official operating protocols. Always use official government web portals for sensitive personal credentials."
+            border_color = "#0284c7"
+            bg_color = "#f0f9ff"
+            title_color = "#075985"
+
+        # 2. Table CSS for Beautiful Rendering on Blogger
+        table_css = """
+<style>
+.evergreen-article-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+}
+.evergreen-article-container th {
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 12px 14px;
+  text-align: left;
+  border: 1px solid #334155;
+  font-weight: 700;
+}
+.evergreen-article-container td {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+}
+.evergreen-article-container tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+.evergreen-article-container tr:hover {
+  background-color: #f1f5f9;
+}
+</style>
+"""
+
+        # 3. Canonical Header Badge (Passing Link Juice to UniqueDigit)
+        canonical_header = ""
+        canonical_footer = ""
+        if live_url:
+            canonical_header = f"""
+<div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 12px; padding: 14px 18px; margin: 0 0 24px 0; color: #ffffff; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+  <div>
+    <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #38bdf8; font-weight: 700;">📌 Official Primary Source</div>
+    <div style="font-size: 13px; font-weight: 600; color: #f8fafc; margin-top: 2px;">UniqueDigit Interactive Research Hub</div>
+  </div>
+  <a href="{live_url}" target="_blank" rel="canonical" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+    Open Interactive Guide & Calculators ➔
+  </a>
+</div>
+"""
+            canonical_footer = f"""
+<div style="margin: 32px 0 20px 0; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: center;">
+  <div style="font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">📖 Read Full Interactive Research on UniqueDigit</div>
+  <p style="font-size: 13px; color: #64748b; margin: 0 0 12px 0;">This publication is synchronized with the live database at UniqueDigit. View full charts, data points, and community updates:</p>
+  <a href="{live_url}" target="_blank" rel="canonical" style="display: inline-block; background: #0284c7; color: #ffffff; padding: 10px 22px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 13px;">
+    Access Complete Guide on UniqueDigit →
+  </a>
+</div>
+"""
+
+        # 4. Convert Markdown Body to HTML with native tables
+        parsed_html = markdown.markdown(article["body_md"], extensions=['tables', 'extra', 'nl2br'])
+
+        # 5. Assemble Rich Container
+        body_html = f'<div class="evergreen-article-container" style="font-family: system-ui, -apple-system, sans-serif; line-height: 1.8; color: #1e293b;">\n'
+        body_html += table_css
+        body_html += canonical_header
+
+        # Hero Image
         if img_url:
-            body_html += f'<div style="text-align: center; margin-bottom: 24px;"><img src="{img_url}" alt="{article["title"]}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"/></div>'
+            body_html += f'<div style="text-align: center; margin-bottom: 24px;"><img src="{img_url}" alt="{article["title"]}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"/></div>\n'
 
-        # Convert simple markdown headers and bolding
-        converted_md = article["body_md"]
-        converted_md = re.sub(r'### (.*?)\n', r'<h3 style="color: #0f172a; margin-top: 24px;">\1</h3>\n', converted_md)
-        converted_md = re.sub(r'## (.*?)\n', r'<h2 style="color: #0284c7; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 32px;">\1</h2>\n', converted_md)
-        converted_md = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', converted_md)
-        converted_md = re.sub(r'\n\n', r'</p><p style="margin-bottom: 16px;">', converted_md)
+        # E-E-A-T Safety Box
+        body_html += f"""
+<div style="background: {bg_color}; border-left: 4px solid {border_color}; padding: 16px 20px; border-radius: 8px; margin: 20px 0 28px 0;">
+  <div style="font-weight: 800; color: {title_color}; font-size: 13px;">{advisory_title}</div>
+  <p style="margin: 6px 0 0 0; font-size: 13px; color: #334155; line-height: 1.6;">{advisory_text}</p>
+</div>
+"""
 
-        body_html += f'<p style="margin-bottom: 16px;">{converted_md}</p>'
+        # Main Parsed HTML
+        body_html += f'<div class="article-content">{parsed_html}</div>\n'
 
         if video_html:
             body_html += video_html
@@ -406,12 +500,13 @@ class EvergreenSyndicationAgent:
         # Add FAQ Accordion
         faqs = article.get("faq", [])
         if faqs:
-            body_html += '<div style="margin-top: 36px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">'
-            body_html += '<h3 style="margin-top: 0; color: #0f172a;">❓ Frequently Asked Questions</h3>'
+            body_html += '<div style="margin-top: 36px; padding: 22px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">'
+            body_html += '<h3 style="margin-top: 0; color: #0f172a; font-size: 18px; font-weight: 800;">❓ Frequently Asked Questions (FAQ)</h3>'
             for item in faqs:
-                body_html += f'<div style="margin-bottom: 16px;"><strong style="color: #0369a1;">Q: {item.get("q")}</strong><p style="margin: 4px 0 0 0; color: #475569;">{item.get("a")}</p></div>'
-            body_html += '</div>'
+                body_html += f'<div style="margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px dashed #cbd5e1;"><strong style="color: #0369a1; font-size: 14px;">Q: {item.get("q")}</strong><p style="margin: 6px 0 0 0; color: #475569; font-size: 14px; line-height: 1.6;">{item.get("a")}</p></div>'
+            body_html += '</div>\n'
 
+        body_html += canonical_footer
         body_html += '</div>'
 
         labels = article.get("labels", [topic["label"]])
@@ -426,7 +521,7 @@ class EvergreenSyndicationAgent:
             )
             if res and isinstance(res, dict) and res.get("url"):
                 blogger_url = res.get("url")
-                log("SyndicationAgent", f"✅ Blogger published: {blogger_url}")
+                log("SyndicationAgent", f"✅ Blogger published with native tables & canonical backlink: {blogger_url}")
                 return blogger_url
         except Exception as e:
             log("SyndicationAgent", f"⚠️ Blogger syndication note: {e}")
@@ -475,7 +570,27 @@ def run_evergreen_mission(pillar: str = "health", count: int = 1):
 
         # Step 4: Dispatch to D1 + Blogger + IndexNow
         cf_live = dispatcher.publish_to_d1(article, topic, img_url, img_credit)
-        blogger_url = dispatcher.publish_to_blogger_cross(article, topic, img_url, video_html)
+        blogger_url = dispatcher.publish_to_blogger_cross(article, topic, img_url, video_html, live_url=cf_live)
+
+        # Step 4b: Two-Way Interconnection: Link Blogger back into D1 sources if published
+        if cf_live and blogger_url and dispatcher.cf_account and dispatcher.cf_db and dispatcher.cf_token:
+            try:
+                sources_with_blogger = json.dumps([
+                    {"title": "UniqueDigit Editorial Desk", "url": cf_live},
+                    {"title": "Official Blogger Syndication Archive", "url": blogger_url}
+                ], ensure_ascii=False)
+                update_sql = "UPDATE posts SET sources = ? WHERE niche_id = (SELECT id FROM niches WHERE slug = ? LIMIT 1) AND slug = ?"
+                slug_val = cf_live.split("/")[-1]
+                dispatcher_endpoint = f"https://api.cloudflare.com/client/v4/accounts/{dispatcher.cf_account}/d1/database/{dispatcher.cf_db}/query"
+                requests.post(
+                    dispatcher_endpoint,
+                    headers={"Authorization": f"Bearer {dispatcher.cf_token}", "Content-Type": "application/json"},
+                    json={"sql": update_sql, "params": [sources_with_blogger, topic["niche_slug"], slug_val]},
+                    timeout=10
+                )
+                log("SyndicationAgent", "🔗 Two-Way Interconnection Locked: Cloudflare D1 & Blogger linked bidirectionally!")
+            except Exception as e:
+                log("SyndicationAgent", f"Interconnection sync note: {e}")
 
         # Step 5: Save to Seen Cache
         seen_cache = load_seen_cache()
