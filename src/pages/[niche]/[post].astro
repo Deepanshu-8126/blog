@@ -16,6 +16,7 @@ import TldrBox from '../../components/TldrBox.astro';
 import SarkariDirectBox from '../../components/SarkariDirectBox.astro';
 import CurrentAffairsQuizHook from '../../components/CurrentAffairsQuizHook.astro';
 import ComicLoreBox from '../../components/ComicLoreBox.astro';
+import ComicStripViewer, { type ComicPanel } from '../../components/ComicStripViewer.astro';
 import { getPost, getPostsByNiche, getProductsByNiche, getNicheBySlug, getTrendingPosts, getAllProducts } from '../../lib/db';
 import { marked } from 'marked';
 
@@ -115,6 +116,21 @@ headingRenderer.code = ({ text, lang }: { text: string; lang?: string }) => {
 const rawBodyHtml = normalizedMarkdown ? (marked.parse(normalizedMarkdown, { renderer: headingRenderer }) as string) : '';
 const bodyHtml = typeof rawBodyHtml === 'string' ? sanitizeMarkdownHtml(rawBodyHtml) : '';
 const isCard = post.kind === 'card' || !post.indexable;
+
+// Extract structured comic strip panels if present
+const comicPanels: ComicPanel[] = (() => {
+  if (niche.slug !== 'comics') return [];
+  const match = (post.body_md || '').match(/```comic-strip\s*([\s\S]*?)\s*```/);
+  if (match) {
+    try {
+      const parsed = JSON.parse(match[1]);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch (e) {
+      console.warn('[Comic Panels Parse Note]:', e);
+    }
+  }
+  return [];
+})();
 
 // Estimated reading time & stats
 const wordCount = (post.body_md || post.summary || '').split(/\s+/).length;
@@ -966,6 +982,11 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         <!-- Comics & Anime Lore Protocol (Only for Comics Niche) -->
         {niche.slug === 'comics' && (
           <ComicLoreBox title={post.title} summary={post.summary} />
+        )}
+
+        <!-- Interactive Vertical Webcomic Strip Viewer (If Strip Panels Present) -->
+        {comicPanels.length > 0 && (
+          <ComicStripViewer stripTitle={post.title} panels={comicPanels} />
         )}
 
         <!-- Theatrical Box Office & OTT Release Matrix (Only for Movies Niche) -->
