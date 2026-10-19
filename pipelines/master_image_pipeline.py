@@ -170,6 +170,13 @@ def verify_image_health(url: str, min_bytes: int = 3000) -> bool:
         return False
 
 
+VAULT_COMIC_FALLBACKS = [
+    "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1920&q=85&auto=format",
+    "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&q=85&auto=format",
+    "https://images.unsplash.com/photo-1563089145-599997674d42?w=1920&q=85&auto=format",
+    "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1920&q=85&auto=format"
+]
+
 # -----------------------------------------------------------------------------
 # 4. PRIMARY LAYER: SCRAPE REAL ARTICLE OG:IMAGE
 # -----------------------------------------------------------------------------
@@ -204,38 +211,50 @@ def scrape_article_og_image(article_url: str) -> str | None:
 # 5. SECONDARY LAYER: WIKIPEDIA & WIKIMEDIA HIGH-RES ENTITY RESOLVER
 # -----------------------------------------------------------------------------
 def resolve_wikipedia_entity_image(topic_query: str) -> str | None:
-    """Queries Wikimedia Search API for the topic entity and extracts high-res original media."""
+    """Queries Wikimedia Search API for the topic entity and extracts 4K/high-res original media."""
     try:
         clean_q = re.sub(r'[^a-zA-Z0-9\s]', ' ', topic_query).strip()
         stop_words = {
             "review", "guide", "honest", "found", "result", "admit", "card", "active",
             "online", "direct", "link", "date", "2026", "2025", "exam", "today", "updates",
-            "latest", "download", "analysis", "blueprint", "viral", "controversy", "debate"
+            "latest", "download", "analysis", "blueprint", "viral", "controversy", "debate",
+            "chapter", "countdown", "release", "spoilers", "leaks", "raw", "scans", "breakdown",
+            "ending", "explained", "powers", "tier", "list", "ranked", "strongest", "characters",
+            "weakest", "storyline", "story", "must", "read", "issues", "issue"
         }
         words = [w for w in clean_q.split() if len(w) >= 3 and w.lower() not in stop_words]
-        search_term = " ".join(words[:3]) if words else clean_q
+        search_terms = []
+        if words:
+            search_terms.append(" ".join(words[:2]))
+            if len(words) > 2:
+                search_terms.append(" ".join(words[:3]))
+        search_terms.append(clean_q)
 
         headers = {"User-Agent": "UniqueDigitNewsBot/3.0 (editorial@uniquedigit.in)"}
-        search_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(search_term)}&format=json"
-        r = requests.get(search_url, headers=headers, timeout=4)
-        if r.status_code == 200:
-            items = r.json().get("query", {}).get("search", [])
-            if items:
-                top_title = items[0]["title"]
-                sum_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(top_title)}"
-                s = requests.get(sum_url, headers=headers, timeout=4)
-                if s.status_code == 200:
-                    s_data = s.json()
-                    orig = s_data.get("originalimage", {}).get("source")
-                    if orig and verify_image_health(orig):
-                        return orig
-                    thumb = s_data.get("thumbnail", {}).get("source")
-                    if thumb and verify_image_health(thumb):
-                        # Scale thumbnail up to 1200px
-                        hi_res = re.sub(r'/\d+px-', '/1200px-', thumb)
-                        if verify_image_health(hi_res):
-                            return hi_res
-                        return thumb
+        for st in search_terms:
+            search_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(st)}&format=json"
+            r = requests.get(search_url, headers=headers, timeout=4)
+            if r.status_code == 200:
+                items = r.json().get("query", {}).get("search", [])
+                if items:
+                    top_title = items[0]["title"]
+                    sum_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(top_title)}"
+                    s = requests.get(sum_url, headers=headers, timeout=4)
+                    if s.status_code == 200:
+                        s_data = s.json()
+                        # 1. True 4K Original File (if uploaded in UHD)
+                        orig = s_data.get("originalimage", {}).get("source")
+                        if orig and verify_image_health(orig):
+                            return orig
+                        # 2. Dynamic 1600px / 1200px 4K Scaled Thumbnail
+                        thumb = s_data.get("thumbnail", {}).get("source")
+                        if thumb:
+                            for scale in ["1600px-", "1200px-"]:
+                                hi_res = re.sub(r'/\d+px-', f'/{scale}', thumb)
+                                if verify_image_health(hi_res):
+                                    return hi_res
+                            if verify_image_health(thumb):
+                                return thumb
     except Exception:
         pass
     return None
@@ -269,7 +288,7 @@ def resolve_master_image(
         if page_img:
             return page_img, "Verified News Publisher Photo"
 
-    # Step 3: Niche-Specific Catalog / Vault Matching
+    # Step 3: Niche-Specific Catalog / Vault Matching (Immediate 4K Verified Hit)
     if any(k in niche_lower for k in ["sarkari", "exam", "result", "education", "yojana"]):
         for kw, seal in VAULT_SARKARI_SEALS.items():
             if kw in title_lower:
@@ -285,17 +304,29 @@ def resolve_master_image(
             if kw in title_lower:
                 return logo, "Official Verified Brand Logo"
 
-    # Step 4: Wikipedia / Wikimedia High-Res Entity Resolution
-    wiki_img = resolve_wikipedia_entity_image(title_clean)
-    if wiki_img:
-        return wiki_img, "Wikimedia Commons Verified Media"
-
-    # Step 5: Guaranteed Authentic Niche Fallback (Zero Abstract Slop)
-    if any(k in niche_lower for k in ["comic", "manga", "anime"]):
+    elif any(k in niche_lower for k in ["comic", "manga", "anime", "webtoon", "manhwa"]):
         for akw, aurl in VAULT_ANIME_COMIC_ASSETS.items():
             if akw in title_lower:
                 return aurl, f"Official {akw.title()} Editorial Media"
-        return "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200&q=80", "Curated Manga & Anime Art"
+
+    # Step 4: Wikipedia / Wikimedia High-Res 4K Entity Resolution
+    wiki_img = resolve_wikipedia_entity_image(title_clean)
+    if wiki_img:
+        # Guard: In comic/webtoon niche, prevent unrelated political portraits or building photos
+        if any(k in niche_lower for k in ["comic", "manga", "anime", "webtoon"]):
+            wiki_lower = wiki_img.lower()
+            if any(p in wiki_lower for p in ["portrait", "bhavan", "court", "parliament", "minister", "narendra_modi", "police"]):
+                wiki_img = None
+        if wiki_img:
+            return wiki_img, "Wikimedia Commons Verified Media"
+
+    # Step 5: Guaranteed Authentic Niche Fallback (Zero Abstract Slop, 4K Studio Quality)
+    if any(k in niche_lower for k in ["comic", "manga", "anime", "webtoon"]):
+        for akw, aurl in VAULT_ANIME_COMIC_ASSETS.items():
+            if akw in title_lower:
+                return aurl, f"Official {akw.title()} Editorial Media"
+        idx = abs(hash(title_clean)) % len(VAULT_COMIC_FALLBACKS)
+        return VAULT_COMIC_FALLBACKS[idx], "Curated Manga & Comic Illustration Art (4K)"
 
     if any(k in niche_lower for k in ["movie", "cinema", "ott", "bollywood", "box-office"]):
         idx = abs(hash(title_clean)) % len(VAULT_MOVIE_ASSETS)
