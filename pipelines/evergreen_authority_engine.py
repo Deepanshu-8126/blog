@@ -162,6 +162,120 @@ EVERGREEN_PILLARS = {
             ("https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=1200&q=80", "Unsplash Indian Railway Transit & Navigation Photography"),
             ("https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=80", "Unsplash Cyber Security & Online Privacy Photography")
         ]
+    },
+    "real-estate": {
+        "niche_slug": "real-estate",
+        "label": "Real Estate & Home Loans",
+        "seeds": [
+            "home loan emi calculator sbi hdfc 2026",
+            "rental agreement format india how to make legally",
+            "property buying guide for first time buyers in india",
+            "ready to move vs under construction property pros cons",
+            "home loan balance transfer process and benefits",
+            "best areas to buy flat in hyderabad bengaluru pune 2026",
+            "property registration charges and stamp duty india state wise",
+            "vastu tips for home buying north east facing plot"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80", "Unsplash Real Estate Property Photography"),
+            ("https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80", "Unsplash Modern Indian Home Architecture"),
+            ("https://images.unsplash.com/photo-1582407947304-fd86f28f8de5?w=1200&q=80", "Unsplash Urban City Real Estate Photography")
+        ]
+    },
+    "gadgets": {
+        "niche_slug": "gadgets",
+        "label": "Gadgets & Mobile Reviews",
+        "seeds": [
+            "best smartphones under 15000 india 2026",
+            "best truly wireless earbuds under 2000 india",
+            "laptop buying guide india under 50000 for students",
+            "best smartwatch under 5000 india with health tracking",
+            "gaming smartphone vs regular which is better for youtube",
+            "best powerbank 20000mah fast charging india",
+            "realme vs samsung which budget phone is better",
+            "best 5g phone under 20000 india 2026 comparison"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&q=80", "Unsplash Smartphone Photography"),
+            ("https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1200&q=80", "Unsplash Gadgets & Electronics Photography"),
+            ("https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=1200&q=80", "Unsplash Laptop & Tech Photography")
+        ]
+    },
+    "recipes": {
+        "niche_slug": "recipes",
+        "label": "Indian Recipes & Cooking",
+        "seeds": [
+            "quick indian dinner recipes ready in 30 minutes",
+            "healthy office tiffin box ideas for weight loss",
+            "high protein indian breakfast options for gym goers",
+            "no oil no sugar sweets indian recipes for diabetics",
+            "instant pot pressure cooker dal recipes india",
+            "easy desi snacks recipes for kids after school",
+            "low carb indian meal prep guide for weight loss",
+            "winter special indian soups and kadha for immunity"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=1200&q=80", "Unsplash Indian Food Photography"),
+            ("https://images.unsplash.com/photo-1567337710282-00832b415979?w=1200&q=80", "Unsplash Healthy Meal Prep Photography"),
+            ("https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80", "Unsplash Fresh Cooking Photography")
+        ]
+    },
+    "sports": {
+        "niche_slug": "sports",
+        "label": "Sports & Cricket",
+        "seeds": [
+            "ipl 2026 squad analysis best players each team",
+            "cricket fitness routine batsmen bowlers stamina",
+            "how to improve batting technique tips for amateur cricketers",
+            "football vs cricket career in india which pays more",
+            "best sports protein supplements for athletes india 2026",
+            "badminton tips for beginners techniques grip footwork",
+            "kabaddi training routine strength conditioning for players",
+            "how to watch ipl free online legally 2026 india"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=1200&q=80", "Unsplash Cricket Sports Photography"),
+            ("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1200&q=80", "Unsplash Football & Sports Action Photography"),
+            ("https://images.unsplash.com/photo-1544117519-31a4b719223d?w=1200&q=80", "Unsplash Badminton & Indoor Sports Photography")
+        ]
+    },
+    "parenting": {
+        "niche_slug": "parenting",
+        "label": "Parenting & Baby Care",
+        "seeds": [
+            "newborn baby care tips first month india",
+            "school fees comparison top private schools india 2026",
+            "best educational toys for kids 2 to 5 years india",
+            "how to improve child concentration and focus naturally",
+            "screen time guidelines for toddlers and children",
+            "best baby food recipes 6 months to 1 year india",
+            "how to choose right school for your child india guide",
+            "common childhood diseases symptoms home treatment india"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=1200&q=80", "Unsplash Happy Parenting Family Photography"),
+            ("https://images.unsplash.com/photo-1492725764893-90b379c2b6e7?w=1200&q=80", "Unsplash Baby Care Photography"),
+            ("https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1200&q=80", "Unsplash Children Playing Photography")
+        ]
+    },
+    "travel": {
+        "niche_slug": "travel",
+        "label": "Travel & Budget Trips",
+        "seeds": [
+            "budget solo travel india hill stations under 5000",
+            "best train routes india scenic journey guide",
+            "thailand visa on arrival guide for indian passport holders",
+            "how to book cheap flights india tips and tricks",
+            "best weekend getaways from delhi mumbai bengaluru 2026",
+            "irctc tatkal booking tips to get confirmed ticket",
+            "best backpacking destinations india for college students",
+            "manali leh bike trip complete guide packing list budget"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&q=80", "Unsplash Travel Adventure Photography"),
+            ("https://images.unsplash.com/photo-1473496169904-658ba7574b0d?w=1200&q=80", "Unsplash Indian Mountain Travel Photography"),
+            ("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80", "Unsplash Beach & Tropical Travel Photography")
+        ]
     }
 }
 
@@ -170,7 +284,14 @@ BLOGGER_NICHE_ROUTING = {
     "career": os.getenv("BLOGGER_EXAM_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
     "finance": os.getenv("BLOGGER_DEALS_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
     "lifehacks": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
-    "health": os.getenv("BLOGGER_BLOG_ID")
+    "health": os.getenv("BLOGGER_BLOG_ID"),
+    # New niches → main blog (fallback routing, update per blog when new Blogger blogs created)
+    "real-estate": os.getenv("BLOGGER_BLOG_ID"),
+    "gadgets": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
+    "recipes": os.getenv("BLOGGER_BLOG_ID"),
+    "sports": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
+    "parenting": os.getenv("BLOGGER_BLOG_ID"),
+    "travel": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
 }
 
 # ======================================================================================
@@ -635,7 +756,26 @@ class EvergreenSyndicationAgent:
 # 6. MASTER ORCHESTRATION DISPATCHER (Rectification #20)
 # ======================================================================================
 def run_evergreen_mission(pillar: str = "health", count: int = 1):
-    pillars_to_run = list(EVERGREEN_PILLARS.keys()) if pillar.lower() == "all" else [pillar.lower()]
+    if pillar.lower() == "all":
+        pillars_to_run = list(EVERGREEN_PILLARS.keys())
+    elif pillar.lower() == "auto":
+        # Auto-balance: pick the pillar with the fewest published guides or oldest publication
+        seen_cache = load_seen_cache()
+        pillar_counts = {p: 0 for p in EVERGREEN_PILLARS.keys()}
+        pillar_last_seen = {p: "" for p in EVERGREEN_PILLARS.keys()}
+        for item in seen_cache.values():
+            p = item.get("pillar")
+            if p in pillar_counts:
+                pillar_counts[p] += 1
+                if item.get("published_at", "") > pillar_last_seen[p]:
+                    pillar_last_seen[p] = item.get("published_at", "")
+        # Sort by count ascending, then by last published ascending
+        sorted_pillars = sorted(EVERGREEN_PILLARS.keys(), key=lambda p: (pillar_counts[p], pillar_last_seen[p]))
+        current_choice = sorted_pillars[0]
+        pillars_to_run = [current_choice]
+        log("AutoScheduler", f"🎯 Intelligent Auto-Balanced Pillar Selected: '{current_choice.upper()}' (coverage count: {pillar_counts[current_choice]})")
+    else:
+        pillars_to_run = [pillar.lower()]
 
     print("=" * 75)
     print(f"🌲 INITIATING SYSTEM 2: EVERGREEN AUTHORITY MISSION ({', '.join(pillars_to_run).upper()})")

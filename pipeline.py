@@ -1503,7 +1503,8 @@ Return strict JSON:
         # Strict mapping to the 13 canonical website niches (Never create fake/junk niches)
         CANONICAL_NICHES = {
             "viral", "movies", "exams-results", "pc-builds", "ai-tools",
-            "deals", "cashback", "side-hustles", "health", "fashion", "food", "gta-6", "gold-rate"
+            "deals", "cashback", "side-hustles", "health", "fashion", "food", "gta-6", "gold-rate",
+            "real-estate", "gadgets", "recipes", "sports", "parenting", "travel"
         }
         if any(w in q_lower for w in ["ssc", "upsc", "neet", "jee", "cbse", "admit card", "sarkari", "cutoff", "answer key", "syllabus", "hall ticket"]):
             n_slug = "exams-results"
@@ -1515,9 +1516,21 @@ Return strict JSON:
             n_slug = "ai-tools"
         elif any(w in q_lower for w in ["discount", "loot", "sale", "price drop", "coupon"]):
             n_slug = "deals"
-        elif any(w in q_lower for w in ["recipe", "food", "dish", "cooking"]):
+        elif any(w in q_lower for w in ["home loan", "rent agreement", "property", "flat in", "bhk", "real estate", "stamp duty"]):
+            n_slug = "real-estate"
+        elif any(w in q_lower for w in ["smartphone", "phone under", "earbuds", "smartwatch", "gadget", "tablet", "5g phone"]):
+            n_slug = "gadgets"
+        elif any(w in q_lower for w in ["recipe", "tiffin", "cooking", "breakfast", "dinner recipe", "snack"]):
+            n_slug = "recipes"
+        elif any(w in q_lower for w in ["ipl", "cricket", "match", "world cup", "football", "badminton", "sports", "wicket", "stadium"]):
+            n_slug = "sports"
+        elif any(w in q_lower for w in ["newborn", "baby care", "parenting", "school fee", "toddler", "kids toy", "child care"]):
+            n_slug = "parenting"
+        elif any(w in q_lower for w in ["flight", "travel", "irctc", "tatkal", "visa on arrival", "tourist", "resort", "hill station", "trip"]):
+            n_slug = "travel"
+        elif any(w in q_lower for w in ["food", "dish"]):
             n_slug = "food"
-        elif any(w in q_lower for w in ["workout", "gym", "fitness", "diet", "health"]):
+        elif any(w in q_lower for w in ["workout", "gym", "fitness", "diet", "health", "protein"]):
             n_slug = "health"
         elif any(w in q_lower for w in ["fashion", "sneaker", "dress", "outfit", "style"]):
             n_slug = "fashion"

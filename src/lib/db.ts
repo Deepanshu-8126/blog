@@ -106,12 +106,17 @@ export const SEED_NICHES: Niche[] = [
   { id: '15', slug: 'automotive-trends', name: 'Automotive', tagline: 'EVs, bikes & new car launches in India', grp: 'Lifestyle', icon: 'car', page_type: 'feed', pin: false, is_new: false, sort: 15, active: true },
   { id: '16', slug: 'exams-results', name: 'Exams & Results', tagline: 'Govt jobs, admit cards & board results', grp: 'Education', icon: 'book', page_type: 'feed', pin: false, is_new: false, sort: 16, active: true },
   { id: '17', slug: 'entertainment-celebrity', name: 'Entertainment & Lifestyle', tagline: 'Celebrity news, red carpets & lifestyle buzz', grp: 'Entertainment', icon: 'film', page_type: 'feed', pin: false, is_new: false, sort: 17, active: true },
-  { id: '18', slug: 'finance', name: 'Finance', tagline: 'Markets, SIPs, banking & personal finance', grp: 'Money', icon: 'trending-up', page_type: 'feed', pin: false, is_new: false, sort: 18, active: true }
+  { id: '18', slug: 'finance', name: 'Finance', tagline: 'Markets, SIPs, banking & personal finance', grp: 'Money', icon: 'trending-up', page_type: 'feed', pin: false, is_new: false, sort: 18, active: true },
+  { id: '19', slug: 'real-estate', name: 'Real Estate', tagline: 'Home loans, renting tips & property guides', grp: 'Money', icon: 'home', page_type: 'feed', pin: false, is_new: true, sort: 19, active: true },
+  { id: '20', slug: 'gadgets', name: 'Gadgets & Mobile', tagline: 'Best phone reviews & gadget buying guides', grp: 'Tech', icon: 'smartphone', page_type: 'feed', pin: false, is_new: true, sort: 20, active: true },
+  { id: '21', slug: 'recipes', name: 'Indian Recipes', tagline: 'Quick meals, tiffin ideas & weight loss cooking', grp: 'Lifestyle', icon: 'utensils', page_type: 'feed', pin: false, is_new: true, sort: 21, active: true },
+  { id: '22', slug: 'sports', name: 'Sports & Cricket', tagline: 'IPL, cricket scores & fitness for athletes', grp: 'Entertainment', icon: 'trophy', page_type: 'feed', pin: false, is_new: true, sort: 22, active: true },
+  { id: '23', slug: 'parenting', name: 'Parenting & Baby', tagline: 'Newborn tips, school guides & toys reviews', grp: 'Lifestyle', icon: 'smile', page_type: 'feed', pin: false, is_new: true, sort: 23, active: true },
+  { id: '24', slug: 'travel', name: 'Travel & Budget Trips', tagline: 'Budget travel, train routes & visa guides', grp: 'Lifestyle', icon: 'plane', page_type: 'feed', pin: false, is_new: true, sort: 24, active: true }
 ];
 
 export const SLUG_ALIASES: Record<string, string> = {
-  'cricket': 'cricket-sports',
-  'sports': 'cricket-sports',
+  'cricket': 'sports',
   'football': 'football-sports',
   'builds': 'pc-builds',
   'pc': 'pc-builds',
@@ -128,7 +133,11 @@ export const SLUG_ALIASES: Record<string, string> = {
   'celebrity': 'entertainment-celebrity',
   'bollywood': 'movies',
   'cinema': 'movies',
-  'tech': 'pc-builds'
+  'tech': 'gadgets',
+  'property': 'real-estate',
+  'recipe': 'recipes',
+  'baby': 'parenting',
+  'trip': 'travel'
 };
 export const SEED_POSTS: Post[] = [];
 
