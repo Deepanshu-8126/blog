@@ -357,17 +357,17 @@ Official Direct Link: {target_link}
 CORE OBJECTIVE:
 Write an ultra-high-ranking, 100% human-written style guide (600-750 words) in natural, engaging Hinglish (fluent blend of Roman Hindi with standard English education terms like Scorecard, Cutoff, Merit List, Admit Card, Direct Link).
 
-MANDATORY EDITORIAL RULES (Anti-AI Bot Craft):
+MANDATORY EDITORIAL RULES (Anti-AI Bot & Zero-Copyright Risk):
 1. HEADLINE RULES (VERY STRICT):
    - Length: EXACTLY 50 to 65 characters.
    - PUNCHY, CLEAR, FOCUSED ON A SINGLE EVENT (Zero clutter, zero multi-category mixing).
-   - If Admit Card: "[Entity] [Exam] Admit Card 2026: Direct Download Link & Shift Time"
-   - If Result: "[Entity] [Exam] Result 2026: Scorecard & Cutoff Marks Direct Link"
-   - If Yojana: "[Scheme Name] 2026: Beneficiary Status Check & Direct Portal Link"
-   - If Time Table: "[Entity] [Class/Exam] Time Table 2026: Datesheet PDF Download"
+   - If Admit Card: "{entity} {category} 2026: Direct Download Link & Exam Shift Time"
+   - If Result: "{entity} {category} 2026: Scorecard & Cutoff Marks Direct Link"
+   - If Yojana: "{title.title()} 2026: Beneficiary Status Check & Direct Portal Link"
+   - If Time Table: "{entity} Time Table 2026: Datesheet PDF Download Link"
    - NEVER combine "Time Table" with "Marks Declared" or "Cutoff"!
 
-2. FIRST 2 LINES (DIRECT ANSWER RULE):
+2. FIRST 2 LINES (DIRECT ANSWER RULE - GOOGLE FEATURED SNIPPET TARGET):
    - Do NOT start with textbook intros, "Are yaar", or "In today's fast paced world".
    - Line 1: Clear announcement of what is released, the official date, and status.
    - Line 2: Exactly where candidates can access it ({target_link}).
@@ -376,7 +376,7 @@ MANDATORY EDITORIAL RULES (Anti-AI Bot Craft):
    - ## ⚡ Quick Highlights Box:
      | Detail | Official Status |
      | :--- | :--- |
-     | **Exam / Yojana Name** | Clean official name (e.g. UP Police Constable Exam 2026) |
+     | **Exam / Yojana Name** | Clean official name (e.g. {entity} {category} 2026) |
      | **Authority / Board** | {entity} |
      | **Current Status** | 🟢 Active / Declared |
      | **Required Login** | Registration No / Roll No / DOB |
@@ -397,7 +397,13 @@ MANDATORY EDITORIAL RULES (Anti-AI Bot Craft):
    - ## ❓ Frequently Asked Questions (Top 3 FAQs):
      3 exact questions that Indian users search on Google with direct, 2-sentence answers.
 
-4. BANNED AI JARGON:
+4. 100% ORIGINAL WRITING - ZERO COPYRIGHT INFRINGEMENT:
+   - All sentences must be original editorial analysis. Do NOT copy text verbatim from press releases or third-party portals.
+   - Rephrase all facts, dates, and instructions in clean, accessible Hinglish.
+   - Append mandatory statutory safe harbor notice at the end:
+     `\n\n---\n*Disclaimer: This portal provides informational synthesis and public commentary based on official public notifications under Section 52(1)(q) of the Indian Copyright Act, 1957. For official verifications and direct applications, always visit the official department portal at [{official_domain or 'Official Website'}]({target_link}).*`
+
+5. BANNED AI JARGON:
    "In conclusion", "delve into", "tapestry", "beacon", "it is important to remember", "furthermore", "moreover", "game-changer", "fast-paced world", "testament to", "realm".
 
 Return strict JSON:
@@ -405,11 +411,23 @@ Return strict JSON:
   "title": "Clean, focused, 50-65 char headline matching exact search intent",
   "summary": "Compelling SERP meta description under 155 characters",
   "body_md": "Full markdown article following the exact structure above",
-  "tags": ["{category}", "Sarkari Result", "{entity}", "2026"]
+  "tags": ["{category}", "Sarkari Result", "{entity}", "2026"],
+  "faq": [
+    {{"q": "How to check {title} online?", "a": "Direct 2-sentence answer mentioning {official_domain or 'official portal'}."}},
+    {{"q": "What is the official website for {entity}?", "a": "Direct 2-sentence answer with {target_link}."}},
+    {{"q": "What documents/credentials are required?", "a": "Direct 2-sentence answer."}}
+  ]
 }}"""
 
     try:
-        return gemini(prompt)
+        res = gemini(prompt)
+        if res and not res.get("faq"):
+            res["faq"] = [
+                {"q": f"How to check {title} online?", "a": f"Visit {target_link} and enter your registration details."},
+                {"q": f"What is the official website for {entity}?", "a": f"The official portal is {target_link}."},
+                {"q": "What credentials are required?", "a": "Registration Number or Roll Number and Date of Birth."}
+            ]
+        return res
     except Exception as e:
         print(f"❌ Generation error for {title}: {e}")
         return None
@@ -417,10 +435,10 @@ Return strict JSON:
 # ======================================================================================
 # 🌐 CLOUDFLARE D1 MAIN WEBSITE PUBLISHER
 # ======================================================================================
-def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_url="", official_domain=""):
+def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_url="", official_domain="", faq_list=None, image_credit=""):
     """
     Stores article in Cloudflare D1 SQLite database to go live instantly on
-    https://uniquedigit-viral-hub.pages.dev/exams-results/
+    https://uniquedigit-viral-hub.pages.dev/exams-results/ with full FAQ schema.
     """
     if not (CF_ACCOUNT and CF_D1_DB and CF_TOKEN):
         print("⚠️ [Cloudflare D1]: Missing CF credentials in environment.")
@@ -429,8 +447,9 @@ def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_ur
     clean_src = source_url if (source_url and not any(b in source_url.lower() for b in ["search?q=", "google.com/search", "news.google.com/search"])) else None
     slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')[:80]
     post_id = uuid.uuid4().hex[:16]
-    sources_json = json.dumps([{"title": official_domain or "Official Authority", "url": clean_src or ""}])
-    faq_json = json.dumps([])
+    sources_json = json.dumps([{"title": official_domain or "Official Authority", "url": clean_src or ""}], ensure_ascii=False)
+    faq_json = json.dumps(faq_list or [], ensure_ascii=False)
+    credit = image_credit or ("Wikimedia Commons (Public Domain / CC-BY-SA 4.0)" if ("wikimedia.org" in image_url or "wikipedia.org" in image_url) else "Unsplash (Royalty-Free)")
 
     sql = """
     INSERT INTO posts (
@@ -442,7 +461,7 @@ def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_ur
         ?,
         (SELECT id FROM niches WHERE slug = 'exams-results' LIMIT 1),
         ?, 'article', ?, ?, ?, ?, ?,
-        ?, 'Official Verified Emblem', ?, 88.0, 25, 1, 1, 'published',
+        ?, ?, ?, 90.0, 25, 1, 1, 'published',
         strftime('%Y-%m-%dT%H:%M:%SZ', 'now'),
         strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
     )
@@ -450,10 +469,13 @@ def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_ur
         title = excluded.title,
         summary = excluded.summary,
         body_md = excluded.body_md,
+        faq = excluded.faq,
+        sources = excluded.sources,
         image_url = excluded.image_url,
+        image_credit = excluded.image_credit,
         updated_at = strftime('%Y-%m-%dT%H:%M:%SZ', 'now');
     """
-    params = [post_id, slug, title, summary, body_md, faq_json, sources_json, image_url, source_url]
+    params = [post_id, slug, title, summary, body_md, faq_json, sources_json, image_url, credit, source_url]
 
     url = f"https://api.cloudflare.com/client/v4/accounts/{CF_ACCOUNT}/d1/database/{CF_D1_DB}/query"
     headers = {"Authorization": f"Bearer {CF_TOKEN}", "Content-Type": "application/json"}
@@ -549,11 +571,13 @@ def run_sarkari_radar(max_posts=3):
         except Exception as e:
             print(f"⚠️ [Blogger Catch]: {e}")
 
-        # 6. Publish to Cloudflare Main Site (ALWAYS GUARANTEED)
+        # 6. Publish to Cloudflare Main Site (ALWAYS GUARANTEED with Rich FAQ Schema)
         cf_success = publish_to_cloudflare_d1(
             final_title, summary, body_md, tags, real_img,
             source_url=item.get("link", ""),
-            official_domain=item.get("official_domain", "")
+            official_domain=item.get("official_domain", ""),
+            faq_list=article.get("faq", []),
+            image_credit=img_type
         )
 
         # 7. Update Cache if successfully pushed to Blogger OR Cloudflare
