@@ -376,9 +376,31 @@ class EvergreenGuideWriter:
                 title = title[:65]
         return title
 
+    def fetch_existing_internal_links(self, niche_slug: str) -> list[dict]:
+        """Queries D1 for recent published articles in the same niche to weave contextual internal backlinks."""
+        links = []
+        cf_acc = os.getenv("CLOUDFLARE_ACCOUNT_ID") or "cf1a42fb306054063805cf459fddf853"
+        cf_db = os.getenv("CLOUDFLARE_D1_DATABASE_ID") or "61d1d46f-f438-47f5-9128-516d9beb11cb"
+        cf_token = os.getenv("CLOUDFLARE_API_TOKEN")
+        if not cf_token:
+            return links
+        try:
+            sql = "SELECT slug, title FROM posts WHERE niche_id = (SELECT id FROM niches WHERE slug = ? LIMIT 1) AND status = 'published' AND kind = 'article' ORDER BY published_at DESC LIMIT 4"
+            endpoint = f"https://api.cloudflare.com/client/v4/accounts/{cf_acc}/d1/database/{cf_db}/query"
+            r = requests.post(endpoint, headers={"Authorization": f"Bearer {cf_token}", "Content-Type": "application/json"}, json={"sql": sql, "params": [niche_slug]}, timeout=5)
+            if r.status_code == 200:
+                rows = r.json().get("result", [{}])[0].get("results", [])
+                for row in rows:
+                    if row.get("slug") and row.get("title"):
+                        links.append({"title": row.get("title"), "url": f"/{niche_slug}/{row.get('slug')}"})
+        except Exception as e:
+            log("GuideWriter", f"Internal linking query note: {e}")
+        return links
+
     def write_guide(self, topic: dict) -> dict | None:
         query = topic["search_query"]
         pillar = topic["pillar_key"]
+        niche_slug = topic["niche_slug"]
         log("GuideWriter", f"Synthesizing high-intent authority guide for: '{query}'...")
 
         # Domain specific prompt rules (Rectifications #10, #11, #12, #13)
@@ -401,10 +423,58 @@ class EvergreenGuideWriter:
 - Cite official commissions: SSC (ssc.gov.in) or UPSC (upsc.gov.in) with accurate eligibility criteria.
 - Recommend authentic free resources and official syllabus breakdowns.
 """
+        elif pillar == "real-estate":
+            domain_rules = """
+- Include EMI calculation matrix for ₹30L, ₹50L, and ₹75L home loans across 10, 20, and 30-year tenures.
+- Detail legal due diligence checklist: Title Deed, Encumbrance Certificate, RERA approval number.
+- Comparison: Ready to move vs Under construction tax benefits & risks.
+"""
+        elif pillar == "gadgets":
+            domain_rules = """
+- Include complete spec comparison matrix table: [Device | Display & Refresh Rate | Processor | Battery & Charging | Camera Setup | Price in India]
+- Explicitly state who should buy and who should skip this device.
+- Highlight real-world battery life and long-term software update policy.
+"""
+        elif pillar == "recipes":
+            domain_rules = """
+- Include full nutrition breakdown table: [Serving Size | Calories | Protein | Carbs | Fats | Dietary Fiber]
+- Clearly state Prep Time, Cook Time, and Total Servings.
+- Step-by-step numbered cooking method with expert chef tips for texture and aroma.
+"""
+        elif pillar == "sports":
+            domain_rules = """
+- Include player/team tactical performance comparison table with strike rates, averages, or fitness metrics.
+- Actionable weekly athletic conditioning split for amateur athletes.
+- Professional recovery and injury prevention checklist.
+"""
+        elif pillar == "parenting":
+            domain_rules = """
+- Include age-by-age developmental milestones table.
+- Clear pediatric wellness guidelines and screen-time recommendations.
+- Essential safety checklist for child health and home environment.
+"""
+        elif pillar == "travel":
+            domain_rules = """
+- Include complete budget estimation table: [Expense Category | Budget Traveler (₹) | Mid-Range (₹) | Luxury (₹)]
+- Detailed Day-wise practical itinerary with local transport recommendations.
+- Best season to visit, packing checklist, and local booking hacks.
+"""
         else: # lifehacks
             domain_rules = """
 - Step-by-step navigation for official portal (e.g. myaadhaar.uidai.gov.in or irctc.co.in).
 - Safety warning against fake phishing portals or unauthorized cyber cafes.
+"""
+
+        # Fetch existing articles for contextual in-body internal backlinks
+        existing_articles = self.fetch_existing_internal_links(niche_slug)
+        internal_links_clause = ""
+        if existing_articles:
+            formatted_links = "\n".join([f"- Title: \"{a['title']}\" -> Link: `{a['url']}`" for a in existing_articles[:3]])
+            internal_links_clause = f"""
+11. **Contextual In-Body Internal Backlinks (SEO Topical Silo)**:
+   You MUST naturally integrate 1 or 2 of the following internal links directly into relevant paragraph sentences using markdown hyperlink format [Anchor Text](path):
+{formatted_links}
+   CRITICAL: Embed them contextually inside paragraph text (e.g., "For related guidance, check our [Complete Guide](url)"), NOT as a detached bullet list at the end.
 """
 
         prompt = f"""
@@ -430,7 +500,7 @@ STRICT EDITORIAL REQUIREMENTS (Zero AI Slop, 100% Comprehensive E-E-A-T):
 10. **Structured FAQs (Max 5 Questions)**:
     - Questions must be natural user search queries.
     - CRITICAL: Answers MUST be concise (under 2-3 sentences, <60 words) so Google's FAQ rich result parser shows them.
-
+{internal_links_clause}
 OUTPUT STRICT VALID JSON ONLY (No markdown code fences, no extraneous text):
 {{
   "title": "50-65 chars punchy title",
