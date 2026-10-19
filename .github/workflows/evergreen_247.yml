@@ -1,0 +1,151 @@
+name: 🌲 System 2 - Evergreen Authority Guide Engine (24/7 Cloud)
+
+'on':
+  schedule:
+    # Runs 4x per day (every 6 hours) — one guide per pillar daily
+    # Health: 01:00 UTC | Finance: 07:00 UTC | Career: 13:00 UTC | Lifehacks: 19:00 UTC
+    - cron: '0 1 * * *'    # 🥗 Health & Fitness (6:30 AM IST)
+    - cron: '0 7 * * *'    # 💰 Personal Finance (12:30 PM IST)
+    - cron: '0 13 * * *'   # 🎓 Career & Exams (6:30 PM IST)
+    - cron: '0 19 * * *'   # 🛠️ Lifehacks & Tech (12:30 AM IST)
+  workflow_dispatch:
+    inputs:
+      pillar:
+        description: 'Pillar to run (health | finance | career | lifehacks | all)'
+        required: false
+        default: 'health'
+      count:
+        description: 'Number of guides to generate'
+        required: false
+        default: '1'
+
+concurrency:
+  group: evergreen-guide-engine
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  run-evergreen-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: 📦 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📥 Install Dependencies
+        run: pip install -r requirements.txt --quiet
+
+      - name: 🥗 Run Health Guide (01:00 UTC)
+        if: github.event_name == 'schedule' && github.event.schedule == '0 1 * * *'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID }}
+          BLOGGER_VIRAL_BLOG_ID: ${{ secrets.BLOGGER_VIRAL_BLOG_ID }}
+          BLOGGER_DEALS_BLOG_ID: ${{ secrets.BLOGGER_DEALS_BLOG_ID }}
+          PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: python pipelines/evergreen_authority_engine.py health 1
+
+      - name: 💰 Run Finance Guide (07:00 UTC)
+        if: github.event_name == 'schedule' && github.event.schedule == '0 7 * * *'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID }}
+          BLOGGER_VIRAL_BLOG_ID: ${{ secrets.BLOGGER_VIRAL_BLOG_ID }}
+          BLOGGER_DEALS_BLOG_ID: ${{ secrets.BLOGGER_DEALS_BLOG_ID }}
+          PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: python pipelines/evergreen_authority_engine.py finance 1
+
+      - name: 🎓 Run Career Guide (13:00 UTC)
+        if: github.event_name == 'schedule' && github.event.schedule == '0 13 * * *'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID }}
+          BLOGGER_VIRAL_BLOG_ID: ${{ secrets.BLOGGER_VIRAL_BLOG_ID }}
+          BLOGGER_DEALS_BLOG_ID: ${{ secrets.BLOGGER_DEALS_BLOG_ID }}
+          PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: python pipelines/evergreen_authority_engine.py career 1
+
+      - name: 🛠️ Run Lifehacks Guide (19:00 UTC)
+        if: github.event_name == 'schedule' && github.event.schedule == '0 19 * * *'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID }}
+          BLOGGER_VIRAL_BLOG_ID: ${{ secrets.BLOGGER_VIRAL_BLOG_ID }}
+          BLOGGER_DEALS_BLOG_ID: ${{ secrets.BLOGGER_DEALS_BLOG_ID }}
+          PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: python pipelines/evergreen_authority_engine.py lifehacks 1
+
+      - name: 🖐️ Run Manual Dispatch
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_EXAM_BLOG_ID: ${{ secrets.BLOGGER_EXAM_BLOG_ID }}
+          BLOGGER_VIRAL_BLOG_ID: ${{ secrets.BLOGGER_VIRAL_BLOG_ID }}
+          BLOGGER_DEALS_BLOG_ID: ${{ secrets.BLOGGER_DEALS_BLOG_ID }}
+          PORTAL_BASE_URL: ${{ secrets.PORTAL_BASE_URL }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: python pipelines/evergreen_authority_engine.py ${{ github.event.inputs.pillar || 'health' }} ${{ github.event.inputs.count || '1' }}
+
+      - name: 💾 Commit Seen Cache (Prevent Duplicates Across Runs)
+        run: |
+          git config user.name "UniqueDigit Evergreen Bot"
+          git config user.email "bot@uniquedigit.in"
+          git add evergreen_seen_cache.json || true
+          git diff --staged --quiet || git commit -m "chore(cache): update evergreen seen cache [skip ci]"
+          git push || true
