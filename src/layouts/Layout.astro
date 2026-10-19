@@ -18,10 +18,13 @@ const {
   title = 'UniqueDigit — Tech News, Verified Deals & Indian Trends',
   description = 'India’s trusted digital hub for tech updates, verified shopping deals, smartphone guides, and viral trends.',
   image = '/favicon.svg',
-  canonical = Astro.url.href,
+  canonical,
   niche,
   activeGroup
 } = Astro.props;
+
+const rawCanonical = canonical || `${Astro.url.origin}${Astro.url.pathname}`;
+const cleanCanonical = rawCanonical.split('?')[0].split('#')[0];
 
 const siteName = 'UniqueDigit';
 const gaId = import.meta.env.PUBLIC_GA_ID || 'G-PR5FML8NW5';
@@ -33,13 +36,13 @@ const cuelinksPubId = import.meta.env.PUBLIC_CUELINKS_PUB_ID || '';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="referrer" content="no-referrer" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     
     <!-- SEO Meta Tags -->
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    <link rel="canonical" href={cleanCanonical} />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="google-site-verification" content="2pmqeFnZhStZrLL0nTMOn4PG2D4Yivghgs99GK2Dto0" />
