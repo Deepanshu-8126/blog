@@ -11,10 +11,8 @@ function xmlEscape(str: string): string {
     .replace(/'/g, '&apos;');
 }
 
-export const GET: APIRoute = async ({ request, locals }) => {
-  const url = new URL(request.url);
-  const host = request.headers.get('x-forwarded-host') || url.host;
-  const baseUrl = `https://${host}`;
+export const GET: APIRoute = async ({ locals }) => {
+  const baseUrl = 'https://uniquedigit-viral-hub.pages.dev';
   const runtime = (locals as any)?.runtime;
   const posts = await getTrendingPosts(25, runtime?.env);
   const buildDate = new Date().toUTCString();

@@ -1,9 +1,8 @@
 import type { APIRoute } from 'astro';
 import { getNiches, getAllPublishedPosts } from '../lib/db';
 
-export const GET: APIRoute = async ({ request, locals }) => {
-  const url = new URL(request.url);
-  const baseUrl = `${url.protocol}//${url.host}`;
+export const GET: APIRoute = async ({ locals }) => {
+  const baseUrl = 'https://uniquedigit-viral-hub.pages.dev';
 
   const runtime = (locals as any)?.runtime;
   const niches = await getNiches(runtime?.env);

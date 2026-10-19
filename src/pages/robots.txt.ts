@@ -1,11 +1,10 @@
 import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = async ({ request }) => {
-  const url = new URL(request.url);
-  const host = request.headers.get('x-forwarded-host') || url.host;
-  const baseUrl = `https://${host}`;
+export const GET: APIRoute = async () => {
+  const baseUrl = 'https://uniquedigit-viral-hub.pages.dev';
 
-  const robots = `User-agent: *
+  const robots = `# UniqueDigit Production Autonomous Sentinel (Verified: 2026)
+User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /go/
