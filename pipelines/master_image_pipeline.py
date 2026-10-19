@@ -113,11 +113,26 @@ VAULT_MOVIE_ASSETS = [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Amazon_Prime_Video_logo.svg/500px-Amazon_Prime_Video_logo.svg.png"
 ]
 
+VAULT_ANIME_COMIC_ASSETS = {
+    "one piece": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/One_Piece_Logo.svg/1200px-One_Piece_Logo.svg.png",
+    "luffy": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/One_Piece_Logo.svg/1200px-One_Piece_Logo.svg.png",
+    "solo leveling": "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80",
+    "jujutsu kaisen": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200&q=80",
+    "gojo": "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200&q=80",
+    "naruto": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Naruto_logo.svg/1200px-Naruto_logo.svg.png",
+    "boruto": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Naruto_logo.svg/1200px-Naruto_logo.svg.png",
+    "demon slayer": "https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&q=80",
+    "spider man": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Spider-Man.svg/1200px-Spider-Man.svg.png",
+    "batman": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Batman_logo.svg/1200px-Batman_logo.svg.png",
+    "marvel": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Marvel_Logo.svg/1200px-Marvel_Logo.svg.png",
+    "dc comics": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/DC_Comics_logo.svg/1200px-DC_Comics_logo.svg.png"
+}
 
 TRUSTED_PERMANENT_ASSETS = set(
     list(VAULT_SARKARI_SEALS.values()) +
     list(VAULT_DEAL_ASSETS.values()) +
     list(VAULT_TECH_LOGOS.values()) +
+    list(VAULT_ANIME_COMIC_ASSETS.values()) +
     VAULT_VIRAL_PRESS +
     VAULT_MOVIE_ASSETS
 )
@@ -276,6 +291,12 @@ def resolve_master_image(
         return wiki_img, "Wikimedia Commons Verified Media"
 
     # Step 5: Guaranteed Authentic Niche Fallback (Zero Abstract Slop)
+    if any(k in niche_lower for k in ["comic", "manga", "anime"]):
+        for akw, aurl in VAULT_ANIME_COMIC_ASSETS.items():
+            if akw in title_lower:
+                return aurl, f"Official {akw.title()} Editorial Media"
+        return "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200&q=80", "Curated Manga & Anime Art"
+
     if any(k in niche_lower for k in ["movie", "cinema", "ott", "bollywood", "box-office"]):
         idx = abs(hash(title_clean)) % len(VAULT_MOVIE_ASSETS)
         return VAULT_MOVIE_ASSETS[idx], "Official Cinema & Streaming Platform Media"
