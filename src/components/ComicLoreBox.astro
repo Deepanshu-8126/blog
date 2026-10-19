@@ -1,0 +1,58 @@
+---
+interface Props {
+  title: string;
+  summary?: string;
+}
+
+const { title, summary } = Astro.props;
+
+// Determine if this is a chapter drop / release query or lore recap
+const isReleaseRadar = title.toLowerCase().includes('chapter') || title.toLowerCase().includes('release') || title.toLowerCase().includes('date') || title.toLowerCase().includes('schedule');
+---
+
+<div class="my-8 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 border border-purple-500/30 p-6 sm:p-7 shadow-2xl relative overflow-hidden text-white">
+  <!-- Glowing Background Accent -->
+  <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-purple-600/20 blur-3xl pointer-events-none"></div>
+  <div class="absolute -left-10 -bottom-10 w-44 h-44 rounded-full bg-cyan-500/15 blur-3xl pointer-events-none"></div>
+
+  <div class="relative z-10">
+    <!-- Top Header Badge -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-800">
+      <div class="flex items-center gap-2.5">
+        <span class="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-400 flex items-center justify-center font-bold text-base shadow-xs">
+          💥
+        </span>
+        <div>
+          <span class="text-xs font-black uppercase tracking-wider text-purple-400 font-mono">
+            {isReleaseRadar ? 'Manga & Comic Release Radar' : 'Master Lore & Power Analysis'}
+          </span>
+          <h4 class="text-sm sm:text-base font-black text-white line-clamp-1">{title}</h4>
+        </div>
+      </div>
+      <span class="px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-amber-400/15 text-amber-300 border border-amber-400/30">
+        ⚡ 100% Fair-Use Fan Editorial
+      </span>
+    </div>
+
+    <!-- Live Release Status / Reading Guide Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
+      <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+        <span class="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-1">Coverage Scope</span>
+        <span class="text-xs font-bold text-slate-200">Full Arc Breakdown & Analysis</span>
+      </div>
+      <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+        <span class="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-1">Official Platforms</span>
+        <span class="text-xs font-bold text-purple-300">MangaPlus / Viz / Marvel Unlimited</span>
+      </div>
+      <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+        <span class="text-[10px] uppercase font-mono font-bold text-slate-400 block mb-1">Anti-Piracy Policy</span>
+        <span class="text-xs font-bold text-emerald-400">Zero Raw Scans • Pure Commentary</span>
+      </div>
+    </div>
+
+    <!-- Fair-Use Legal Shield Notice -->
+    <p class="text-[11px] text-slate-400 leading-relaxed m-0 border-t border-slate-800/80 pt-3">
+      <strong>Fair Dealing Notice:</strong> Characters, artwork concepts, and universe trademarks belong exclusively to their respective creators and official publishers (Shueisha, Kodansha, Marvel, DC). This article provides transformative cultural critique, recaps, and original analysis under Section 52(1)(a) of the Indian Copyright Act.
+    </p>
+  </div>
+</div>

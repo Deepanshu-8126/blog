@@ -1504,10 +1504,12 @@ Return strict JSON:
         CANONICAL_NICHES = {
             "viral", "movies", "exams-results", "pc-builds", "ai-tools",
             "deals", "cashback", "side-hustles", "health", "fashion", "food", "gta-6", "gold-rate",
-            "real-estate", "gadgets", "recipes", "sports", "parenting", "travel"
+            "real-estate", "gadgets", "recipes", "sports", "parenting", "travel", "comics"
         }
         if any(w in q_lower for w in ["ssc", "upsc", "neet", "jee", "cbse", "admit card", "sarkari", "cutoff", "answer key", "syllabus", "hall ticket"]):
             n_slug = "exams-results"
+        elif any(w in q_lower for w in ["manga", "anime", "comic", "webtoon", "manhwa", "solo leveling", "one piece", "jujutsu kaisen", "demon slayer", "boruto", "marvel", "dc comics", "batman", "spider-man", "superhero", "avengers"]):
+            n_slug = "comics"
         elif any(w in q_lower for w in ["trailer", "box office", "teaser", "cinema", "movie review"]):
             n_slug = "movies"
         elif any(w in q_lower for w in ["gpu", "rtx", "processor", "ram", "pc build"]):

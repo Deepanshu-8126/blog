@@ -112,7 +112,8 @@ export const SEED_NICHES: Niche[] = [
   { id: '21', slug: 'recipes', name: 'Indian Recipes', tagline: 'Quick meals, tiffin ideas & weight loss cooking', grp: 'Lifestyle', icon: 'utensils', page_type: 'feed', pin: false, is_new: true, sort: 21, active: true },
   { id: '22', slug: 'sports', name: 'Sports & Cricket', tagline: 'IPL, cricket scores & fitness for athletes', grp: 'Entertainment', icon: 'trophy', page_type: 'feed', pin: false, is_new: true, sort: 22, active: true },
   { id: '23', slug: 'parenting', name: 'Parenting & Baby', tagline: 'Newborn tips, school guides & toys reviews', grp: 'Lifestyle', icon: 'smile', page_type: 'feed', pin: false, is_new: true, sort: 23, active: true },
-  { id: '24', slug: 'travel', name: 'Travel & Budget Trips', tagline: 'Budget travel, train routes & visa guides', grp: 'Lifestyle', icon: 'plane', page_type: 'feed', pin: false, is_new: true, sort: 24, active: true }
+  { id: '24', slug: 'travel', name: 'Travel & Budget Trips', tagline: 'Budget travel, train routes & visa guides', grp: 'Lifestyle', icon: 'plane', page_type: 'feed', pin: false, is_new: true, sort: 24, active: true },
+  { id: '25', slug: 'comics', name: 'Comics & Anime Lore', tagline: 'Manga recaps, superhero multiverse, release countdowns & AI strips', grp: 'Entertainment', icon: 'zap', page_type: 'feed', pin: true, is_new: true, sort: 25, active: true, config: { disclaimer: 'All recaps, reviews, and character power analyses are original editorial fan commentary created under fair use principles.' } }
 ];
 
 export const SLUG_ALIASES: Record<string, string> = {
@@ -137,7 +138,13 @@ export const SLUG_ALIASES: Record<string, string> = {
   'property': 'real-estate',
   'recipe': 'recipes',
   'baby': 'parenting',
-  'trip': 'travel'
+  'trip': 'travel',
+  'manga': 'comics',
+  'anime': 'comics',
+  'webtoon': 'comics',
+  'webtoons': 'comics',
+  'manhwa': 'comics',
+  'comic': 'comics'
 };
 export const SEED_POSTS: Post[] = [];
 

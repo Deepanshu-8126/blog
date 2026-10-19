@@ -15,6 +15,7 @@ import DealPriceStack from '../../components/DealPriceStack.astro';
 import TldrBox from '../../components/TldrBox.astro';
 import SarkariDirectBox from '../../components/SarkariDirectBox.astro';
 import CurrentAffairsQuizHook from '../../components/CurrentAffairsQuizHook.astro';
+import ComicLoreBox from '../../components/ComicLoreBox.astro';
 import { getPost, getPostsByNiche, getProductsByNiche, getNicheBySlug, getTrendingPosts, getAllProducts } from '../../lib/db';
 import { marked } from 'marked';
 
@@ -960,6 +961,11 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
         <!-- Health & Medical Advisory Protocol (Only for Health Niche) -->
         {niche.slug === 'health' && (
           <HealthDisclaimer />
+        )}
+
+        <!-- Comics & Anime Lore Protocol (Only for Comics Niche) -->
+        {niche.slug === 'comics' && (
+          <ComicLoreBox title={post.title} summary={post.summary} />
         )}
 
         <!-- Theatrical Box Office & OTT Release Matrix (Only for Movies Niche) -->

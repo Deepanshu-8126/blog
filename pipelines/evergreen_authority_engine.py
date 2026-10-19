@@ -297,6 +297,27 @@ EVERGREEN_PILLARS = {
             ("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80", "Unsplash Generative AI & Neural Network Visual"),
             ("https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80", "Unsplash Future Computing & AI Automation Photography")
         ]
+    },
+    "comics": {
+        "niche_slug": "comics",
+        "label": "Comics, Manga & Anime Lore",
+        "seeds": [
+            "solo leveling ragnarok ending explained sung suho powers",
+            "one piece chapter release date countdown leaks schedule",
+            "jujutsu kaisen strongest characters ranked power scale tier list",
+            "marvel secret wars timeline and incursions explained for beginners",
+            "spider man beyond amazing comics story recap issue",
+            "boruto two blue vortex chapter release date countdown raw scans",
+            "demon slayer hashira power rankings ranked weakest to strongest",
+            "batman darkest comic storylines every fan must read",
+            "relatable indian engineering college life funny comic strips",
+            "corporate mazdoor daily life hilarious webcomic strip"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200&q=80", "Unsplash Anime Comic Action Illustration Art"),
+            ("https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&q=80", "Unsplash Manga Dark Fantasy Artwork"),
+            ("https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&q=80", "Unsplash Comic Book Graphic Neon Visual")
+        ]
     }
 }
 
@@ -308,6 +329,7 @@ BLOGGER_NICHE_ROUTING = {
     "health": os.getenv("BLOGGER_BLOG_ID"),
     "ai-tools": os.getenv("BLOGGER_BLOG_ID"),
     "ai": os.getenv("BLOGGER_BLOG_ID"),
+    "comics": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
     # New niches → main blog (fallback routing, update per blog when new Blogger blogs created)
     "real-estate": os.getenv("BLOGGER_BLOG_ID"),
     "gadgets": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
@@ -488,6 +510,13 @@ class EvergreenGuideWriter:
 - Provide 3 to 5 EXACT copy-paste ready-to-use Prompt Templates inside markdown code blocks with fill-in-the-blank brackets like [Insert Company / Topic].
 - Step-by-step master workflow: System prompt setup, role playing, context injection, and avoiding hallucinations.
 - Clear disclosure on commercial licensing, copyright rights, and data privacy policies.
+"""
+        elif pillar in ["comics", "manga"]:
+            domain_rules = """
+- Include character power level or chapter breakdown matrix table: [Character / Arc | Power Tier (SSS/S/A/B) | Signature Feat / Ability | Counter / Weakness]
+- If covering upcoming chapter/issues: Include explicit Release Schedule Box [Official Drop Date | Raw Scan Leak Window | Where to Read Legally (MangaPlus/Viz)]
+- If explaining story/ending: Complete chronological recap with core turning points and thematic breakdown.
+- Include explicit Fair-Use Editorial Fan Commentary Notice: State that all characters and lore are property of their respective creators/publishers and this analysis is non-commercial critique and news reporting.
 """
         else: # lifehacks
             domain_rules = """
