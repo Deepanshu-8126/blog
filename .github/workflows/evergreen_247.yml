@@ -7,7 +7,7 @@ name: 🌲 System 2 - Evergreen Authority Guide Engine (24/7 Cloud)
   workflow_dispatch:
     inputs:
       pillar:
-        description: 'Pillar to run (auto | all | health | finance | career | lifehacks | real-estate | gadgets | recipes | sports | parenting | travel)'
+        description: 'Pillar to run (auto | all | ai-tools | health | finance | career | lifehacks | real-estate | gadgets | recipes | sports | parenting | travel)'
         required: false
         default: 'auto'
       count:

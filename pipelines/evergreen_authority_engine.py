@@ -276,6 +276,27 @@ EVERGREEN_PILLARS = {
             ("https://images.unsplash.com/photo-1473496169904-658ba7574b0d?w=1200&q=80", "Unsplash Indian Mountain Travel Photography"),
             ("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80", "Unsplash Beach & Tropical Travel Photography")
         ]
+    },
+    "ai-tools": {
+        "niche_slug": "ai-tools",
+        "label": "AI Tools & Viral Prompts",
+        "seeds": [
+            "best free ai video generator tools without watermark 2026",
+            "chatgpt prompts for resume writing ats friendly free",
+            "best ai tools for students research study notes",
+            "midjourney prompts for realistic indian portraits 4k",
+            "free ai voice generator text to speech hindi english",
+            "deepseek vs chatgpt for coding python which is better",
+            "best ai image generator free alternatives to midjourney",
+            "chatgpt prompts for digital marketing and social media reels",
+            "claude ai prompt engineering guide for copywriting",
+            "best free ai website builders for beginners india"
+        ],
+        "image_pool": [
+            ("https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&q=80", "Unsplash Artificial Intelligence & Deep Learning Tech"),
+            ("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=80", "Unsplash Generative AI & Neural Network Visual"),
+            ("https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&q=80", "Unsplash Future Computing & AI Automation Photography")
+        ]
     }
 }
 
@@ -285,6 +306,8 @@ BLOGGER_NICHE_ROUTING = {
     "finance": os.getenv("BLOGGER_DEALS_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
     "lifehacks": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
     "health": os.getenv("BLOGGER_BLOG_ID"),
+    "ai-tools": os.getenv("BLOGGER_BLOG_ID"),
+    "ai": os.getenv("BLOGGER_BLOG_ID"),
     # New niches → main blog (fallback routing, update per blog when new Blogger blogs created)
     "real-estate": os.getenv("BLOGGER_BLOG_ID"),
     "gadgets": os.getenv("BLOGGER_VIRAL_BLOG_ID") or os.getenv("BLOGGER_BLOG_ID"),
@@ -458,6 +481,13 @@ class EvergreenGuideWriter:
 - Include complete budget estimation table: [Expense Category | Budget Traveler (₹) | Mid-Range (₹) | Luxury (₹)]
 - Detailed Day-wise practical itinerary with local transport recommendations.
 - Best season to visit, packing checklist, and local booking hacks.
+"""
+        elif pillar in ["ai-tools", "ai"]:
+            domain_rules = """
+- Include comparison matrix table: [AI Tool | Primary Use Case | Free Tier Limit | Paid Pricing (₹/$) | Top Free Alternative]
+- Provide 3 to 5 EXACT copy-paste ready-to-use Prompt Templates inside markdown code blocks with fill-in-the-blank brackets like [Insert Company / Topic].
+- Step-by-step master workflow: System prompt setup, role playing, context injection, and avoiding hallucinations.
+- Clear disclosure on commercial licensing, copyright rights, and data privacy policies.
 """
         else: # lifehacks
             domain_rules = """

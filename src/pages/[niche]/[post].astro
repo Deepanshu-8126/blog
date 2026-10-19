@@ -81,11 +81,34 @@ const tableOfContents = tokens
     id: slugifyHeading(t.text)
   }));
 
-// Setup marked renderer to inject anchor IDs into headings
+// Setup marked renderer to inject anchor IDs into headings and custom interactive prompt cards
 const headingRenderer = new marked.Renderer();
 headingRenderer.heading = ({ text, depth }: { text: string; depth: number }) => {
   const cleanId = slugifyHeading(text);
   return `<h${depth} id="${cleanId}" class="scroll-mt-28 group relative font-black text-slate-900 tracking-tight">${text}<a href="#${cleanId}" class="ml-2 text-slate-300 opacity-0 group-hover:opacity-100 transition no-underline text-base" aria-hidden="true">#</a></h${depth}>\n`;
+};
+
+headingRenderer.code = ({ text, lang }: { text: string; lang?: string }) => {
+  const rawLang = (lang || '').toLowerCase();
+  const isPrompt = rawLang === 'prompt' || text.toLowerCase().includes('you are a') || text.toLowerCase().includes('act as') || text.toLowerCase().includes('write a') || text.toLowerCase().includes('[insert');
+  const badgeTitle = isPrompt ? '🤖 Ready-to-Use AI Prompt Template' : (rawLang ? rawLang.toUpperCase() : 'CODE SNIPPET');
+  const badgeEmoji = isPrompt ? '✨' : '💻';
+  const encodedCode = encodeURIComponent(text);
+
+  return `
+<div class="prompt-code-card my-7 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl overflow-hidden group">
+  <div class="flex items-center justify-between px-4 py-3 bg-slate-800/90 border-b border-slate-700/70 text-xs backdrop-blur-sm">
+    <div class="flex items-center gap-2">
+      <span class="text-sm">${badgeEmoji}</span>
+      <span class="font-bold font-mono text-emerald-400 tracking-wide text-xs">${badgeTitle}</span>
+    </div>
+    <button type="button" class="copy-prompt-btn px-3 py-1.5 rounded-xl bg-slate-700/80 hover:bg-brand text-white font-mono font-bold text-xs transition-all flex items-center gap-1.5 shadow-xs active:scale-95 cursor-pointer" data-clipboard="${encodedCode}">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      <span class="copy-label">Copy Prompt</span>
+    </button>
+  </div>
+  <pre class="p-4 sm:p-5 text-slate-100 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap select-all overflow-x-auto bg-slate-950/80"><code>${text}</code></pre>
+</div>\n`;
 };
 
 const rawBodyHtml = normalizedMarkdown ? (marked.parse(normalizedMarkdown, { renderer: headingRenderer }) as string) : '';
@@ -838,6 +861,34 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
           </div>
         )}
 
+        <!-- Dynamic Real-Time Trend Pulse in this Niche -->
+        {sidebarTrending.length > 0 && (
+          <div class="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-brand/10 to-indigo-500/10 border border-amber-500/20 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-sm">
+                🔥
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full font-mono">
+                    Live Pulse in {niche.name}
+                  </span>
+                  <span class="text-[11px] text-slate-500 font-medium hidden sm:inline">• 24/7 Real-Time Radar</span>
+                </div>
+                <p class="text-xs sm:text-sm font-bold text-slate-900 mt-0.5 truncate">
+                  Trending Now: <a href={`/${sidebarTrending[0].niches?.slug || niche.slug}/${sidebarTrending[0].slug}`} class="hover:text-brand underline decoration-amber-400 decoration-2 underline-offset-2 transition">{sidebarTrending[0].title}</a>
+                </p>
+              </div>
+            </div>
+            <a
+              href={`/${niche.slug}`}
+              class="w-full sm:w-auto px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-brand text-white text-xs font-bold text-center whitespace-nowrap transition shadow-xs active:scale-95 shrink-0"
+            >
+              Explore {niche.name} Hub &rarr;
+            </a>
+          </div>
+        )}
+
         <!-- Interactive Table of Contents (TOC) Quick Jump Bar -->
         {tableOfContents.length > 0 && (
           <div class="mb-8 sm:mb-12 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-50 via-purple-50/40 to-slate-50 border border-slate-200/90 shadow-2xs">
@@ -1443,8 +1494,32 @@ if (displayHeroImage) renderedImages.add(displayHeroImage);
             }
           });
         }
+      // 5b. Interactive 1-Click AI Prompt Copy Engine
+      try {
+        document.addEventListener('click', (e) => {
+          const btn = (e.target as HTMLElement)?.closest('.copy-prompt-btn') as HTMLButtonElement | null;
+          if (!btn) return;
+          const encodedText = btn.getAttribute('data-clipboard');
+          if (!encodedText) return;
+          
+          try {
+            const rawText = decodeURIComponent(encodedText);
+            navigator.clipboard.writeText(rawText).then(() => {
+              const label = btn.querySelector('.copy-label');
+              const origText = label ? label.textContent : 'Copy Prompt';
+              if (label) label.textContent = 'Copied! ✨';
+              btn.classList.add('!bg-emerald-600', '!text-white');
+              setTimeout(() => {
+                if (label) label.textContent = origText;
+                btn.classList.remove('!bg-emerald-600', '!text-white');
+              }, 2200);
+            });
+          } catch (clipErr) {
+            console.warn('[Clipboard Error]:', clipErr);
+          }
+        });
       } catch (err) {
-        console.warn('[Sidebar Toggle Init Error]:', err);
+        console.warn('[Prompt Copy Init Error]:', err);
       }
 
       // 6. Floating Back to Top Button
