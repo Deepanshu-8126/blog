@@ -43,6 +43,14 @@ jobs:
       - name: 📥 Install Dependencies
         run: pip install -r requirements.txt --quiet
 
+      - name: 🔄 Restore Evergreen Seen Cache
+        uses: actions/cache@v4
+        with:
+          path: evergreen_seen_cache.json
+          key: evergreen-seen-cache-${{ github.run_id }}
+          restore-keys: |
+            evergreen-seen-cache-
+
       - name: 🚀 Execute Evergreen Authority Engine
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -66,9 +74,10 @@ jobs:
           python pipelines/evergreen_authority_engine.py "$PILLAR" "$COUNT"
 
       - name: 💾 Commit Seen Cache (Prevent Duplicates Across Cloud Runs)
+        if: always()
         run: |
           git config user.name "UniqueDigit Evergreen Bot"
           git config user.email "bot@uniquedigit.in"
-          git add evergreen_seen_cache.json || true
+          git add -f evergreen_seen_cache.json || true
           git diff --staged --quiet || git commit -m "chore(cache): update evergreen seen cache [skip ci]"
           git push || true
