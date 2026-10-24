@@ -350,7 +350,7 @@ def publish_capsule_to_cloudflare_d1(capsule: dict):
         ?,
         (SELECT id FROM niches WHERE slug = 'exams-results' LIMIT 1),
         ?, 'article', ?, ?, ?, ?, ?,
-        ?, 'PIB & Government Educational Wire', 'https://uniquedigit-viral-hub.pages.dev/current-affairs', 94.0, 45, 1, 1, 'published',
+        ?, 'PIB & Government Educational Wire', 'https://uniquedigit-viral-hub.pages.dev/current-affairs', 94.0, 0, 1, 1, 'published',
         strftime('%Y-%m-%dT%H:%M:%SZ', 'now'),
         strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
     )

@@ -461,7 +461,7 @@ def publish_to_cloudflare_d1(title, summary, body_md, tags, image_url, source_ur
         ?,
         (SELECT id FROM niches WHERE slug = 'exams-results' LIMIT 1),
         ?, 'article', ?, ?, ?, ?, ?,
-        ?, ?, ?, 90.0, 25, 1, 1, 'published',
+        ?, ?, ?, 90.0, 0, 1, 1, 'published',
         strftime('%Y-%m-%dT%H:%M:%SZ', 'now'),
         strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
     )

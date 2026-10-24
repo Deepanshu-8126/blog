@@ -665,9 +665,9 @@ class EvergreenSyndicationAgent:
         faq_json = json.dumps(article.get("faq", []), ensure_ascii=False)
         sources_json = json.dumps([{"title": "UniqueDigit Editorial Research", "url": "https://uniquedigit-viral-hub.pages.dev"}], ensure_ascii=False)
 
-        # Realistic dynamic views and hype calibration (Rectification #15)
+        # Genuine zero-baseline views (real user metrics only)
         hype_val = round(88.0 + random.uniform(0.5, 7.5), 1)
-        views_val = random.randint(45, 95)
+        views_val = 0
 
         sql = """
         INSERT INTO posts (
