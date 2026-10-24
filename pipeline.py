@@ -1478,7 +1478,12 @@ STRICT EDITORIAL GROUNDING GUIDELINES:
      * Clean Markdown Table (dates, scores, metrics, or comparisons).
      * Honest Final Verdict / Practical Next Step.
    - BANNED CLICHES: "In conclusion", "delve into", "tapestry", "beacon", "testament to", "fast-paced world", "furthermore", "moreover", "revolutionize", "game-changer".
-5. Include FAQ schema (3 real questions) and tags.
+5. EXACT-MATCH GOOGLE SEARCH INTENT TITLE (CRITICAL FOR RANKING):
+   - MUST start with the EXACT keyword query Indian users type into Google Search for "{query}".
+   - NEVER use personal diary voice ("I've spent hours...", "Why I love...", "What happens next").
+   - Format: "[Exact Topic/Keyword] (2026): [Direct Link / Full Review / Price & Date / Step-by-Step Guide]"
+   - Include high-CTR modifiers: "2026", "Price in India", "Direct Link", "Review", "Under ₹...", "Full Details".
+6. Include FAQ schema (3 real questions) and tags.
 
 Return strict JSON:
 {{
@@ -1487,8 +1492,8 @@ Return strict JSON:
   "niche_tagline": "Short 1-line description",
   "niche_group": "Tech | Entertainment | Lifestyle | Money | Education",
   "niche_icon": "gamepad | sparkles | cpu | book-open | tag | heart | clapperboard | trophy",
-  "title": "Engaging, click-worthy, non-clickbait headline",
-  "summary": "Meta summary under 160 characters",
+  "title": "Exact-match search intent title under 65 chars (e.g., 'Casio G-Shock GMC-2500 Price in India, Specs & Review 2026')",
+  "summary": "Meta summary under 160 characters containing primary search keyword",
   "body_md": "Full markdown with ## subheadings, comparison points, and guides",
   "faq": [{{"q": "Popular question", "a": "Direct 2-sentence answer"}}],
   "tags": ["Tag1", "Tag2"]

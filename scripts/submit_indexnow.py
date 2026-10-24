@@ -57,8 +57,17 @@ for name, endpoint in endpoints:
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", errors="replace") if e.fp else ""
         print(f"[{name}] HTTP {e.code}: {body[:150]}")
-    except Exception as e:
         print(f"[{name} ERR] {e}")
+
+# --- Step 2B: Instant Google Search Bot Ping ---
+print(f"\n[2B] Triggering Google Searchbot Dynamic Sitemap Ping...")
+try:
+    g_ping = f"https://www.google.com/ping?sitemap={urllib.parse.quote(SITEMAP_URL, safe='')}"
+    req = urllib.request.Request(g_ping, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=10) as g_resp:
+        print(f"[OK] Google Searchbot Ping: HTTP {g_resp.status} - Crawl Queued!")
+except Exception as ge:
+    print(f"[Google Ping Info]: {ge}")
 
 # --- Step 3: Fast Health Check on sample URLs ---
 print(f"\n[3/3] Running quick reachability audit on recent URLs...")
