@@ -43,6 +43,12 @@ def ensure_affiliate_link(url: str) -> str:
             return f"{url}{sep}tag={AMAZON_TAG}"
         else:
             return re.sub(r'tag=[^&]+', f'tag={AMAZON_TAG}', url)
+    elif "flipkart.com" in url:
+        if "affid=" not in url:
+            sep = "&" if "?" in url else "?"
+            return f"{url}{sep}affid=uniquedigit"
+        else:
+            return re.sub(r'affid=[^&]+', 'affid=uniquedigit', url)
     return url
 
 
@@ -256,6 +262,34 @@ def generate_deal_html(deal: dict) -> tuple[str, str]:
     {buy_btn_html}
 
     {faq_html}
+
+    <!-- Google Search Rich Snippet Schema.org Product Structured Data -->
+    <script type="application/ld+json">
+    {{
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "{clean_prod}",
+      "image": ["{image_url}"],
+      "description": "Get {clean_prod} at lowest price with discount on {store_name}.",
+      "brand": {{
+        "@type": "Brand",
+        "name": "{clean_prod.split()[0]}"
+      }},
+      "offers": {{
+        "@type": "Offer",
+        "url": "{aff_url}",
+        "priceCurrency": "INR",
+        "price": "{price or 999}",
+        "priceValidUntil": "2026-12-31",
+        "itemCondition": "https://schema.org/NewCondition",
+        "availability": "https://schema.org/InStock",
+        "seller": {{
+          "@type": "Organization",
+          "name": "{store_name}"
+        }}
+      }}
+    }}
+    </script>
     """
 
     return article_title, content_html

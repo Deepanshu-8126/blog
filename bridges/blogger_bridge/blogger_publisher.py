@@ -65,7 +65,12 @@ def get_blogger_service():
 
     # Refresh token if needed
     if not creds.valid:
-        creds.refresh(Request())
+        try:
+            creds.refresh(Request())
+        except Exception as e:
+            print(f"\n⚠️ [Blogger OAuth Expired]: Refresh token expired or revoked ({e}).")
+            print("👉 Run 'python bridges/blogger_bridge/blogger_auth.py' to re-authenticate.\n")
+            return None, None
 
     service = build("blogger", "v3", credentials=creds)
     return service, blog_id

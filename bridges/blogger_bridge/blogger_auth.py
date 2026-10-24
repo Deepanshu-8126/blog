@@ -129,6 +129,11 @@ def authenticate():
     print("=======================================================")
     print(f"🔒 Configuration saved to .env & {TOKENS_FILE}")
     print(f"🚀 Primary Blog Locked: {primary_blog.get('name')} (ID: {primary_blog.get('id')})")
+    print("=======================================================")
+    print("💡 CRITICAL: To prevent this token from expiring in 7 days:")
+    print("1. Go to https://console.cloud.google.com/apis/credentials/consent")
+    print("2. Under 'Publishing status', click 'PUBLISH APP' (Move from Testing to Production).")
+    print("3. Once in Production, Google refresh tokens NEVER expire!")
     print("=======================================================\n")
 
 if __name__ == "__main__":
